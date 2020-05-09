@@ -117,7 +117,7 @@ class Fediverse(callbacks.PluginRegexp):
     """Fetches information from ActivityPub servers."""
 
     threaded = True
-    regexps = ['usernameSnarfer']
+    regexps = ["usernameSnarfer"]
 
     def __init__(self, irc):
         super().__init__(irc)
@@ -201,6 +201,7 @@ class Fediverse(callbacks.PluginRegexp):
                 utils.web.htmlToText(actor["summary"]),
             )
         )
+
     usernameSnarfer.__doc__ = _username_regexp.pattern
 
     @wrap(["somethingWithoutSpaces"])

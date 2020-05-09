@@ -51,9 +51,17 @@ def configure(advanced):
 
 
 Fediverse = conf.registerPlugin("Fediverse")
-conf.registerChannelValue(Fediverse, 'usernameSnarfer',
-    registry.Boolean(False, _("""Determines whether the bot will output the
-    profile of @username@hostname accounts it sees in channel messages.""")))
+conf.registerChannelValue(
+    Fediverse,
+    "usernameSnarfer",
+    registry.Boolean(
+        False,
+        _(
+            """Determines whether the bot will output the
+    profile of @username@hostname accounts it sees in channel messages."""
+        ),
+    ),
+)
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
