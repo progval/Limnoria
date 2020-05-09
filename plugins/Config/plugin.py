@@ -207,6 +207,25 @@ class Config(callbacks.Plugin):
     search = wrap(search, ['lowered']) # XXX compose with withoutSpaces?
 
     @internationalizeDocstring
+    def searchhelp(self, irc, msg, args, phrase):
+        """<phrase>
+
+        Searches for <phrase> in the help of current configuration variables.
+        """
+        L = []
+        for (name, x) in conf.supybot.getValues(getChildren=True):
+            if phrase in x.help().lower():
+                last_name_part = registry.split(name)[-1]
+                if not irc.isChannel(last_name_part) \
+                        and not last_name_part.startswith(':'): # network
+                    L.append(name)
+        if L:
+            irc.reply(format('%L', L))
+        else:
+            irc.reply(_('There were no matching configuration variables.'))
+    searchhelp = wrap(searchhelp, ['lowered'])
+
+    @internationalizeDocstring
     def searchvalues(self, irc, msg, args, word):
         """<word>
 

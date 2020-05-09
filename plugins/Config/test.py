@@ -88,6 +88,14 @@ class ConfigTestCase(ChannelPluginTestCase):
         self.assertNotError('config channel reply.whenAddressedBy.chars @')
         self.assertNotRegexp('config search chars', self.channel)
 
+    def testSearchHelp(self):
+        self.assertRegexp(
+            'config searchhelp "what prefix characters"',
+            'supybot.reply.whenAddressedBy.chars')
+        self.assertNotError('config channel reply.whenAddressedBy.chars @')
+        self.assertNotRegexp(
+            'config searchhelp "what prefix characters"', self.channel)
+
     def testSearchValues(self):
         self.assertResponse(
             'config searchvalues @@@',
