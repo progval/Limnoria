@@ -178,7 +178,7 @@ class RealSupyHTTPServer(HTTPServer):
         else:
             raise AssertionError(protocol)
         HTTPServer.__init__(self, address, callback)
-        self.callbacks = {}
+        self.callbacks = DEFAULT_CALLBACKS
 
     def server_bind(self):
         if self.protocol == 6:
@@ -322,6 +322,10 @@ class SupyHTTPServerCallback(log.Firewalled):
 
     doPost = doGet
 
+    def doWellKnown(self, handler, path):
+        """Handles GET request to /.well-known/"""
+        return None
+
     def doHook(self, handler, subdir):
         """Method called when hooking this callback."""
         pass
@@ -352,7 +356,6 @@ class Supy404(SupyHTTPServerCallback):
 class SupyIndex(SupyHTTPServerCallback):
     """Displays the index of available plugins."""
     name = "index"
-    fullpath = True
     defaultResponse = _("Request not handled.")
     def doGetOrHead(self, handler, path, write_content):
         plugins = [x for x in handler.server.callbacks.items()]
@@ -428,6 +431,27 @@ class Favicon(SupyHTTPServerCallback):
             if write_content:
                 self.wfile.write(response)
 
+class SupyWellKnown(SupyHTTPServerCallback):
+    """Serves /.well-known/ resources."""
+    name = 'well-known'
+    defaultResponse = _('Request not handled')
+
+    def doGetOrHead(self, handler, path, write_content):
+        for callback in handler.server.callbacks.values():
+            resp = callback.doWellKnown(handler, path)
+            if resp:
+                (status, headers, content) = resp
+                handler.send_response(status)
+                for header in headers.items():
+                    self.send_header(*header)
+                self.end_headers()
+                if write_content:
+                    self.wfile.write(content)
+                return
+
+        handler.send_response(404)
+        self.end_headers()
+
 http_servers = []
 
 def startServer():
@@ -471,6 +495,9 @@ def unhook(subdir):
     assert isinstance(http_servers, list)
     for server in list(http_servers):
         server.unhook(subdir)
-        if len(server.callbacks) <= 0 and not configGroup.keepAlive():
+        if len(set(server.callbacks) - set(DEFAULT_CALLBACKS)) <= 0 \
+                and not configGroup.keepAlive():
             server.shutdown()
             http_servers.remove(server)
+
+DEFAULT_CALLBACKS = {'.well-known': SupyWellKnown()}

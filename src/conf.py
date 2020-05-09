@@ -1388,6 +1388,11 @@ registerGlobalValue(supybot.servers.http, 'keepAlive',
 registerGlobalValue(supybot.servers.http, 'favicon',
     registry.String('', _("""Determines the path of the file served as
     favicon to browsers.""")))
+registerGlobalValue(supybot.servers.http, 'publicUrl',
+    registry.String('', _("""Determines the public URL of the server.
+    By default it is http://<hostname>:<port>/, but you will want to change
+    this if there is a reverse proxy (nginx, apache, ...) in front of
+    the bot.""")))
 
 
 ###
