@@ -229,6 +229,10 @@ def actor_url(localuser, hostname):
 def get_actor(localuser, hostname):
     url = actor_url(localuser, hostname)
 
+    return get_actor_from_url(url)
+
+
+def get_actor_from_url(url):
     content = signed_request(url, headers={"Accept": ACTIVITY_MIMETYPE})
 
     assert content is not None

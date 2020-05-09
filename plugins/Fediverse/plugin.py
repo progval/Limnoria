@@ -140,16 +140,22 @@ class Fediverse(callbacks.PluginRegexp):
         if username in self._actor_cache:
             return self._actor_cache[username]
         match = _username_regexp.match(username)
-        if not match:
-            irc.errorInvalid("fediverse username", username)
-        localuser = match.group("localuser")
-        hostname = match.group("hostname")
+        if match:
+            localuser = match.group("localuser")
+            hostname = match.group("hostname")
 
-        try:
-            actor = ap.get_actor(localuser, hostname)
-        except ap.ActorNotFound:
-            # Usually a 404
-            irc.error("Unknown user %s." % username, Raise=True)
+            try:
+                actor = ap.get_actor(localuser, hostname)
+            except ap.ActorNotFound:
+                irc.error("Unknown user %s." % username, Raise=True)
+        else:
+            match = utils.web.urlRe.match(username)
+            if match:
+                # TODO: error handling
+                actor = ap.get_actor_from_url(match.group(0))
+                username = self._format_actor_username(actor)
+            else:
+                irc.errorInvalid("fediverse username", username)
 
         self._actor_cache[username] = actor
         self._actor_cache[actor["id"]] = actor
@@ -161,14 +167,31 @@ class Fediverse(callbacks.PluginRegexp):
         return "@%s@%s" % (actor["preferredUsername"], hostname)
 
     def _format_status(self, irc, status):
-        assert status["type"] == "Note", status
-        author_url = status["attributedTo"]
-        author = self._get_actor(irc, author_url)
-        return _("%s (%s): %s") % (
-            author["name"],
-            self._format_actor_username(author),
-            utils.web.htmlToText(status["content"]),
-        )
+        if status["type"] == "Create":
+            return self._format_status(irc, status["object"])
+        elif status["type"] == "Note":
+            author_url = status["attributedTo"]
+            author = self._get_actor(irc, author_url)
+            return _("\x02%s (%s)\x02: %s") % (
+                author["name"],
+                self._format_actor_username(author),
+                utils.web.htmlToText(status["content"]),
+            )
+        elif status["type"] == "Announce":
+            # aka boost; let's go fetch the original status
+            try:
+                content = ap.signed_request(
+                    status["object"], headers={"Accept": ap.ACTIVITY_MIMETYPE}
+                )
+                status = json.loads(content)
+                return self._format_status(irc, status)
+            except ap.ActivityPubProtocolError as e:
+                return "<Could not fetch status: %s>" % e.args[0]
+        else:
+            assert False, "Unknown status type %s: %r" % (
+                status["type"],
+                status,
+            )
 
     @wrap(["somethingWithoutSpaces"])
     def profile(self, irc, msg, args, username):
@@ -187,6 +210,8 @@ class Fediverse(callbacks.PluginRegexp):
         )
 
     def usernameSnarfer(self, irc, msg, match):
+        if callbacks.addressed(irc, msg):
+            return
         try:
             actor = self._get_actor(irc, match.group(0))
         except ap.ActivityPubError:
@@ -208,7 +233,7 @@ class Fediverse(callbacks.PluginRegexp):
     def featured(self, irc, msg, args, username):
         """<@user@instance>
 
-        Returned the featured statuses of @user@instance (aka. pinned toots).
+        Returnes the featured statuses of @user@instance (aka. pinned toots).
         """
         actor = self._get_actor(irc, username)
         if "featured" not in actor:
@@ -216,7 +241,33 @@ class Fediverse(callbacks.PluginRegexp):
         statuses = json.loads(ap.signed_request(actor["featured"])).get(
             "orderedItems", []
         )
-        irc.replies([self._format_status(irc, status) for status in statuses])
+        irc.replies(
+            filter(
+                bool, (self._format_status(irc, status) for status in statuses)
+            )
+        )
+
+    @wrap(["somethingWithoutSpaces"])
+    def statuses(self, irc, msg, args, username):
+        """<@user@instance>
+
+        Returned the last statuses of @user@instance.
+        """
+        actor = self._get_actor(irc, username)
+        if "outbox" not in actor:
+            irc.error(_("No status."), Raise=True)
+        outbox = json.loads(ap.signed_request(actor["outbox"]))
+
+        # Fetches the first page of the outbox. This should be a good-enough
+        # approximation of the number of statuses to show.
+        statuses = json.loads(ap.signed_request(outbox["first"])).get(
+            "orderedItems", []
+        )
+        irc.replies(
+            filter(
+                bool, (self._format_status(irc, status) for status in statuses)
+            )
+        )
 
 
 Class = Fediverse
