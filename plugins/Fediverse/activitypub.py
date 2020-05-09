@@ -30,7 +30,9 @@
 
 import os
 import json
+import email
 import base64
+import datetime
 import functools
 import contextlib
 import urllib.parse
@@ -44,7 +46,7 @@ from cryptography.hazmat.primitives.asymmetric.rsa import generate_private_key
 
 
 from supybot import commands, conf
-from supybot.utils import web
+from supybot.utils import gen, web
 
 
 XRD_URI = "{http://docs.oasis-open.org/ns/xri/xrd-1.0}"
@@ -189,14 +191,22 @@ def get_public_key_pem():
 def signed_request(url, headers=None, data=None):
     method = "get" if data is None else "post"
     instance_actor_url = get_instance_actor_url()
-    headers = headers or {}
+    headers = gen.InsensitivePreservingDict(headers or {})
+
+    if 'Date' not in headers:
+        headers['Date'] = email.utils.formatdate(usegmt=True)
 
     if instance_actor_url:
+        parsed_url = urllib.parse.urlparse(url)
         signed_headers = [
             (
                 "(request-target)",
-                method + " " + urllib.parse.urlparse(url).path,
-            )
+                method + " " + parsed_url.path,
+            ),
+            (
+                "host",
+                parsed_url.hostname,
+            ),
         ]
         for (header_name, header_value) in headers.items():
             signed_headers.append((header_name.lower(), header_value))
