@@ -85,11 +85,11 @@ def sandbox(f):
             return commands.process(
                 f,
                 *args,
-                **kwargs,
                 timeout=10,
                 heap_size=100 * 1024 * 1024,
                 pn="Fediverse",
-                cn=f.__name__
+                cn=f.__name__,
+                **kwargs
             )
         except (commands.ProcessTimeoutError, MemoryError):
             raise web.Error(
