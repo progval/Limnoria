@@ -28,6 +28,7 @@
 
 ###
 
+import os
 import json
 import base64
 import functools
@@ -39,6 +40,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.asymmetric.rsa import generate_private_key
 
 
 from supybot import commands, conf
@@ -148,8 +150,25 @@ def get_instance_actor_url():
     return urllib.parse.urljoin(root_url, "/fediverse/instance_actor")
 
 
+def _generate_private_key():
+    return generate_private_key(
+        public_exponent=65537, key_size=2048, backend=default_backend()
+    )
+
+
 def _get_private_key():
     path = conf.supybot.directories.data.dirize("Fediverse/instance_key.pem")
+    if not os.path.isfile(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        key = _generate_private_key()
+        pem = key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+        with open(path, "wb") as fd:
+            fd.write(pem)
+
     with open(path, "rb") as fd:
         return serialization.load_pem_private_key(
             fd.read(), password=None, backend=default_backend()
