@@ -30,7 +30,6 @@
 
 import json
 import base64
-import hashlib
 import functools
 import contextlib
 import urllib.parse
@@ -93,11 +92,9 @@ def sandbox(f):
                 cn=f.__name__
             )
         except (commands.ProcessTimeoutError, MemoryError):
-            raise utils.web.Error(
-                _(
-                    "Page is too big or the server took "
-                    "too much time to answer the request."
-                )
+            raise web.Error(
+                "Page is too big or the server took "
+                "too much time to answer the request."
             )
 
     return newf
@@ -174,7 +171,6 @@ def _signed_request(url, headers, data=None):
     method = "get" if data is None else "post"
     instance_actor_url = get_instance_actor_url()
 
-    assert instance_actor_url
     if instance_actor_url:
         signed_headers = [
             (
