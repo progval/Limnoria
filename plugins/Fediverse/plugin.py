@@ -159,44 +159,6 @@ class Fediverse(callbacks.Plugin):
             )
         )
 
-    '''
-    @wrap(['somethingWithoutSpaces'])
-    def post(self, irc, msg, args, username):
-        """<@user@instance>
-
-        Returns generic information on the account @user@instance."""
-        match = _username_re.match(username)
-        if not match:
-            irc.errorInvalid('fediverse username', username)
-        localuser = match.group('localuser')
-        hostname = match.group('hostname')
-
-        instance_actor = ap.get_instance_actor_url()
-        instance_hostname = urllib.parse.urlparse(
-            conf.supybot.servers.http.publicUrl()).hostname
-        doc = {
-            "@context": "https://www.w3.org/ns/activitystreams",
-
-            "id": "https://%s/create-hello-world" % instance_hostname,
-            "type": "Create",
-            "actor": instance_actor,
-
-            "object": {
-                    "id": "https://%s/hello-world" % instance_hostname,
-                    "type": "Note",
-                    "published": "2018-06-23T17:17:11Z",
-                    "attributedTo": instance_actor,
-                    "content": "<p>Hello world</p>",
-                    "to": "https://www.w3.org/ns/activitystreams#Public"
-            }
-        }
-
-        ap._signed_request(
-            url='https://%s/inbox' % hostname,
-            headers={},
-            data=json.dumps(doc),
-        )'''
-
 
 Class = Fediverse
 
