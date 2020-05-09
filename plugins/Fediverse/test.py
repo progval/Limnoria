@@ -86,5 +86,11 @@ class FediverseTestCase(PluginTestCase):
             # TODO: add a test with an instance which only allows fetches
             # with valid signatures.
 
+        def testProfileUnknown(self):
+            self.assertResponse(
+                "profile @nonexistinguser@oc.todon.fr",
+                "Error: Unknown user @nonexistinguser@oc.todon.fr.",
+            )
+
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

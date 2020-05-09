@@ -133,7 +133,7 @@ def webfinger(hostname, uri):
     template = _get_webfinger_url(hostname)
     assert template
 
-    with convert_exceptions(WebfingerError):
+    with convert_exceptions(ActorNotFound):
         content = web.getUrlContent(
             template.replace("{uri}", uri),
             headers={"Accept": "application/json"},

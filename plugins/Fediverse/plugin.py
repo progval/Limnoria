@@ -145,9 +145,9 @@ class Fediverse(callbacks.Plugin):
 
         try:
             actor = ap.get_actor(localuser, hostname)
-        except ap.WebfingerError as e:
+        except ap.ActorNotFound as e:
             # Usually a 404
-            irc.error(e.args[0], Raise=True)
+            irc.error("Unknown user %s." % username, Raise=True)
 
         irc.reply(
             _("\x02%s\x02 (@%s@%s): %s")
