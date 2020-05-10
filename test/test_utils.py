@@ -1166,16 +1166,16 @@ class TestCacheDict(SupyTestCase):
             self.assertTrue(i in d)
             self.assertTrue(d[i] == i)
 
-class TestTimeoutDict(SupyTestCase):
+class TestExpiringDict(SupyTestCase):
     def testInit(self):
-        d = TimeoutDict(10)
+        d = ExpiringDict(10)
         self.assertEqual(dict(d), {})
         d['foo'] = 'bar'
         d['baz'] = 'qux'
         self.assertEqual(dict(d), {'foo': 'bar', 'baz': 'qux'})
 
     def testExpire(self):
-        d = TimeoutDict(10)
+        d = ExpiringDict(10)
         self.assertEqual(dict(d), {})
         d['foo'] = 'bar'
         timeFastForward(11)
@@ -1189,8 +1189,8 @@ class TestTimeoutDict(SupyTestCase):
         self.assertEqual(dict(d), {'baz': 'qux', 'quux': 42})
 
     def testEquality(self):
-        d1 = TimeoutDict(10)
-        d2 = TimeoutDict(10)
+        d1 = ExpiringDict(10)
+        d2 = ExpiringDict(10)
         self.assertEqual(d1, d2)
 
         d1['foo'] = 'bar'
@@ -1208,16 +1208,16 @@ class TestTimeoutDict(SupyTestCase):
         self.assertEqual(d1, d2)
 
 
-class TestExpiringDict(SupyTestCase):
+class TestTimeoutDict(SupyTestCase):
     def testInit(self):
-        d = ExpiringDict(10)
+        d = TimeoutDict(10)
         self.assertEqual(dict(d), {})
         d['foo'] = 'bar'
         d['baz'] = 'qux'
         self.assertEqual(dict(d), {'foo': 'bar', 'baz': 'qux'})
 
     def testExpire(self):
-        d = ExpiringDict(10)
+        d = TimeoutDict(10)
         self.assertEqual(dict(d), {})
         d['foo'] = 'bar'
         timeFastForward(11)
@@ -1231,8 +1231,8 @@ class TestExpiringDict(SupyTestCase):
         self.assertEqual(dict(d), {'quux': 42})
 
     def testEquality(self):
-        d1 = ExpiringDict(10)
-        d2 = ExpiringDict(10)
+        d1 = TimeoutDict(10)
+        d2 = TimeoutDict(10)
         self.assertEqual(d1, d2)
 
         d1['foo'] = 'bar'

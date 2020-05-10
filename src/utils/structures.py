@@ -307,6 +307,8 @@ class smallqueue(list):
 
 
 class TimeoutQueue(object):
+    """A queue whose elements are dropped after a certain time."""
+
     __slots__ = ('queue', 'timeout')
     def __init__(self, timeout, queue=None):
         if queue is None:
@@ -458,9 +460,9 @@ class CacheDict(collections.abc.MutableMapping):
         return len(self.d)
 
 
-class TimeoutDict(collections.abc.MutableMapping):
+class ExpiringDict(collections.abc.MutableMapping):
     """An efficient dictionary that MAY drop its items when they are too old.
-    For guaranteed expiry, use ExpiringDict.
+    For guaranteed expiry, use TimeoutDict.
 
     Currently, this is implemented by internally alternating two "generation"
     dicts, which are dropped after a certain time."""
@@ -478,7 +480,7 @@ class TimeoutDict(collections.abc.MutableMapping):
         return (self.__class__, (self.timeout, dict(self)))
 
     def __repr__(self):
-        return 'TimeoutDict(%s, %r)' % (self.timeout, dict(self))
+        return 'ExpiringDict(%s, %r)' % (self.timeout, dict(self))
 
     def __getitem__(self, key):
         try:
@@ -534,11 +536,11 @@ class TimeoutDict(collections.abc.MutableMapping):
         return len(set(self.new_gen.keys()) | set(self.old_gen.keys()))
 
 
-class ExpiringDict: # Don't inherit from MutableMapping: not thread-safe
+class TimeoutDict: # Don't inherit from MutableMapping: not thread-safe
     """A dictionary that drops its items after they have been in the dict
     for a certain time.
 
-    Use TimeoutDict for a more efficient implementation that doesn't require
+    Use ExpiringDict for a more efficient implementation that doesn't require
     guaranteed timeout.
     """
     __slots__ = ('_lock', 'd', 'timeout')
@@ -554,7 +556,7 @@ class ExpiringDict: # Don't inherit from MutableMapping: not thread-safe
         return (self.__class__, (self.timeout, dict(self)))
 
     def __repr__(self):
-        return 'ExpiringDict(%s, %r)' % (self.timeout, dict(self))
+        return 'TimeoutDict(%s, %r)' % (self.timeout, dict(self))
 
     def __getitem__(self, key):
         with self._lock:
