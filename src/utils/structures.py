@@ -459,7 +459,8 @@ class CacheDict(collections.abc.MutableMapping):
 
 
 class TimeoutDict(collections.abc.MutableMapping):
-    """A dictionary that may drop its items when they are too old.
+    """An efficient dictionary that MAY drop its items when they are too old.
+    For guaranteed expiry, use ExpiringDict.
 
     Currently, this is implemented by internally alternating two "generation"
     dicts, which are dropped after a certain time."""
@@ -531,6 +532,81 @@ class TimeoutDict(collections.abc.MutableMapping):
     def __len__(self):
         # order matters
         return len(set(self.new_gen.keys()) | set(self.old_gen.keys()))
+
+
+class ExpiringDict: # Don't inherit from MutableMapping: not thread-safe
+    """A dictionary that drops its items after they have been in the dict
+    for a certain time.
+
+    Use TimeoutDict for a more efficient implementation that doesn't require
+    guaranteed timeout.
+    """
+    __slots__ = ('_lock', 'd', 'timeout')
+    __synchronized__ = ('_expire_generations',)
+
+    def __init__(self, timeout, items=None):
+        expiry = time.time() + timeout
+        self._lock = threading.Lock()
+        self.d = {k: (expiry, v) for (k, v) in (items or {}).items()}
+        self.timeout = timeout
+
+    def __reduce__(self):
+        return (self.__class__, (self.timeout, dict(self)))
+
+    def __repr__(self):
+        return 'ExpiringDict(%s, %r)' % (self.timeout, dict(self))
+
+    def __getitem__(self, key):
+        with self._lock:
+            try:
+                (expiry, value) = self.d[key]
+                if expiry < time.time():
+                    del self.d[key]
+                    raise KeyError
+            except KeyError:
+                raise KeyError(key) from None
+
+            return value
+
+    def __setitem__(self, key, value):
+        with self._lock:
+            self.d[key] = (time.time() + self.timeout, value)
+
+    def clear(self):
+        with self._lock:
+            self.d.clear()
+
+    def __delitem__(self, key):
+        with self._lock:
+            del self.d[key]
+
+    def _items(self):
+        now = time.time()
+        with self._lock:
+            return [
+                (k, v) for (k, (expiry, v)) in self.d.items()
+                if expiry >= now]
+
+    def keys(self):
+        return [k for (k, v) in self._items()]
+
+    def values(self):
+        return [v for (k, v) in self._items()]
+
+    def items(self):
+        return self._items()
+
+    def __iter__(self):
+        return (k for (k, v) in self._items())
+
+    def __len__(self):
+        return len(self._items())
+
+    def __eq__(self, other):
+        return self._items() == list(other.items())
+
+    def __ne__(self, other):
+        return not (self == other)
 
 
 class TruncatableSet(collections.abc.MutableSet):

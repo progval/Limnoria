@@ -122,7 +122,7 @@ class Fediverse(callbacks.PluginRegexp):
     def __init__(self, irc):
         super().__init__(irc)
         self._startHttp()
-        self._actor_cache = utils.structures.TimeoutDict(timeout=600)
+        self._actor_cache = utils.structures.ExpiringDict(timeout=600)
 
     def _startHttp(self):
         callback = FediverseHttp()
