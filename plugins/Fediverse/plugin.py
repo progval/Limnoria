@@ -183,7 +183,7 @@ class Fediverse(callbacks.PluginRegexp):
                 content = ap.signed_request(
                     status["object"], headers={"Accept": ap.ACTIVITY_MIMETYPE}
                 )
-                status = json.loads(content)
+                status = json.loads(content.decode())
                 return self._format_status(irc, status)
             except ap.ActivityPubProtocolError as e:
                 return "<Could not fetch status: %s>" % e.args[0]
@@ -239,9 +239,9 @@ class Fediverse(callbacks.PluginRegexp):
         if "featured" not in actor:
             irc.reply(_("No featured statuses."))
             return
-        statuses = json.loads(ap.signed_request(actor["featured"])).get(
-            "orderedItems", []
-        )
+        statuses = json.loads(
+            ap.signed_request(actor["featured"]).decode()
+        ).get("orderedItems", [])
         if not statuses:
             irc.reply(_("No featured statuses."))
             return
@@ -260,11 +260,11 @@ class Fediverse(callbacks.PluginRegexp):
         actor = self._get_actor(irc, username)
         if "outbox" not in actor:
             irc.error(_("No status."), Raise=True)
-        outbox = json.loads(ap.signed_request(actor["outbox"]))
+        outbox = json.loads(ap.signed_request(actor["outbox"]).decode())
 
         # Fetches the first page of the outbox. This should be a good-enough
         # approximation of the number of statuses to show.
-        statuses = json.loads(ap.signed_request(outbox["first"])).get(
+        statuses = json.loads(ap.signed_request(outbox["first"]).decode()).get(
             "orderedItems", []
         )
         irc.replies(

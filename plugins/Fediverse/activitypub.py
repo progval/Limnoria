@@ -140,7 +140,7 @@ def webfinger(hostname, uri):
         )
 
     with convert_exceptions(WebfingerError, "Invalid JSON: ", True):
-        return json.loads(content)
+        return json.loads(content.decode())
 
 
 def get_instance_actor_url():
@@ -241,4 +241,4 @@ def get_actor_from_url(url):
     assert content is not None
 
     with convert_exceptions(ActivityPubProtocolError, "Invalid JSON: ", True):
-        return json.loads(content)
+        return json.loads(content.decode())

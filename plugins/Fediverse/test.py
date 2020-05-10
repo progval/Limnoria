@@ -256,9 +256,7 @@ OUTBOX_FIRSTPAGE_VALUE = {
 }
 OUTBOX_FIRSTPAGE_DATA = json.dumps(OUTBOX_FIRSTPAGE_VALUE).encode()
 
-BOOSTED_URL = (
-    "https://example.net/users/BoostedUser/statuses/123456"
-)
+BOOSTED_URL = "https://example.net/users/BoostedUser/statuses/123456"
 BOOSTED_VALUE = {
     "@context": [
         "https://www.w3.org/ns/activitystreams",
