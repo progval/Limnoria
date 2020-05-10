@@ -58,7 +58,7 @@ from .test_data import (
 )
 
 
-class FediverseTestCase(ChannelPluginTestCase):
+class BaseFediverseTestCase(ChannelPluginTestCase):
     config = {
         # Allow snarfing the same URL twice in a row
         "supybot.snarfThrottle": 0.0
@@ -73,6 +73,25 @@ class FediverseTestCase(ChannelPluginTestCase):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "wb") as fd:
             fd.write(PRIVATE_KEY)
+
+
+class NetworkedFediverseTestCase(BaseFediverseTestCase):
+    if network:
+
+        def testNetworkProfile(self):
+            self.assertRegexp("profile @val@oc.todon.fr", "0E082B40E4376B1E")
+            # TODO: add a test with an instance which only allows fetches
+            # with valid signatures.
+
+        def testNetworkProfileUnknown(self):
+            self.assertResponse(
+                "profile @nonexistinguser@oc.todon.fr",
+                "Error: Unknown user @nonexistinguser@oc.todon.fr.",
+            )
+
+
+class NetworklessFediverseTestCase(BaseFediverseTestCase):
+    timeout = 0.1
 
     @contextlib.contextmanager
     def mockRequests(self, expected_requests):
@@ -103,19 +122,6 @@ class FediverseTestCase(ChannelPluginTestCase):
 
             self.assertEqual(
                 list(expected_requests), [], "Less requests than expected."
-            )
-
-    if network:
-
-        def testNetworkProfile(self):
-            self.assertRegexp("profile @val@oc.todon.fr", "0E082B40E4376B1E")
-            # TODO: add a test with an instance which only allows fetches
-            # with valid signatures.
-
-        def testNetworkProfileUnknown(self):
-            self.assertResponse(
-                "profile @nonexistinguser@oc.todon.fr",
-                "Error: Unknown user @nonexistinguser@oc.todon.fr.",
             )
 
     def testFeaturedNone(self):
@@ -220,9 +226,7 @@ class FediverseTestCase(ChannelPluginTestCase):
 
     def testProfileSnarfer(self):
         with self.mockRequests([]):
-            self.assertSnarfNoResponse(
-                "aaa @nonexistinguser@example.org bbb", timeout=1
-            )
+            self.assertSnarfNoResponse("aaa @nonexistinguser@example.org bbb")
 
         with conf.supybot.plugins.Fediverse.snarfers.username.context(True):
             expected_requests = [
@@ -244,13 +248,13 @@ class FediverseTestCase(ChannelPluginTestCase):
 
             with self.mockRequests(expected_requests):
                 self.assertSnarfNoResponse(
-                    "aaa @nonexistinguser@example.org bbb", timeout=1
+                    "aaa @nonexistinguser@example.org bbb"
                 )
 
     def testProfileUrlSnarfer(self):
         with self.mockRequests([]):
             self.assertSnarfNoResponse(
-                "aaa https://example.org/users/someuser bbb", timeout=1
+                "aaa https://example.org/users/someuser bbb"
             )
 
         with conf.supybot.plugins.Fediverse.snarfers.profile.context(True):
@@ -258,7 +262,7 @@ class FediverseTestCase(ChannelPluginTestCase):
 
             with self.mockRequests(expected_requests):
                 self.assertSnarfNoResponse(
-                    "aaa https://example.org/users/someuser bbb", timeout=1
+                    "aaa https://example.org/users/someuser bbb"
                 )
 
             expected_requests = [(ACTOR_URL, ACTOR_DATA)]
@@ -361,8 +365,7 @@ class FediverseTestCase(ChannelPluginTestCase):
     def testStatusUrlSnarferDisabled(self):
         with self.mockRequests([]):
             self.assertSnarfNoResponse(
-                "aaa https://example.org/users/someuser/statuses/1234 bbb",
-                timeout=1,
+                "aaa https://example.org/users/someuser/statuses/1234 bbb"
             )
 
     def testStatusUrlSnarfer(self):
@@ -385,8 +388,7 @@ class FediverseTestCase(ChannelPluginTestCase):
 
             with self.mockRequests(expected_requests):
                 self.assertSnarfNoResponse(
-                    "aaa https://example.org/users/someuser/statuses/1234 bbb",
-                    timeout=1,
+                    "aaa https://example.org/users/someuser/statuses/1234 bbb"
                 )
 
             expected_requests = [
@@ -407,8 +409,7 @@ class FediverseTestCase(ChannelPluginTestCase):
 
             with self.mockRequests(expected_requests):
                 self.assertSnarfNoResponse(
-                    "aaa https://example.org/users/someuser/statuses/1234 bbb",
-                    timeout=1,
+                    "aaa https://example.org/users/someuser/statuses/1234 bbb"
                 )
 
         # Sends a request, notices it's a profile, gives up
@@ -417,7 +418,7 @@ class FediverseTestCase(ChannelPluginTestCase):
 
             with self.mockRequests(expected_requests):
                 self.assertSnarfNoResponse(
-                    "aaa https://example.org/users/someuser/ bbb", timeout=1
+                    "aaa https://example.org/users/someuser/ bbb"
                 )
 
 
