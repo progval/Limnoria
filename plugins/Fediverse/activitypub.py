@@ -32,7 +32,6 @@ import os
 import json
 import email
 import base64
-import datetime
 import functools
 import contextlib
 import urllib.parse
@@ -193,20 +192,14 @@ def signed_request(url, headers=None, data=None):
     instance_actor_url = get_instance_actor_url()
     headers = gen.InsensitivePreservingDict(headers or {})
 
-    if 'Date' not in headers:
-        headers['Date'] = email.utils.formatdate(usegmt=True)
+    if "Date" not in headers:
+        headers["Date"] = email.utils.formatdate(usegmt=True)
 
     if instance_actor_url:
         parsed_url = urllib.parse.urlparse(url)
         signed_headers = [
-            (
-                "(request-target)",
-                method + " " + parsed_url.path,
-            ),
-            (
-                "host",
-                parsed_url.hostname,
-            ),
+            ("(request-target)", method + " " + parsed_url.path),
+            ("host", parsed_url.hostname),
         ]
         for (header_name, header_value) in headers.items():
             signed_headers.append((header_name.lower(), header_value))

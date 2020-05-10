@@ -237,10 +237,14 @@ class Fediverse(callbacks.PluginRegexp):
         """
         actor = self._get_actor(irc, username)
         if "featured" not in actor:
-            irc.error(_("No featured statuses."), Raise=True)
+            irc.reply(_("No featured statuses."))
+            return
         statuses = json.loads(ap.signed_request(actor["featured"])).get(
             "orderedItems", []
         )
+        if not statuses:
+            irc.reply(_("No featured statuses."))
+            return
         irc.replies(
             filter(
                 bool, (self._format_status(irc, status) for status in statuses)
