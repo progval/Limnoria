@@ -277,6 +277,28 @@ class FediverseTestCase(ChannelPluginTestCase):
                 "Error: Unknown user @nonexistinguser@example.org.",
             )
 
+    def testStatus(self):
+        expected_requests = [
+            (STATUS_URL, STATUS_DATA),
+            (ACTOR_URL, ACTOR_DATA),
+        ]
+
+        with self.mockRequests(expected_requests):
+            self.assertResponse(
+                "status https://example.org/users/someuser/statuses/1234",
+                "\x02someuser (@someuser@example.org)\x02: "
+                + "@ FirstAuthor I am replying to you",
+            )
+
+    def testStatusError(self):
+        expected_requests = [(STATUS_URL, utils.web.Error("blah"))]
+
+        with self.mockRequests(expected_requests):
+            self.assertResponse(
+                "status https://example.org/users/someuser/statuses/1234",
+                "Error: Could not get status: blah",
+            )
+
     def testStatuses(self):
         expected_requests = [
             (HOSTMETA_URL, HOSTMETA_DATA),

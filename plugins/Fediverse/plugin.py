@@ -337,6 +337,19 @@ class Fediverse(callbacks.PluginRegexp):
             )
         )
 
+    @wrap(["url"])
+    def status(self, irc, msg, args, url):
+        """<url>
+
+        Shows the content of the status at <url>.
+        """
+        try:
+            status = ap.get_resource_from_url(url)
+        except ap.ActivityPubError as e:
+            irc.error(_("Could not get status: %s") % e.args[0], Raise=True)
+
+        irc.reply(self._format_status(irc, msg, status))
+
 
 Class = Fediverse
 
