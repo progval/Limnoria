@@ -57,8 +57,23 @@ conf.registerChannelValue(
     registry.Boolean(
         False,
         _(
-            """Determines whether the bot will output the
-    profile of @username@hostname accounts it sees in channel messages."""
+            """Determines whether the bot will output the profile of
+            @username@hostname accounts it sees in channel messages."""
+        ),
+    ),
+)
+
+conf.registerGroup(Fediverse, "format")
+conf.registerGroup(Fediverse.format, "statuses")
+
+conf.registerChannelValue(
+    Fediverse.format.statuses,
+    "showContentWithCW",
+    registry.Boolean(
+        True,
+        _(
+            """Determines whether the content of a status will be shown
+            when the status has a Content Warning."""
         ),
     ),
 )

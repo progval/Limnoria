@@ -166,21 +166,35 @@ class Fediverse(callbacks.PluginRegexp):
         hostname = urllib.parse.urlparse(actor["id"]).hostname
         return "@%s@%s" % (actor["preferredUsername"], hostname)
 
-    def _format_status(self, irc, status):
+    def _format_status(self, irc, msg, status):
         if status["type"] == "Create":
-            return self._format_status(irc, status["object"])
+            return self._format_status(irc, msg, status["object"])
         elif status["type"] == "Note":
             author_url = status["attributedTo"]
             author = self._get_actor(irc, author_url)
             cw = status.get("summary")
             if cw:
-                return _("\x02%s (%s)\x02: [CW %s] %s") % (
-                    author["name"],
-                    self._format_actor_username(author),
-                    cw,
-                    utils.web.htmlToText(status["content"]),
-                )
+                if self.registryValue(
+                    "format.statuses.showContentWithCW",
+                    msg.channel,
+                    irc.network,
+                ):
+                    # show CW and content
+                    return _("\x02%s (%s)\x02: \x02[CW %s]\x02 %s") % (
+                        author["name"],
+                        self._format_actor_username(author),
+                        cw,
+                        utils.web.htmlToText(status["content"]),
+                    )
+                else:
+                    # show CW but not content
+                    return _("\x02%s (%s)\x02: CW %s") % (
+                        author["name"],
+                        self._format_actor_username(author),
+                        cw,
+                    )
             else:
+                # no CW, show content
                 return _("\x02%s (%s)\x02: %s") % (
                     author["name"],
                     self._format_actor_username(author),
@@ -193,7 +207,7 @@ class Fediverse(callbacks.PluginRegexp):
                     status["object"], headers={"Accept": ap.ACTIVITY_MIMETYPE}
                 )
                 status = json.loads(content.decode())
-                return self._format_status(irc, status)
+                return self._format_status(irc, msg, status)
             except ap.ActivityPubProtocolError as e:
                 return "<Could not fetch status: %s>" % e.args[0]
         else:
@@ -256,7 +270,8 @@ class Fediverse(callbacks.PluginRegexp):
             return
         irc.replies(
             filter(
-                bool, (self._format_status(irc, status) for status in statuses)
+                bool,
+                (self._format_status(irc, msg, status) for status in statuses),
             )
         )
 
@@ -278,7 +293,8 @@ class Fediverse(callbacks.PluginRegexp):
         )
         irc.replies(
             filter(
-                bool, (self._format_status(irc, status) for status in statuses)
+                bool,
+                (self._format_status(irc, msg, status) for status in statuses),
             )
         )
 

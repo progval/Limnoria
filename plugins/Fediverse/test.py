@@ -240,17 +240,14 @@ OUTBOX_FIRSTPAGE_VALUE = {
             },
         },
         {
-            "id": "https://example.org/users/someuser/statuses/1234/activity",
+            "id": "https://example.org/users/someuser/statuses/1235/activity",
             "type": "Create",
             "actor": "https://example.org/users/someuser",
             "published": "2020-05-08T01:23:45Z",
             "to": ["https://example.org/users/someuser/followers"],
-            "cc": [
-                "https://www.w3.org/ns/activitystreams#Public",
-                "https://example.com/users/FirstAuthor",
-            ],
+            "cc": ["https://www.w3.org/ns/activitystreams#Public"],
             "object": {
-                "id": "https://example.org/users/someuser/statuses/1234",
+                "id": "https://example.org/users/someuser/statuses/1235",
                 "type": "Note",
                 "summary": "This is a content warning",
                 "attributedTo": "https://example.org/users/someuser",
@@ -378,15 +375,15 @@ class FediverseTestCase(ChannelPluginTestCase):
     @contextlib.contextmanager
     def mockRequests(self, expected_requests):
         with Manager() as m:
-            expected_requests = m.list(expected_requests)
+            expected_requests = m.list(list(expected_requests))
             original_getUrlContent = utils.web.getUrlContent
 
             @functools.wraps(original_getUrlContent)
             def newf(url, headers={}, data=None):
-                self.assertIsNone(data, "Unexpected POST")
+                self.assertIsNone(data, "Unexpected POST to %s" % url)
                 assert expected_requests, url
                 (expected_url, response) = expected_requests.pop(0)
-                self.assertEqual(url, expected_url, "Unexpected URL")
+                self.assertEqual(url, expected_url, "Unexpected URL: %s" % url)
 
                 if isinstance(response, bytes):
                     return response
@@ -572,11 +569,32 @@ class FediverseTestCase(ChannelPluginTestCase):
                 "\x02someuser (@someuser@example.org)\x02: "
                 + "@ FirstAuthor I am replying to you, "
                 + "\x02someuser (@someuser@example.org)\x02: "
-                + "[CW This is a content warning] "
+                + "\x02[CW This is a content warning]\x02 "
                 + "This is a status with a content warning, and "
                 + "\x02Boosted User (@BoostedUser@example.net)\x02: "
                 + "Status Content",
             )
+
+        # The actors are cached from the previous request
+        expected_requests = [
+            (OUTBOX_URL, OUTBOX_DATA),
+            (OUTBOX_FIRSTPAGE_URL, OUTBOX_FIRSTPAGE_DATA),
+            (BOOSTED_URL, BOOSTED_DATA),
+        ]
+
+        with self.mockRequests(expected_requests):
+            with conf.supybot.plugins.Fediverse.format.statuses.showContentWithCW.context(
+                False
+            ):
+                self.assertResponse(
+                    "statuses @someuser@example.org",
+                    "\x02someuser (@someuser@example.org)\x02: "
+                    + "@ FirstAuthor I am replying to you, "
+                    + "\x02someuser (@someuser@example.org)\x02: "
+                    + "CW This is a content warning, and "
+                    + "\x02Boosted User (@BoostedUser@example.net)\x02: "
+                    + "Status Content",
+                )
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
