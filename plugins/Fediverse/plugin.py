@@ -172,11 +172,20 @@ class Fediverse(callbacks.PluginRegexp):
         elif status["type"] == "Note":
             author_url = status["attributedTo"]
             author = self._get_actor(irc, author_url)
-            return _("\x02%s (%s)\x02: %s") % (
-                author["name"],
-                self._format_actor_username(author),
-                utils.web.htmlToText(status["content"]),
-            )
+            cw = status.get("summary")
+            if cw:
+                return _("\x02%s (%s)\x02: [CW %s] %s") % (
+                    author["name"],
+                    self._format_actor_username(author),
+                    cw,
+                    utils.web.htmlToText(status["content"]),
+                )
+            else:
+                return _("\x02%s (%s)\x02: %s") % (
+                    author["name"],
+                    self._format_actor_username(author),
+                    utils.web.htmlToText(status["content"]),
+                )
         elif status["type"] == "Announce":
             # aka boost; let's go fetch the original status
             try:

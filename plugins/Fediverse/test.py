@@ -189,7 +189,7 @@ OUTBOX_FIRSTPAGE_VALUE = {
     "partOf": "https://example.org/users/someuser/outbox",
     "orderedItems": [
         {
-            "id": "https://example.org/users/someuser/statuses/104135036335976677/activity",
+            "id": "https://example.org/users/someuser/statuses/1234/activity",
             "type": "Create",
             "actor": "https://example.org/users/someuser",
             "published": "2020-05-08T01:23:45Z",
@@ -237,6 +237,25 @@ OUTBOX_FIRSTPAGE_VALUE = {
                         "items": [],
                     },
                 },
+            },
+        },
+        {
+            "id": "https://example.org/users/someuser/statuses/1234/activity",
+            "type": "Create",
+            "actor": "https://example.org/users/someuser",
+            "published": "2020-05-08T01:23:45Z",
+            "to": ["https://example.org/users/someuser/followers"],
+            "cc": [
+                "https://www.w3.org/ns/activitystreams#Public",
+                "https://example.com/users/FirstAuthor",
+            ],
+            "object": {
+                "id": "https://example.org/users/someuser/statuses/1234",
+                "type": "Note",
+                "summary": "This is a content warning",
+                "attributedTo": "https://example.org/users/someuser",
+                "inReplyTo": None,
+                "content": "<p>This is a status with a content warning</p>",
             },
         },
         {
@@ -551,7 +570,10 @@ class FediverseTestCase(ChannelPluginTestCase):
             self.assertResponse(
                 "statuses @someuser@example.org",
                 "\x02someuser (@someuser@example.org)\x02: "
-                + "@ FirstAuthor I am replying to you and "
+                + "@ FirstAuthor I am replying to you, "
+                + "\x02someuser (@someuser@example.org)\x02: "
+                + "[CW This is a content warning] "
+                + "This is a status with a content warning, and "
                 + "\x02Boosted User (@BoostedUser@example.net)\x02: "
                 + "Status Content",
             )
