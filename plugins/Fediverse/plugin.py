@@ -154,25 +154,43 @@ class Fediverse(callbacks.PluginRegexp):
             if match:
                 # TODO: error handling
                 actor = ap.get_resource_from_url(match.group(0))
-                username = self._format_actor_username(actor)
+                try:
+                    hostname = urllib.parse.urlparse(actor.get("id")).hostname
+                    username = "@%s@%s" % (
+                        hostname,
+                        actor.get["preferredUsername"],
+                    )
+                except Exception:
+                    username = None
             else:
                 irc.errorInvalid("fediverse username", username)
 
-        self._actor_cache[username] = actor
+        if username:
+            self._actor_cache[username] = actor
         self._actor_cache[actor["id"]] = actor
 
         return actor
 
-    def _format_actor_username(self, actor):
-        hostname = urllib.parse.urlparse(actor["id"]).hostname
-        return "@%s@%s" % (actor["preferredUsername"], hostname)
+    def _format_actor_fullname(self, actor):
+        try:
+            hostname = urllib.parse.urlparse(actor.get("id")).hostname
+        except Exception:
+            hostname = "<unknown>"
+        username = actor.get("preferredUsername", "<unknown>")
+        name = actor.get("name", username)
+        return "\x02%s\x02 (@%s@%s)" % (name, username, hostname)
 
     def _format_status(self, irc, msg, status):
         if status["type"] == "Create":
             return self._format_status(irc, msg, status["object"])
         elif status["type"] == "Note":
             author_url = status["attributedTo"]
-            author = self._get_actor(irc, author_url)
+            try:
+                author = self._get_actor(irc, author_url)
+            except ap.ActivityPubError as e:
+                author_fullname = _("<error: %s>") % str(e)
+            else:
+                author_fullname = self._format_actor_fullname(author)
             cw = status.get("summary")
             if cw:
                 if self.registryValue(
@@ -181,24 +199,18 @@ class Fediverse(callbacks.PluginRegexp):
                     irc.network,
                 ):
                     # show CW and content
-                    return _("\x02%s (%s)\x02: \x02[CW %s]\x02 %s") % (
-                        author["name"],
-                        self._format_actor_username(author),
+                    return _("%s: \x02[CW %s]\x02 %s") % (
+                        author_fullname,
                         cw,
                         utils.web.htmlToText(status["content"]),
                     )
                 else:
                     # show CW but not content
-                    return _("\x02%s (%s)\x02: CW %s") % (
-                        author["name"],
-                        self._format_actor_username(author),
-                        cw,
-                    )
+                    return _("%s: CW %s") % (author_fullname, cw)
             else:
                 # no CW, show content
-                return _("\x02%s (%s)\x02: %s") % (
-                    author["name"],
-                    self._format_actor_username(author),
+                return _("%s: %s") % (
+                    author_fullname,
                     utils.web.htmlToText(status["content"]),
                 )
         elif status["type"] == "Announce":
@@ -225,18 +237,16 @@ class Fediverse(callbacks.PluginRegexp):
         actor = self._get_actor(irc, username)
 
         irc.reply(
-            _("\x02%s\x02 (%s): %s")
+            _("%s: %s")
             % (
-                actor["name"],
-                self._format_actor_username(actor),
+                self._format_actor_fullname(actor),
                 utils.web.htmlToText(actor["summary"]),
             )
         )
 
     def _format_profile(self, irc, msg, actor):
-        return _("\x02%s\x02 (%s): %s") % (
-            actor["name"],
-            self._format_actor_username(actor),
+        return _("%s: %s") % (
+            self._format_actor_fullname(actor),
             utils.web.htmlToText(actor["summary"]),
         )
 

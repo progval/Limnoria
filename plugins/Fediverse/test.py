@@ -34,7 +34,7 @@ import functools
 import contextlib
 from multiprocessing import Manager
 
-from supybot import conf, utils
+from supybot import commands, conf, utils
 from supybot.test import ChannelPluginTestCase, network
 
 from .test_data import (
@@ -59,6 +59,10 @@ from .test_data import (
 
 
 class FediverseTestCase(ChannelPluginTestCase):
+    config = {
+        # Allow snarfing the same URL twice in a row
+        "supybot.snarfThrottle": 0.0
+    }
     plugins = ("Fediverse",)
 
     def setUp(self):
@@ -286,7 +290,7 @@ class FediverseTestCase(ChannelPluginTestCase):
         with self.mockRequests(expected_requests):
             self.assertResponse(
                 "status https://example.org/users/someuser/statuses/1234",
-                "\x02someuser (@someuser@example.org)\x02: "
+                "\x02someuser\x02 (@someuser@example.org): "
                 + "@ FirstAuthor I am replying to you",
             )
 
@@ -297,6 +301,17 @@ class FediverseTestCase(ChannelPluginTestCase):
             self.assertResponse(
                 "status https://example.org/users/someuser/statuses/1234",
                 "Error: Could not get status: blah",
+            )
+
+        expected_requests = [
+            (STATUS_URL, STATUS_DATA),
+            (ACTOR_URL, utils.web.Error("blah")),
+        ]
+
+        with self.mockRequests(expected_requests):
+            self.assertResponse(
+                "status https://example.org/users/someuser/statuses/1234",
+                "<error: blah>: " + "@ FirstAuthor I am replying to you",
             )
 
     def testStatuses(self):
@@ -313,12 +328,12 @@ class FediverseTestCase(ChannelPluginTestCase):
         with self.mockRequests(expected_requests):
             self.assertResponse(
                 "statuses @someuser@example.org",
-                "\x02someuser (@someuser@example.org)\x02: "
+                "\x02someuser\x02 (@someuser@example.org): "
                 + "@ FirstAuthor I am replying to you, "
-                + "\x02someuser (@someuser@example.org)\x02: "
+                + "\x02someuser\x02 (@someuser@example.org): "
                 + "\x02[CW This is a content warning]\x02 "
                 + "This is a status with a content warning, and "
-                + "\x02Boosted User (@BoostedUser@example.net)\x02: "
+                + "\x02Boosted User\x02 (@BoostedUser@example.net): "
                 + "Status Content",
             )
 
@@ -335,26 +350,38 @@ class FediverseTestCase(ChannelPluginTestCase):
             ):
                 self.assertResponse(
                     "statuses @someuser@example.org",
-                    "\x02someuser (@someuser@example.org)\x02: "
+                    "\x02someuser\x02 (@someuser@example.org): "
                     + "@ FirstAuthor I am replying to you, "
-                    + "\x02someuser (@someuser@example.org)\x02: "
+                    + "\x02someuser\x02 (@someuser@example.org): "
                     + "CW This is a content warning, and "
-                    + "\x02Boosted User (@BoostedUser@example.net)\x02: "
+                    + "\x02Boosted User\x02 (@BoostedUser@example.net): "
                     + "Status Content",
                 )
 
-    def testStatusUrlSnarfer(self):
+    def testStatusUrlSnarferDisabled(self):
         with self.mockRequests([]):
             self.assertSnarfNoResponse(
                 "aaa https://example.org/users/someuser/statuses/1234 bbb",
                 timeout=1,
             )
 
+    def testStatusUrlSnarfer(self):
         with conf.supybot.plugins.Fediverse.snarfers.status.context(True):
             expected_requests = [
                 (STATUS_URL, STATUS_DATA),
-                (ACTOR_URL, utils.web.Error("blah")),
+                (ACTOR_URL, ACTOR_DATA),
             ]
+
+            with self.mockRequests(expected_requests):
+                self.assertSnarfResponse(
+                    "aaa https://example.org/users/someuser/statuses/1234 bbb",
+                    "\x02someuser\x02 (@someuser@example.org): "
+                    + "@ FirstAuthor I am replying to you",
+                )
+
+    def testStatusUrlSnarferErrors(self):
+        with conf.supybot.plugins.Fediverse.snarfers.status.context(True):
+            expected_requests = [(STATUS_URL, utils.web.Error("blah"))]
 
             with self.mockRequests(expected_requests):
                 self.assertSnarfNoResponse(
@@ -364,14 +391,13 @@ class FediverseTestCase(ChannelPluginTestCase):
 
             expected_requests = [
                 (STATUS_URL, STATUS_DATA),
-                (ACTOR_URL, ACTOR_DATA),
+                (ACTOR_URL, utils.web.Error("blah")),
             ]
 
             with self.mockRequests(expected_requests):
                 self.assertSnarfResponse(
                     "aaa https://example.org/users/someuser/statuses/1234 bbb",
-                    "\x02someuser (@someuser@example.org)\x02: "
-                    + "@ FirstAuthor I am replying to you",
+                    "<error: blah>: @ FirstAuthor I am replying to you",
                 )
 
     def testSnarferType(self):
