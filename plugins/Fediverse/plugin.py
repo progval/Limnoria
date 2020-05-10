@@ -118,6 +118,7 @@ class Fediverse(callbacks.PluginRegexp):
 
     threaded = True
     regexps = ["usernameSnarfer", "urlSnarfer_"]
+    callBefore = ("Web",)
 
     def __init__(self, irc):
         super().__init__(irc)
