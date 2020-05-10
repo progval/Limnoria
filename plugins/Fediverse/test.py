@@ -166,6 +166,60 @@ OUTBOX_VALUE = {
 }
 OUTBOX_DATA = json.dumps(OUTBOX_VALUE).encode()
 
+STATUS_URL = "https://example.org/users/someuser/statuses/1234"
+STATUS_VALUE = {
+    "id": "https://example.org/users/someuser/statuses/1234/activity",
+    "type": "Create",
+    "actor": "https://example.org/users/someuser",
+    "published": "2020-05-08T01:23:45Z",
+    "to": ["https://example.org/users/someuser/followers"],
+    "cc": [
+        "https://www.w3.org/ns/activitystreams#Public",
+        "https://example.com/users/FirstAuthor",
+    ],
+    "object": {
+        "id": "https://example.org/users/someuser/statuses/1234",
+        "type": "Note",
+        "summary": None,
+        "inReplyTo": "https://example.com/users/FirstAuthor/statuses/42",
+        "published": "2020-05-08T01:23:45Z",
+        "url": "https://example.org/@FirstAuthor/42",
+        "attributedTo": "https://example.org/users/someuser",
+        "to": ["https://example.org/users/someuser/followers"],
+        "cc": [
+            "https://www.w3.org/ns/activitystreams#Public",
+            "https://example.com/users/FirstAuthor",
+        ],
+        "sensitive": False,
+        "atomUri": "https://example.org/users/someuser/statuses/1234",
+        "inReplyToAtomUri": "https://example.com/users/FirstAuthor/statuses/42",
+        "conversation": "tag:example.com,2020-05-08:objectId=aaaa:objectType=Conversation",
+        "content": '<p><span class="h-card"><a href="https://example.com/@FirstAuthor" class="u-url mention">@<span>FirstAuthor</span></a></span> I am replying to you</p>',
+        "contentMap": {
+            "en": '<p><span class="h-card"><a href="https://example.com/@FirstAuthor" class="u-url mention">@<span>FirstAuthor</span></a></span> I am replying to you</p>'
+        },
+        "attachment": [],
+        "tag": [
+            {
+                "type": "Mention",
+                "href": "https://example.com/users/FirstAuthor",
+                "name": "@FirstAuthor@example.com",
+            }
+        ],
+        "replies": {
+            "id": "https://example.org/users/someuser/statuses/1234/replies",
+            "type": "Collection",
+            "first": {
+                "type": "CollectionPage",
+                "next": "https://example.org/users/someuser/statuses/1234/replies?only_other_accounts=true&page=true",
+                "partOf": "https://example.org/users/someuser/statuses/1234/replies",
+                "items": [],
+            },
+        },
+    },
+}
+STATUS_DATA = json.dumps(STATUS_VALUE).encode()
+
 OUTBOX_FIRSTPAGE_URL = "https://example.org/users/someuser/outbox?page=true"
 OUTBOX_FIRSTPAGE_VALUE = {
     "@context": [
@@ -188,57 +242,7 @@ OUTBOX_FIRSTPAGE_VALUE = {
     "prev": "https://example.org/users/someuser/outbox?min_id=104135036335976677&page=true",
     "partOf": "https://example.org/users/someuser/outbox",
     "orderedItems": [
-        {
-            "id": "https://example.org/users/someuser/statuses/1234/activity",
-            "type": "Create",
-            "actor": "https://example.org/users/someuser",
-            "published": "2020-05-08T01:23:45Z",
-            "to": ["https://example.org/users/someuser/followers"],
-            "cc": [
-                "https://www.w3.org/ns/activitystreams#Public",
-                "https://example.com/users/FirstAuthor",
-            ],
-            "object": {
-                "id": "https://example.org/users/someuser/statuses/1234",
-                "type": "Note",
-                "summary": None,
-                "inReplyTo": "https://example.com/users/FirstAuthor/statuses/42",
-                "published": "2020-05-08T01:23:45Z",
-                "url": "https://example.org/@FirstAuthor/42",
-                "attributedTo": "https://example.org/users/someuser",
-                "to": ["https://example.org/users/someuser/followers"],
-                "cc": [
-                    "https://www.w3.org/ns/activitystreams#Public",
-                    "https://example.com/users/FirstAuthor",
-                ],
-                "sensitive": False,
-                "atomUri": "https://example.org/users/someuser/statuses/1234",
-                "inReplyToAtomUri": "https://example.com/users/FirstAuthor/statuses/42",
-                "conversation": "tag:example.com,2020-05-08:objectId=aaaa:objectType=Conversation",
-                "content": '<p><span class="h-card"><a href="https://example.com/@FirstAuthor" class="u-url mention">@<span>FirstAuthor</span></a></span> I am replying to you</p>',
-                "contentMap": {
-                    "en": '<p><span class="h-card"><a href="https://example.com/@FirstAuthor" class="u-url mention">@<span>FirstAuthor</span></a></span> I am replying to you</p>'
-                },
-                "attachment": [],
-                "tag": [
-                    {
-                        "type": "Mention",
-                        "href": "https://example.com/users/FirstAuthor",
-                        "name": "@FirstAuthor@example.com",
-                    }
-                ],
-                "replies": {
-                    "id": "https://example.org/users/someuser/statuses/1234/replies",
-                    "type": "Collection",
-                    "first": {
-                        "type": "CollectionPage",
-                        "next": "https://example.org/users/someuser/statuses/1234/replies?only_other_accounts=true&page=true",
-                        "partOf": "https://example.org/users/someuser/statuses/1234/replies",
-                        "items": [],
-                    },
-                },
-            },
-        },
+        STATUS_VALUE,
         {
             "id": "https://example.org/users/someuser/statuses/1235/activity",
             "type": "Create",
@@ -517,7 +521,12 @@ class FediverseTestCase(ChannelPluginTestCase):
             )
 
     def testProfileSnarfer(self):
-        with conf.supybot.plugins.Fediverse.usernameSnarfer.context(True):
+        with self.mockRequests([]):
+            self.assertSnarfNoResponse(
+                "aaa @nonexistinguser@example.org bbb", timeout=1
+            )
+
+        with conf.supybot.plugins.Fediverse.snarfers.username.context(True):
             expected_requests = [
                 (HOSTMETA_URL, HOSTMETA_DATA),
                 (WEBFINGER_URL, WEBFINGER_DATA),
@@ -538,6 +547,28 @@ class FediverseTestCase(ChannelPluginTestCase):
             with self.mockRequests(expected_requests):
                 self.assertSnarfNoResponse(
                     "aaa @nonexistinguser@example.org bbb", timeout=1
+                )
+
+    def testProfileUrlSnarfer(self):
+        with self.mockRequests([]):
+            self.assertSnarfNoResponse(
+                "aaa https://example.org/users/someuser bbb", timeout=1
+            )
+
+        with conf.supybot.plugins.Fediverse.snarfers.profile.context(True):
+            expected_requests = [(ACTOR_URL, utils.web.Error("blah"))]
+
+            with self.mockRequests(expected_requests):
+                self.assertSnarfNoResponse(
+                    "aaa https://example.org/users/someuser bbb", timeout=1
+                )
+
+            expected_requests = [(ACTOR_URL, ACTOR_DATA)]
+
+            with self.mockRequests(expected_requests):
+                self.assertSnarfResponse(
+                    "aaa https://example.org/users/someuser bbb",
+                    "\x02someuser\x02 (@someuser@example.org): My Biography",
                 )
 
     def testProfileUnknown(self):
@@ -594,6 +625,63 @@ class FediverseTestCase(ChannelPluginTestCase):
                     + "CW This is a content warning, and "
                     + "\x02Boosted User (@BoostedUser@example.net)\x02: "
                     + "Status Content",
+                )
+
+    def testStatusUrlSnarfer(self):
+        with self.mockRequests([]):
+            self.assertSnarfNoResponse(
+                "aaa https://example.org/users/someuser/statuses/1234 bbb",
+                timeout=1,
+            )
+
+        with conf.supybot.plugins.Fediverse.snarfers.status.context(True):
+            expected_requests = [
+                (STATUS_URL, STATUS_DATA),
+                (ACTOR_URL, utils.web.Error("blah")),
+            ]
+
+            with self.mockRequests(expected_requests):
+                self.assertSnarfNoResponse(
+                    "aaa https://example.org/users/someuser/statuses/1234 bbb",
+                    timeout=1,
+                )
+
+            expected_requests = [
+                (STATUS_URL, STATUS_DATA),
+                (ACTOR_URL, ACTOR_DATA),
+            ]
+
+            with self.mockRequests(expected_requests):
+                self.assertSnarfResponse(
+                    "aaa https://example.org/users/someuser/statuses/1234 bbb",
+                    "\x02someuser (@someuser@example.org)\x02: "
+                    + "@ FirstAuthor I am replying to you",
+                )
+
+
+    def testSnarferType(self):
+        # Sends a request, notices it's a status, gives up
+        with conf.supybot.plugins.Fediverse.snarfers.profile.context(True):
+            expected_requests = [
+                (STATUS_URL, STATUS_DATA),
+            ]
+
+            with self.mockRequests(expected_requests):
+                self.assertSnarfNoResponse(
+                    "aaa https://example.org/users/someuser/statuses/1234 bbb",
+                    timeout=1,
+                )
+
+        # Sends a request, notices it's a profile, gives up
+        with conf.supybot.plugins.Fediverse.snarfers.profile.context(True):
+            expected_requests = [
+                (ACTOR_URL, ACTOR_DATA),
+            ]
+
+            with self.mockRequests(expected_requests):
+                self.assertSnarfNoResponse(
+                    "aaa https://example.org/users/someuser/ bbb",
+                    timeout=1,
                 )
 
 

@@ -34,7 +34,7 @@ import importlib
 import urllib.parse
 
 from supybot import utils, callbacks, httpserver
-from supybot.commands import wrap
+from supybot.commands import urlSnarfer, wrap
 from supybot.i18n import PluginInternationalization
 
 from . import activitypub as ap
@@ -102,7 +102,7 @@ class FediverseHttp(httpserver.SupyHTTPServerCallback):
             ],
             "id": actor_url,
             "preferredUsername": hostname,
-            "type": "Person",
+            "type": "Service",
             "publicKey": {
                 "id": actor_url + "#main-key",
                 "owner": actor_url,
@@ -117,7 +117,7 @@ class Fediverse(callbacks.PluginRegexp):
     """Fetches information from ActivityPub servers."""
 
     threaded = True
-    regexps = ["usernameSnarfer"]
+    regexps = ["usernameSnarfer", "urlSnarfer_"]
 
     def __init__(self, irc):
         super().__init__(irc)
@@ -152,7 +152,7 @@ class Fediverse(callbacks.PluginRegexp):
             match = utils.web.urlRe.match(username)
             if match:
                 # TODO: error handling
-                actor = ap.get_actor_from_url(match.group(0))
+                actor = ap.get_resource_from_url(match.group(0))
                 username = self._format_actor_username(actor)
             else:
                 irc.errorInvalid("fediverse username", username)
@@ -232,8 +232,19 @@ class Fediverse(callbacks.PluginRegexp):
             )
         )
 
+    def _format_profile(self, irc, msg, actor):
+        return _("\x02%s\x02 (%s): %s") % (
+            actor["name"],
+            self._format_actor_username(actor),
+            utils.web.htmlToText(actor["summary"]),
+        )
+
     def usernameSnarfer(self, irc, msg, match):
         if callbacks.addressed(irc, msg):
+            return
+        if not self.registryValue(
+            "snarfers.username", msg.channel, irc.network
+        ):
             return
         try:
             actor = self._get_actor(irc, match.group(0))
@@ -241,16 +252,43 @@ class Fediverse(callbacks.PluginRegexp):
             # Be silent on errors
             return
 
-        irc.reply(
-            _("\x02%s\x02 (%s): %s")
-            % (
-                actor["name"],
-                self._format_actor_username(actor),
-                utils.web.htmlToText(actor["summary"]),
-            )
-        )
+        irc.reply(self._format_profile(irc, msg, actor))
 
     usernameSnarfer.__doc__ = _username_regexp.pattern
+
+    @urlSnarfer
+    def urlSnarfer_(self, irc, msg, match):
+        channel = msg.channel
+        network = irc.network
+        url = match.group(0)
+        if not channel:
+            return
+        if callbacks.addressed(irc, msg):
+            return
+        snarf_profile = self.registryValue(
+            "snarfers.profile", channel, network
+        )
+        snarf_status = self.registryValue("snarfers.status", channel, network)
+        if not snarf_profile and not snarf_status:
+            return
+        try:
+            resource = ap.get_resource_from_url(url)
+        except ap.ActivityPubError:
+            return
+
+        try:
+            if snarf_profile and resource["type"] in ("Person", "Service"):
+                irc.reply(self._format_profile(irc, msg, resource))
+            elif snarf_status and resource["type"] in (
+                "Create",
+                "Note",
+                "Announce",
+            ):
+                irc.reply(self._format_status(irc, msg, resource))
+        except ap.ActivityPubError:
+            return
+
+    urlSnarfer_.__doc__ = utils.web._httpUrlRe
 
     @wrap(["somethingWithoutSpaces"])
     def featured(self, irc, msg, args, username):

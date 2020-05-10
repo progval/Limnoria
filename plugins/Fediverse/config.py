@@ -51,14 +51,37 @@ def configure(advanced):
 
 
 Fediverse = conf.registerPlugin("Fediverse")
+conf.registerGroup(Fediverse, "snarfers")
 conf.registerChannelValue(
-    Fediverse,
-    "usernameSnarfer",
+    Fediverse.snarfers,
+    "username",
     registry.Boolean(
         False,
         _(
             """Determines whether the bot will output the profile of
             @username@hostname accounts it sees in channel messages."""
+        ),
+    ),
+)
+conf.registerChannelValue(
+    Fediverse.snarfers,
+    "profile",
+    registry.Boolean(
+        False,
+        _(
+            """Determines whether the bot will output the profile of
+            URLs to Fediverse accounts it sees in channel messages."""
+        ),
+    ),
+)
+conf.registerChannelValue(
+    Fediverse.snarfers,
+    "status",
+    registry.Boolean(
+        False,
+        _(
+            """Determines whether the bot will output the content of
+            statuses whose URLs it sees in channel messages."""
         ),
     ),
 )
