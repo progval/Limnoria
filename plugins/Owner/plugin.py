@@ -262,7 +262,11 @@ class Owner(callbacks.Plugin):
                                             network=irc.network)
                 self.Proxy(irc, msg, tokens)
             except SyntaxError as e:
-                irc.error(str(e))
+                if conf.supybot.reply.error.detailed():
+                    irc.error(str(e))
+                else:
+                    irc.replyError(msg=msg)
+                    self.log.info('Syntax error: %s', e)
 
     def logmark(self, irc, msg, args, text):
         """<text>
