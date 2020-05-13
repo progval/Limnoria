@@ -1331,6 +1331,7 @@ conf.registerGlobalValue(conf.supybot, 'capabilities',
         '-aka.add', '-aka.set', '-aka.remove',
         '-alias.add', '-alias.remove',
         '-scheduler.add', '-scheduler.remove',
+        '-scheduler.repeat',
     ],
     """These are the
     capabilities that are given to everyone by default.  If they are normal
