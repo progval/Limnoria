@@ -444,10 +444,13 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
 
     def showRecord(self, record):
         template = string.Template(conf.supybot.reply.format.databaseRecord())
+        username = getUserName(record.by)
+        nick = username.split('!')[0] # nick==username iff this is a registered user
         return template.substitute(
             id=record.id,
             text=record.text,
-            username=getUserName(record.by),
+            username=username,
+            nick=nick,
             at=record.at,
             **self.typeSubstitutions(),
         )

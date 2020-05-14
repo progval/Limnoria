@@ -509,7 +509,7 @@ registerChannelValue(supybot.reply.format, 'databaseRecord',
     _("""Format used by generic database plugins (Lart, Dunno, Prase, Success,
     Quote, ...) to show an entry. You can use the following variables:
     $type/$types/$Type/$Types (plugin name and variants), $id, $text,
-    $userid/$username (author), $at (creation time).""")))
+    $at (creation time), $userid/$username/$nick (author).""")))
 
 registerGlobalValue(supybot.reply, 'maximumLength',
     registry.Integer(512*256, _("""Determines the absolute maximum length of
