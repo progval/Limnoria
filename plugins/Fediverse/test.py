@@ -34,9 +34,10 @@ import functools
 import contextlib
 from multiprocessing import Manager
 
-from supybot import commands, conf, utils
+from supybot import conf, log, utils
 from supybot.test import ChannelPluginTestCase, network
 
+from . import activitypub as ap
 from .test_data import (
     PRIVATE_KEY,
     HOSTMETA_URL,
@@ -89,9 +90,30 @@ class NetworkedFediverseTestCase(BaseFediverseTestCase):
                 "Error: Unknown user @nonexistinguser@oc.todon.fr.",
             )
 
+        def testHasWebfingerSupport(self):
+            self.assertTrue(ap.has_webfinger_support("oc.todon.fr"))
+            self.assertFalse(ap.has_webfinger_support("example.org"))
+
 
 class NetworklessFediverseTestCase(BaseFediverseTestCase):
     timeout = 0.1
+
+    @contextlib.contextmanager
+    def mockWebfingerSupport(self, value):
+        original_has_webfinger_support = ap.has_webfinger_support
+
+        @functools.wraps(original_has_webfinger_support)
+        def newf(hostname):
+            if value == "not called":
+                assert False
+            assert type(value) is bool
+            return value
+
+        ap.has_webfinger_support = newf
+
+        yield
+
+        ap.has_webfinger_support = original_has_webfinger_support
 
     @contextlib.contextmanager
     def mockRequests(self, expected_requests):
@@ -105,6 +127,7 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 assert expected_requests, url
                 (expected_url, response) = expected_requests.pop(0)
                 self.assertEqual(url, expected_url, "Unexpected URL: %s" % url)
+                log.debug("Got request to %s", url)
 
                 if isinstance(response, bytes):
                     return response
@@ -225,7 +248,7 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
             )
 
     def testProfileSnarfer(self):
-        with self.mockRequests([]):
+        with self.mockWebfingerSupport("not called"), self.mockRequests([]):
             self.assertSnarfNoResponse("aaa @nonexistinguser@example.org bbb")
 
         with conf.supybot.plugins.Fediverse.snarfers.username.context(True):
@@ -235,24 +258,46 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 (ACTOR_URL, ACTOR_DATA),
             ]
 
-            with self.mockRequests(expected_requests):
+            # First request, should work
+            with self.mockWebfingerSupport(True), self.mockRequests(
+                expected_requests
+            ):
                 self.assertSnarfResponse(
                     "aaa @someuser@example.org bbb",
                     "\x02someuser\x02 (@someuser@example.org): My Biography",
                 )
+
+            # Same request; it is all cached
+            with self.mockWebfingerSupport("not called"), self.mockRequests(
+                []
+            ):
+                self.assertSnarfResponse(
+                    "aaa @someuser@example.org bbb",
+                    "\x02someuser\x02 (@someuser@example.org): My Biography",
+                )
+
+            # Nonexisting user
 
             expected_requests = [
                 (HOSTMETA_URL, HOSTMETA_DATA),
                 (WEBFINGER_URL, utils.web.Error("blah")),
             ]
 
-            with self.mockRequests(expected_requests):
+            with self.mockWebfingerSupport("not called"), self.mockRequests(
+                expected_requests
+            ):
                 self.assertSnarfNoResponse(
                     "aaa @nonexistinguser@example.org bbb"
                 )
 
+    def testProfileSnarferNoWebfinger(self):
+        with conf.supybot.plugins.Fediverse.snarfers.username.context(False):
+            # No webfinger support, shouldn't make requests
+            with self.mockWebfingerSupport(False), self.mockRequests([]):
+                self.assertSnarfNoResponse("aaa @someuser@example.org bbb")
+
     def testProfileUrlSnarfer(self):
-        with self.mockRequests([]):
+        with self.mockWebfingerSupport("not called"), self.mockRequests([]):
             self.assertSnarfNoResponse(
                 "aaa https://example.org/users/someuser bbb"
             )
@@ -260,14 +305,18 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
         with conf.supybot.plugins.Fediverse.snarfers.profile.context(True):
             expected_requests = [(ACTOR_URL, utils.web.Error("blah"))]
 
-            with self.mockRequests(expected_requests):
+            with self.mockWebfingerSupport(True), self.mockRequests(
+                expected_requests
+            ):
                 self.assertSnarfNoResponse(
                     "aaa https://example.org/users/someuser bbb"
                 )
 
             expected_requests = [(ACTOR_URL, ACTOR_DATA)]
 
-            with self.mockRequests(expected_requests):
+            with self.mockWebfingerSupport("not called"), self.mockRequests(
+                expected_requests
+            ):
                 self.assertSnarfResponse(
                     "aaa https://example.org/users/someuser bbb",
                     "\x02someuser\x02 (@someuser@example.org): My Biography",
@@ -363,7 +412,7 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 )
 
     def testStatusUrlSnarferDisabled(self):
-        with self.mockRequests([]):
+        with self.mockWebfingerSupport("not called"), self.mockRequests([]):
             self.assertSnarfNoResponse(
                 "aaa https://example.org/users/someuser/statuses/1234 bbb"
             )
@@ -375,7 +424,9 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 (ACTOR_URL, ACTOR_DATA),
             ]
 
-            with self.mockRequests(expected_requests):
+            with self.mockWebfingerSupport(True), self.mockRequests(
+                expected_requests
+            ):
                 self.assertSnarfResponse(
                     "aaa https://example.org/users/someuser/statuses/1234 bbb",
                     "\x02someuser\x02 (@someuser@example.org): "
@@ -386,7 +437,9 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
         with conf.supybot.plugins.Fediverse.snarfers.status.context(True):
             expected_requests = [(STATUS_URL, utils.web.Error("blah"))]
 
-            with self.mockRequests(expected_requests):
+            with self.mockWebfingerSupport(True), self.mockRequests(
+                expected_requests
+            ):
                 self.assertSnarfNoResponse(
                     "aaa https://example.org/users/someuser/statuses/1234 bbb"
                 )
@@ -396,7 +449,9 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 (ACTOR_URL, utils.web.Error("blah")),
             ]
 
-            with self.mockRequests(expected_requests):
+            with self.mockWebfingerSupport("not called"), self.mockRequests(
+                expected_requests
+            ):
                 self.assertSnarfResponse(
                     "aaa https://example.org/users/someuser/statuses/1234 bbb",
                     "<error: blah>: @ FirstAuthor I am replying to you",
@@ -407,7 +462,9 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
         with conf.supybot.plugins.Fediverse.snarfers.profile.context(True):
             expected_requests = [(STATUS_URL, STATUS_DATA)]
 
-            with self.mockRequests(expected_requests):
+            with self.mockWebfingerSupport(True), self.mockRequests(
+                expected_requests
+            ):
                 self.assertSnarfNoResponse(
                     "aaa https://example.org/users/someuser/statuses/1234 bbb"
                 )
@@ -416,7 +473,9 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
         with conf.supybot.plugins.Fediverse.snarfers.profile.context(True):
             expected_requests = [(ACTOR_URL, ACTOR_DATA)]
 
-            with self.mockRequests(expected_requests):
+            with self.mockWebfingerSupport("not called"), self.mockRequests(
+                expected_requests
+            ):
                 self.assertSnarfNoResponse(
                     "aaa https://example.org/users/someuser/ bbb"
                 )

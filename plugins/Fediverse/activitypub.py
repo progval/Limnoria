@@ -34,6 +34,7 @@ import email
 import base64
 import functools
 import contextlib
+import urllib.error
 import urllib.parse
 import xml.etree.ElementTree as ET
 
@@ -127,6 +128,47 @@ def _get_webfinger_url(hostname):
                 return link.attrib["template"]
 
     return "https://%s/.well-known/webfinger?resource={uri}"
+
+
+def has_webfinger_support(hostname):
+    """Returns whether the hostname probably supports webfinger or not.
+
+    This relies on an edge case of the Webfinger specification,
+    so it may not successfully detect some hosts because they don't follow
+    the specification."""
+    request = urllib.request.Request(
+        "https://%s/.well-known/webfinger" % hostname, method="HEAD"
+    )
+    try:
+        urllib.request.urlopen(request)
+    except urllib.error.HTTPError as e:
+        if e.code == 400:
+            # RFC 7033 requires a 400 response when the "resource" parameter
+            # is missing: https://tools.ietf.org/html/rfc7033#section-4.2
+            #
+            # This works for:
+            # * Misskey
+            # * PeerTube
+            # * Pleroma
+            return True
+        elif e.headers.get("Content-Type", "") == "application/jrd+json":
+            # WriteFreely, and possibly others.
+            # https://github.com/writeas/writefreely/issues/310
+            return True
+        elif e.code == 404:
+            if e.headers.get("Server", "").lower() == "mastodon":
+                # https://github.com/tootsuite/mastodon/issues/13757
+                return True
+
+    # Else, the host probably doesn't support Webfinger.
+
+    # Known false negatives:
+    # * Nextcloud (returns 404)
+    # * Pixelfed (returns 302 to the homepage):
+    #   https://github.com/pixelfed/pixelfed/issues/2180
+    # * Plume (returns 404):
+    #   https://github.com/Plume-org/Plume/issues/770
+    return False
 
 
 def webfinger(hostname, uri):

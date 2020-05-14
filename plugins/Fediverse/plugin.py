@@ -125,6 +125,14 @@ class Fediverse(callbacks.PluginRegexp):
         self._startHttp()
         self._actor_cache = utils.structures.TimeoutDict(timeout=600)
 
+        # Used when snarfing, to cheaply avoid querying non-ActivityPub
+        # servers.
+        # Is also written to when using commands that successfully find
+        # ActivityPub data.
+        self._webfinger_support_cache = utils.structures.TimeoutDict(
+            timeout=60 * 60 * 24
+        )
+
     def _startHttp(self):
         callback = FediverseHttp()
         callback._plugin = self
@@ -136,6 +144,13 @@ class Fediverse(callbacks.PluginRegexp):
 
     def _stopHttp(self):
         httpserver.unhook("fediverse")
+
+    def _has_webfinger_support(self, hostname):
+        if hostname not in self._webfinger_support_cache:
+            self._webfinger_support_cache[hostname] = ap.has_webfinger_support(
+                hostname
+            )
+        return self._webfinger_support_cache[hostname]
 
     def _get_actor(self, irc, username):
         if username in self._actor_cache:
@@ -167,6 +182,8 @@ class Fediverse(callbacks.PluginRegexp):
 
         if username:
             self._actor_cache[username] = actor
+            self._webfinger_support_cache[hostname] = True
+
         self._actor_cache[actor["id"]] = actor
 
         return actor
@@ -257,9 +274,17 @@ class Fediverse(callbacks.PluginRegexp):
             "snarfers.username", msg.channel, irc.network
         ):
             return
+
+        if not self._has_webfinger_support(match.group("hostname")):
+            self.log.debug(
+                "Not snarfing, host doesn't have Webfinger support."
+            )
+            return
+
         try:
             actor = self._get_actor(irc, match.group(0))
-        except ap.ActivityPubError:
+        except ap.ActivityPubError as e:
+            self.log.info("Could not fetch %s: %s", match.group(0), e)
             # Be silent on errors
             return
 
@@ -282,6 +307,14 @@ class Fediverse(callbacks.PluginRegexp):
         snarf_status = self.registryValue("snarfers.status", channel, network)
         if not snarf_profile and not snarf_status:
             return
+
+        hostname = urllib.parse.urlparse(url).hostname
+        if not self._has_webfinger_support(hostname):
+            self.log.debug(
+                "Not snarfing, host doesn't have Webfinger support."
+            )
+            return
+
         try:
             resource = ap.get_resource_from_url(url)
         except ap.ActivityPubError:
@@ -357,6 +390,9 @@ class Fediverse(callbacks.PluginRegexp):
             status = ap.get_resource_from_url(url)
         except ap.ActivityPubError as e:
             irc.error(_("Could not get status: %s") % e.args[0], Raise=True)
+        else:
+            hostname = urllib.parse.urlparse(url).hostname
+            self._webfinger_support_cache[hostname] = True
 
         irc.reply(self._format_status(irc, msg, status))
 
