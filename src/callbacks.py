@@ -1426,7 +1426,7 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
         else:
             self.__parent.__call__(irc, msg)
 
-    def registryValue(self, name, channel=None, network=None, value=True):
+    def registryValue(self, name, channel=None, network=None, *, value=True):
         if isinstance(network, bool):
             # Network-unaware plugin that uses 'value' as a positional
             # argument.
