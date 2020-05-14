@@ -33,6 +33,7 @@ import os
 import csv
 import time
 import codecs
+import string
 import fnmatch
 import os.path
 import threading
@@ -321,13 +322,19 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         self.db.close()
         self.__parent.die()
 
+    def typeSubstitutions(self):
+        """Returns a dict with keys Types/Type/types/type, whose values are
+        the plugin name with matching capitalization and plural."""
+        return {
+            'Types': format('%p', self.name()),
+            'Type': self.name(),
+            'types': format('%p', self.name().lower()),
+            'type': self.name().lower(),
+        }
+
     def getCommandHelp(self, name, simpleSyntax=None):
-        help = self.__parent.getCommandHelp(name, simpleSyntax)
-        help = help.replace('$Types', format('%p', self.name()))
-        help = help.replace('$Type', self.name())
-        help = help.replace('$types', format('%p', self.name().lower()))
-        help = help.replace('$type', self.name().lower())
-        return help
+        helpTemplate = self.__parent.getCommandHelp(name, simpleSyntax)
+        return helpTemplate.substitute(self._typeSubstitutions())
 
     def noSuchRecord(self, irc, channel, id):
         irc.error(_('There is no %s with id #%s in my database for %s.') %
@@ -436,9 +443,14 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
                            additional(rest('glob'))])
 
     def showRecord(self, record):
-        name = getUserName(record.by)
-        return format(_('%s #%s: %q (added by %s at %t)'),
-                      self.name(), record.id, record.text, name, record.at)
+        template = string.Template(conf.supybot.reply.format.databaseRecord())
+        return template.substitute(
+            id=record.id,
+            text=record.text,
+            username=getUserName(record.by),
+            at=record.at,
+            **self.typeSubstitutions(),
+        )
 
     def get(self, irc, msg, args, channel, id):
         """[<channel>] <id>
