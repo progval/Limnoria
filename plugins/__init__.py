@@ -448,10 +448,11 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         nick = username.split('!')[0] # nick==username iff this is a registered user
         return template.substitute(
             id=record.id,
-            text=record.text,
+            text=utils.str.quoted(record.text),
+            userid=record.by,
             username=username,
             nick=nick,
-            at=record.at,
+            at=utils.str.timestamp(record.at),
             **self.typeSubstitutions(),
         )
 
