@@ -38,8 +38,10 @@ import os.path
 import threading
 import collections.abc
 
-from .. import callbacks, conf, dbi, ircdb, ircutils, log, utils, world
+from .. import callbacks, conf, dbi, ircdb, ircutils, i18n, log, utils, world
 from ..commands import *
+
+_ = i18n.PluginInternationalization()
 
 class NoSuitableDatabase(Exception):
     def __init__(self, suitable):
@@ -328,7 +330,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         return help
 
     def noSuchRecord(self, irc, channel, id):
-        irc.error('There is no %s with id #%s in my database for %s.' %
+        irc.error(_('There is no %s with id #%s in my database for %s.') %
                   (self.name(), id, channel))
 
     def checkChangeAllowed(self, irc, msg, channel, user, record):
@@ -367,7 +369,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         self.addValidator(irc, text)
         if text is not None:
             id = self.db.add(channel, at, user, text)
-            irc.replySuccess('%s #%s added.' % (self.name(), id))
+            irc.replySuccess(_('%s #%s added.') % (self.name(), id))
     add = wrap(add, ['channeldb', 'text'])
 
     def remove(self, irc, msg, args, channel, id):
@@ -389,7 +391,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
 
     def searchSerializeRecord(self, record):
         text = utils.str.ellipsisify(record.text, 50)
-        return format('#%s: %q', record.id, text)
+        return format(_('#%s: %q'), record.id, text)
 
     def search(self, irc, msg, args, channel, optlist, glob):
         """[<channel>] [--{regexp,by} <value>] [<glob>]
@@ -424,10 +426,10 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
             L.append(self.searchSerializeRecord(record))
         if L:
             L.sort()
-            irc.reply(format('%s found: %L', len(L), L))
+            irc.reply(format(_('%s found: %L'), len(L), L))
         else:
             what = self.name().lower()
-            irc.reply(format('No matching %p were found.', what))
+            irc.reply(format(_('No matching %p were found.'), what))
     search = wrap(search, ['channeldb',
                            getopts({'by': 'otherUser',
                                     'regexp': 'regexpMatcher'}),
@@ -435,7 +437,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
 
     def showRecord(self, record):
         name = getUserName(record.by)
-        return format('%s #%s: %q (added by %s at %t)',
+        return format(_('%s #%s: %q (added by %s at %t)'),
                       self.name(), record.id, record.text, name, record.at)
 
     def get(self, irc, msg, args, channel, id):
@@ -479,7 +481,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         """
         n = self.db.size(channel)
         whats = self.name().lower()
-        irc.reply(format('There %b %n in my database.', n, (n, whats)))
+        irc.reply(format(_('There %b %n in my database.'), n, (n, whats)))
     stats = wrap(stats, ['channeldb'])
 
 
