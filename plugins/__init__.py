@@ -453,7 +453,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
             username=username,
             nick=nick,
             at=utils.str.timestamp(record.at),
-            **self.typeSubstitutions(),
+            **self.typeSubstitutions()
         )
 
     def get(self, irc, msg, args, channel, id):
