@@ -287,7 +287,13 @@ class QuoteGrabs(callbacks.Plugin):
             raise callbacks.ArgumentError
         if ircutils.nickEqual(nick, msg.nick):
             irc.error(_('You can\'t quote grab yourself.'), Raise=True)
+        if conf.supybot.protocols.irc.experimentalExtensions():
+            msgid = msg.server_tags.get('+draft/reply')
+        else:
+            msgid = None
         for m in reversed(irc.state.history):
+            if msgid and m.server_tags.get('msgid') != msgid:
+                continue
             if m.command == 'PRIVMSG' and ircutils.nickEqual(m.nick, nick) \
                     and ircutils.strEqual(m.args[0], chan):
                 # TODO: strip statusmsg prefix for comparison? Must be careful

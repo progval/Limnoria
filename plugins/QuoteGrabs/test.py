@@ -51,6 +51,41 @@ class QuoteGrabsTestCase(ChannelPluginTestCase):
         self.assertNotError('grab foo')
         self.assertResponse('quote foo', '* foo moos')
 
+    def testQuoteGrabReplyDisabled(self):
+        testPrefix = 'foo!bar@baz'
+        prefixChar = conf.supybot.reply.whenAddressedBy.chars()[0]
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'msgid': 'aaaa'}, prefix=testPrefix,
+            command='PRIVMSG', args=(self.channel, 'something')))
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'msgid': 'bbbb'}, prefix=testPrefix,
+            command='PRIVMSG', args=(self.channel, 'something else')))
+
+        # supybot.protocols.irc.experimentalExtensions is not enabled, so
+        # +draft/reply is ignored.
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'+draft/reply': 'aaaa'}, prefix=self.prefix,
+            command='PRIVMSG', args=(self.channel, prefixChar+'grab foo')))
+        self.assertResponse(' ', 'The operation succeeded.')
+        self.assertResponse('quote foo', '<foo> something else')
+
+    def testQuoteGrabReply(self):
+        testPrefix = 'foo!bar@baz'
+        prefixChar = conf.supybot.reply.whenAddressedBy.chars()[0]
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'msgid': 'aaaa'}, prefix=testPrefix,
+            command='PRIVMSG', args=(self.channel, 'something')))
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'msgid': 'bbbb'}, prefix=testPrefix,
+            command='PRIVMSG', args=(self.channel, 'something else')))
+
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                server_tags={'+draft/reply': 'aaaa'}, prefix=self.prefix,
+                command='PRIVMSG', args=(self.channel, prefixChar+'grab foo')))
+            self.assertResponse(' ', 'The operation succeeded.')
+        self.assertResponse('quote foo', '<foo> something')
+
     def testUngrab(self):
         testPrefix = 'foo!bar@baz'
         # nothing yet
