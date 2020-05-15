@@ -75,7 +75,7 @@ class Google(callbacks.PluginRegexp):
             msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
         return msg
 
-    _decode_re = re.compile(r'<div class="\w+"><a href="/url\?q=(?P<url>[^"]+)&[^"]+"><div class="(\w| )+">(?P<title>.*?)</div><div class="(\w| )+">(?P<breadcrumbs>.*?)</div></a></div>(?P<content><div class="(\w| )+">.*?</div></div>)', re.DOTALL | re.MULTILINE)
+    _decode_re = re.compile(r'<div class="\w+"><a href="/url\?q=(?P<url>[^"]+)&[^"]+"[^>]*><div class="(\w| )+">(?P<title>.*?)</div><div class="(\w| )+">(?P<breadcrumbs>.*?)</div></a></div>(?P<content><div class="(\w| )+">.*?</div></div>)', re.DOTALL | re.MULTILINE)
     @classmethod
     def decode(cls, text):
         matches = cls._decode_re.finditer(text)
