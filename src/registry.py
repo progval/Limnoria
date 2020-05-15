@@ -36,7 +36,7 @@ import codecs
 import string
 import textwrap
 
-from . import utils, i18n
+from . import utils, i18n, ircutils
 from .utils import minisix
 _ = i18n.PluginInternationalization()
 
@@ -400,6 +400,59 @@ class Value(Group):
                     self._name)
             else:
                 channel = None
+
+        # It may seem weird to check channel/network validity here,
+        # but we need to prevent plugins from passing garbage values.
+        #
+        # For example, LinkRelay has an inFilter() function that calls
+        # self.registryValue('...', msg.args[0]) no matter the command. This
+        # means that, every time it receives a 'PING :<timestamp>' from a
+        # network (eg. OFTC), it calls
+        # self.registryValue('...', '<timestamp>'), which calls this
+        # function.
+        #
+        # We then get the proper group, and do .get('<timestamp>'), which
+        # causes a new variable to be registered.
+        # And if the values have a high cardinality (eg. with timestamps),
+        # this creates *a lot* of values, thereby leaking megabytes of memory
+        # a week.
+        #
+        # Ideally, we would want to not register these variables, but it's
+        # complicated for multiple reasons, including:
+        #
+        # 1. if two plugins .get() them, store them for a little while, then
+        #    both set them, we have to take care of it.
+        # 2. if <group>.network.channel is modified, then we need to register
+        #    both .channel and .network. (and what if two plugins are doing
+        #    this concurrently with different channels?)
+        # 3. we could also have a task run in the upkeep function, but we have
+        #    issues again with plugins that keep a reference.
+        #
+        # All in all, this is not ideal, but afaict, this is the least bad
+        # solution. And let's hope no one bruteforces valid channel names.
+        # If you have a better solution, please let us know!
+        #
+        # Also, we're setting them to None instead of raising an error in
+        # order not to break existing plugins.
+        if channel and not ircutils.isChannel(channel):
+            from . import log
+            log.warning(
+                'Trying to get channel-specific value of %s for channel %s, '
+                'but it is not a channel. This is a bug, please report it.',
+                self._name, channel)
+            channel = None
+        if network:
+            from . import world  # put here to work around circular dependencies
+            if world.getIrc(network) is None:
+                # checking 'world is not None' as part of the workaround for
+                # circular dependencies (see the end of the file)
+                from . import log
+                log.warning(
+                    'Trying to get network-specific value of %s for network %s, '
+                    'but it is not a network. This is a bug, please report it.',
+                    self._name, network)
+                network = None
+
         if network and channel:
             # The complicated case. We want a net+chan specific value,
             # which may come in three different ways:
