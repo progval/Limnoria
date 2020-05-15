@@ -216,20 +216,24 @@ class Fediverse(callbacks.PluginRegexp):
                     irc.network,
                 ):
                     # show CW and content
-                    return _("%s: \x02[CW %s]\x02 %s") % (
+                    res = [_("%s: \x02[CW %s]\x02 %s") % (
                         author_fullname,
                         cw,
                         utils.web.htmlToText(status["content"]),
-                    )
+                    )]
                 else:
                     # show CW but not content
-                    return _("%s: CW %s") % (author_fullname, cw)
+                    res = [_("%s: CW %s") % (author_fullname, cw)]
             else:
                 # no CW, show content
-                return _("%s: %s") % (
+                res = [_("%s: %s") % (
                     author_fullname,
                     utils.web.htmlToText(status["content"]),
-                )
+                )]
+
+            for attachment in status.get("attachment", []):
+                res.append(utils.str.url(attachment.get("url")))
+            return " ".join(res)
         elif status["type"] == "Announce":
             # aka boost; let's go fetch the original status
             try:

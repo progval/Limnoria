@@ -214,6 +214,38 @@ STATUS_VALUE = {
 }
 STATUS_DATA = json.dumps(STATUS_VALUE).encode()
 
+STATUS_WITH_PHOTO_URL = "https://example.org/users/someuser/statuses/123"
+STATUS_WITH_PHOTO_VALUE = {
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    "https://example.org/schemas/litepub-0.1.jsonld",
+  ],
+  "actor": "https://example.org/users/someuser",
+  "attachment": [
+    {
+      "mediaType": "image/jpeg",
+      "name": "IMG_foo.jpg",
+      "type": "Document",
+      "url": "https://example.org/foo.jpg"
+    }
+  ],
+  "attributedTo": "https://example.org/users/someuser",
+  "cc": [
+    "https://www.w3.org/ns/activitystreams#Public"
+  ],
+  "content": "Here is a picture",
+  "id": "https://example.org/users/someuser/statuses/123",
+  "published": "2020-05-08T01:23:45Z",
+  "sensitive": False,
+  "summary": "",
+  "tag": [],
+  "to": [
+    "https://example.org/users/someuser/followers"
+  ],
+  "type": "Note"
+}
+STATUS_WITH_PHOTO_DATA = json.dumps(STATUS_WITH_PHOTO_VALUE).encode()
+
 OUTBOX_FIRSTPAGE_URL = "https://example.org/users/someuser/outbox?page=true"
 OUTBOX_FIRSTPAGE_VALUE = {
     "@context": [

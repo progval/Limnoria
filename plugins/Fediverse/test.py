@@ -50,6 +50,8 @@ from .test_data import (
     OUTBOX_DATA,
     STATUS_URL,
     STATUS_DATA,
+    STATUS_WITH_PHOTO_URL,
+    STATUS_WITH_PHOTO_DATA,
     OUTBOX_FIRSTPAGE_URL,
     OUTBOX_FIRSTPAGE_DATA,
     BOOSTED_URL,
@@ -347,6 +349,19 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 + "@ FirstAuthor I am replying to you",
             )
 
+    def testStatusAttachment(self):
+        expected_requests = [
+            (STATUS_WITH_PHOTO_URL, STATUS_WITH_PHOTO_DATA),
+            (ACTOR_URL, ACTOR_DATA),
+        ]
+
+        with self.mockRequests(expected_requests):
+            self.assertResponse(
+                "status https://example.org/users/someuser/statuses/123",
+                "\x02someuser\x02 (@someuser@example.org): "
+                + "Here is a picture <https://example.org/foo.jpg>",
+            )
+
     def testStatusError(self):
         expected_requests = [(STATUS_URL, utils.web.Error("blah"))]
 
@@ -387,7 +402,8 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 + "\x02[CW This is a content warning]\x02 "
                 + "This is a status with a content warning, and "
                 + "\x02Boosted User\x02 (@BoostedUser@example.net): "
-                + "Status Content",
+                + "Status Content "
+                + "<https://example.net/system/media_attachments/image.png>",
             )
 
         # The actors are cached from the previous request
@@ -408,7 +424,8 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                     + "\x02someuser\x02 (@someuser@example.org): "
                     + "CW This is a content warning, and "
                     + "\x02Boosted User\x02 (@BoostedUser@example.net): "
-                    + "Status Content",
+                    + "Status Content "
+                    + "<https://example.net/system/media_attachments/image.png>",
                 )
 
     def testStatusUrlSnarferDisabled(self):
