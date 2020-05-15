@@ -33,8 +33,10 @@ from supybot.test import *
 class DDGTestCase(PluginTestCase):
     plugins = ('DDG',)
 
-    def testSearch(self):
-        self.assertRegexp(
-            'ddg search wikipedia', 'Wikipedia.*? - .*?https?\:\/\/')
+    if network:
+
+        def testSearch(self):
+            self.assertRegexp(
+                'ddg search wikipedia', 'Wikipedia.*? - .*?https?\:\/\/')
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
