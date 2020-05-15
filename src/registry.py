@@ -404,10 +404,10 @@ class Value(Group):
         # It may seem weird to check channel/network validity here,
         # but we need to prevent plugins from passing garbage values.
         #
-        # For example, LinkRelay has an inFilter() function that calls
+        # For example, LinkRelay has an inFilter() function that called
         # self.registryValue('...', msg.args[0]) no matter the command. This
-        # means that, every time it receives a 'PING :<timestamp>' from a
-        # network (eg. OFTC), it calls
+        # means that, every time the bot sends a 'PING :<timestamp>' from to
+        # network, LinkRelayed called
         # self.registryValue('...', '<timestamp>'), which calls this
         # function.
         #
