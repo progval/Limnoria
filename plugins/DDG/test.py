@@ -38,5 +38,9 @@ class DDGTestCase(PluginTestCase):
         def testSearch(self):
             self.assertRegexp(
                 'ddg search wikipedia', 'Wikipedia.*? - .*?https?\:\/\/')
+            self.assertRegexp(
+                'ddg search en.wikipedia.org',
+                'Wikipedia, the free encyclopedia\x02 - '
+                '.* <https://en.wikipedia.org/>')
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
