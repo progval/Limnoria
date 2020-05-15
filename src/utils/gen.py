@@ -202,12 +202,9 @@ def safeEval(s, namespace=None):
         else:
             return False
     if checkNode(node):
-        if namespace is None:
-            return eval(s, namespace, namespace)
-        else:
-            # Probably equivalent to eval() because checkNode(node) is True,
-            # but it's an extra security.
-            return ast.literal_eval(node)
+        # Probably equivalent to eval() because checkNode(node) is True,
+        # but it's an extra security.
+        return ast.literal_eval(node)
     else:
         raise ValueError(format('Unsafe string: %q', s))
 
