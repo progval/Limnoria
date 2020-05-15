@@ -443,7 +443,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
                            additional(rest('glob'))])
 
     def showRecord(self, record):
-        template = string.Template(conf.supybot.reply.format.databaseRecord())
+        template = string.Template(conf.supybot.replies.databaseRecord())
         username = getUserName(record.by)
         nick = username.split('!')[0] # nick==username iff this is a registered user
         return template.substitute(

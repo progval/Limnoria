@@ -501,16 +501,6 @@ def commaAndify(seq, *args, **kwargs):
     return originalCommaAndify(seq, *args, **kwargs)
 utils.str.commaAndify = commaAndify
 
-class DatabaseRecordTemplatedString(registry.TemplatedString):
-    requiredTemplates = ['text']
-
-registerChannelValue(supybot.reply.format, 'databaseRecord',
-    DatabaseRecordTemplatedString(_('$Type #$id: $text (added by $username at $at)'),
-    _("""Format used by generic database plugins (Lart, Dunno, Prase, Success,
-    Quote, ...) to show an entry. You can use the following variables:
-    $type/$types/$Type/$Types (plugin name and variants), $id, $text,
-    $at (creation time), $userid/$username/$nick (author).""")))
-
 registerGlobalValue(supybot.reply, 'maximumLength',
     registry.Integer(512*256, _("""Determines the absolute maximum length of
     the bot's reply -- no reply will be passed through the bot with a length
@@ -739,6 +729,17 @@ registerChannelValue(supybot.replies, 'possibleBug',
     <https://github.com/ProgVal/Limnoria/issues>."""),
     _("""Determines what message the bot sends when it thinks you've
     encountered a bug that the developers don't know about.""")))
+
+class DatabaseRecordTemplatedString(registry.TemplatedString):
+    requiredTemplates = ['text']
+
+registerChannelValue(supybot.replies, 'databaseRecord',
+    DatabaseRecordTemplatedString(_('$Type #$id: $text (added by $username at $at)'),
+    _("""Format used by generic database plugins (Lart, Dunno, Prase, Success,
+    Quote, ...) to show an entry. You can use the following variables:
+    $type/$types/$Type/$Types (plugin name and variants), $id, $text,
+    $at (creation time), $userid/$username/$nick (author).""")))
+
 ###
 # End supybot.replies.
 ###
