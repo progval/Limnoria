@@ -28,6 +28,10 @@
 
 ###
 
+import functools
+from html.parser import HTMLParser
+from urllib.parse import urlencode, parse_qs
+
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
@@ -42,18 +46,7 @@ except ImportError:
     # without the i18n module
     _ = lambda x: x
 
-
-try:  # Python 3
-    from urllib.parse import urlencode, parse_qs
-except ImportError:  # Python 2
-    from urllib import urlencode
-    from urlparse import parse_qs
-try:
-    from bs4 import BeautifulSoup
-except ImportError:
-    raise ImportError("Beautiful Soup 4 is required for this plugin: get it"
-                      " at http://www.crummy.com/software/BeautifulSoup/bs4"
-                      "/doc/#installing-beautiful-soup")
+from .parser import DDGHTMLParser
 
 
 class DDG(callbacks.Plugin):
@@ -70,12 +63,11 @@ class DDG(callbacks.Plugin):
 
         real_url, data = utils.web.getUrlTargetAndContent(url)
         data = data.decode("utf-8")
-        soup = BeautifulSoup(data)
+        parser = DDGHTMLParser()
+        parser.feed(data)
 
         # Remove "sponsored link" results
-        return (url, real_url, [td for td in soup.find_all('td') if 'result-sponsored' not in 
-                                str(td.parent.get('class'))])
-
+        return (url, real_url, parser.results)
 
     def search_core(self, text, channel_context=None, max_results=None, show_snippet=None):
         """
@@ -103,47 +95,31 @@ class DDG(callbacks.Plugin):
             return [('', '', real_url)]
 
         for t in raw_results:
-            res = ''
-            # Each valid result has a preceding heading in the format
-            # '<td valign="top">1.&nbsp;</td>', etc.
-            if t.text[0].isdigit():
-                res = t.next_sibling.next_sibling
-            if not res:
-                continue
-            try:
+            if self.registryValue("showsnippet", channel_context):
+                snippet = t.snippet.strip()
+            else:
                 snippet = ''
-                # 1) Get a result snippet.
+            title = t.title.strip()
+            origlink = link = t.link
 
-                if self.registryValue("showsnippet", channel_context):
-                    snippet = res.parent.next_sibling.next_sibling.\
-                        find_all("td")[-1]
-                    snippet = snippet.text.strip()
-                # 2) Fetch the link title.
-                title = res.a.text.strip()
-                # 3) Fetch the result link.
-                origlink = link = res.a.get('href')
+            # As of 2017-01-20, some links on DuckDuckGo's site are shown going through
+            # a redirect service. The links are in the format "/l/?kh=-1&uddg=https%3A%2F%2Fduckduckgo.com%2F"
+            # instead of simply being "https://duckduckgo.com". So, we decode these links here.
+            if link.startswith('/l/'):
+                linkparse = utils.web.urlparse(link)
+                try:
+                    link = parse_qs(linkparse.query)['uddg'][0]
+                except KeyError:
+                    # No link was given here, skip.
+                    continue
+                except IndexError:
+                    self.log.exception("DDG: failed to expand redirected result URL %s", origlink)
+                    continue
+                else:
+                    self.log.debug("DDG: expanded result URL from %s to %s", origlink, link)
 
-                # As of 2017-01-20, some links on DuckDuckGo's site are shown going through
-                # a redirect service. The links are in the format "/l/?kh=-1&uddg=https%3A%2F%2Fduckduckgo.com%2F"
-                # instead of simply being "https://duckduckgo.com". So, we decode these links here.
-                if link.startswith('/l/'):
-                    linkparse = utils.web.urlparse(link)
-                    try:
-                        link = parse_qs(linkparse.query)['uddg'][0]
-                    except KeyError:
-                        # No link was given here, skip.
-                        continue
-                    except IndexError:
-                        self.log.exception("DDG: failed to expand redirected result URL %s", origlink)
-                        continue
-                    else:
-                        self.log.debug("DDG: expanded result URL from %s to %s", origlink, link)
-
-                # Return a list of tuples in the form (link title, snippet text, link)
-                results.append((title, snippet, link))
-
-            except AttributeError:
-                continue
+            # Return a list of tuples in the form (link title, snippet text, link)
+            results.append((title, snippet, link))
         return results[:maxr]
 
     @wrap(['text'])
