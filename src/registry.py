@@ -442,6 +442,9 @@ class Value(Group):
         """Override this with a function to convert a string to whatever type
         you want, and call self.setValue to set the value."""
         self.setValue(s)
+
+        # redundant as setValue() already sets it, but it avoids really hard
+        # bugs if subclasses mess with _setValue.
         self._wasSet = True
 
     def setValue(self, v):
