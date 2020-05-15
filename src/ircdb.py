@@ -688,7 +688,7 @@ class DuplicateHostmask(ValueError):
 class UsersDictionary(utils.IterableMap):
     """A simple serialized-to-file User Database."""
     __slots__ = ('noFlush', 'filename', 'users', '_nameCache',
-            '_hostmaskCache')
+            '_hostmaskCache', 'nextId')
     def __init__(self):
         self.noFlush = False
         self.filename = None
