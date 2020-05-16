@@ -435,25 +435,10 @@ class Value(Group):
         # Also, we're setting them to None instead of raising an error in
         # order not to break existing plugins.
         if channel and not ircutils.isChannel(channel):
-            if channel != 'global':
-                # excluding 'global', it's a special value used for linking
-                # channels and by some plugins.
-                from . import log
-                log.warning(
-                    'Trying to get channel-specific value of %s for channel %s, '
-                    'but it is not a channel. This is a bug, please report it.',
-                    self._name, channel)
             channel = None
         if network:
             from . import world  # put here to work around circular dependencies
             if world.getIrc(network) is None:
-                # checking 'world is not None' as part of the workaround for
-                # circular dependencies (see the end of the file)
-                from . import log
-                log.warning(
-                    'Trying to get network-specific value of %s for network %s, '
-                    'but it is not a network. This is a bug, please report it.',
-                    self._name, network)
                 network = None
 
         if network and channel:
