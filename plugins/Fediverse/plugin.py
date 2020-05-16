@@ -298,7 +298,7 @@ class Fediverse(callbacks.PluginRegexp):
             # Be silent on errors
             return
 
-        irc.reply(self._format_profile(irc, msg, actor))
+        irc.reply(self._format_profile(irc, msg, actor), prefixNick=False)
 
     usernameSnarfer.__doc__ = _username_regexp.pattern
 
@@ -338,7 +338,9 @@ class Fediverse(callbacks.PluginRegexp):
                 "Note",
                 "Announce",
             ):
-                irc.reply(self._format_status(irc, msg, resource))
+                irc.reply(
+                    self._format_status(irc, msg, resource), prefixNick=False
+                )
         except ap.ActivityPubError:
             return
 
