@@ -466,6 +466,8 @@ class Config(callbacks.Plugin):
         """<name>
 
         Resets the configuration variable <name> to its default value.
+        Use commands 'reset channel' and 'reset network' instead to make
+        a channel- or network- specific value inherit from the global one.
         """
         v = str(group.__class__(group._default, ''))
         self._setValue(irc, msg, group, v)
