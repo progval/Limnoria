@@ -105,6 +105,15 @@ def isReadOnly(name):
     else:
         return False
 
+def checkCanSetValue(irc, msg, group):
+    if isReadOnly(group._name):
+        irc.error(_("This configuration variable is not writeable "
+            "via IRC. To change it you have to: 1) use the 'flush' command 2) edit "
+            "the config file 3) use the 'config reload' command."), Raise=True)
+    capability = getCapability(irc, group._name)
+    if not ircdb.checkCapability(msg.prefix, capability):
+        irc.errorNoCapability(capability, Raise=True)
+
 def _reload():
     ircdb.users.reload()
     ircdb.ignores.reload()
@@ -283,16 +292,9 @@ class Config(callbacks.Plugin):
                       'available in this group.'), Raise=True)
 
     def _setValue(self, irc, msg, group, value):
-        if isReadOnly(group._name):
-            irc.error(_("This configuration variable is not writeable "
-                "via IRC. To change it you have to: 1) use the 'flush' command 2) edit "
-                "the config file 3) use the 'config reload' command."), Raise=True)
-        capability = getCapability(irc, group._name)
-        if ircdb.checkCapability(msg.prefix, capability):
-            # I think callCommand catches exceptions here.  Should it?
-            group.set(value)
-        else:
-            irc.errorNoCapability(capability, Raise=True)
+        checkCanSetValue(irc, msg, group)
+        # I think callCommand catches exceptions here.  Should it?
+        group.set(value)
 
     @internationalizeDocstring
     def channel(self, irc, msg, args, network, channels, group, value):
@@ -469,6 +471,52 @@ class Config(callbacks.Plugin):
         self._setValue(irc, msg, group, v)
         irc.replySuccess()
     setdefault = wrap(setdefault, ['settableConfigVar'])
+
+    class reset(callbacks.Commands):
+        @internationalizeDocstring
+        def channel(self, irc, msg, args, network, channel, group):
+            """[<network>] [<channel>] <name>
+
+            Resets the channel-specific value of variable <name>, so that
+            it will match the network-specific value (or the global one
+            if the latter isn't set).
+            <network> and <channel> default to the current network and
+            channel.
+            """
+
+            if network != '*':
+                # reset group.:network.#channel
+                netgroup = group.get(':' + network.network)
+                changroup = netgroup.get(channel)
+                checkCanSetValue(irc, msg, changroup)
+                changroup._setValue(netgroup.value, inherited=True)
+
+            # reset group.#channel
+            changroup = group.get(channel)
+            checkCanSetValue(irc, msg, changroup)
+            changroup._setValue(group.value, inherited=True)
+
+            irc.replySuccess()
+        channel = wrap(channel, [
+            optional(first(('literal', '*'), 'networkIrc')),
+            'channel', 'settableConfigVar'])
+
+        @internationalizeDocstring
+        def network(self, irc, msg, args, network, group):
+            """[<network>] [<channel>] <name>
+
+            Resets the network-specific value of variable <name>, so that
+            it will match the global.
+            <network> defaults to the current network and
+            channel.
+            """
+            # reset group.#channel
+            changroup = group.get(':' + network.network)
+            checkCanSetValue(irc, msg, changroup)
+            changroup._setValue(group.value, inherited=True)
+
+            irc.replySuccess()
+        network = wrap(network, ['networkIrc', 'settableConfigVar'])
 
 Class = Config
 

@@ -195,6 +195,13 @@ class ConfigTestCase(ChannelPluginTestCase):
                 'Global: 0; #test @ test: 1')
 
     def testChannel(self):
+        try:
+            conf.supybot.reply.whenAddressedBy.strings.get(':test').unregister(self.channel)
+            conf.supybot.reply.whenAddressedBy.strings.unregister(':test')
+            conf.supybot.reply.whenAddressedBy.strings.unregister(self.channel)
+        except:
+            pass
+
         self.assertResponse('config reply.whenAddressedBy.strings ^',
                 'The operation succeeded.')
         self.assertResponse('config channel reply.whenAddressedBy.strings @',
@@ -278,6 +285,157 @@ class ConfigTestCase(ChannelPluginTestCase):
 
         # Inherit from #5, which set for #testchan1 on all nets
         self.assertResponse('config channel testnet3 #testchan1 reply.whenAddressedBy.strings', ':')
+
+    def testChannelInheritance(self):
+        try:
+            conf.supybot.reply.whenAddressedBy.strings.get(':test').unregister(self.channel)
+            conf.supybot.reply.whenAddressedBy.strings.unregister(':test')
+            conf.supybot.reply.whenAddressedBy.strings.unregister(self.channel)
+        except:
+            pass
+
+        self.assertResponse('config reply.whenAddressedBy.strings ^',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: ^; #test @ test: ^')
+        self.assertResponse('config channel reply.whenAddressedBy.strings', '^')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertFalse(
+            conf.supybot.reply.whenAddressedBy.strings.get(self.channel)._wasSet)
+
+        # Parent changes, child follows
+        self.assertResponse('config reply.whenAddressedBy.strings @',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: @; #test @ test: @')
+        self.assertResponse('config channel reply.whenAddressedBy.strings', '@')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertFalse(
+            conf.supybot.reply.whenAddressedBy.strings.get(self.channel)._wasSet)
+
+        # Child changes, parent keeps its value
+        self.assertResponse('config channel reply.whenAddressedBy.strings $',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: @; #test @ test: $')
+        self.assertResponse('config channel reply.whenAddressedBy.strings', '$')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings.get(self.channel)._wasSet)
+
+        # Parent changes, child keeps its value
+        self.assertResponse('config reply.whenAddressedBy.strings .',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: .; #test @ test: $')
+        self.assertResponse('config channel reply.whenAddressedBy.strings', '$')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings.get(self.channel)._wasSet)
+
+    def testResetChannel(self):
+        try:
+            conf.supybot.reply.whenAddressedBy.strings.get(':test').unregister(self.channel)
+            conf.supybot.reply.whenAddressedBy.strings.unregister(':test')
+            conf.supybot.reply.whenAddressedBy.strings.unregister(self.channel)
+        except:
+            pass
+
+        self.assertResponse('config reply.whenAddressedBy.strings ^',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: ^; #test @ test: ^')
+        self.assertResponse('config channel reply.whenAddressedBy.strings', '^')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertFalse(
+            conf.supybot.reply.whenAddressedBy.strings.get(self.channel)._wasSet)
+
+        # Child changes, parent keeps its value
+        self.assertResponse('config channel reply.whenAddressedBy.strings $',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: ^; #test @ test: $')
+        self.assertResponse('config channel reply.whenAddressedBy.strings', '$')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings.get(self.channel)._wasSet)
+
+        # Reset child
+        self.assertResponse('config reset channel reply.whenAddressedBy.strings',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: ^; #test @ test: ^')
+        self.assertResponse('config channel reply.whenAddressedBy.strings', '^')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertFalse(
+            conf.supybot.reply.whenAddressedBy.strings.get(self.channel)._wasSet)
+
+        # Parent changes, child follows
+        self.assertResponse('config reply.whenAddressedBy.strings .',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: .; #test @ test: .')
+        self.assertResponse('config channel reply.whenAddressedBy.strings', '.')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertFalse(
+            conf.supybot.reply.whenAddressedBy.strings.get(self.channel)._wasSet)
+
+    def testResetNetwork(self):
+        try:
+            conf.supybot.reply.whenAddressedBy.strings.unregister(':test')
+        except:
+            pass
+
+        self.assertResponse('config reply.whenAddressedBy.strings ^',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: ^; #test @ test: ^')
+        self.assertResponse('config network reply.whenAddressedBy.strings', '^')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertFalse(
+            conf.supybot.reply.whenAddressedBy.strings.get(':test')._wasSet)
+
+        # Child changes, parent keeps its value
+        self.assertResponse('config network reply.whenAddressedBy.strings $',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: ^; #test @ test: $')
+        self.assertResponse('config network reply.whenAddressedBy.strings', '$')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings.get(':test')._wasSet)
+
+        # Reset child
+        self.assertResponse('config reset network reply.whenAddressedBy.strings',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: ^; #test @ test: ^')
+        self.assertResponse('config network reply.whenAddressedBy.strings', '^')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertFalse(
+            conf.supybot.reply.whenAddressedBy.strings.get(':test')._wasSet)
+
+        # Parent changes, child follows
+        self.assertResponse('config reply.whenAddressedBy.strings .',
+            'The operation succeeded.')
+        self.assertResponse('config reply.whenAddressedBy.strings',
+            'Global: .; #test @ test: .')
+        self.assertResponse('config network reply.whenAddressedBy.strings', '.')
+        self.assertTrue(
+            conf.supybot.reply.whenAddressedBy.strings._wasSet)
+        self.assertFalse(
+            conf.supybot.reply.whenAddressedBy.strings.get(':test')._wasSet)
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
