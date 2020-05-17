@@ -65,6 +65,7 @@ class SeenDB(plugins.ChannelUserDB):
 
     def update(self, channel, nickOrId, saying):
         seen = time.time()
+        channel = sys.intern(channel)
         self[channel, nickOrId] = (seen, saying)
         self[channel, '<last>'] = (seen, saying)
 

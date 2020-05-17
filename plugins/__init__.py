@@ -31,6 +31,7 @@
 import gc
 import os
 import csv
+import sys
 import time
 import codecs
 import string
@@ -188,6 +189,7 @@ class ChannelUserDictionary(collections.abc.MutableMapping):
 
     def __setitem__(self, key, v):
         (channel, id) = key
+        channel = sys.intern(channel)
         if channel not in self.channels:
             self.channels[channel] = self.IdDict()
         self.channels[channel][id] = v
@@ -242,6 +244,7 @@ class ChannelUserDB(ChannelUserDictionary):
                     except ValueError:
                         # We'll skip over this so, say, nicks can be kept here.
                         pass
+                    channel = sys.intern(channel)
                     v = self.deserialize(channel, id, t)
                     self[channel, id] = v
                 except Exception as e:
