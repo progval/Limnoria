@@ -474,7 +474,12 @@ class Config(callbacks.Plugin):
         irc.replySuccess()
     setdefault = wrap(setdefault, ['settableConfigVar'])
 
-    class reset(callbacks.Commands):
+    class reset_(callbacks.Commands):
+        # to prevent conflict with the reset() command of callbacks, this class
+        # is renamed 'reset_'
+        def name(self):
+            return 'reset'
+
         @internationalizeDocstring
         def channel(self, irc, msg, args, network, channel, group):
             """[<network>] [<channel>] <name>
