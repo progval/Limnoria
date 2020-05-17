@@ -1208,7 +1208,10 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.fastqueue.reset()
         self.startedSync.clear()
         for callback in self.callbacks:
-            callback.reset()
+            try:
+                callback.reset()
+            except Exception:
+                log.exception('Uncaught exception in %r.reset()', callback)
         self._queueConnectMessages()
 
     def _setNonResettingVariables(self):
