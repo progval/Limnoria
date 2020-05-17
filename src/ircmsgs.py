@@ -36,6 +36,7 @@ object (which, as you'll read later, is quite...full-featured :))
 """
 
 import re
+import sys
 import time
 import base64
 import datetime
@@ -81,7 +82,7 @@ def parse_server_tags(s):
     server_tags = {}
     for tag in s.split(';'):
         if '=' not in tag:
-            server_tags[tag] = None
+            server_tags[sys.intern(tag)] = None
         else:
             (key, value) = tag.split('=', 1)
             value = unescape_server_tag_value(value)
@@ -89,7 +90,7 @@ def parse_server_tags(s):
                 # "Implementations MUST interpret empty tag values (e.g. foo=)
                 # as equivalent to missing tag values (e.g. foo)."
                 value = None
-            server_tags[key] = value
+            server_tags[sys.intern(key)] = value
     return server_tags
 def format_server_tags(server_tags):
     parts = []
@@ -212,6 +213,8 @@ class IrcMsg(object):
                     self.server_tags = {}
                 else:
                     self.server_tags = server_tags
+        self.prefix = sys.intern(self.prefix)
+        self.command = sys.intern(self.command)
         self.args = tuple(self.args)
         if isUserHostmask(self.prefix):
             (self.nick,self.user,self.host)=ircutils.splitHostmask(self.prefix)
