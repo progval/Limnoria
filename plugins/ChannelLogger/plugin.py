@@ -186,7 +186,9 @@ class ChannelLogger(callbacks.Plugin):
                 except KeyError:
                     logChannelMessages = True
                 nick = msg.nick or irc.nick
-                if msg.tagged('ChannelLogger__relayed'):
+                rewriteRelayed = self.registryValue('rewriteRelayed',
+                                                    channel, irc.network)
+                if rewriteRelayed and msg.tagged('ChannelLogger__relayed'):
                     (nick, text) = text.split(' ', 1)
                     nick = nick[1:-1]
                     msg.args = (recipients, text)

@@ -72,6 +72,10 @@ conf.registerChannelValue(ChannelLogger, 'filenameTimestamp',
     for the timestamp are in the time.strftime docs at python.org.  In order
     for your logs to be rotated, you'll also have to enable
     supybot.plugins.ChannelLogger.rotateLogs.""")))
+conf.registerChannelValue(ChannelLogger, 'rewriteRelayed',
+    registry.Boolean(False, _("""Determines whether the bot will rewrite
+    outgoing relayed messages (eg. from the Relay plugin) to use the original
+    nick instead of the bot's nick.""")))
 
 conf.registerGlobalValue(ChannelLogger, 'directories',
     registry.Boolean(True, _("""Determines whether the bot will partition its
