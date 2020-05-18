@@ -1682,8 +1682,6 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             self._requestCaps(common_supported_unrequested_capabilities)
 
     def _requestCaps(self, caps):
-        self.state.capabilities_req |= caps
-
         caps = list(sorted(caps))
         cap_lines = []
         if 'echo-message' in caps \
@@ -1701,6 +1699,9 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 # This makes sure they are always on the same line (which
                 # happens to be the first):
                 caps = ['echo-message', 'labeled-response'] + caps
+
+        self.state.capabilities_req |= set(caps)
+
         caps = ' '.join(caps)
         # textwrap works here because in ASCII, all chars are 1 bytes:
         cap_lines = textwrap.wrap(

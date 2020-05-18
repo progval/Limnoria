@@ -522,6 +522,13 @@ class IrcCapsTestCase(SupyTestCase):
         m = self.irc.takeMsg()
         self.assertIsNone(m)
 
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+            args=('*', 'ACK', 'account-notify')))
+
+        m = self.irc.takeMsg()
+        self.assertTrue(m.command == 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args, ('END',), m)
+
     def testEchomessageLabeledresponseGrouped(self):
         self.irc = irclib.Irc('test')
 
