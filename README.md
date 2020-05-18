@@ -13,7 +13,7 @@ Master branch: [![Build Status (master branch)](https://travis-ci.org/ProgVal/Li
 
 Testing branch: [![Build Status (testing branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=testing)](https://travis-ci.org/ProgVal/Limnoria)
 
-Limnoria supports CPython 3.4, 3.5, 3.6, 3.7, nightly;
+Limnoria supports CPython 3.4, 3.5, 3.6, 3.7, 3.8, nightly;
 and Pypy 3.
 
 # Support
