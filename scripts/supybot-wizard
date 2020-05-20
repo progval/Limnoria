@@ -634,14 +634,14 @@ def main():
                 if yn('Do you want to remove its owner capability?',
                       default=False):
                     u.removeCapability('owner')
-                    ircdb.users.setUser(id, u)
+                    ircdb.users.setUser(u)
             else:
                 output("""That user already exists, but doesn't have owner
                 capabilities.""")
                 if yn('Do you want to add to it owner capabilities?',
                       default=False):
                     u.addCapability('owner')
-                    ircdb.users.setUser(id, u)
+                    ircdb.users.setUser(u)
         except KeyError:
             password = getpass('What should the owner\'s password be?')
             u = ircdb.users.newUser()
