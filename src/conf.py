@@ -988,8 +988,10 @@ registerGlobalValue(supybot.directories, 'plugins',
     [config supybot.directories.plugins], newPluginDirectory'.""")))
 
 registerGlobalValue(supybot, 'plugins',
-    registry.SpaceSeparatedSetOfStrings([], _("""Determines what plugins will
-    be loaded."""), orderAlphabetically=True))
+    registry.SpaceSeparatedSetOfStrings([], _("""List of all plugins that were
+    ever loaded. Currently has no effect whatsoever. You probably want to use
+    the 'load' or 'unload' commands, or edit supybot.plugins.<pluginname>
+    instead of this."""), orderAlphabetically=True))
 registerGlobalValue(supybot.plugins, 'alwaysLoadImportant',
     registry.Boolean(True, _("""Determines whether the bot will always load
     important plugins (Admin, Channel, Config, Misc, Owner, and User)
