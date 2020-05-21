@@ -340,6 +340,65 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(callbacks.tokenize('bar [baz]'), ['bar', ['baz']])
 
 
+class ReplySplitTestCase(PluginTestCase):
+    plugins = ()
+    class LargeMessage(callbacks.Plugin):
+        def largenotice(self, irc, msg, args):
+            irc.reply('abc '*400)
+        def largeprivmsg(self, irc, msg, args):
+            irc.reply('abc '*400, notice=False)
+
+    class LargeError(callbacks.Plugin):
+        def largeerror(self, irc, msg, args):
+            irc.error('abc '*400)
+
+    def testLargePrivmsg(self):
+        self.irc.addCallback(self.LargeMessage(self.irc))
+        with conf.supybot.reply.withNoticeWhenPrivate.context(False):
+            self.feedMsg('@largeprivmsg')
+            m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'PRIVMSG')
+        self.assertEqual(m.args[0], self.nick)
+        self.assertEqual(m.args[1], 'abc '*112 + ' \x02(3 more messages)\x02')
+
+    def testLargeNotice(self):
+        self.irc.addCallback(self.LargeMessage(self.irc))
+        self.feedMsg('@largenotice')
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'NOTICE')
+        self.assertEqual(m.args[0], self.nick)
+        self.assertEqual(m.args[1], 'abc '*113 + '\x02(3 more messages)\x02')
+
+
+class ChannelReplySplitTestCase(ChannelPluginTestCase):
+    plugins = ()
+    class LargeMessage(callbacks.Plugin):
+        def largenotice(self, irc, msg, args):
+            irc.reply('abc '*400, notice=True)
+        def largeprivmsg(self, irc, msg, args):
+            irc.reply('abc '*400)
+
+    class LargeError(callbacks.Plugin):
+        def largeerror(self, irc, msg, args):
+            irc.error('abc '*400)
+
+    def testLargePrivmsg(self):
+        self.irc.addCallback(self.LargeMessage(self.irc))
+        self.feedMsg('@largeprivmsg')
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'PRIVMSG')
+        self.assertEqual(m.args[0], self.channel)
+        self.assertEqual(m.args[1], self.nick + ': ' + 'abc '*111 + '\x02(3 more messages)\x02')
+
+    def testLargeNotice(self):
+        self.irc.addCallback(self.LargeMessage(self.irc))
+        self.feedMsg('@largenotice')
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'NOTICE')
+        self.assertEqual(m.args[0], self.channel)
+        self.assertEqual(m.args[1], self.nick + ': ' + 'abc '*111 + ' \x02(3 more messages)\x02')
+
+
 class AmbiguityTestCase(PluginTestCase):
     plugins = ('Misc',) # Something so it doesn't complain.
     class Foo(callbacks.Plugin):

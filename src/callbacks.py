@@ -172,10 +172,11 @@ def reply(*args, **kwargs):
                   DeprecationWarning)
     return _makeReply(dynamic.irc, *args, **kwargs)
 
-def _makeReply(irc, msg, s,
-              prefixNick=None, private=None,
-              notice=None, to=None, action=None, error=False,
-              stripCtcp=True):
+def _prepareReply(irc, msg,
+                 prefixNick=None, private=None,
+                 notice=None, to=None, action=None, error=False,
+                 stripCtcp=True):
+    prefix = ''
     msg.tag('repliedTo')
     # Ok, let's make the target:
     # XXX This isn't entirely right.  Consider to=#foo, private=True.
@@ -202,7 +203,7 @@ def _makeReply(irc, msg, s,
             channel=channel, network=irc.network) or notice
         private=conf.get(conf.supybot.reply.error.inPrivate,
             channel=channel, network=irc.network) or private
-        s = _('Error: ') + s
+        prefix = _('Error: ') + prefix
     if private:
         prefixNick = False
         if to is None:
@@ -213,16 +214,10 @@ def _makeReply(irc, msg, s,
         prefixNick = False
     if to is None:
         to = msg.nick
-    if stripCtcp:
-        s = s.strip('\x01')
-    # Ok, now let's make the payload:
-    s = ircutils.safeArgument(s)
-    if not s and not action:
-        s = _('Error: I tried to send you an empty message.')
     if prefixNick and isPublic(target):
         # Let's may sure we don't do, "#channel: foo.".
         if not isPublic(to):
-            s = '%s: %s' % (to, s)
+            prefix = '%s: %s' % (to, prefix)
     if not isPublic(target):
         if conf.supybot.reply.withNoticeWhenPrivate():
             notice = True
@@ -233,18 +228,64 @@ def _makeReply(irc, msg, s,
     # We don't use elif here because actions can't be sent as NOTICEs.
     if action:
         msgmaker = ircmsgs.action
-    # Finally, we'll return the actual message.
-    ret = msgmaker(target, s)
-    ret.tag('inReplyTo', msg)
-    if 'msgid' in msg.server_tags \
-            and conf.supybot.protocols.irc.experimentalExtensions() \
-            and 'message-tags' in irc.state.capabilities_ack:
-        # In theory, msgid being in server_tags implies message-tags was
-        # negotiated, but the +reply spec requires it explicitly. Plus, there's
-        # no harm in doing this extra check, in case a plugin is replying
-        # across network (as it may happen with '@network command').
-        ret.server_tags['+draft/reply'] = msg.server_tags['msgid']
-    return ret
+
+    def replyMaker(s):
+        if stripCtcp:
+            s = s.strip('\x01')
+
+        # Ok, now let's make the payload:
+        s = ircutils.safeArgument(s)
+        if not s and not action:
+            if error:
+                # There is already an 'Error: ' prefix, don't duplicate it.
+                s = _('I tried to send you an empty message.')
+            else:
+                s = _('Error: I tried to send you an empty message.')
+
+        s = prefix + s
+
+        # Finally, we'll return the actual message.
+        ret = msgmaker(target, s)
+        ret.tag('inReplyTo', msg)
+        if 'msgid' in msg.server_tags \
+                and conf.supybot.protocols.irc.experimentalExtensions() \
+                and 'message-tags' in irc.state.capabilities_ack:
+            # In theory, msgid being in server_tags implies message-tags was
+            # negotiated, but the +reply spec requires it explicitly. Plus, there's
+            # no harm in doing this extra check, in case a plugin is replying
+            # across network (as it may happen with '@network command').
+            ret.server_tags['+draft/reply'] = msg.server_tags['msgid']
+
+        return ret
+
+    overheadLength = (
+        len(':')
+        + len(irc.prefix)
+        + len(' ')
+        # command here
+        + len(' ')
+        + len(target)
+        + len(' :')
+        # payload here
+        + len('\r\n')
+    )
+
+    if msgmaker is ircmsgs.privmsg:
+        overheadLength += len('PRIVMSG')
+    elif msgmaker is ircmsgs.notice:
+        overheadLength += len('NOTICE')
+    elif msgmaker is ircmsgs.action:
+        overheadLength += len('PRIVMSG') + len('\x01ACTION ') + len('\x01')
+    else:
+        assert False, 'unexpected msgmaker: %r' % (msgmaker,)
+
+    prefixLength = len(prefix)
+
+    return (replyMaker, overheadLength, prefixLength)
+
+def _makeReply(irc, msg, s, **kwargs):
+    (replyMaker, _, _) = _prepareReply(irc, msg, **kwargs)
+    return replyMaker(s)
 
 def error(*args, **kwargs):
     warnings.warn('callbacks.error is deprecated. Use irc.error instead.',
@@ -942,19 +983,15 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     sendMsg(m)
                     return m
                 else:
+                    (replyMaker, overheadLength, prefixLength) = \
+                        _prepareReply(self, msg, **replyArgs)
+
                     s = ircutils.safeArgument(s)
                     allowedLength = conf.get(conf.supybot.reply.mores.length,
                         channel=target, network=self.irc.network)
                     if not allowedLength: # 0 indicates this.
-                        allowedLength = (512
-                                - len(':') - len(self.irc.prefix)
-                                - len(' PRIVMSG ')
-                                - len(target)
-                                - len(' :')
-                                - len('\r\n')
-                                )
-                        if self.prefixNick:
-                            allowedLength -= len(msg.nick) + len(': ')
+                        allowedLength = 512 - overheadLength
+                    allowedLength -= prefixLength
                     maximumMores = conf.get(conf.supybot.reply.mores.maximum,
                         channel=target, network=self.irc.network)
                     maximumLength = allowedLength * maximumMores
@@ -970,7 +1007,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         # action implies noLengthCheck, which has already been
                         # handled.  Let's stick an assert in here just in case.
                         assert not self.action
-                        m = _makeReply(self, msg, s, **replyArgs)
+                        m = replyMaker(s)
                         sendMsg(m)
                         return m
                     # The '(XX more messages)' may have not the same
@@ -993,7 +1030,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                                 more = _('more messages')
                             n = ircutils.bold('(%i %s)' % (len(msgs), more))
                             chunk = '%s %s' % (chunk, n)
-                        msgs.append(_makeReply(self, msg, chunk, **replyArgs))
+                        msgs.append(replyMaker(chunk))
 
                     instant = conf.get(conf.supybot.reply.mores.instant,
                         channel=target, network=self.irc.network)
