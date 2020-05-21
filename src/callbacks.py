@@ -281,11 +281,56 @@ def _prepareReply(irc, msg,
 
     prefixLength = len(prefix)
 
-    return (replyMaker, overheadLength, prefixLength)
+    return (replyMaker, target, overheadLength, prefixLength)
 
 def _makeReply(irc, msg, s, **kwargs):
-    (replyMaker, _, _) = _prepareReply(irc, msg, **kwargs)
+    (replyMaker, _, _, _) = _prepareReply(irc, msg, **kwargs)
     return replyMaker(s)
+
+
+def _splitReply(s, *, irc, target, replyMaker, overheadLength, prefixLength):
+    allowedLength = conf.get(conf.supybot.reply.mores.length,
+        channel=target, network=irc.network)
+    if not allowedLength: # 0 indicates this.
+        allowedLength = 512 - overheadLength
+    allowedLength -= prefixLength
+    maximumMores = conf.get(conf.supybot.reply.mores.maximum,
+        channel=target, network=irc.network)
+    maximumLength = allowedLength * maximumMores
+    if len(s) > maximumLength:
+        log.warning('Truncating to %s bytes from %s bytes.',
+                    maximumLength, len(s))
+        s = s[:maximumLength]
+    s_size = len(s.encode()) if minisix.PY3 else len(s)
+    if s_size <= allowedLength or \
+       not conf.get(conf.supybot.reply.mores,
+            channel=target, network=irc.network):
+        return [replyMaker(s)]
+
+    # The '(XX more messages)' may have not the same
+    # length in the current locale
+    allowedLength -= len(_('(XX more messages)')) + 1 # bold
+    chunks = ircutils.wrap(s, allowedLength)
+
+    # Last messages to display at the beginning of the list
+    # (which is used like a stack)
+    chunks.reverse()
+
+    msgs = []
+    for (i, chunk) in enumerate(chunks):
+        if i == 0:
+            pass # last message, no suffix to add
+        else:
+            if i == 1:
+                more = _('more message')
+            else:
+                more = _('more messages')
+            n = ircutils.bold('(%i %s)' % (len(msgs), more))
+            chunk = '%s %s' % (chunk, n)
+        msgs.append(replyMaker(chunk))
+
+    return msgs
+
 
 def error(*args, **kwargs):
     warnings.warn('callbacks.error is deprecated. Use irc.error instead.',
@@ -983,54 +1028,18 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     sendMsg(m)
                     return m
                 else:
-                    (replyMaker, overheadLength, prefixLength) = \
+                    (replyMaker, target, overheadLength, prefixLength) = \
                         _prepareReply(self, msg, **replyArgs)
 
                     s = ircutils.safeArgument(s)
-                    allowedLength = conf.get(conf.supybot.reply.mores.length,
-                        channel=target, network=self.irc.network)
-                    if not allowedLength: # 0 indicates this.
-                        allowedLength = 512 - overheadLength
-                    allowedLength -= prefixLength
-                    maximumMores = conf.get(conf.supybot.reply.mores.maximum,
-                        channel=target, network=self.irc.network)
-                    maximumLength = allowedLength * maximumMores
-                    if len(s) > maximumLength:
-                        log.warning('Truncating to %s bytes from %s bytes.',
-                                    maximumLength, len(s))
-                        s = s[:maximumLength]
-                    s_size = len(s.encode()) if minisix.PY3 else len(s)
-                    if s_size <= allowedLength or \
-                       not conf.get(conf.supybot.reply.mores,
-                            channel=target, network=self.irc.network):
-                        # There's no need for action=self.action here because
-                        # action implies noLengthCheck, which has already been
-                        # handled.  Let's stick an assert in here just in case.
-                        assert not self.action
-                        m = replyMaker(s)
-                        sendMsg(m)
-                        return m
-                    # The '(XX more messages)' may have not the same
-                    # length in the current locale
-                    allowedLength -= len(_('(XX more messages)')) + 1 # bold
-                    chunks = ircutils.wrap(s, allowedLength)
-
-                    # Last messages to display at the beginning of the list
-                    # (which is used like a stack)
-                    chunks.reverse()
-
-                    msgs = []
-                    for (i, chunk) in enumerate(chunks):
-                        if i == 0:
-                            pass # last message, no suffix to add
-                        else:
-                            if i == 1:
-                                more = _('more message')
-                            else:
-                                more = _('more messages')
-                            n = ircutils.bold('(%i %s)' % (len(msgs), more))
-                            chunk = '%s %s' % (chunk, n)
-                        msgs.append(replyMaker(chunk))
+                    msgs = _splitReply(
+                        s,
+                        irc=self.irc,
+                        target=target,
+                        replyMaker=replyMaker,
+                        overheadLength=overheadLength,
+                        prefixLength=prefixLength,
+                    )
 
                     instant = conf.get(conf.supybot.reply.mores.instant,
                         channel=target, network=self.irc.network)
