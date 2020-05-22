@@ -39,19 +39,19 @@ import supybot.world as world
 # in here if you're keeping the plugin in CVS or some similar system.
 __version__ = ""
 
-__author__ = getattr(supybot.authors, 'jlu',
-                     supybot.Author('James Lu', 'GLolol', 'james@overdrivenetworks.com'))
+__author__ = supybot.authors.jlu
+__maintainer__ = supybot.authors.limnoria_core
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
 __contributors__ = {}
 
 # This is a url where the most recent plugin package can be downloaded.
-__url__ = 'https://github.com/jlu5/SupyPlugins/'
+__url__ = 'https://github.com/ProgVal/Limnoria/tree/testing/plugins/DDG'
 
 from . import config
 from . import plugin
-from imp import reload
+from importlib import reload
 # In case we're being reloaded.
 reload(config)
 reload(plugin)
