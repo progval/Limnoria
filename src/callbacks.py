@@ -737,9 +737,9 @@ class ReplyIrcProxy(RichReplyMethods):
         if msg is None:
             msg = self.msg
         if s:
-            m = _makeErrorReply(self, msg, s, **kwargs)
-            self.irc.queueMsg(m)
-            return m
+            msg.tag('isError')
+            kwargs['error'] = True
+            return self._replyFinal(msg, s, **kwargs)
 
     def reply(self, s, msg=None, **kwargs):
         if msg is None:
@@ -1131,9 +1131,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         if not isinstance(self.irc, irclib.Irc):
             return self.irc.error(s, **kwargs)
         elif s:
-            m = _makeErrorReply(self, self.msg, s, **kwargs)
-            self.irc.queueMsg(m)
-            return m
+            return super(NestedCommandsIrcProxy, self).error(s, self.msg, **kwargs)
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)

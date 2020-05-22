@@ -347,8 +347,6 @@ class ReplySplitTestCase(PluginTestCase):
             irc.reply('abc '*400)
         def largeprivmsg(self, irc, msg, args):
             irc.reply('abc '*400, notice=False)
-
-    class LargeError(callbacks.Plugin):
         def largeerror(self, irc, msg, args):
             irc.error('abc '*400)
 
@@ -369,6 +367,14 @@ class ReplySplitTestCase(PluginTestCase):
         self.assertEqual(m.args[0], self.nick)
         self.assertEqual(m.args[1], 'abc '*113 + '\x02(3 more messages)\x02')
 
+    def testLargeError(self):
+        self.irc.addCallback(self.LargeMessage(self.irc))
+        self.feedMsg('@largeerror')
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'NOTICE')
+        self.assertEqual(m.args[0], self.nick)
+        self.assertEqual(m.args[1], 'Error: ' + 'abc '*111 + ' \x02(3 more messages)\x02')
+
 
 class ChannelReplySplitTestCase(ChannelPluginTestCase):
     plugins = ()
@@ -377,6 +383,8 @@ class ChannelReplySplitTestCase(ChannelPluginTestCase):
             irc.reply('abc '*400, notice=True)
         def largeprivmsg(self, irc, msg, args):
             irc.reply('abc '*400)
+        def largeerror(self, irc, msg, args):
+            irc.error('abc '*400)
 
     class LargeError(callbacks.Plugin):
         def largeerror(self, irc, msg, args):
@@ -397,6 +405,14 @@ class ChannelReplySplitTestCase(ChannelPluginTestCase):
         self.assertEqual(m.command, 'NOTICE')
         self.assertEqual(m.args[0], self.channel)
         self.assertEqual(m.args[1], self.nick + ': ' + 'abc '*111 + ' \x02(3 more messages)\x02')
+
+    def testLargeError(self):
+        self.irc.addCallback(self.LargeMessage(self.irc))
+        self.feedMsg('@largeerror')
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'PRIVMSG')
+        self.assertEqual(m.args[0], self.channel)
+        self.assertEqual(m.args[1], self.nick + ': Error: ' + 'abc '*109 + ' \x02(3 more messages)\x02')
 
 
 class AmbiguityTestCase(PluginTestCase):
