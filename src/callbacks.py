@@ -281,10 +281,10 @@ def _prepareReply(irc, msg,
 
     prefixLength = len(prefix)
 
-    return (replyMaker, target, to, overheadLength, prefixLength)
+    return (replyMaker, target, to, private, overheadLength, prefixLength)
 
 def _makeReply(irc, msg, s, **kwargs):
-    (replyMaker, _, _, _, _) = _prepareReply(irc, msg, **kwargs)
+    (replyMaker, _, _, _, _, _) = _prepareReply(irc, msg, **kwargs)
     return replyMaker(s)
 
 
@@ -695,6 +695,8 @@ class ReplyIrcProxy(RichReplyMethods):
     """This class is a thin wrapper around an irclib.Irc object that gives it
     the reply() and error() methods (as well as everything in RichReplyMethods,
     based on those two)."""
+    _mores = ircutils.IrcDict()
+
     def __init__(self, irc, msg):
         self.irc = irc
         self.msg = msg
@@ -734,18 +736,63 @@ class ReplyIrcProxy(RichReplyMethods):
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
         kwargs.pop('noLengthCheck', None)
-        m = _makeReply(self, msg, s, **kwargs)
-        self.irc.queueMsg(m)
-        return m
+        return self._replyFinal(msg, s, **kwargs)
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
+
+    def _replyFinal(self, msg, s, sendImmediately=False, **kwargs):
+        if sendImmediately:
+            sendMsg = self.irc.sendMsg
+        else:
+            sendMsg = self.irc.queueMsg
+
+        (replyMaker, target, to, private, overheadLength, prefixLength) = \
+            _prepareReply(self, msg, **kwargs)
+
+        s = ircutils.safeArgument(s)
+        msgs = _splitReply(
+            s,
+            irc=self.irc,
+            target=target,
+            replyMaker=replyMaker,
+            overheadLength=overheadLength,
+            prefixLength=prefixLength,
+        )
+
+        instant = conf.get(conf.supybot.reply.mores.instant,
+            channel=target, network=self.irc.network)
+        while instant > 1 and msgs:
+            instant -= 1
+            response = msgs.pop()
+            sendMsg(response)
+            # XXX We should somehow allow these to be returned, but
+            #     until someone complains, we'll be fine :)  We
+            #     can't return from here, though, for obvious
+            #     reasons.
+            # return m
+        if not msgs:
+            return
+        response = msgs.pop()
+        prefix = msg.prefix
+        if to and ircutils.isNick(to):
+            try:
+                state = self.getRealIrc().state
+                prefix = state.nickToHostmask(to)
+            except KeyError:
+                pass # We'll leave it as it is.
+        mask = prefix.split('!', 1)[1]
+        self._mores[mask] = msgs
+        public = bool(self.msg.channel)
+        private = private or not public
+        self._mores[msg.nick] = (private, msgs)
+        sendMsg(response)
+        return response
 
 SimpleProxy = ReplyIrcProxy # Backwards-compatibility
 
 class NestedCommandsIrcProxy(ReplyIrcProxy):
     "A proxy object to allow proper nesting of commands (even threaded ones)."
-    _mores = ircutils.IrcDict()
     def __init__(self, irc, msg, args, nested=0):
         assert isinstance(args, list), 'Args should be a list, not a string.'
         super(NestedCommandsIrcProxy, self).__init__(irc, msg)
@@ -1028,47 +1075,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     sendMsg(m)
                     return m
                 else:
-                    (replyMaker, target, to, overheadLength, prefixLength) = \
-                        _prepareReply(self, msg, **replyArgs)
-
-                    s = ircutils.safeArgument(s)
-                    msgs = _splitReply(
-                        s,
-                        irc=self.irc,
-                        target=target,
-                        replyMaker=replyMaker,
-                        overheadLength=overheadLength,
-                        prefixLength=prefixLength,
-                    )
-
-                    instant = conf.get(conf.supybot.reply.mores.instant,
-                        channel=target, network=self.irc.network)
-                    while instant > 1 and msgs:
-                        instant -= 1
-                        response = msgs.pop()
-                        sendMsg(response)
-                        # XXX We should somehow allow these to be returned, but
-                        #     until someone complains, we'll be fine :)  We
-                        #     can't return from here, though, for obvious
-                        #     reasons.
-                        # return m
-                    if not msgs:
-                        return
-                    response = msgs.pop()
-                    prefix = msg.prefix
-                    if to and ircutils.isNick(to):
-                        try:
-                            state = self.getRealIrc().state
-                            prefix = state.nickToHostmask(to)
-                        except KeyError:
-                            pass # We'll leave it as it is.
-                    mask = prefix.split('!', 1)[1]
-                    self._mores[mask] = msgs
-                    public = bool(self.msg.channel)
-                    private = self.private or not public
-                    self._mores[msg.nick] = (private, msgs)
-                    sendMsg(response)
-                    return response
+                    # Format and split the reply, add to self._mores
+                    self._replyFinal(msg, s, **replyArgs)
             finally:
                 self._resetReplyAttributes()
         else:

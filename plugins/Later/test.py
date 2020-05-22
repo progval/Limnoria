@@ -137,6 +137,17 @@ class LaterTestCase(ChannelPluginTestCase):
             m = self.getMsg(' ')
         self.assertEqual(str(m).strip(),
                 'PRIVMSG #test :foo: Sent just now: <%s> stuff' % self.prefix)
+
+    def testLargeMessage(self):
+        self.assertNotError('later tell foo ' + ' stuff'*100)
+        self.assertRegexp('later notes', 'foo')
+        testPrefix = 'foo!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.channel, 'something',
+                                         prefix=testPrefix))
+        m = self.getMsg(' ')
+        self.assertEqual(str(m).strip(),
+                'PRIVMSG #test :foo: Sent just now: <test> '
+                + 'stuff ' * 70 + ' \x02(1 more message)\x02')
  
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
