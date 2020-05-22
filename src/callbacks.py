@@ -281,10 +281,10 @@ def _prepareReply(irc, msg,
 
     prefixLength = len(prefix)
 
-    return (replyMaker, target, overheadLength, prefixLength)
+    return (replyMaker, target, to, overheadLength, prefixLength)
 
 def _makeReply(irc, msg, s, **kwargs):
-    (replyMaker, _, _, _) = _prepareReply(irc, msg, **kwargs)
+    (replyMaker, _, _, _, _) = _prepareReply(irc, msg, **kwargs)
     return replyMaker(s)
 
 
@@ -1028,7 +1028,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     sendMsg(m)
                     return m
                 else:
-                    (replyMaker, target, overheadLength, prefixLength) = \
+                    (replyMaker, target, to, overheadLength, prefixLength) = \
                         _prepareReply(self, msg, **replyArgs)
 
                     s = ircutils.safeArgument(s)
@@ -1056,10 +1056,10 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         return
                     response = msgs.pop()
                     prefix = msg.prefix
-                    if self.to and ircutils.isNick(self.to):
+                    if to and ircutils.isNick(to):
                         try:
                             state = self.getRealIrc().state
-                            prefix = state.nickToHostmask(self.to)
+                            prefix = state.nickToHostmask(to)
                         except KeyError:
                             pass # We'll leave it as it is.
                     mask = prefix.split('!', 1)[1]
