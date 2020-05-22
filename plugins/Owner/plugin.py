@@ -201,9 +201,7 @@ class Owner(callbacks.Plugin):
                                     utils.str.dqrepr(name))
                             elif "No module named 'config'" in e:
                                 s = ("Failed to load %s: This plugin may be incompatible "
-                                "with your current Python version. If this error is appearing "
-                                "with stock Supybot plugins, remove the stock plugins directory "
-                                "(usually ~/Limnoria/plugins) from 'config directories.plugins'." % name)
+                                     "with your current Python version." % name)
                             else:
                                 s = 'Failed to load %s: import error (%s).' % (name, e)
                             log.warning(s)
