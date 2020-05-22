@@ -41,6 +41,7 @@ import codecs
 import getopt
 import inspect
 import warnings
+import collections
 
 from . import (conf, ircdb, irclib, ircmsgs, ircutils, log, registry,
         utils, world)
@@ -172,6 +173,10 @@ def reply(*args, **kwargs):
                   DeprecationWarning)
     return _makeReply(dynamic.irc, *args, **kwargs)
 
+_prepared_reply = collections.namedtuple(
+    '_prepared_reply',
+    'replyMaker target to private overheadLength prefixLength')
+
 def _prepareReply(irc, msg,
                  prefixNick=None, private=None,
                  notice=None, to=None, action=None, error=False,
@@ -281,11 +286,17 @@ def _prepareReply(irc, msg,
 
     prefixLength = len(prefix)
 
-    return (replyMaker, target, to, private, overheadLength, prefixLength)
+    return _prepared_reply(
+        replyMaker=replyMaker,
+        target=target,
+        to=to,
+        private=private,
+        overheadLength=overheadLength,
+        prefixLength=prefixLength
+    )
 
 def _makeReply(irc, msg, s, **kwargs):
-    (replyMaker, _, _, _, _, _) = _prepareReply(irc, msg, **kwargs)
-    return replyMaker(s)
+    return _prepareReply(irc, msg, **kwargs).replyMaker(s)
 
 
 def _splitReply(s, *, irc, target, replyMaker, overheadLength, prefixLength):
@@ -747,21 +758,20 @@ class ReplyIrcProxy(RichReplyMethods):
         else:
             sendMsg = self.irc.queueMsg
 
-        (replyMaker, target, to, private, overheadLength, prefixLength) = \
-            _prepareReply(self, msg, **kwargs)
+        preparedReply = _prepareReply(self, msg, **kwargs)
 
         s = ircutils.safeArgument(s)
         msgs = _splitReply(
             s,
             irc=self.irc,
-            target=target,
-            replyMaker=replyMaker,
-            overheadLength=overheadLength,
-            prefixLength=prefixLength,
+            target=preparedReply.target,
+            replyMaker=preparedReply.replyMaker,
+            overheadLength=preparedReply.overheadLength,
+            prefixLength=preparedReply.prefixLength,
         )
 
         instant = conf.get(conf.supybot.reply.mores.instant,
-            channel=target, network=self.irc.network)
+            channel=preparedReply.target, network=self.irc.network)
         while instant > 1 and msgs:
             instant -= 1
             response = msgs.pop()
@@ -775,16 +785,16 @@ class ReplyIrcProxy(RichReplyMethods):
             return
         response = msgs.pop()
         prefix = msg.prefix
-        if to and ircutils.isNick(to):
+        if preparedReply.to and ircutils.isNick(preparedReply.to):
             try:
                 state = self.getRealIrc().state
-                prefix = state.nickToHostmask(to)
+                prefix = state.nickToHostmask(preparedReply.to)
             except KeyError:
                 pass # We'll leave it as it is.
         mask = prefix.split('!', 1)[1]
         self._mores[mask] = msgs
         public = bool(self.msg.channel)
-        private = private or not public
+        private = preparedReply.private or not public
         self._mores[msg.nick] = (private, msgs)
         sendMsg(response)
         return response
