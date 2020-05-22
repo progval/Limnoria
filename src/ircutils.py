@@ -691,6 +691,7 @@ def unDccIP(i):
 
 class IrcString(str):
     """This class does case-insensitive comparison and hashing of nicks."""
+    __slots__ = ('lowered',)
     def __new__(cls, s=''):
         x = super(IrcString, cls).__new__(cls, s)
         x.lowered = str(toLower(x))
@@ -711,12 +712,14 @@ class IrcString(str):
 
 class IrcDict(utils.InsensitivePreservingDict):
     """Subclass of dict to make key comparison IRC-case insensitive."""
+    __slots__ = ()
     def key(self, s):
         if s is not None:
             s = toLower(s)
         return s
 
 class CallableValueIrcDict(IrcDict):
+    __slots__ = ()
     def __getitem__(self, k):
         v = super(IrcDict, self).__getitem__(k)
         if callable(v):
@@ -725,6 +728,7 @@ class CallableValueIrcDict(IrcDict):
 
 class IrcSet(utils.NormalizingSet):
     """A sets.Set using IrcStrings instead of regular strings."""
+    __slots__ = ()
     def normalize(self, s):
         return IrcString(s)
 
