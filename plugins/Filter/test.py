@@ -179,5 +179,6 @@ class FilterTest(ChannelPluginTestCase):
     def testUwu(self):
         for _ in range(100):
             self.assertRegexp('uwu foo bar baz', 'foo baw baz( [uoUO]w[uoUO])?')
+        self.assertRegexp('uwu FOO BAR BAZ', 'FOO BAW BAZ( [uoUO]w[uoUO])?')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

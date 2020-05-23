@@ -756,13 +756,13 @@ class Filter(callbacks.Plugin):
     vowelrot = wrap(vowelrot, ['text'])
 
 
-    _uwure = re.compile('[lr]')
+    _uwutrans = utils.str.MultipleReplacer(dict(list(zip('lrLR', 'wwWW'))))
     def uwu(self, irc, msg, args, text):
         """<text>
 
         Returns <text> in uwu-speak.
         """
-        text = self._uwure.sub('w', text)
+        text = self._uwutrans(text)
         text += random.choice([''] * 10 + [' uwu', ' UwU', ' owo', ' OwO'])
         irc.reply(text)
     uwu = wrap(uwu, ['text'])
