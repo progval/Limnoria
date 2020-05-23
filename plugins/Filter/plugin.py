@@ -82,7 +82,7 @@ class Filter(callbacks.Plugin):
     _filterCommands = ['jeffk', 'leet', 'rot13', 'hexlify', 'binary',
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
                        'supa1337', 'stripcolor', 'aol', 'rainbow', 'spellit',
-                       'hebrew', 'undup', 'gnu', 'shrink', 'uniud', 'capwords',
+                       'hebrew', 'undup', 'uwu', 'gnu', 'shrink', 'uniud', 'capwords',
                        'caps', 'vowelrot']
     @internationalizeDocstring
     def outfilter(self, irc, msg, args, channel, command):
@@ -754,6 +754,19 @@ class Filter(callbacks.Plugin):
         text = self._vowelrottrans(text)
         irc.reply(text)
     vowelrot = wrap(vowelrot, ['text'])
+
+
+    _uwure = re.compile('[lr]')
+    def uwu(self, irc, msg, args, text):
+        """<text>
+
+        Returns <text> in uwu-speak.
+        """
+        text = self._uwure.sub('w', text)
+        text += random.choice([''] * 10 + [' uwu', ' UwU', ' owo', ' OwO'])
+        irc.reply(text)
+    uwu = wrap(uwu, ['text'])
+
 Filter = internationalizeDocstring(Filter)
 
 Class = Filter

@@ -173,4 +173,11 @@ class FilterTest(ChannelPluginTestCase):
         self.assertResponse('shrink internationalization, localization',
                             'i18n, l10n')
 
+    def testVowelrot(self):
+        self.assertResponse('vowelrot foo bar baz', 'fuu ber bez')
+
+    def testUwu(self):
+        for _ in range(100):
+            self.assertRegexp('uwu foo bar baz', 'foo baw baz( [uoUO]w[uoUO])?')
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
