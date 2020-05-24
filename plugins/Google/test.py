@@ -57,7 +57,7 @@ class GoogleTestCase(ChannelPluginTestCase):
         def testUrlDecode(self):
             self.assertRegexp(
                     'google site:http://www.urbandictionary.com carajo land',
-                    '\x02Urban Dictionary: carajo land\x02: '
+                    '\x02carajo land - Urban Dictionary\x02: '
                     r'https?://www.urbandictionary.com/define.php\?term=carajo%20land')
 
         def testLucky(self):

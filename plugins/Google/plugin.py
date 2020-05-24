@@ -43,6 +43,8 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Google')
 
+from .parser import GoogleHTMLParser
+
 class Google(callbacks.PluginRegexp):
     """This is a simple plugin to provide access to the Google services we
     all know and love from our favorite IRC bot."""
@@ -75,16 +77,11 @@ class Google(callbacks.PluginRegexp):
             msg = ircmsgs.privmsg(msg.args[0], s, msg=msg)
         return msg
 
-    _decode_re = re.compile(r'<div class="\w+"><a href="/url\?q=(?P<url>[^"]+)&[^"]+"[^>]*><div class="(\w| )+">(?P<title>.*?)</div><div class="(\w| )+">(?P<breadcrumbs>.*?)</div></a></div>(?P<content><div class="(\w| )+">.*?</div></div>)', re.DOTALL | re.MULTILINE)
     @classmethod
     def decode(cls, text):
-        matches = cls._decode_re.finditer(text)
-        results = []
-        for match in matches:
-            r = match.groupdict()
-            r['url'] = utils.web.urlunquote(utils.web.htmlToText(r['url'].split('&amp;')[0]))
-            results.append(r)
-        return results
+        parser = GoogleHTMLParser()
+        parser.feed(text)
+        return parser.results
 
 
     _gsearchUrl = 'https://www.google.com/search'
@@ -140,9 +137,8 @@ class Google(callbacks.PluginRegexp):
         if max:
             data = data[:max]
         for result in data:
-            title = utils.web.htmlToText(result['title']\
-                                         .encode('utf-8'))
-            url = result['url']
+            title = utils.web.htmlToText(result.title.encode('utf-8'))
+            url = result.link
             if minisix.PY2:
                 url = url.encode('utf-8')
             if title:
@@ -173,9 +169,9 @@ class Google(callbacks.PluginRegexp):
                            {'smallsearch': True})
         data = self.decode(data)
         if data:
-            url = data[0]['url']
+            url = data[0].link
             if 'snippet' in opts:
-                snippet = data[0]['content']
+                snippet = data[0].snippet
                 snippet = " | " + utils.web.htmlToText(snippet, tagReplace='')
             else:
                 snippet = ""
