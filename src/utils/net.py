@@ -36,6 +36,7 @@ import re
 import ssl
 import socket
 import hashlib
+import contextlib
 
 from .web import _ipAddr, _domain
 
@@ -160,19 +161,32 @@ def check_certificate_fingerprint(conn, trusted_fingerprints):
             return
     raise ssl.CertificateError('No matching fingerprint.')
 
+@contextlib.contextmanager
+def _prefix_ssl_error(prefix):
+    try:
+        yield
+    except ssl.SSLError as e:
+        raise ssl.SSLError(
+            e.args[0], '%s failed: %s' % (prefix, e.args[1]), *e.args[2:]) \
+            from None
+
 def ssl_wrap_socket(conn, hostname, logger, certfile=None,
         trusted_fingerprints=None, verify=True, ca_file=None,
         **kwargs):
-    context = ssl.create_default_context(**kwargs)
+    with _prefix_ssl_error('creating SSL context'):
+        context = ssl.create_default_context(**kwargs)
     if trusted_fingerprints or not verify:
         # Do not use Certification Authorities
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
     if ca_file:
-        context.load_verify_locations(cafile=ca_file)
+        with _prefix_ssl_error('loading CA certificate'):
+            context.load_verify_locations(cafile=ca_file)
     if certfile:
-        context.load_cert_chain(certfile)
-    conn = context.wrap_socket(conn, server_hostname=hostname)
+        with _prefix_ssl_error('loading client certfile'):
+            context.load_cert_chain(certfile)
+    with _prefix_ssl_error('establishing TLS connection'):
+        conn = context.wrap_socket(conn, server_hostname=hostname)
     if verify and trusted_fingerprints:
         check_certificate_fingerprint(conn, trusted_fingerprints)
     return conn

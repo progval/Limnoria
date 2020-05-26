@@ -419,7 +419,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 'attack on your connection, or the server\'s certificate is '
                 'not in your trusted fingerprints list.')
                 % (self.irc.network, e.args[0]))
-            raise ssl.SSLError('Aborting because of failed certificate '
+            raise ssl.CertificateError('Aborting because of failed certificate '
                     'verification.')
 
 
