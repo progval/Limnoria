@@ -412,24 +412,13 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     trusted_fingerprints=network_config.ssl.serverFingerprints(),
                     ca_file=network_config.ssl.authorityCertificate(),
                     )
-        except getattr(ssl, 'CertificateError', None) as e:
-            # Default to None for old Python version, which do not have
-            # CertificateError
+        except ssl.CertificateError as e:
             drivers.log.error(('Certificate validation failed when '
                 'connecting to %s: %s\n'
                 'This means either someone is doing a man-in-the-middle '
                 'attack on your connection, or the server\'s certificate is '
                 'not in your trusted fingerprints list.')
                 % (self.irc.network, e.args[0]))
-            raise ssl.SSLError('Aborting because of failed certificate '
-                    'verification.')
-        except ssl.SSLError as e:
-            drivers.log.error(('Certificate validation failed when '
-                'connecting to %s: %s\n'
-                'This means either someone is doing a man-in-the-middle '
-                'attack on your connection, or the server\'s '
-                'certificate is not trusted.')
-                % (self.irc.network, e.args[1]))
             raise ssl.SSLError('Aborting because of failed certificate '
                     'verification.')
 
