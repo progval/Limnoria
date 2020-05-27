@@ -336,7 +336,8 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         }
 
     def getCommandHelp(self, name, simpleSyntax=None):
-        helpTemplate = self.__parent.getCommandHelp(name, simpleSyntax)
+        helpTemplate = string.Template(self.__parent.getCommandHelp(
+            name, simpleSyntax))
         return helpTemplate.substitute(self._typeSubstitutions())
 
     def noSuchRecord(self, irc, channel, id):
