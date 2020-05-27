@@ -325,7 +325,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         self.db.close()
         self.__parent.die()
 
-    def typeSubstitutions(self):
+    def _typeSubstitutions(self):
         """Returns a dict with keys Types/Type/types/type, whose values are
         the plugin name with matching capitalization and plural."""
         return {
@@ -457,7 +457,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
             username=username,
             nick=nick,
             at=utils.str.timestamp(record.at),
-            **self.typeSubstitutions()
+            **self._typeSubstitutions()
         )
 
     def get(self, irc, msg, args, channel, id):
