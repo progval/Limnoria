@@ -75,8 +75,8 @@ class GoogleHTMLParser(HTMLParser):
         if tag in STACKED_TAGS:
             self.stack.append(tag)
 
-        if tag == 'a' and attrs['href'].startswith('/url?q='):
-            assert self.state == ParserState.OUTSIDE, (self.state, self.current_title)
+        if tag == 'a' and attrs['href'].startswith('/url?q=') \
+                and self.state == ParserState.OUTSIDE:
             self.state = ParserState.IN_LINK
             href = attrs['href'][len('/url?q='):]
             self.current_link = utils.web.urlunquote(utils.web.htmlToText(href.split('&sa')[0]))
