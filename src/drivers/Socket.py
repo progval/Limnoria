@@ -326,7 +326,10 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self._instances.append(self)
 
     def setTimeout():
-        self.conn.settimeout(conf.supybot.drivers.poll())
+        try:
+            self.conn.settimeout(conf.supybot.drivers.poll())
+        except Exception:
+            drivers.log.exception('Could not set socket timeout:')
 
     def _checkAndWriteOrReconnect(self):
         self.writeCheckTime = None
