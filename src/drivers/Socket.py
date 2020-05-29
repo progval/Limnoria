@@ -145,6 +145,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
 
     @classmethod
     def _select(cls):
+        timeout = conf.supybot.drivers.poll()
         try:
             if not cls._selecting.acquire(blocking=False):
                 # there's already a thread running this code, abort.
@@ -162,7 +163,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             if not cls._instances:
                 return
             rlist, wlist, xlist = select.select([x.conn for x in cls._instances],
-                    [], [], conf.supybot.drivers.poll())
+                    [], [], timeout)
             for instance in cls._instances:
                 if instance.conn in rlist:
                     instance._read()
