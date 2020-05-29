@@ -105,9 +105,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         return server
 
     def _handleSocketError(self, e):
+        # 'e is None' means the socket was closed.
+        #
         # (11, 'Resource temporarily unavailable') raised if connect
         # hasn't finished yet.  We'll keep track of how many we get.
-        if e.args[0] != 11 or self.eagains > 120:
+        if e is None or e.args[0] != 11 or self.eagains > 120:
             drivers.log.disconnect(self.currentServer, e)
             if self in self._instances:
                 self._instances.remove(self)
@@ -195,7 +197,13 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def _read(self):
         """Called by _select() when we can read data."""
         try:
-            self.inbuffer += self.conn.recv(1024)
+            new_data = self.conn.recv(1024)
+            if not new_data:
+                # Socket was closed
+                self._handleSocketError(None)
+                return
+
+            self.inbuffer += new_data
             self.eagains = 0 # If we successfully recv'ed, we can reset this.
             lines = self.inbuffer.split(b'\n')
             self.inbuffer = lines.pop()
