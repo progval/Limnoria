@@ -307,10 +307,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     '<http://docs.limnoria.net/en/latest/use/faq.html#how-to-make-a-connection-secure>')
                     % self.irc.network)
 
-            def setTimeout():
-                self.conn.settimeout(conf.supybot.drivers.poll())
-            conf.supybot.drivers.poll.addCallback(setTimeout)
-            setTimeout()
+            conf.supybot.drivers.poll.addCallback(self.setTimeout)
+            self.setTimeout()
             self.connected = True
             self.resetDelay()
         except socket.error as e:
@@ -326,6 +324,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 self.scheduleReconnect()
             return
         self._instances.append(self)
+
+    def setTimeout():
+        self.conn.settimeout(conf.supybot.drivers.poll())
 
     def _checkAndWriteOrReconnect(self):
         self.writeCheckTime = None
@@ -353,6 +354,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
     def die(self):
         if self in self._instances:
             self._instances.remove(self)
+        conf.supybot.drivers.poll.removeCallback(self.setTimeout)
         self.zombie = True
         if self.nextReconnectTime is not None:
             self.nextReconnectTime = None
