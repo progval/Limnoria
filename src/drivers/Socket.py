@@ -333,7 +333,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             return
         self._instances.append(self)
 
-    def setTimeout():
+    def setTimeout(self):
         try:
             self.conn.settimeout(conf.supybot.drivers.poll())
         except Exception:
