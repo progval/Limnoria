@@ -189,6 +189,8 @@ class ChannelUserDictionary(collections.abc.MutableMapping):
 
     def __setitem__(self, key, v):
         (channel, id) = key
+        channel = str(channel)  # channel might be an IrcString,
+                                # which is not internalizable
         channel = sys.intern(channel)
         if channel not in self.channels:
             self.channels[channel] = self.IdDict()
