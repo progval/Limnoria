@@ -78,7 +78,7 @@ def _unescape_replacer(m):
 def unescape_server_tag_value(s):
     return _escape_sequence_pattern.sub(_unescape_replacer, s)
 
-def parse_server_tags(s):
+def _parse_server_tags(s):
     server_tags = {}
     for tag in s.split(';'):
         if '=' not in tag:
@@ -92,7 +92,7 @@ def parse_server_tags(s):
                 value = None
             server_tags[sys.intern(key)] = value
     return server_tags
-def format_server_tags(server_tags):
+def _format_server_tags(server_tags):
     parts = []
     for (key, value) in server_tags.items():
         if value is None:
@@ -131,6 +131,76 @@ class IrcMsg(object):
     it to a different source, they could do this:
 
     IrcMsg(prefix='', args=(newSource, otherMsg.args[1]), msg=otherMsg)
+
+    .. attribute:: command
+
+        The IRC command of the message (eg. PRIVMSG, NOTICE, MODE, QUIT, ...).
+        In case of "split" commands (eg. CAP LS), this is only the first part,
+        and the other parts are in `args`.
+
+    .. attribute:: args
+
+        Arguments of the IRC command (including subcommands).
+        For example, for a PRIVMSG,
+        `args = ('#channel', 'content of the message')`.
+
+    .. attribute:: channel
+
+        The name of the channel this message was received on or will be sent
+        to; or None if this is not a channel message (PRIVMSG to a nick, QUIT,
+        etc.)
+
+        `msg.args[0]` was formerly used to get the channel, but it had several
+        pitfalls (such as needing server-specific channel vs nick detection,
+        and needing to strip statusmsg characters).
+
+    .. attribute:: prefix
+
+        `nick!user@host` of the author of the message, or None.
+
+    .. attribute:: nick
+
+        Nickname of the author of the message, or None.
+
+    .. attribute:: user
+
+        Username/ident of the author of the message, or None.
+
+    .. attribute:: host
+
+        Hostname of the author of the message, or None.
+
+    .. attribute:: time
+
+       Float timestamp of the moment the message was sent by the server.
+       If the server does not support `server-time`, this falls back to the
+       value of `time.time()` when the message was received.
+
+    .. attribute:: server_tags
+
+        Dictionary of IRCv3 message tags. `None` values indicate the tag is
+        present but has no value.
+
+        This includes client tags; the name is meant to disambiguate wrt the
+        `tags` attribute, which are tags used internally by Supybot/Limnoria.
+
+    .. attribute:: reply_env
+
+        (Mutable) dictionary of internal key:value pairs, all of which must be
+        strings.
+
+        Several plugins offer string templating, such as the 'echo' command in
+        the Misc plugin; which replace `$variable` with a value.
+
+        Adding values to this dictionary allows access to these values from
+        these commands; this is especially useful when nesting commands.
+
+    .. attribute:: tags
+
+        (Mutable) dictionary of internal key:value pairs on this message.
+
+        This is not to be confused with IRCv3 message tags; these are
+        stored as `server_tags` (including the client tags).
     """
     # It's too useful to be able to tag IrcMsg objects with extra, unforeseen
     # data.  Goodbye, __slots__.
@@ -138,6 +208,7 @@ class IrcMsg(object):
     __slots__ = ('args', 'command', 'host', 'nick', 'prefix', 'user',
                  '_hash', '_str', '_repr', '_len', 'tags', 'reply_env',
                  'server_tags', 'time', 'channel')
+
     def __init__(self, s='', command='', args=(), prefix='', server_tags=None, msg=None,
             reply_env=None):
         assert not (msg and s), 'IrcMsg.__init__ cannot accept both s and msg'
@@ -157,7 +228,7 @@ class IrcMsg(object):
                 self._str = s
                 if s[0] == '@':
                     (server_tags, s) = s.split(' ', 1)
-                    self.server_tags = parse_server_tags(server_tags[1:])
+                    self.server_tags = _parse_server_tags(server_tags[1:])
                 else:
                     self.server_tags = {}
                 if ' :' in s: # Note the space: IPV6 addresses are bad w/o it.
@@ -247,7 +318,7 @@ class IrcMsg(object):
                     s = '%s\r\n' % self.command
 
         if self.server_tags:
-            s = format_server_tags(self.server_tags) + ' ' + s
+            s = _format_server_tags(self.server_tags) + ' ' + s
 
         self._str = s
 
@@ -289,11 +360,14 @@ class IrcMsg(object):
         return (self.__class__, (str(self),))
 
     def tag(self, tag, value=True):
-        """Affect a key:value pair to this message."""
+        """Affect an internal key:value pair to this message.
+
+        This is not to be confused with IRCv3 message tags; these are
+        stored as `server_tags` (including the client tags)."""
         self.tags[tag] = value
 
     def tagged(self, tag):
-        """Get the value affected to a tag."""
+        """Get the value affected to a tag, or None if it is not set.."""
         return self.tags.get(tag) # Returns None if it's not there.
 
     def __getattr__(self, attr):
