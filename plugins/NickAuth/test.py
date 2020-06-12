@@ -29,6 +29,7 @@
 ###
 
 import supybot.ircdb as ircdb
+import supybot.ircutils as ircutils
 from supybot.test import *
 
 class NickAuthTestCase(PluginTestCase):
@@ -79,7 +80,7 @@ class NickAuthTestCase(PluginTestCase):
     def testNoAuth(self):
         self._procedure(False)
 
-    def testJoin(self):
+    def testUserJoin(self):
         self.irc.feedMsg(ircmsgs.IrcMsg('CAP * NEW extended-join'))
         m = self.irc.takeMsg()
         self.assertEqual(m.command, 'CAP')
@@ -103,6 +104,25 @@ class NickAuthTestCase(PluginTestCase):
             'whoami', "I don't recognize you", frm=self.prefix1)
         self.irc.feedMsg(ircmsgs.IrcMsg(
             ':%s JOIN %s baz :Real name' % (self.prefix1, channel)))
+        self.assertResponse('ping', 'pong')
+        self.assertResponse('whoami', 'foobar', frm=self.prefix1)
+
+    def testBotJoin(self):
+        channel = '#test'
+        self.irc.feedMsg(ircmsgs.join(channel, prefix=self.prefix))
+        self.assertEqual(self.irc.takeMsg().command, 'MODE')
+        self.assertEqual(self.irc.takeMsg().command, 'MODE')
+        self.assertEqual(self.irc.takeMsg().command, 'WHO')
+        self.assertEqual(self.irc.takeMsg(), None)
+
+        self._register()
+        self.assertRegexp(
+            'whoami', "I don't recognize you", frm=self.prefix1)
+        (nick, ident, host) = ircutils.splitHostmask(self.prefix1)
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            ':card.freenode.net 354 pgjrgrg 1 %(ident)s 255.255.255.255 '
+            '%(host)s %(nick)s H baz :gecos'
+            % dict(nick=nick, ident=ident, host=host)))
         self.assertResponse('ping', 'pong')
         self.assertResponse('whoami', 'foobar', frm=self.prefix1)
 
