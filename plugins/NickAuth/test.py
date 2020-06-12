@@ -35,13 +35,17 @@ class NickAuthTestCase(PluginTestCase):
     plugins = ('NickAuth', 'User')
 
     prefix1 = 'something!user@host.tld'
-    def _procedure(self, nickserv_reply):
+
+    def _register(self):
         self.assertNotError('register foobar 123')
         self.assertResponse('user list', 'foobar')
         self.assertNotError('hostmask remove foobar %s' % self.prefix)
         self.assertNotError('identify foobar 123')
         self.assertNotError('nick add foobar baz')
         self.assertNotError('unidentify')
+
+    def _procedure(self, nickserv_reply):
+        self._register()
         self.prefix = self.prefix1
         self.assertError('nick add foobar qux')
         self.nick = self.prefix.split('!')[0]
@@ -74,6 +78,33 @@ class NickAuthTestCase(PluginTestCase):
         self._procedure(True)
     def testNoAuth(self):
         self._procedure(False)
+
+    def testJoin(self):
+        self.irc.feedMsg(ircmsgs.IrcMsg('CAP * NEW extended-join'))
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'CAP')
+        self.assertEqual(m.args, ('REQ', 'extended-join'))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg('CAP * ACK extended-join'))
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'CAP')
+        self.assertEqual(m.args, ('END',))
+        self.assertEqual(self.irc.takeMsg(), None)
+
+        channel = '#test'
+        self.irc.feedMsg(ircmsgs.join(channel, prefix=self.prefix))
+        self.assertEqual(self.irc.takeMsg().command, 'MODE')
+        self.assertEqual(self.irc.takeMsg().command, 'MODE')
+        self.assertEqual(self.irc.takeMsg().command, 'WHO')
+        self.assertEqual(self.irc.takeMsg(), None)
+
+        self._register()
+        self.assertRegexp(
+            'whoami', "I don't recognize you", frm=self.prefix1)
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            ':%s JOIN %s baz :Real name' % (self.prefix1, channel)))
+        self.assertResponse('ping', 'pong')
+        self.assertResponse('whoami', 'foobar', frm=self.prefix1)
 
     def testList(self):
         self.assertNotError('register foobar 123')
