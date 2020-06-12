@@ -155,11 +155,11 @@ class NickAuth(callbacks.Plugin):
         return msg
 
     def do330(self, irc, msg):
+        # RPL_WHOISACCOUNT
         mynick, theirnick, theiraccount, garbage = msg.args
-        # I would like to use a dict comprehension, but we have to support
-        # Python 2.6 :(
-        self._requests = dict([(x,y) for x,y in self._requests.items()
-                if y[0]+60>time.time()])
+        now = time.time()
+        self._requests = {
+            x: y for x,y in self._requests.items() if y[0]+60 > now}
         try:
             (timestamp, prefix, irc) = self._requests.pop((irc.network, theirnick))
         except KeyError:
@@ -183,11 +183,9 @@ class NickAuth(callbacks.Plugin):
 
     def doAccount(self, irc, msg):
         account = msg.args[0]
-        user = ircdb.users.getUserFromNick(irc.network, account)
 
         if account != '*':
             self._auth(irc, msg.prefix, account)
-
 
     def doJoin(self, irc, msg):
         if len(msg.args) < 2:
@@ -199,13 +197,13 @@ class NickAuth(callbacks.Plugin):
             self._auth(irc, msg.prefix, account)
 
     def do354(self, irc, msg):
+        # RPL_WHOSPCRPL, ie. WHOX reply
         if len(msg.args) != 9 or msg.args[1] != '1':
             return
 
         # irc.nick 1 user ip host nick status account gecos
         (n, t, ident, ip, host, nick, status, account, gecos) = msg.args
         prefix = '%s!%s@%s' % (nick, ident, host)
-        user = ircdb.users.getUserFromNick(irc.network, account)
 
         if account != '0':
             self._auth(irc, prefix, account)
