@@ -188,8 +188,7 @@ class NickAuth(callbacks.Plugin):
             self._auth(irc, msg.prefix, account)
 
     def doJoin(self, irc, msg):
-        if len(msg.args) < 2:
-            # extended-join is not supported
+        if 'extended-join' not in irc.state.capabilities_ack:
             return
 
         account = msg.args[1]
