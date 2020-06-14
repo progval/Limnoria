@@ -534,9 +534,23 @@ def main():
                   by a comma. For example:
                   #supybot-bots #mychannel,mykey #otherchannel""");
         while True:
-            channels = something('What channels?', default=defaultChannels)
+            channels_input = something('What channels?', default=defaultChannels)
+            channels = []
+            for channel in channels_input.split():
+                L = channel.split(',')
+                if len(L) == 0:
+                    continue
+                elif len(L) == 1:
+                    (channel,) = L
+                    channels.append(channel)
+                elif len(L) == 2:
+                    (channel, key) = L
+                    channels.append(channel)
+                    network.channels.key.get(channel).setValue(key)
+                else:
+                    output("""Too man commas in %s.""" % channel)
             try:
-                network.channels.set(channels)
+                network.channels.set(' '.join(channels))
                 break
             except registry.InvalidRegistryValue as e:
                 output(""""%s" is an invalid IRC channel.  Be sure to prefix
