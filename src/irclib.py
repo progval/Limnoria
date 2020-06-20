@@ -1565,8 +1565,11 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         parsed_policy = ircutils.parseStsPolicy(
             log, policy, parseDuration=secure_connection)
         if parsed_policy is None:
-            # There was an error (and it was logged). Abort the connection.
-            self.driver.reconnect(wait=True)
+            # There was an error (and it was logged). Ignore it and proceed
+            # with the connection.
+            # Currently this shouldn't happen, but let's future-proof it, eg.
+            # in case https://github.com/ircv3/ircv3-specifications/pull/390
+            # gets adopted.
             return
 
         if secure_connection:
