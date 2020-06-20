@@ -119,7 +119,7 @@ class SedRegex(callbacks.PluginRegexp):
         try:
             (pattern, replacement, count, flags) = self._unpack_sed(msg.args[1])
         except Exception as e:
-            self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
+            self.log.warning(_("SedRegex parser error: %s"), e, exc_info=True)
             if self.registryValue('displayErrors', msg.channel, irc.network):
                 irc.error('%s.%s: %s' % (e.__class__.__module__, e.__class__.__name__, e))
             return
@@ -143,6 +143,7 @@ class SedRegex(callbacks.PluginRegexp):
             irc.error(_("Search not found in the last %i messages.") %
                 len(irc.state.history))
         except Exception as e:
+            self.log.warning(_("SedRegex replacer error: %s"), e, exc_info=True)
             if self.registryValue('displayErrors', msg.channel, irc.network):
                 irc.error('%s.%s: %s' % (e.__class__.__module__,
                     e.__class__.__name__, e))
