@@ -129,7 +129,17 @@ def process(f, *args, **kwargs):
     targetArgs = (f, q,) + args
     p = callbacks.CommandProcess(target=newf,
                                 args=targetArgs, kwargs=kwargs)
-    p.start()
+    try:
+        p.start()
+    except OSError as e:
+        log.error(
+            'Failed to start a subprocess because of the following error: %s '
+            'This might be caused by the way Limnoria is demonized / run in '
+            'the background. Instead, try running it as a service '
+            '<https://docs.limnoria.net/use/supybot-botchk.html>, '
+            'use the --daemon option, or run it in screen/tmux.',
+            e)
+        raise
     p.join(timeout)
     if p.is_alive():
         p.terminate()
