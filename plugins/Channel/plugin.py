@@ -81,6 +81,9 @@ class Channel(callbacks.Plugin):
 
     def _sendMsgs(self, irc, nicks, f):
         numModes = irc.state.supported.get('modes', 1)
+        if numModes is None:
+            # No limit enforced by the server, we're setting one ourselves.
+            numModes = 5
         for i in range(0, len(nicks), numModes):
             irc.queueMsg(f(nicks[i:i + numModes]))
         irc.noReply()
