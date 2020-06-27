@@ -87,7 +87,7 @@ _domain = r'%s(?:\.%s)*\.[0-9a-z][-0-9a-z]+' % (_label, _label)
 _urlRe = r'(%s://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % (
         _scheme, _domain, _ipAddr)
 urlRe = re.compile(_urlRe, re.I)
-_httpUrlRe = r'(https?://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\])>\s]*)?)' % \
+_httpUrlRe = r'(https?://(?:\S+@)?(?:%s|%s)(?::\d+)?(?:/[^\]>\s]*)?)' % \
              (_domain, _ipAddr)
 httpUrlRe = re.compile(_httpUrlRe, re.I)
 
