@@ -81,8 +81,7 @@ class GoogleHTMLParser(HTMLParser):
             href = attrs['href'][len('/url?q='):]
             self.current_link = utils.web.urlunquote(href.split('&sa')[0])
 
-        elif tag == 'div' and 'a' in self.stack and 'h3' in self.stack \
-                and self.state == ParserState.IN_LINK:
+        elif tag == 'h3' and 'a' in self.stack and self.state == ParserState.IN_LINK:
             self.state = ParserState.IN_TITLE
             mark = DomMark.HEADING
 
