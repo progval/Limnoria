@@ -32,6 +32,12 @@ import enum
 import collections
 from html.parser import HTMLParser
 
+DEBUG = False
+
+def debug(msg, *args):
+    if DEBUG:
+        print(msg % args)
+
 result = collections.namedtuple('result', 'link title snippet')
 
 @enum.unique
@@ -62,6 +68,7 @@ class DDGHTMLParser(HTMLParser):
         classes = attrs.get('class', '').split()
 
         if tag in STACKED_TAGS:
+            debug('Stacking %s with classes %s', tag, classes)
             self.stack.append((tag, classes))
 
         if ('tr', ['result-sponsored']) in self.stack:
@@ -69,17 +76,20 @@ class DDGHTMLParser(HTMLParser):
             return
 
         if tag == 'a' and 'result-link' in classes:
+            debug('Got result-link')
             assert self.state == ParserState.OUTSIDE, (self.state, self.current_title)
             self.state = ParserState.IN_TITLE
             self.current_link = attrs['href']
             self.current_title = []
 
         elif tag == 'td' and 'result-snippet' in classes:
+            debug('Got result-snipper')
             assert self.state == ParserState.TITLE_PARSED, self.state
             self.state = ParserState.IN_SNIPPET
             self.current_snippet = []
 
         elif tag == 'span' and 'link-text' in classes:
+            debug('Got link-text')
             if self.state == ParserState.TITLE_PARSED:
                 # No snippet
                 self.state = ParserState.OUTSIDE
@@ -91,23 +101,29 @@ class DDGHTMLParser(HTMLParser):
             assert item[0] == tag, (item, tag)
 
         if tag == 'a' and self.state == ParserState.IN_TITLE:
+            debug('Title parsed')
             self.state = ParserState.TITLE_PARSED
         elif tag == 'td' and self.state == ParserState.IN_SNIPPET:
+            debug('Snippet parsed')
             self.build_result()
             self.state = ParserState.OUTSIDE
 
     def handle_data(self, data):
         if self.state == ParserState.IN_TITLE:
+            debug('Got title data: %s', data)
             self.current_title.append(data)
         elif self.state == ParserState.IN_SNIPPET:
+            debug('Got snippet data: %s', data)
             self.current_snippet.append(data)
 
     def build_result(self):
-        self.results.append(result(
+        res = result(
             link=self.current_link,
             title=''.join(self.current_title),
             snippet=''.join(self.current_snippet),
-        ))
+        )
+        debug('Finished parsing result: %r', res)
+        self.results.append(res)
         self.reset_current_result()
 
 if __name__ == '__main__':
