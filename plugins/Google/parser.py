@@ -79,9 +79,9 @@ class GoogleHTMLParser(HTMLParser):
                 and self.state == ParserState.OUTSIDE:
             self.state = ParserState.IN_LINK
             href = attrs['href'][len('/url?q='):]
-            self.current_link = utils.web.urlunquote(utils.web.htmlToText(href.split('&sa')[0]))
+            self.current_link = utils.web.urlunquote(href.split('&sa')[0])
 
-        elif tag == 'div' and 'a' in self.stack and attrs.get('role') == 'heading' \
+        elif tag == 'div' and 'a' in self.stack and 'h3' in self.stack \
                 and self.state == ParserState.IN_LINK:
             self.state = ParserState.IN_TITLE
             mark = DomMark.HEADING
