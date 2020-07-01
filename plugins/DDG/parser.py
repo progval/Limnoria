@@ -47,6 +47,18 @@ class ParserState(enum.Enum):
     TITLE_PARSED = 2
     IN_SNIPPET = 3
 
+
+# This is implemented as a stack automaton. Here is the transition graph.
+# See comments below to find the description of each transition
+#
+# --> OUTSIDE --(1)--> IN_TITLE --(2)--> TITLE_PARSED --(3)--> IN_SNIPPET
+#       ^  ^                                  |                     |
+#       |  |                                  |                     |
+#       |  +----------------(5)---------------+                     |
+#       |                                                           |
+#       +------------------------------(4)--------------------------+
+
+
 STACKED_TAGS = ('table', 'tr', 'td', 'a')
 
 class DDGHTMLParser(HTMLParser):
@@ -76,6 +88,8 @@ class DDGHTMLParser(HTMLParser):
             return
 
         if tag == 'a' and 'result-link' in classes:
+            # 1. Starts the title of a result; transition from OUTSIDE
+            #    to IN_TITLE
             debug('Got result-link')
             assert self.state == ParserState.OUTSIDE, (self.state, self.current_title)
             self.state = ParserState.IN_TITLE
@@ -83,12 +97,17 @@ class DDGHTMLParser(HTMLParser):
             self.current_title = []
 
         elif tag == 'td' and 'result-snippet' in classes:
+            # 3. Starts a snippet. Normally, just after a title ended.
+            #    Transition from TITLE_PARSED to IN_SNIPPET
             debug('Got result-snipper')
             assert self.state == ParserState.TITLE_PARSED, self.state
             self.state = ParserState.IN_SNIPPET
             self.current_snippet = []
 
         elif tag == 'span' and 'link-text' in classes:
+            # 5. This is the link, after a snippet if any. We're catching it
+            #    detect results without a snippet. If so, transition directly
+            #    from TITLE_PARSED to OUTSIDE
             debug('Got link-text')
             if self.state == ParserState.TITLE_PARSED:
                 # No snippet
@@ -101,9 +120,13 @@ class DDGHTMLParser(HTMLParser):
             assert item[0] == tag, (item, tag)
 
         if tag == 'a' and self.state == ParserState.IN_TITLE:
+            # 2. End of the <a> node matched in step 1; transition from
+            #    IN_TITLE to TITLE_PARSED
             debug('Title parsed')
             self.state = ParserState.TITLE_PARSED
         elif tag == 'td' and self.state == ParserState.IN_SNIPPET:
+            # 4. End of the <td> node matched in step 3, this concludes the
+            #    parsing of this result. Transition from IN_SNIPPET to OUTSIDE
             debug('Snippet parsed')
             self.build_result()
             self.state = ParserState.OUTSIDE
