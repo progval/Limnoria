@@ -97,7 +97,7 @@ class Herald(callbacks.Plugin):
             if id in self.splitters:
                 self.log.debug('Not heralding id #%s, recent split.', id)
                 return
-            now = time.time()
+            now = time.monotonic()
             throttle = self.registryValue('throttle',
                                           channel, irc.network)
             if now - self.lastHerald.get((channel, id), 0) > throttle:
@@ -133,7 +133,7 @@ class Herald(callbacks.Plugin):
             id = self._getId(irc, msg.prefix)
         except KeyError:
             id = msg.nick
-        self.lastParts[msg.args[0], id] = time.time()
+        self.lastParts[msg.args[0], id] = time.monotonic()
 
     def _getId(self, irc, userNickHostmask):
         try:
