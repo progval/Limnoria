@@ -87,31 +87,15 @@ class Herald(callbacks.Plugin):
     def doJoin(self, irc, msg):
         if ircutils.strEqual(irc.nick, msg.nick):
             return # It's us.
-        if msg.nick in self.splitters:
-            self.log.debug('Not heralding %s, recent split.', msg.nick)
-            return # Recently split.
         channel = msg.args[0]
         irc = callbacks.SimpleProxy(irc, msg)
         if self.registryValue('heralding', channel, irc.network):
             try:
                 id = ircdb.users.getUserId(msg.prefix)
-                if id in self.splitters:
-                    self.log.debug('Not heralding id #%s, recent split.', id)
-                    return
-                herald = self.db[channel, id]
             except KeyError:
-                default = self.registryValue('default', channel, irc.network)
-                if default:
-                    default = ircutils.standardSubstitute(irc, msg, default)
-                    msgmaker = ircmsgs.privmsg
-                    if self.registryValue('default.notice',
-                                          channel, irc.network):
-                        msgmaker = ircmsgs.notice
-                    target = msg.nick
-                    if self.registryValue('default.public',
-                                          channel, irc.network):
-                        target = channel
-                    irc.queueMsg(msgmaker(target, default))
+                id = msg.nick
+            if id in self.splitters:
+                self.log.debug('Not heralding id #%s, recent split.', id)
                 return
             now = time.time()
             throttle = self.registryValue('throttle',
@@ -122,16 +106,34 @@ class Herald(callbacks.Plugin):
                                           channel, irc.network)
                    if now - self.lastParts[channel, id] < i:
                        return
-                self.lastHerald[channel, id] = now
-                herald = ircutils.standardSubstitute(irc, msg, herald)
-                irc.reply(herald, prefixNick=False)
+                try:
+                    herald = self.db[channel, id]
+                except KeyError:
+                    herald = self.registryValue('default', channel, irc.network)
+                    if herald:
+                        herald = ircutils.standardSubstitute(irc, msg, herald)
+                        msgmaker = ircmsgs.privmsg
+                        if self.registryValue('default.notice',
+                                              channel, irc.network):
+                            msgmaker = ircmsgs.notice
+                        target = msg.nick
+                        if self.registryValue('default.public',
+                                              channel, irc.network):
+                            target = channel
+                        self.lastHerald[channel, id] = now
+                        irc.queueMsg(msgmaker(target, herald))
+                    return
+                if herald:
+                    self.lastHerald[channel, id] = now
+                    herald = ircutils.standardSubstitute(irc, msg, herald)
+                    irc.reply(herald, prefixNick=False)
 
     def doPart(self, irc, msg):
         try:
             id = self._getId(irc, msg.prefix)
-            self.lastParts[msg.args[0], id] = time.time()
         except KeyError:
-            pass
+            id = msg.nick
+        self.lastParts[msg.args[0], id] = time.time()
 
     def _getId(self, irc, userNickHostmask):
         try:
