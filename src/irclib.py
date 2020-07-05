@@ -624,9 +624,14 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         Supported user and channel modes are cached"""
         # msg.args = [nick, server, ircd-version, umodes, modes,
         #             modes that require arguments? (non-standard)]
-        self.ircd = msg.args[2] if len(msg.args) >= 3 else msg.args[1]
-        self.supported['umodes'] = frozenset(msg.args[3])
-        self.supported['chanmodes'] = frozenset(msg.args[4])
+        self.ircd = msg.args[2] if len(msg.args) > 2 else msg.args[1]
+
+        # The conditionals are for Twitch, which doesn't send umodes or
+        # chanmodes.
+        if len(msg.args) > 3:
+            self.supported['umodes'] = frozenset(msg.args[3])
+        if len(msg.args) > 4:
+            self.supported['chanmodes'] = frozenset(msg.args[4])
 
     _005converters = utils.InsensitivePreservingDict({
         'modes': lambda s: int(s) if s else None,  # it's optional

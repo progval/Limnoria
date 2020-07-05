@@ -387,6 +387,12 @@ class IrcStateTestCase(SupyTestCase):
         self.assertEqual(state.supported['chanmodes'],
                          frozenset('biklmnopstveI'))
 
+    def testShort004(self):
+        state = irclib.IrcState()
+        state.addMsg(self.irc, ircmsgs.IrcMsg(':coulomb.oftc.net 004 testnick coulomb.oftc.net hybrid-7.2.2+oftc1.6.8'))
+        self.assertNotIn('umodes', state.supported)
+        self.assertNotIn('chanmodes', state.supported)
+
     def testEmptyTopic(self):
         state = irclib.IrcState()
         state.addMsg(self.irc, ircmsgs.topic('#foo'))
