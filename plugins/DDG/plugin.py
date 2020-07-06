@@ -105,7 +105,7 @@ class DDG(callbacks.Plugin):
             # As of 2017-01-20, some links on DuckDuckGo's site are shown going through
             # a redirect service. The links are in the format "/l/?kh=-1&uddg=https%3A%2F%2Fduckduckgo.com%2F"
             # instead of simply being "https://duckduckgo.com". So, we decode these links here.
-            if link.startswith('/l/'):
+            if link.startswith('/l/') or link.startswith('//duckduckgo.com/l/'):
                 linkparse = utils.web.urlparse(link)
                 try:
                     link = parse_qs(linkparse.query)['uddg'][0]
