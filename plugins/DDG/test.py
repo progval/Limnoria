@@ -28,6 +28,7 @@
 
 ###
 
+import supybot.conf as conf
 from supybot.test import *
 
 class DDGTestCase(PluginTestCase):
@@ -42,5 +43,9 @@ class DDGTestCase(PluginTestCase):
                 'ddg search en.wikipedia.org',
                 'Wikipedia, the free encyclopedia\x02 - '
                 '.* <https://en.wikipedia.org/>')
+            with conf.supybot.plugins.DDG.region.context('fr-fr'):
+                self.assertRegexp(
+                    'ddg search wikipedia',
+                    'Wikipédia, l\'encyclopédie libre - .*?https?\:\/\/')
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
