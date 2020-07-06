@@ -47,6 +47,8 @@ def configure(advanced):
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('DDG', True)
 
+class SafeSearch(registry.OnlySomeStrings):
+    validStrings = ['active', 'moderate', 'off']
 
 DDG = conf.registerPlugin('DDG')
 conf.registerChannelValue(DDG, 'maxResults',
@@ -56,6 +58,14 @@ conf.registerChannelValue(DDG, 'showSnippet',
     registry.Boolean(True, _("""Determines whether the bot will show a
     snippet of each resulting link. If False, it will show the title
     of the link instead.""")))
-
+conf.registerChannelValue(DDG, 'region',
+    registry.String("", _("""Set the DDG search region to return results
+    for the language/country of your choice. E.g. 'us-en' for United States.
+    https://duckduckgo.com/params""")))
+conf.registerChannelValue(DDG, 'searchFilter',
+    SafeSearch('moderate', _("""Determines what level of search filtering to use
+    by default.  'active' - most filtering, 'moderate' - default filtering,
+    'off' - no filtering""")))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+

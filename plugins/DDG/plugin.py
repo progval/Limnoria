@@ -54,10 +54,21 @@ class DDG(callbacks.Plugin):
     threaded = True
 
     @staticmethod
-    def _ddgurl(text):
+    def _ddgurl(text, region=None, safeSearch=None):
         # DuckDuckGo has a 'lite' site free of unparseable JavaScript
         # elements, so we'll use that to our advantage!
-        url = "https://lite.duckduckgo.com/lite?" + urlencode({"q": text})
+        url = "https://lite.duckduckgo.com/lite?"
+        params = {"q": text}
+        if region:
+            params["kl"] = region
+        if safeSearch:
+            if safeSearch == "active":
+                params["kp"] = 1
+            elif safeSearch == "moderate":
+                params["kp"] = -1
+            elif safeSearch == "off":
+                params["kp"] = -2
+        url += urlencode(params)
 
         log.debug("DDG: Using URL %s for search %s", url, text)
 
@@ -87,7 +98,10 @@ class DDG(callbacks.Plugin):
         # still somewhat tricky.
         results = []
 
-        url, real_url, raw_results = self._ddgurl(text)
+        region = self.registryValue("region", channel_context)
+        safeSearch = self.registryValue("searchFilter", channel_context)
+
+        url, real_url, raw_results = self._ddgurl(text, region, safeSearch)
 
         if real_url != url:
             # We received a redirect, likely from something like a !bang request.
@@ -146,3 +160,4 @@ Class = DDG
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
+
