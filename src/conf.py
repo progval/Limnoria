@@ -1352,7 +1352,7 @@ class HttpRequestLanguage(registry.String):
         utils.web.defaultHeaders = defaultHttpHeaders(None, None)
 
 class HttpUserAgents(registry.CommaSeparatedListOfStrings):
-    """Must be a valid HTTP Accept-Language value."""
+    """Must be a valid HTTP User-Agent value."""
     __slots__ = ()
     def setValue(self, v):
         super(HttpUserAgent, self).setValue(v)
