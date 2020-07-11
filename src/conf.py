@@ -1346,6 +1346,8 @@ def defaultHttpHeaders(network, channel):
     else:
         if agent:
             headers['User-Agent'] = agent
+        elif 'User-Agent' in headers:
+            del headers['Accept-Language']
     return headers
 
 class HttpRequestLanguage(registry.String):
