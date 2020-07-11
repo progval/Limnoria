@@ -1331,7 +1331,7 @@ def defaultHttpHeaders(network, channel):
     try:
         language = supybot.protocols.http.requestLanguage.getSpecific(
                 network, channel)()
-        agent = random.choice(supybot.protocols.http.userAgent.getSpecific(
+        agent = random.choice(supybot.protocols.http.userAgents.getSpecific(
                 network, channel)())
     except registry.NonExistentRegistryEntry:
         pass # Starting up; headers will be set by HttpRequestLanguage/UserAgents later
@@ -1364,7 +1364,7 @@ registerChannelValue(supybot.protocols.http, 'requestLanguage',
     the server's location.""")))
 
 
-registerChannelValue(supybot.protocols.http, 'userAgent',
+registerChannelValue(supybot.protocols.http, 'userAgents',
     HttpUserAgents([], _("""If set, the User-Agent HTTP header will be set to a randomly
     selected value from this comma-separated list of strings for requests.""")))
 
