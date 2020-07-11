@@ -32,6 +32,7 @@ import os
 import sys
 import time
 import socket
+import random
 
 from . import ircutils, registry, utils
 from .utils import minisix
@@ -1337,6 +1338,14 @@ def defaultHttpHeaders(network, channel):
             headers['Accept-Language'] = language
         elif 'Accept-Language' in headers:
             del headers['Accept-Language']
+    try:
+        agent = random.choice(supybot.protocols.http.userAgent.getSpecific(
+                network, channel)())
+    except registry.NonExistentRegistryEntry:
+        pass
+    else:
+        if agent:
+            headers['User-Agent'] = agent
     return headers
 
 class HttpRequestLanguage(registry.String):
@@ -1351,6 +1360,10 @@ registerChannelValue(supybot.protocols.http, 'requestLanguage',
     value for requests. Useful for overriding the auto-detected language based on
     the server's location.""")))
 
+
+registerChannelValue(supybot.protocols.http, 'userAgent',
+    registry.CommaSeparatedListOfStrings('', _("""If set, the User-Agent HTTP header
+    will be set to a randomly selected value from this list for requests.""")))
 
 ###
 # supybot.protocols.ssl
