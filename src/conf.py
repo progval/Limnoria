@@ -1355,7 +1355,7 @@ class HttpUserAgents(registry.CommaSeparatedListOfStrings):
     """Must be a valid HTTP User-Agent value."""
     __slots__ = ()
     def setValue(self, v):
-        super(HttpUserAgent, self).setValue(v)
+        super(HttpUserAgents, self).setValue(v)
         utils.web.defaultHeaders = defaultHttpHeaders(None, None)
 
 registerChannelValue(supybot.protocols.http, 'requestLanguage',
