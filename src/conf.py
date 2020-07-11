@@ -1331,19 +1331,15 @@ def defaultHttpHeaders(network, channel):
     try:
         language = supybot.protocols.http.requestLanguage.getSpecific(
                 network, channel)()
-    except registry.NonExistentRegistryEntry:
-        pass # Starting up; language will be set by HttpRequestLanguage later
-    else:
-        if language:
-            headers['Accept-Language'] = language
-        elif 'Accept-Language' in headers:
-            del headers['Accept-Language']
-    try:
         agent = random.choice(supybot.protocols.http.userAgent.getSpecific(
                 network, channel)())
     except registry.NonExistentRegistryEntry:
         pass
     else:
+        if language:
+            headers['Accept-Language'] = language
+        elif 'Accept-Language' in headers:
+            del headers['Accept-Language']
         if agent.strip():
             headers['User-agent'] = agent
     return headers
@@ -1355,6 +1351,13 @@ class HttpRequestLanguage(registry.String):
         super(HttpRequestLanguage, self).setValue(v)
         utils.web.defaultHeaders = defaultHttpHeaders(None, None)
 
+class HttpUserAgent(registry.CommaSeparatedListOfStrings):
+    """Must be a valid HTTP User-Agent value."""
+    __slots__ = ()
+    def setValue(self, v):
+        super(HttpUserAgent, self).setValue(v)
+        utils.web.defaultHeaders = defaultHttpHeaders(None, None)
+
 registerChannelValue(supybot.protocols.http, 'requestLanguage',
     HttpRequestLanguage('', _("""If set, the Accept-Language HTTP header will be set to this
     value for requests. Useful for overriding the auto-detected language based on
@@ -1362,7 +1365,7 @@ registerChannelValue(supybot.protocols.http, 'requestLanguage',
 
 
 registerChannelValue(supybot.protocols.http, 'userAgent',
-    registry.CommaSeparatedListOfStrings([], _("""If set, the User-Agent HTTP header
+    HttpUserAgent([], _("""If set, the User-Agent HTTP header
     will be set to a randomly selected value from this list for requests.""")))
 
 ###
