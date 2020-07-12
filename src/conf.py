@@ -1331,8 +1331,8 @@ def defaultHttpHeaders(network, channel):
     try:
         language = supybot.protocols.http.requestLanguage.getSpecific(
                 network, channel)()
-        agent = random.choice(supybot.protocols.http.userAgents.getSpecific(
-                network, channel)())
+        agent = supybot.protocols.http.userAgents.getSpecific(
+                network, channel)()
     except registry.NonExistentRegistryEntry:
         pass # Starting up; headers will be set by HttpRequestLanguage/UserAgents later
     else:
@@ -1340,8 +1340,10 @@ def defaultHttpHeaders(network, channel):
             headers['Accept-Language'] = language
         elif 'Accept-Language' in headers:
             del headers['Accept-Language']
-        if agent.strip():
-            headers['User-agent'] = agent
+        if agent:
+            agent = random.choice(agent).strip()
+            if agent:
+                headers['User-agent'] = agent
     return headers
 
 class HttpRequestLanguage(registry.String):
