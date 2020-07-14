@@ -107,6 +107,7 @@ class Google(callbacks.PluginRegexp):
                                     dynamic.irc.nick)
         headers = dict(utils.web.defaultHeaders)
         headers['Referer'] = ref
+        headers['User-agent'] = 'Mozilla/5.0 (compatible; utils.web python module)'
         opts = {'q': query, 'gbv': '2'}
         for (k, v) in options.items():
             if k == 'smallsearch':
@@ -254,7 +255,7 @@ class Google(callbacks.PluginRegexp):
 
     def _translate(self, sourceLang, targetLang, text):
         headers = dict(utils.web.defaultHeaders)
-        headers['User-Agent'] = ('Mozilla/5.0 (X11; U; Linux i686) '
+        headers['User-agent'] = ('Mozilla/5.0 (X11; U; Linux i686) '
                                  'Gecko/20071127 Firefox/2.0.0.11')
 
         sourceLang = utils.web.urlquote(sourceLang)
