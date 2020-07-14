@@ -112,6 +112,10 @@ class FactoidsTestCase(ChannelPluginTestCase):
                           'my primary author')
         self.assertRegexp('factoids search --values primary author',
                           'my primary author')
+        self.assertRegexp('factoids search --author test j*',
+                          'jamessan.*jemfinch')
+        self.assertRegexp('factoids search --author blahblah j*',
+                          'No keys matched that query.')
 
     def testWhatisOnNumbers(self):
         self.assertNotError('learn 911 is emergency number')

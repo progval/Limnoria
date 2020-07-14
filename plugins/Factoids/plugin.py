@@ -801,7 +801,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     _sqlTrans = utils.str.MultipleReplacer({'*': '%', '?': '_'})
     @internationalizeDocstring
     def search(self, irc, msg, args, channel, optlist, globs):
-        """[<channel>] [--values] [--{regexp} <value>] [<glob> ...]
+        """[<channel>] [--values] [--regexp <value>] [--author <username>] [<glob> ...]
 
         Searches the keyspace for keys matching <glob>.  If --regexp is given,
         its associated value is taken as a regexp and matched against the keys.
@@ -810,6 +810,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         if not optlist and not globs:
             raise callbacks.ArgumentError
         tables = ['keys']
+        join_factoids = False
         formats = []
         criteria = []
         target = 'keys.key'
@@ -818,19 +819,29 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         for (option, arg) in optlist:
             if option == 'values':
                 target = 'factoids.fact'
-                if 'factoids' not in tables:
-                    tables.append('factoids')
-                    tables.append('relations')
-                criteria.append('factoids.id=relations.fact_id AND keys.id=relations.key_id')
+                join_factoids = True
             elif option == 'regexp':
                 criteria.append('%s(TARGET)' % predicateName)
                 def p(s, r=arg):
                     return int(bool(r.search(s)))
                 db.create_function(predicateName, 1, p)
                 predicateName += 'p'
+            elif option == 'author':
+                join_factoids = True
+                criteria.append('factoids.added_by=?')
+                formats.append(arg)
         for glob in globs:
             criteria.append('TARGET LIKE ?')
             formats.append(self._sqlTrans(glob))
+
+        if join_factoids:
+            if 'factoids' not in tables:
+                tables.append('factoids')
+                tables.append('relations')
+            criteria.append(
+                'factoids.id=relations.fact_id AND keys.id=relations.key_id'
+            )
+
         cursor = db.cursor()
         sql = """SELECT keys.key FROM %s WHERE %s""" % \
               (', '.join(tables), ' AND '.join(criteria))
@@ -861,7 +872,11 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             s = format('%L', keys)
             irc.reply(s)
     search = wrap(search, ['channel',
-                           getopts({'values': '', 'regexp': 'regexpMatcher'}),
+                           getopts({
+                               'values': '',
+                               'regexp': 'regexpMatcher',
+                               'author': 'somethingWithoutSpaces',
+                           }),
                            any('glob')])
 
 
