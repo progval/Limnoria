@@ -43,9 +43,8 @@ read it.
 
 ### In English
 
-If you have any trouble, feel free to swing by [#supybot and #limnoria](ircs://chat.freenode.net:6697/#supybot,#limnoria) on
-[freenode](https://freenode.net/) or [#supybot](ircs://irc.oftc.net:6697/#supybot) at [OFTC](http://oftc.net/) (we have a Limnoria there relaying,
-so either network works) and ask questions.  We'll be happy to help
+If you have any trouble, feel free to swing by [#limnoria](ircs://chat.freenode.net:6697/#limnoria) on
+[freenode](https://freenode.net/) and ask questions.  We'll be happy to help
 wherever we can.  And by all means, if you find anything hard to
 understand or think you know of a better way to do something,
 *please* post it on the [issue tracker] so we can improve the bot!
