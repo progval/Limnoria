@@ -38,7 +38,7 @@ matrix:
       dist: xenial
 
     - python: "pypy3"
-      env: WITH_OPT_DEPS=true
+      env: WITH_OPT_DEPS=false
       dist: trusty
     - python: "pypy3"
       env: WITH_OPT_DEPS=true
