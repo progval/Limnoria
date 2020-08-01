@@ -1377,7 +1377,8 @@ registerGroup(supybot.protocols, 'ssl')
 registerGlobalValue(supybot.protocols.ssl, 'verifyCertificates',
     registry.Boolean(False, _("""Determines whether server certificates
     will be verified, which checks whether the server certificate is signed
-    by a known certificate authority, and aborts the connection if it is not.""")))
+    by a known certificate authority, and aborts the connection if it is not.
+    This is assumed to be True of serverFingerprints is set.""")))
 
 
 ###

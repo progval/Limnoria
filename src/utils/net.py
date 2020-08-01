@@ -187,7 +187,7 @@ def ssl_wrap_socket(conn, hostname, logger, certfile=None,
             context.load_cert_chain(certfile)
     with _prefix_ssl_error('establishing TLS connection'):
         conn = context.wrap_socket(conn, server_hostname=hostname)
-    if verify and trusted_fingerprints:
+    if trusted_fingerprints:
         check_certificate_fingerprint(conn, trusted_fingerprints)
     return conn
 
