@@ -175,20 +175,25 @@ def ssl_wrap_socket(conn, hostname, logger, certfile=None,
         **kwargs):
     with _prefix_ssl_error('creating SSL context'):
         context = ssl.create_default_context(**kwargs)
-    if trusted_fingerprints or not verify:
-        # Do not use Certification Authorities
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
+
     if ca_file:
         with _prefix_ssl_error('loading CA certificate'):
             context.load_verify_locations(cafile=ca_file)
+    elif trusted_fingerprints or not verify:
+        # Do not use Certification Authorities
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+
     if certfile:
         with _prefix_ssl_error('loading client certfile'):
             context.load_cert_chain(certfile)
+
     with _prefix_ssl_error('establishing TLS connection'):
         conn = context.wrap_socket(conn, server_hostname=hostname)
+
     if trusted_fingerprints:
         check_certificate_fingerprint(conn, trusted_fingerprints)
+
     return conn
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
