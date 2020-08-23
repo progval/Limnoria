@@ -59,6 +59,8 @@ class FakeLog(object):
 class ChannelLogger(callbacks.Plugin):
     """This plugin allows the bot to log channel conversations to disk."""
     noIgnore = True
+    echoMessage = True
+
     def __init__(self, irc):
         self.__parent = super(ChannelLogger, self)
         self.__parent.__init__(irc)
@@ -283,10 +285,8 @@ class ChannelLogger(callbacks.Plugin):
         # Let's try this little trick...
         if msg.command in ('PRIVMSG', 'NOTICE'):
             # Other messages should be sent back to us.
-            m = ircmsgs.IrcMsg(msg=msg, prefix=irc.prefix)
             if msg.tagged('relayedMsg'):
-                m.tag('ChannelLogger__relayed')
-            self(irc, m)
+                msg.tag('ChannelLogger__relayed')
         return msg
 
 
