@@ -117,7 +117,8 @@ class IrcCallback(IrcCommandDispatcher, log.Firewalled):
     """
     callAfter = ()
     callBefore = ()
-    echo_message = False
+    echoMessage = False
+    echo_message = False  # deprecated alias of echoMessage
     __firewalled__ = {'die': None,
                       'reset': None,
                       '__call__': None,
@@ -182,7 +183,7 @@ class IrcCallback(IrcCommandDispatcher, log.Firewalled):
 
     def __call__(self, irc, msg):
         """Used for handling each message."""
-        if not self.echo_message \
+        if not self.echoMessage and not self.echo_message \
                 and msg.command in ('PRIVMSG', 'NOTICE', 'TAGMSG') \
                 and ('label' in msg.server_tags
                      or not msg.tagged('receivedAt')):
