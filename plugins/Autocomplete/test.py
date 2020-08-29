@@ -41,7 +41,10 @@ class AutocompleteTestCase(PluginTestCase):
         self.irc.feedMsg(
             ircmsgs.IrcMsg(
                 prefix="foo!bar@baz",
-                server_tags={"msgid": "1234", "+draft/autocomplete-request": request},
+                server_tags={
+                    "msgid": "1234",
+                    "+draft/autocomplete-request": request,
+                },
                 command="TAGMSG",
                 args=[self.nick],
             )
@@ -86,7 +89,9 @@ class AutocompleteTestCase(PluginTestCase):
         with conf.supybot.protocols.irc.experimentalExtensions.context(True):
             with conf.supybot.plugins.Autocomplete.enabled.context(True):
                 self._assertAutocompleteResponse("misc t", "ell")
-                self._assertAutocompleteResponse("misc c", "learmores\tompletenick")
+                self._assertAutocompleteResponse(
+                    "misc c", "learmores\tompletenick"
+                )
 
     def testSinglePluginName(self):
         with conf.supybot.protocols.irc.experimentalExtensions.context(True):
@@ -119,7 +124,10 @@ class AutocompleteChannelTestCase(ChannelPluginTestCase):
         self.irc.feedMsg(
             ircmsgs.IrcMsg(
                 prefix="foo!bar@baz",
-                server_tags={"msgid": "1234", "+draft/autocomplete-request": request},
+                server_tags={
+                    "msgid": "1234",
+                    "+draft/autocomplete-request": request,
+                },
                 command="TAGMSG",
                 args=[self.channel],
             )

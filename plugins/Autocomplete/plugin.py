@@ -56,7 +56,9 @@ def _commonPrefix(L):
 def _getAutocompleteResponse(irc, msg, payload):
     """Returns the value of the +draft/autocomplete-response tag for the given
     +draft/autocomplete-request payload."""
-    tokens = callbacks.tokenize(payload, channel=msg.channel, network=irc.network)
+    tokens = callbacks.tokenize(
+        payload, channel=msg.channel, network=irc.network
+    )
     normalized_payload = " ".join(tokens)
 
     candidate_commands = _getCandidates(irc, normalized_payload)
@@ -81,12 +83,16 @@ def _getAutocompleteResponse(irc, msg, payload):
             candidate[len(common_prefix)] for candidate in tokenized_candidates
         }
 
-        commands = [" ".join(common_prefix + [word]) for word in words_after_prefix]
+        commands = [
+            " ".join(common_prefix + [word]) for word in words_after_prefix
+        ]
 
     # strip what the user already typed
     assert all(command.startswith(normalized_payload) for command in commands)
     normalized_payload_length = len(normalized_payload)
-    response_items = [command[normalized_payload_length:] for command in commands]
+    response_items = [
+        command[normalized_payload_length:] for command in commands
+    ]
 
     return "\t".join(sorted(response_items))
 
@@ -103,7 +109,9 @@ def _getCandidates(irc, normalized_payload):
         cb_commands += [plugin_name + " " + command for command in cb_commands]
 
         candidates |= {
-            command for command in cb_commands if command.startswith(normalized_payload)
+            command
+            for command in cb_commands
+            if command.startswith(normalized_payload)
         }
 
     return candidates

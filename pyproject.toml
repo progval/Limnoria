@@ -1,0 +1,4 @@
+[tool.black]
+line-length = 79
+
+include = 'plugins/(Autocomplete|Fediverse)/.*\.pyi?$'
