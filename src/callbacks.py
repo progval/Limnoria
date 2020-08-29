@@ -775,14 +775,18 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         (a list of strings) and the plugins for which it was a command."""
         assert isinstance(args, list)
         args = list(map(canonicalName, args))
+
+        # Find a list maxL such that maxL = args[0:n] for the largest n
+        # possible such that maxL is a command.
         cbs = []
         maxL = []
         for cb in self.irc.callbacks:
             if not hasattr(cb, 'getCommand'):
                 continue
             L = cb.getCommand(args)
-            #log.debug('%s.getCommand(%r) returned %r', cb.name(), args, L)
             if L and L >= maxL:
+                # equivalent to "L and len(L) >= len(maxL)", because L and maxL
+                # are both "prefixes" of the same list.
                 maxL = L
                 cbs.append((cb, L))
                 assert isinstance(L, list), \
@@ -791,7 +795,11 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                        'getCommand must return a prefix of the args given.  ' \
                        '(args given: %r, returned: %r)' % (args, L)
         log.debug('findCallbacksForArgs: %r', cbs)
+
+        # Filter out all the entries in cbs that are smaller than maxL (ie.
+        # maxL contains them, with more items at the end.)
         cbs = [cb for (cb, L) in cbs if L == maxL]
+
         if len(maxL) == 1:
             # Special case: one arg determines the callback.  In this case, we
             # have to check, in order:
