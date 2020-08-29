@@ -297,8 +297,8 @@ class ChannelLogger(callbacks.Plugin):
                            msg.nick, msg.prefix, reason)
 
     def outFilter(self, irc, msg):
-        # Gotta catch my own messages *somehow* :)
-        # Let's try this little trick...
+        # Mark/remember outgoing relayed messages, so we can rewrite them if
+        # rewriteRelayed is True.
         if msg.command in ('PRIVMSG', 'NOTICE'):
             rewriteRelayed = self.registryValue(
                 'rewriteRelayed', msg.channel, irc.network)
