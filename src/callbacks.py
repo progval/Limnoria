@@ -51,7 +51,15 @@ _ = PluginInternationalization()
 
 def _addressed(irc, msg, prefixChars=None, nicks=None,
               prefixStrings=None, whenAddressedByNick=None,
-              whenAddressedByNickAtEnd=None):
+              whenAddressedByNickAtEnd=None, payload=None):
+    """Determines whether this message is a command to the bot (because of a
+    prefix char/string, or because the bot's nick is used as prefix, or because
+    it's a private message, etc.).
+    Returns the actual content of the command (ie. the content of the message,
+    stripped of the prefix that was used to determine if it's addressed).
+
+    If 'payload' is not None, its value is used instead of msg.args[1] as the
+    content of the message."""
     if isinstance(irc, str):
         warnings.warn(
             "callbacks.addressed's first argument should now be be the Irc "
@@ -71,9 +79,10 @@ def _addressed(irc, msg, prefixChars=None, nicks=None,
                 payload = payload[len(prefixString):].lstrip()
         return payload
 
-    assert msg.command == 'PRIVMSG'
+    assert msg.command in ('PRIVMSG', 'TAGMSG')
     target = msg.channel or msg.args[0]
-    payload = msg.args[1]
+    if not payload:
+        payload = msg.args[1]
     if not payload:
         return ''
     if prefixChars is None:
