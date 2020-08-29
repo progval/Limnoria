@@ -59,9 +59,18 @@ def _getAutocompleteResponse(irc, msg, payload):
     # strip what the user already typed
     assert all(candidate.startswith(normalized_payload) for candidate in candidates)
     normalized_payload_length = len(normalized_payload)
-    response_items = [candidate[normalized_payload_length:] for candidate in candidates]
-    response_items.sort()
-    return "\t".join(response_items)
+    candidate_commands = [
+        candidate[normalized_payload_length:] for candidate in candidates
+    ]
+
+    tokenized_candidates = [
+        callbacks.tokenize(c, channel=msg.channel, network=irc.network)
+        for c in candidate_commands
+    ]
+
+    response_items = {candidate[0] for candidate in tokenized_candidates}
+
+    return "\t".join(sorted(response_items))
 
 
 def _getCandidates(irc, normalized_payload):

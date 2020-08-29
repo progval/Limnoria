@@ -67,10 +67,13 @@ class AutocompleteTestCase(PluginTestCase):
             with conf.supybot.plugins.Autocomplete.enabled.context(True):
                 self._assertAutocompleteResponse("apro", "pos")
                 self._assertAutocompleteResponse("apr", "opos")
-                self._assertAutocompleteResponse("te", "ll\tstplugin eval")
+                self._assertAutocompleteResponse("te", "ll\tstplugin")
                 self._assertAutocompleteResponse("tel", "l")
+                self._assertAutocompleteResponse("mi", "sc")
                 self._assertAutocompleteResponse("misc t", "ell")
                 self._assertAutocompleteResponse("misc c", "learmores\tompletenick")
+                self._assertAutocompleteResponse("lat", "er")
+                self._assertAutocompleteResponse("later", "notes\tremove\ttell\tundo")
 
     def testNoResponse(self):
         with conf.supybot.protocols.irc.experimentalExtensions.context(True):
