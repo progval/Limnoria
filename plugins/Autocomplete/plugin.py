@@ -42,11 +42,11 @@ except ImportError:
 
 
 REQUEST_TAG = "+draft/autocomplete-request"
-RESPONSE_TAG = "+draft/autocomplete"
+RESPONSE_TAG = "+draft/autocomplete-response"
 
 
 def _getAutocompleteResponse(irc, msg, payload):
-    """Returns the value of the +draft/autocomplete tag for the given
+    """Returns the value of the +draft/autocomplete-response tag for the given
     +draft/autocomplete-request payload."""
     tokens = callbacks.tokenize(payload, channel=msg.channel, network=irc.network)
     normalized_payload = " ".join(tokens)
@@ -130,7 +130,7 @@ class Autocomplete(callbacks.Plugin):
             ircmsgs.IrcMsg(
                 server_tags={
                     "+draft/reply": msgid,
-                    "+draft/autocomplete": autocomplete_response,
+                    RESPONSE_TAG: autocomplete_response,
                 },
                 command="TAGMSG",
                 args=[target],

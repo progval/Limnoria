@@ -55,7 +55,7 @@ class AutocompleteTestCase(PluginTestCase):
             ircmsgs.IrcMsg(
                 server_tags={
                     "+draft/reply": "1234",
-                    "+draft/autocomplete": expectedResponse,
+                    "+draft/autocomplete-response": expectedResponse,
                 },
                 command="TAGMSG",
                 args=["foo"],
@@ -103,12 +103,13 @@ class AutocompleteChannelTestCase(ChannelPluginTestCase):
             ircmsgs.IrcMsg(
                 server_tags={
                     "+draft/reply": "1234",
-                    "+draft/autocomplete": expectedResponse,
+                    "+draft/autocomplete-response": expectedResponse,
                 },
                 command="TAGMSG",
                 args=[self.channel],
             ),
         )
+
     def testResponse(self):
         with conf.supybot.protocols.irc.experimentalExtensions.context(True):
             with conf.supybot.plugins.Autocomplete.enabled.context(True):
