@@ -28,17 +28,10 @@
 
 ###
 
-from supybot import conf, utils, plugins, ircutils, ircmsgs, callbacks
-from supybot.commands import *
+from supybot import conf, ircutils, ircmsgs, callbacks
+from supybot.i18n import PluginInternationalization
 
-try:
-    from supybot.i18n import PluginInternationalization
-
-    _ = PluginInternationalization("Autocomplete")
-except ImportError:
-    # Placeholder that allows to run the plugin on a bot
-    # without the i18n module
-    _ = lambda x: x
+_ = PluginInternationalization("Autocomplete")
 
 
 REQUEST_TAG = "+draft/autocomplete-request"
@@ -127,7 +120,7 @@ class Autocomplete(callbacks.Plugin):
     def doTagmsg(self, irc, msg):
         if REQUEST_TAG not in msg.server_tags:
             return
-        if not "msgid" in msg.server_tags:
+        if "msgid" not in msg.server_tags:
             return
         if not self._enabled(irc, msg):
             return
