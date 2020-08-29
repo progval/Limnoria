@@ -51,6 +51,9 @@ class AutocompleteTestCase(PluginTestCase):
         self._sendRequest(request)
         m = self.irc.takeMsg()
         self.assertEqual(
+            m.server_tags["+draft/autocomplete-response"], expectedResponse
+        )
+        self.assertEqual(
             m,
             ircmsgs.IrcMsg(
                 server_tags={
