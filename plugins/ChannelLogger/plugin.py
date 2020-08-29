@@ -317,7 +317,7 @@ class ChannelLogger(callbacks.Plugin):
                 # Else, we can simply rely on internal tags, because echos are
                 # simulated.
                 if msg.tagged('relayedMsg'):
-                    m.tag('ChannelLogger__relayed')
+                    msg.tag('ChannelLogger__relayed')
         return msg
 
 
