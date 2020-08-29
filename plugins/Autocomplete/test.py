@@ -66,14 +66,38 @@ class AutocompleteTestCase(PluginTestCase):
         with conf.supybot.protocols.irc.experimentalExtensions.context(True):
             with conf.supybot.plugins.Autocomplete.enabled.context(True):
                 self._assertAutocompleteResponse("apro", "pos")
+
+    def testSingleCommandName(self):
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
+                self._assertAutocompleteResponse("apro", "pos")
                 self._assertAutocompleteResponse("apr", "opos")
-                self._assertAutocompleteResponse("te", "ll\tstplugin")
                 self._assertAutocompleteResponse("tel", "l")
-                self._assertAutocompleteResponse("mi", "sc")
+
+    def testTwoResults(self):
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
+                self._assertAutocompleteResponse("te", "ll\tstplugin")
+
+    def testCommandNameAndPluginName(self):
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
                 self._assertAutocompleteResponse("misc t", "ell")
                 self._assertAutocompleteResponse("misc c", "learmores\tompletenick")
-                self._assertAutocompleteResponse("lat", "er")
-                self._assertAutocompleteResponse("later", "notes\tremove\ttell\tundo")
+
+    def testSinglePluginName(self):
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
+                self._assertAutocompleteResponse(
+                    "lat", "er notes\ter remove\ter tell\ter undo"
+                )
+
+    def testNextWord(self):
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
+                self._assertAutocompleteResponse(
+                    "later", " notes\t remove\t tell\t undo"
+                )
 
     def testNoResponse(self):
         with conf.supybot.protocols.irc.experimentalExtensions.context(True):

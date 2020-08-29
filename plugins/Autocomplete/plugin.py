@@ -45,30 +45,55 @@ REQUEST_TAG = "+draft/autocomplete-request"
 RESPONSE_TAG = "+draft/autocomplete-response"
 
 
+def _commonPrefix(L):
+    """Takes a list of lists, and returns their longest common prefix."""
+    assert L
+    if len(L) == 1:
+        return L[0]
+
+    for n in range(1, max(map(len, L)) + 1):
+        prefix = L[0][:n]
+        for item in L[1:]:
+            if prefix != item[:n]:
+                return prefix[0:-1]
+
+    assert False
+
+
 def _getAutocompleteResponse(irc, msg, payload):
     """Returns the value of the +draft/autocomplete-response tag for the given
     +draft/autocomplete-request payload."""
     tokens = callbacks.tokenize(payload, channel=msg.channel, network=irc.network)
     normalized_payload = " ".join(tokens)
 
-    candidates = _getCandidates(irc, normalized_payload)
+    candidate_commands = _getCandidates(irc, normalized_payload)
 
-    if not candidates:
-        return ""
+    if len(candidate_commands) == 0:
+        # No result
+        return None
+    elif len(candidate_commands) == 1:
+        # One result, return it directly
+        commands = candidate_commands
+    else:
+        # Multiple results, return only the longest common prefix + one word
+
+        tokenized_candidates = [
+            callbacks.tokenize(c, channel=msg.channel, network=irc.network)
+            for c in candidate_commands
+        ]
+
+        common_prefix = _commonPrefix(tokenized_candidates)
+
+        words_after_prefix = {
+            candidate[len(common_prefix)] for candidate in tokenized_candidates
+        }
+
+        commands = [" ".join(common_prefix + [word]) for word in words_after_prefix]
 
     # strip what the user already typed
-    assert all(candidate.startswith(normalized_payload) for candidate in candidates)
+    assert all(command.startswith(normalized_payload) for command in commands)
     normalized_payload_length = len(normalized_payload)
-    candidate_commands = [
-        candidate[normalized_payload_length:] for candidate in candidates
-    ]
-
-    tokenized_candidates = [
-        callbacks.tokenize(c, channel=msg.channel, network=irc.network)
-        for c in candidate_commands
-    ]
-
-    response_items = {candidate[0] for candidate in tokenized_candidates}
+    response_items = [command[normalized_payload_length:] for command in commands]
 
     return "\t".join(sorted(response_items))
 
