@@ -27,6 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import io
 from unittest.mock import patch, Mock
 
 from supybot import conf
@@ -34,11 +35,17 @@ from supybot.test import *
 
 from . import plugin
 
+timestamp_re = '[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}  '
+
 
 patch_open = patch.object(plugin, 'open', create=True)
 
-class ChannelLoggerTestCase(PluginTestCase):
+class ChannelLoggerTestCase(ChannelPluginTestCase):
     plugins = ('ChannelLogger',)
+    config = {
+        'supybot.plugins.ChannelLogger.flushImmediately': True,
+        'supybot.plugins.ChannelLogger.enable.:test.#foo': True,
+    }
 
     def testLogName(self):
         self.assertEqual(
@@ -80,6 +87,34 @@ class ChannelLoggerTestCase(PluginTestCase):
             mock_open.return_value
         )
         mock_open.assert_not_called()
+
+    @patch_open
+    def testLogPrivmsg(self, mock_open):
+        log_file = io.StringIO()
+        mock_open.return_value = log_file
+
+        self.irc.feedMsg(
+            ircmsgs.privmsg('#foo', 'test message', prefix='foo!bar@baz')
+        )
+
+        self.assertRegex(
+            log_file.getvalue(),
+            timestamp_re + '<foo> test message\n'
+        )
+
+    @patch_open
+    def testLogNotice(self, mock_open):
+        log_file = io.StringIO()
+        mock_open.return_value = log_file
+
+        self.irc.feedMsg(
+            ircmsgs.notice('#foo', 'test message', prefix='foo!bar@baz')
+        )
+
+        self.assertRegex(
+            log_file.getvalue(),
+            timestamp_re + '-foo- test message\n'
+        )
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
