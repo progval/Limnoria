@@ -27,18 +27,59 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+from unittest.mock import patch, Mock
+
+from supybot import conf
 from supybot.test import *
+
+from . import plugin
+
+
+patch_open = patch.object(plugin, 'open', create=True)
 
 class ChannelLoggerTestCase(PluginTestCase):
     plugins = ('ChannelLogger',)
 
-    def testLogDir(self):
+    def testLogName(self):
         self.assertEqual(
             self.irc.getCallback('ChannelLogger').getLogName('test', '#foo'),
-            '#foo.log')
+            '#foo.log'
+        )
         self.assertEqual(
             self.irc.getCallback('ChannelLogger').getLogName('test', '#f/../oo'),
-            '#f..oo.log')
+            '#f..oo.log'
+        )
+
+    def testLogDir(self):
+        self.assertEqual(
+            self.irc.getCallback('ChannelLogger').getLogDir(self.irc, '#foo'),
+            conf.supybot.directories.log.dirize('ChannelLogger/test/#foo')
+        )
+        self.assertEqual(
+            self.irc.getCallback('ChannelLogger').getLogDir(self.irc, '#f/../oo'),
+            conf.supybot.directories.log.dirize('ChannelLogger/test/#f..oo')
+        )
+
+    @patch_open
+    def testLog(self, mock_open):
+        mock_open.return_value = Mock()
+        self.assertIs(
+            self.irc.getCallback('ChannelLogger').getLog(self.irc, '#foo'),
+            mock_open.return_value
+        )
+        mock_open.assert_called_once_with(
+            conf.supybot.directories.log.dirize('ChannelLogger/test/#foo/#foo.log'),
+            encoding='utf-8',
+            mode='a'
+        )
+
+        # the log file should be cached
+        mock_open.reset_mock()
+        self.assertIs(
+            self.irc.getCallback('ChannelLogger').getLog(self.irc, '#foo'),
+            mock_open.return_value
+        )
+        mock_open.assert_not_called()
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
