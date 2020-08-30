@@ -302,8 +302,8 @@ class ChannelLogger(callbacks.Plugin):
         if msg.command in ('PRIVMSG', 'NOTICE'):
             rewriteRelayed = self.registryValue(
                 'rewriteRelayed', msg.channel, irc.network)
-            if rewriteRelayed and  'echo-message' in self.state.capabilities_ack:
-                assert 'labeled-response' in self.state.capabilities_ack, \
+            if rewriteRelayed and  'echo-message' in irc.state.capabilities_ack:
+                assert 'labeled-response' in irc.state.capabilities_ack, \
                     'echo-message was negotiated without labeled-response.'
                 # If we negotiated the echo-message cap, we have to remember
                 # this message was relayed when the server sends it back to us.

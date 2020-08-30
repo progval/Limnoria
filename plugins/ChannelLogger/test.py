@@ -103,6 +103,49 @@ class ChannelLoggerTestCase(ChannelPluginTestCase):
         )
 
     @patch_open
+    def testLogRewriteRelayedEmulatedEcho(self, mock_open):
+        with conf.supybot.plugins.ChannelLogger.rewriteRelayed.context(True):
+            log_file = io.StringIO()
+            mock_open.return_value = log_file
+
+            msg = ircmsgs.privmsg('#foo', '<someone> test message')
+            msg.tag('relayedMsg')
+            self.irc.getCallback('ChannelLogger').outFilter(self.irc, msg)
+            self.irc.feedMsg(msg)
+
+            self.assertRegex(
+                log_file.getvalue(),
+                timestamp_re + '<someone> test message\n'
+            )
+
+    @patch_open
+    def testLogRewriteRelayedRealEcho(self, mock_open):
+        with conf.supybot.plugins.ChannelLogger.rewriteRelayed.context(True):
+            log_file = io.StringIO()
+            mock_open.return_value = log_file
+
+            original_caps = self.irc.state.capabilities_ack
+            self.irc.state.capabilities_ack |= {
+                'echo-message', 'labeled-response'
+            }
+
+            try:
+                out_msg = ircmsgs.privmsg('#foo', '<someone> test message')
+                out_msg.tag('relayedMsg')
+                self.irc.getCallback('ChannelLogger').outFilter(self.irc, out_msg)
+            finally:
+                self.irc.state.capabilities_ack = original_caps
+
+            msg = ircmsgs.privmsg('#foo', '<someone> test message')
+            msg.server_tags['label'] = out_msg.server_tags['label']
+            self.irc.feedMsg(msg)
+
+            self.assertRegex(
+                log_file.getvalue(),
+                timestamp_re + '<someone> test message\n'
+            )
+
+    @patch_open
     def testLogNotice(self, mock_open):
         log_file = io.StringIO()
         mock_open.return_value = log_file
