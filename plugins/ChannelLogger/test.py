@@ -103,23 +103,33 @@ class ChannelLoggerTestCase(ChannelPluginTestCase):
         )
 
     @patch_open
-    def testLogRewriteRelayedEmulatedEcho(self, mock_open):
+    def _testLogRewriteRelayedEmulatedEcho(self, mock_open, relayed):
         with conf.supybot.plugins.ChannelLogger.rewriteRelayed.context(True):
             log_file = io.StringIO()
             mock_open.return_value = log_file
 
-            msg = ircmsgs.privmsg('#foo', '<someone> test message')
-            msg.tag('relayedMsg')
+            msg = ircmsgs.privmsg(
+                '#foo', '<someone> test message', prefix='foo!bar@baz'
+            )
+            if relayed:
+                msg.tag('relayedMsg')
             self.irc.getCallback('ChannelLogger').outFilter(self.irc, msg)
             self.irc.feedMsg(msg)
 
-            self.assertRegex(
-                log_file.getvalue(),
-                timestamp_re + '<someone> test message\n'
-            )
+            if relayed:
+                content = '<someone> test message\n'
+            else:
+                content = '<foo> <someone> test message\n'
+            self.assertRegex(log_file.getvalue(), timestamp_re + content)
+
+    def testLogRewriteRelayedEmulatedEcho(self):
+        self._testLogRewriteRelayedEmulatedEcho(relayed=True)
+
+    def testLogRewriteRelayedEmulatedEchoNotRelayed(self):
+        self._testLogRewriteRelayedEmulatedEcho(relayed=False)
 
     @patch_open
-    def testLogRewriteRelayedRealEcho(self, mock_open):
+    def _testLogRewriteRelayedRealEcho(self, mock_open, relayed):
         with conf.supybot.plugins.ChannelLogger.rewriteRelayed.context(True):
             log_file = io.StringIO()
             mock_open.return_value = log_file
@@ -131,19 +141,29 @@ class ChannelLoggerTestCase(ChannelPluginTestCase):
 
             try:
                 out_msg = ircmsgs.privmsg('#foo', '<someone> test message')
-                out_msg.tag('relayedMsg')
+                if relayed:
+                    out_msg.tag('relayedMsg')
                 self.irc.getCallback('ChannelLogger').outFilter(self.irc, out_msg)
             finally:
                 self.irc.state.capabilities_ack = original_caps
 
-            msg = ircmsgs.privmsg('#foo', '<someone> test message')
+            msg = ircmsgs.privmsg(
+                '#foo', '<someone> test message', prefix='foo!bar@baz'
+            )
             msg.server_tags['label'] = out_msg.server_tags['label']
             self.irc.feedMsg(msg)
 
-            self.assertRegex(
-                log_file.getvalue(),
-                timestamp_re + '<someone> test message\n'
-            )
+            if relayed:
+                content = '<someone> test message\n'
+            else:
+                content = '<foo> <someone> test message\n'
+            self.assertRegex(log_file.getvalue(), timestamp_re + content)
+
+    def testLogRewriteRelayedRealEcho(self):
+        self._testLogRewriteRelayedRealEcho(relayed=True)
+
+    def testLogRewriteRelayedRealEchoNotRelayed(self):
+        self._testLogRewriteRelayedRealEcho(relayed=False)
 
     @patch_open
     def testLogNotice(self, mock_open):
