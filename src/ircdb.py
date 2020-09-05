@@ -1172,8 +1172,8 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
     try:
         id = users.getUserId(hostmask)
         user = users.getUser(id)
-        if user._checkCapability('owner'):
-            # Owners shouldn't ever be ignored.
+        if user._checkCapability('trusted'):
+            # Trusted users (including owners) shouldn't ever be ignored.
             return False
         elif user.ignore:
             log.debug('Ignoring %s due to their IrcUser ignore flag.', hostmask)
