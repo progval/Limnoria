@@ -768,17 +768,23 @@ class Regexp(Value):
                 # value of there parent change.
                 v = (s, utils.str.perlReToPythonRe(s))
             else:
-                v = ('', '')
+                v = None
         except ValueError as e:
             self.error(e)
         else:
             super().set(v)
 
     def __call__(self):
-        return self.value[1]
+        if self.value is None:
+            return None
+        else:
+            return self.value[1]
 
     def __str__(self):
-        return self.value[0]
+        if self.value is None:
+            return ''
+        else:
+            return self.value[0]
 
 class SeparatedListOf(Value):
     __slots__ = ()

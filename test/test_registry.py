@@ -182,8 +182,6 @@ class ValuesTestCase(SupyTestCase):
         self.assertTrue(v().match('foo'))
         v.set('')
         self.assertEqual(v(), None)
-        self.assertRaises(registry.InvalidRegistryValue,
-                          v.setValue, re.compile(r'foo'))
 
     def testBackslashesKeys(self):
         conf.supybot.reply.whenAddressedBy.strings.get(':foo').set('=/*')
