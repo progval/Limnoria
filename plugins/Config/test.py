@@ -39,7 +39,7 @@ def random_string():
 
 class ConfigTestCase(ChannelPluginTestCase):
     # We add utilities so there's something in supybot.plugins.
-    plugins = ('Config', 'User', 'Utilities')
+    plugins = ('Config', 'User', 'Utilities', 'Web')
 
     prefix1 = 'somethingElse!user@host1.tld'
     prefix2 = 'EvensomethingElse!user@host2.tld'
@@ -436,6 +436,77 @@ class ConfigTestCase(ChannelPluginTestCase):
             conf.supybot.reply.whenAddressedBy.strings._wasSet)
         self.assertFalse(
             conf.supybot.reply.whenAddressedBy.strings.get(':test')._wasSet)
+
+    def testResetRegexpChannel(self):
+        """Specifically tests resetting a Regexp value, as they have an extra
+        internal state that needs to be reset; see the comment in plugin.py"""
+        self.assertResponse(
+            'config plugins.Web.nonSnarfingRegexp',
+            'Global:  ; #test @ test:  '
+        )
+        self.assertResponse(
+            'config plugins.Web.nonSnarfingRegexp m/foo/',
+            'The operation succeeded.'
+        )
+        self.assertResponse(
+            'config channel plugins.Web.nonSnarfingRegexp m/bar/',
+            'The operation succeeded.'
+        )
+        self.assertResponse(
+            'config plugins.Web.nonSnarfingRegexp',
+            'Global: m/foo/; #test @ test: m/bar/'
+        )
+        self.assertResponse(
+            'config reset channel plugins.Web.nonSnarfingRegexp',
+            'The operation succeeded.'
+        )
+        self.assertResponse('config plugins.Web.nonSnarfingRegexp',
+            'Global: m/foo/; #test @ test: m/foo/'
+        )
+        self.assertResponse(
+            'config plugins.Web.nonSnarfingRegexp ""',
+            'The operation succeeded.'
+        )
+        self.assertResponse(
+            'config plugins.Web.nonSnarfingRegexp',
+            'Global:  ; #test @ test:  '
+        )
+
+    def testResetRegexpNetwork(self):
+        """Specifically tests resetting a Regexp value, as they have an extra
+        internal state that needs to be reset; see the comment in plugin.py"""
+        self.assertResponse(
+            'config plugins.Web.nonSnarfingRegexp',
+            'Global:  ; #test @ test:  '
+        )
+        self.assertResponse(
+            'config plugins.Web.nonSnarfingRegexp m/foo/',
+            'The operation succeeded.'
+        )
+        self.assertResponse(
+            'config network plugins.Web.nonSnarfingRegexp m/bar/',
+            'The operation succeeded.'
+        )
+        self.assertResponse(
+            'config plugins.Web.nonSnarfingRegexp',
+            'Global: m/foo/; #test @ test: m/bar/'
+        )
+        self.assertResponse(
+            'config reset network plugins.Web.nonSnarfingRegexp',
+            'The operation succeeded.'
+        )
+        self.assertResponse('config plugins.Web.nonSnarfingRegexp',
+            'Global: m/foo/; #test @ test: m/foo/'
+        )
+        self.assertResponse(
+            'config plugins.Web.nonSnarfingRegexp ""',
+            'The operation succeeded.'
+        )
+        self.assertResponse(
+            'config plugins.Web.nonSnarfingRegexp',
+            'Global:  ; #test @ test:  '
+        )
+
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

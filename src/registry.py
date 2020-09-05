@@ -749,14 +749,7 @@ class StringWithSpaceOnRight(String):
 
 class Regexp(Value):
     """Value must be a valid regular expression."""
-    __slots__ = ('sr', 'value', '__parent')
     errormsg = _('Value must be a valid regular expression, not %r.')
-    def __init__(self, *args, **kwargs):
-        kwargs['setDefault'] = False
-        self.sr = ''
-        self.value = None
-        self.__parent = super(Regexp, self)
-        self.__parent.__init__(*args, **kwargs)
 
     def error(self, e):
         s = 'Value must be a regexp of the form m/.../ or /.../. %s' % e
@@ -767,26 +760,25 @@ class Regexp(Value):
     def set(self, s):
         try:
             if s:
-                self.setValue(utils.str.perlReToPythonRe(s), sr=s)
+                # We need to preserve the original string, as it's shown in
+                # the user interface and the config file.
+                # It might be tempting to set the original string as an
+                # attribute, but doing so would result in inconsistent states
+                # for childs of this variable, should they be reset, or the
+                # value of there parent change.
+                v = (s, utils.str.perlReToPythonRe(s))
             else:
-                self.setValue(None)
+                v = ('', '')
         except ValueError as e:
             self.error(e)
-
-    def setValue(self, v, sr=None):
-        if v is None:
-            self.sr = ''
-            self.__parent.setValue(None)
-        elif sr is not None:
-            self.sr = sr
-            self.__parent.setValue(v)
         else:
-            raise InvalidRegistryValue('Can\'t setValue a regexp, there would be an inconsistency '\
-                  'between the regexp and the recorded string value.')
+            super().set(v)
+
+    def __call__(self):
+        return self.value[1]
 
     def __str__(self):
-        self() # Gotta update if we've been reloaded.
-        return self.sr
+        return self.value[0]
 
 class SeparatedListOf(Value):
     __slots__ = ()
