@@ -53,6 +53,7 @@ class BadWords(callbacks.Privmsg):
         self.filtering = True
         self.lastModified = 0
         self.words = conf.supybot.plugins.BadWords.words
+        self.phrases = conf.supybot.plugins.BadWords.phrases
 
     def callCommand(self, name, irc, msg, *args, **kwargs):
         if ircdb.checkCapability(msg.prefix, 'admin'):
@@ -71,7 +72,7 @@ class BadWords(callbacks.Privmsg):
         self.filtering = True
         # We need to check for bad words here rather than in doPrivmsg because
         # messages don't get to doPrivmsg if the user is ignored.
-        if msg.command == 'PRIVMSG' and self.words():
+        if msg.command == 'PRIVMSG' and (self.words() or self.phrases()):
             channel = msg.channel
             self.updateRegexp(channel, irc.network)
             s = ircutils.stripFormatting(msg.args[1])
@@ -96,12 +97,14 @@ class BadWords(callbacks.Privmsg):
         return msg
 
     def updateRegexp(self, channel, network):
-        if self.lastModified < self.words.lastModified:
-            self.makeRegexp(self.words(), channel, network)
+        if self.lastModified < self.words.lastModified \
+                or self.lastModified < self.phrases.lastModified:
+            self.makeRegexp(self.words() | self.phrases(), channel, network)
             self.lastModified = time.time()
 
     def outFilter(self, irc, msg):
-        if self.filtering and msg.command == 'PRIVMSG' and self.words():
+        if self.filtering and msg.command == 'PRIVMSG' \
+                and (self.words() or self.phrases()):
             channel = msg.channel
             self.updateRegexp(channel, irc.network)
             s = msg.args[1]
@@ -124,7 +127,7 @@ class BadWords(callbacks.Privmsg):
 
         Returns the list of words being censored.
         """
-        L = list(self.words())
+        L = list(self.words() | self.phrases())
         if L:
             self.filtering = False
             utils.sortBy(str.lower, L)
@@ -134,29 +137,42 @@ class BadWords(callbacks.Privmsg):
     list = wrap(list, ['admin'])
 
     @internationalizeDocstring
-    def add(self, irc, msg, args, words):
+    def add(self, irc, msg, args, new_words):
         """<word> [<word> ...]
 
         Adds all <word>s to the list of words being censored.
         """
-        set = self.words()
-        set.update(words)
-        self.words.setValue(set)
+        words = self.words()
+        phrases = self.phrases()
+        for word in new_words:
+            if ' ' in word:
+                phrases.add(word)
+            else:
+                words.add(word)
+
+        self.words.setValue(words)
+        self.phrases.setValue(phrases)
+
         irc.replySuccess()
-    add = wrap(add, ['admin', many('somethingWithoutSpaces')])
+    add = wrap(add, ['admin', many('something')])
 
     @internationalizeDocstring
-    def remove(self, irc, msg, args, words):
+    def remove(self, irc, msg, args, old_words):
         """<word> [<word> ...]
 
         Removes <word>s from the list of words being censored.
         """
-        set = self.words()
-        for word in words:
-            set.discard(word)
-        self.words.setValue(set)
+        words = self.words()
+        phrases = self.phrases()
+        for word in old_words:
+            words.discard(word)
+            phrases.discard(word)
+        self.words.setValue(words)
+        self.phrases.setValue(phrases)
+
+
         irc.replySuccess()
-    remove = wrap(remove, ['admin', many('somethingWithoutSpaces')])
+    remove = wrap(remove, ['admin', many('something')])
 
 
 Class = BadWords

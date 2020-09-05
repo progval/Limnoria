@@ -76,7 +76,8 @@ class BadWordsTestCase(PluginTestCase):
         self.assertNotError('badwords list')
         self.assertNotError('badwords add shit')
         self.assertNotError('badwords add ass')
-        self.assertResponse('badwords list', 'ass and shit')
+        self.assertNotError('badwords add "fuck you"')
+        self.assertResponse('badwords list', 'ass, fuck you, and shit')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
