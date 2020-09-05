@@ -143,7 +143,7 @@ class BadWords(callbacks.Privmsg):
         set.update(words)
         self.words.setValue(set)
         irc.replySuccess()
-    add = wrap(add, ['admin', many('something')])
+    add = wrap(add, ['admin', many('somethingWithoutSpaces')])
 
     @internationalizeDocstring
     def remove(self, irc, msg, args, words):
@@ -156,7 +156,7 @@ class BadWords(callbacks.Privmsg):
             set.discard(word)
         self.words.setValue(set)
         irc.replySuccess()
-    remove = wrap(remove, ['admin', many('something')])
+    remove = wrap(remove, ['admin', many('somethingWithoutSpaces')])
 
 
 Class = BadWords
