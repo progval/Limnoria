@@ -37,7 +37,6 @@ import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
 from supybot.commands import *
-from supybot.utils.iter import all
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -172,7 +171,9 @@ class Config(callbacks.Plugin):
                 vname = ':' + vname
             if getattr(v, '_channelValue', False):
                 vname = '#' + vname
-            if v._added and not all(irc.isChannel, v._added):
+            if v._added and not all(
+                    irc.isChannel(child) or child.startswith(':')
+                    for child in v._added):
                 vname = '@' + vname
             L.append(vname)
         utils.sortBy(str.lower, L)
