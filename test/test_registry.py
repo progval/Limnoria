@@ -183,6 +183,16 @@ class ValuesTestCase(SupyTestCase):
         v.set('')
         self.assertEqual(v(), None)
 
+    def testRegexpDefaultString(self):
+        v = registry.Regexp('m/foo/', 'help')
+        self.assertEqual(v(), re.compile('foo'))
+
+        v = registry.Regexp('', 'help')
+        self.assertEqual(v(), None)
+
+        v = registry.Regexp(None, 'help')
+        self.assertEqual(v(), None)
+
     def testBackslashesKeys(self):
         conf.supybot.reply.whenAddressedBy.strings.get(':foo').set('=/*')
         filename = conf.supybot.directories.conf.dirize('backslashes1.conf')

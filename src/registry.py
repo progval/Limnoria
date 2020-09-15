@@ -751,24 +751,35 @@ class Regexp(Value):
     """Value must be a valid regular expression."""
     errormsg = _('Value must be a valid regular expression, not %r.')
 
+    def __init__(self, default, *args, **kwargs):
+        # We're not supposed to do convertions here, BUT this is needed
+        # when the value is set programmatically because the value
+        # plugins set (a string) is not the same as the one they get
+        # (a compiled pattern object)
+        default = self._convertFromString(default)
+        super().__init__(default, *args, **kwargs)
+
     def error(self, e):
         s = 'Value must be a regexp of the form m/.../ or /.../. %s' % e
         e = InvalidRegistryValue(s)
         e.value = self
         raise e
 
+    def _convertFromString(self, s):
+        if s:
+            # We need to preserve the original string, as it's shown in
+            # the user interface and the config file.
+            # It might be tempting to set the original string as an
+            # attribute, but doing so would result in inconsistent states
+            # for childs of this variable, should they be reset, or the
+            # value of there parent change.
+            return (s, utils.str.perlReToPythonRe(s))
+        else:
+            return None
+
     def set(self, s):
         try:
-            if s:
-                # We need to preserve the original string, as it's shown in
-                # the user interface and the config file.
-                # It might be tempting to set the original string as an
-                # attribute, but doing so would result in inconsistent states
-                # for childs of this variable, should they be reset, or the
-                # value of there parent change.
-                v = (s, utils.str.perlReToPythonRe(s))
-            else:
-                v = None
+            v = self._convertFromString(s)
         except ValueError as e:
             self.error(e)
         else:
