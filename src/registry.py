@@ -785,6 +785,17 @@ class Regexp(Value):
         else:
             super().set(v)
 
+    def setValue(self, v):
+        """Don't call this function directly from plugins, it is subject
+        to change without notice."""
+        if v is not None and (not isinstance(v, tuple) or len(v) != 2):
+            raise InvalidRegistryValue(
+                'Can\'t setValue a regexp, there would be an inconsistency '
+                'between the regexp and the recorded string value. '
+                'Use .set() instead.')
+
+        super().setValue(v)
+
     def __call__(self):
         if self.value is None:
             return None

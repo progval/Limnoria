@@ -183,6 +183,13 @@ class ValuesTestCase(SupyTestCase):
         v.set('')
         self.assertEqual(v(), None)
 
+    def testRegexpSetValue(self):
+        v = registry.Regexp(None, 'help')
+        self.assertRaises(registry.InvalidRegistryValue,
+                          v.setValue, r'foo')
+        self.assertRaises(registry.InvalidRegistryValue,
+                          v.setValue, re.compile(r'foo'))
+
     def testRegexpDefaultString(self):
         v = registry.Regexp('m/foo/', 'help')
         self.assertEqual(v(), re.compile('foo'))
