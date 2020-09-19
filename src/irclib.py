@@ -1358,7 +1358,10 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                     self._maybeStartSasl(msg)
                 else:
                     pass # Already in the middle of a SASL auth
-            else:
+            elif self.state.fsm.state != IrcStateFsm.States.CONNECTED:
+                # If we are still in the initial cap negotiation (ie. if this
+                # is not in response to a 'CAP NEW'), send a CAP END so the
+                # server sends us the MOTD
                 self.endCapabilityNegociation(msg)
         else:
             log.debug('Waiting for ACK/NAK of capabilities: %r',
