@@ -28,8 +28,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import functools
+from unittest.mock import patch
 import sys
+
 import feedparser
+
 from supybot.test import *
 import supybot.conf as conf
 import supybot.utils.minisix as minisix
@@ -53,12 +57,26 @@ not_well_formed = """<?xml version="1.0" encoding="utf-8"?>
 </rss>
 """
 
-def constant(content):
-    if minisix.PY3:
-        content = content.encode()
-    def f(*args, **kwargs):
-        return minisix.io.BytesIO(content)
-    return f
+
+class MockResponse:
+    headers = {}
+    url = ''
+    def read(self):
+        return self._data.encode()
+
+    def close(self):
+        pass
+
+def mock_urllib(f):
+    mock = MockResponse()
+
+    @functools.wraps(f)
+    def newf(self):
+        with patch("urllib.request.OpenerDirector.open", return_value=mock):
+            f(self, mock)
+
+    return newf
+
 
 url = 'http://www.advogato.org/rss/articles.xml'
 class RSSTestCase(ChannelPluginTestCase):
@@ -82,9 +100,9 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self.assertNotError('rss remove xkcd')
 
-    def testInitialAnnounceNewest(self):
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_new)
+    @mock_urllib
+    def testInitialAnnounceNewest(self, mock):
+        mock._data = xkcd_new
         timeFastForward(1.1)
         try:
             with conf.supybot.plugins.RSS.sortFeedItems.context('newestFirst'):
@@ -95,11 +113,10 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
-            feedparser._open_resource = old_open
 
-    def testInitialAnnounceOldest(self):
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_new)
+    @mock_urllib
+    def testInitialAnnounceOldest(self, mock):
+        mock._data = xkcd_new
         timeFastForward(1.1)
         try:
             with conf.supybot.plugins.RSS.initialAnnounceHeadlines.context(1):
@@ -110,11 +127,10 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
-            feedparser._open_resource = old_open
 
-    def testNoInitialAnnounce(self):
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_old)
+    @mock_urllib
+    def testNoInitialAnnounce(self, mock):
+        mock._data = xkcd_old
         timeFastForward(1.1)
         try:
             with conf.supybot.plugins.RSS.initialAnnounceHeadlines.context(0):
@@ -124,11 +140,10 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
-            feedparser._open_resource = old_open
 
-    def testAnnounce(self):
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_old)
+    @mock_urllib
+    def testAnnounce(self, mock):
+        mock._data = xkcd_old
         timeFastForward(1.1)
         try:
             self.assertError('rss announce add xkcd')
@@ -139,7 +154,7 @@ class RSSTestCase(ChannelPluginTestCase):
                 with conf.supybot.plugins.RSS.waitPeriod.context(1):
                     timeFastForward(1.1)
                     self.assertNoResponse(' ', timeout=0.1)
-                    feedparser._open_resource = constant(xkcd_new)
+                    mock._data = xkcd_new
                     self.assertNoResponse(' ', timeout=0.1)
                     timeFastForward(1.1)
                     self.assertRegexp(' ', 'Chaos')
@@ -148,11 +163,10 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
-            feedparser._open_resource = old_open
 
-    def testMaxAnnounces(self):
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_old)
+    @mock_urllib
+    def testMaxAnnounces(self, mock):
+        mock._data = xkcd_old
         timeFastForward(1.1)
         try:
             self.assertError('rss announce add xkcd')
@@ -164,7 +178,7 @@ class RSSTestCase(ChannelPluginTestCase):
                     with conf.supybot.plugins.RSS.maximumAnnounceHeadlines.context(1):
                         timeFastForward(1.1)
                         self.assertNoResponse(' ', timeout=0.1)
-                        feedparser._open_resource = constant(xkcd_new)
+                        mock._data = xkcd_new
                         log.debug('set return value to: %r', xkcd_new)
                         self.assertNoResponse(' ', timeout=0.1)
                         timeFastForward(1.1)
@@ -173,11 +187,10 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
-            feedparser._open_resource = old_open
 
-    def testAnnounceAnonymous(self):
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_old)
+    @mock_urllib
+    def testAnnounceAnonymous(self, mock):
+        mock._data = xkcd_old
         timeFastForward(1.1)
         try:
             self.assertNotError('rss announce add http://xkcd.com/rss.xml')
@@ -185,18 +198,17 @@ class RSSTestCase(ChannelPluginTestCase):
             with conf.supybot.plugins.RSS.waitPeriod.context(1):
                 timeFastForward(1.1)
                 self.assertNoResponse(' ', timeout=0.1)
-                feedparser._open_resource = constant(xkcd_new)
+                mock._data = xkcd_new
                 self.assertNoResponse(' ', timeout=0.1)
                 timeFastForward(1.1)
                 self.assertRegexp(' ', 'Telescopes')
         finally:
             self._feedMsg('rss announce remove http://xkcd.com/rss.xml')
             self._feedMsg('rss remove http://xkcd.com/rss.xml')
-            feedparser._open_resource = old_open
 
-    def testAnnounceReload(self):
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_old)
+    @mock_urllib
+    def testAnnounceReload(self, mock):
+        mock._data = xkcd_old
         timeFastForward(1.1)
         try:
             with conf.supybot.plugins.RSS.waitPeriod.context(1):
@@ -210,29 +222,27 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
-            feedparser._open_resource = old_open
 
-    def testReload(self):
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_old)
+    @mock_urllib
+    def testReload(self, mock):
+        mock._data = xkcd_old
         timeFastForward(1.1)
         try:
             with conf.supybot.plugins.RSS.waitPeriod.context(1):
                 self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
                 self.assertNotError('rss announce add xkcd')
                 self.assertRegexp(' ', 'Snake Facts')
-                feedparser._open_resource = constant(xkcd_new)
+                mock._data = xkcd_new
                 self.assertNotError('reload RSS')
                 self.assertRegexp(' ', 'Telescopes')
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
-            feedparser._open_resource = old_open
 
-    def testReloadNoDelay(self):
+    @mock_urllib
+    def testReloadNoDelay(self, mock):
         # https://github.com/ProgVal/Limnoria/issues/922
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_old)
+        mock._data = xkcd_old
         timeFastForward(1.1)
         try:
             with conf.supybot.plugins.RSS.waitPeriod.context(1):
@@ -243,11 +253,10 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
-            feedparser._open_resource = old_open
 
-    def testReannounce(self):
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_old)
+    @mock_urllib
+    def testReannounce(self, mock):
+        mock._data = xkcd_old
         timeFastForward(1.1)
         try:
             self.assertError('rss announce add xkcd')
@@ -260,7 +269,7 @@ class RSSTestCase(ChannelPluginTestCase):
                         timeFastForward(1.1)
                         self.assertNoResponse(' ', timeout=0.1)
                         self._feedMsg('rss announce remove xkcd')
-                        feedparser._open_resource = constant(xkcd_new)
+                        mock._data = xkcd_new
                         timeFastForward(1.1)
                         self.assertNoResponse(' ', timeout=0.1)
                         self.assertNotError('rss announce add xkcd')
@@ -271,11 +280,10 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
-            feedparser._open_resource = old_open
 
-    def testFeedSpecificFormat(self):
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_old)
+    @mock_urllib
+    def testFeedSpecificFormat(self, mock):
+        mock._data = xkcd_old
         timeFastForward(1.1)
         try:
             self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
@@ -287,11 +295,10 @@ class RSSTestCase(ChannelPluginTestCase):
         finally:
             self._feedMsg('rss remove xkcd')
             self._feedMsg('rss remove xkcdsec')
-            feedparser._open_resource = old_open
 
-    def testFeedSpecificWaitPeriod(self):
-        old_open = feedparser._open_resource
-        feedparser._open_resource = constant(xkcd_old)
+    @mock_urllib
+    def testFeedSpecificWaitPeriod(self, mock):
+        mock._data = xkcd_old
         timeFastForward(1.1)
         try:
             self.assertNotError('rss add xkcd1 http://xkcd.com/rss.xml')
@@ -304,7 +311,7 @@ class RSSTestCase(ChannelPluginTestCase):
                 with conf.supybot.plugins.RSS.feeds.xkcd1.waitPeriod.context(1):
                     timeFastForward(1.1)
                     self.assertNoResponse(' ', timeout=0.1)
-                    feedparser._open_resource = constant(xkcd_new)
+                    mock._data = xkcd_new
                     self.assertNoResponse(' ', timeout=0.1)
                     timeFastForward(1.1)
                     self.assertRegexp(' ', 'xkcd1.*Chaos')
@@ -317,30 +324,23 @@ class RSSTestCase(ChannelPluginTestCase):
             self._feedMsg('rss remove xkcd1')
             self._feedMsg('rss announce remove xkcd2')
             self._feedMsg('rss remove xkcd2')
-            feedparser._open_resource = old_open
 
-    def testDescription(self):
+    @mock_urllib
+    def testDescription(self, mock):
         timeFastForward(1.1)
         with conf.supybot.plugins.RSS.format.context('$description'):
-            old_open = feedparser._open_resource
-            feedparser._open_resource = constant(xkcd_new)
-            try:
-                self.assertRegexp('rss http://xkcd.com/rss.xml',
-                        'On the other hand, the refractor\'s')
-            finally:
-                feedparser._open_resource = old_open
+            mock._data = xkcd_new
+            self.assertRegexp('rss http://xkcd.com/rss.xml',
+                    'On the other hand, the refractor\'s')
 
-    def testBadlyFormedFeedWithNoItems(self):
+    @mock_urllib
+    def testBadlyFormedFeedWithNoItems(self, mock):
         # This combination will cause the RSS command to show the last parser
         # error.
-        old_open = feedparser._open_resource
         timeFastForward(1.1)
-        feedparser._open_resource = constant(not_well_formed)
-        try:
-            self.assertRegexp('rss http://example.com/',
-                              'Parser error')
-        finally:
-            feedparser._open_resource = old_open
+        mock._data = not_well_formed
+        self.assertRegexp('rss http://example.com/',
+                          'Parser error')
 
     if network:
         timeout = 5  # Note this applies also to the above tests
