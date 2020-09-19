@@ -137,7 +137,8 @@ class MathTestCase(PluginTestCase):
 
     def testCalcMemoryError(self):
         self.assertRegexp('calc ' + '('*10000,
-            '(too much recursion'  # cpython
+            '(too much recursion'  # cpython < 3.10
+            '|too many nested parentheses'  # cpython >= 3.10
             '|parenthesis is never closed)'  # pypy
         )
 
