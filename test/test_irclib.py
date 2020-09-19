@@ -858,6 +858,17 @@ class IrcTestCase(SupyTestCase):
         self.irc.feedMsg(msg2)
         self.assertEqual(list(self.irc.state.history), [msg1, msg2])
 
+    def testMultipleMotd(self):
+        self.irc.reset()
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='422'))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='422'))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='375', args=['nick']))
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='372', args=['nick', 'some message']))
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='376', args=['nick']))
+
     def testMsgChannel(self):
         self.irc.reset()
 

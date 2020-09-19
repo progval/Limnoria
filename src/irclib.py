@@ -515,6 +515,8 @@ class IrcStateFsm(object):
         self._transition(irc, msg, self.States.INIT_MOTD, [
             self.States.INIT_CAP_NEGOTIATION,
             self.States.INIT_WAITING_MOTD,
+            self.States.CONNECTED,
+            self.States.CONNECTED_SASL,
         ])
 
     def on_end_motd(self, irc, msg):
@@ -522,7 +524,9 @@ class IrcStateFsm(object):
         self._transition(irc, msg, self.States.CONNECTED, [
             self.States.INIT_CAP_NEGOTIATION,
             self.States.INIT_WAITING_MOTD,
-            self.States.INIT_MOTD
+            self.States.INIT_MOTD,
+            self.States.CONNECTED,
+            self.States.CONNECTED_SASL,
         ])
 
     def on_shutdown(self, irc, msg):
