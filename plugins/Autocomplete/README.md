@@ -6,4 +6,4 @@ As this is not yet a released specification, it does nothing unless
 False unless you know what you are doing).
 
 If you are interested in this feature, please contribute to
-[the discussion](https://github.com/ircv3/ircv3-specifications/pull/415>)
+[the discussion](https://github.com/ircv3/ircv3-specifications/pull/415)
