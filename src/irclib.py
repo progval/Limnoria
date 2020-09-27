@@ -301,6 +301,58 @@ class IrcMsgQueue(object):
 # status of various modes (especially ops/halfops/voices) in channels, etc.
 ###
 class ChannelState(utils.python.Object):
+    """Represents the known state of an IRC channel.
+
+    .. attribute:: topic
+
+        The topic of a channel (possibly the empty stringà
+
+        :type: str
+
+    .. attribute:: created
+
+        Timestamp of the channel creation, according to the server.
+
+        :type: int
+
+    .. attribute:: ops
+
+        Set of the nicks of all the operators of the channel.
+
+        :type: ircutils.IrcSet[str]
+
+    .. attribute:: halfops
+
+        Set of the nicks of all the half-operators of the channel.
+
+        :type: ircutils.IrcSet[str]
+
+    .. attribute:: voices
+
+        Set of the nicks of all the voiced users of the channel.
+
+        :type: ircutils.IrcSet[str]
+
+    .. attribute:: users
+
+        Set of the nicks of all the users in the channel.
+
+        :type: ircutils.IrcSet[str]
+
+    .. attribute:: bans
+
+        Set of the all the banmasks set in the channel.
+
+        :type: ircutils.IrcSet[str]
+
+    .. attribute:: modes
+
+        Dict of all the modes set in the channel, with they value, if any.
+        This excludes the following modes: ovhbeq
+
+        :type: Dict[str, Optional[str]]
+    """
+
     __slots__ = ('users', 'ops', 'halfops', 'bans',
                  'voices', 'topic', 'modes', 'created')
     def __init__(self):
@@ -314,16 +366,27 @@ class ChannelState(utils.python.Object):
         self.modes = {}
 
     def isOp(self, nick):
+        """Returns whether the given nick is an op."""
         return nick in self.ops
+
     def isOpPlus(self, nick):
+        """Returns whether the given nick is an op."""
         return nick in self.ops
+
     def isVoice(self, nick):
+        """Returns whether the given nick is voiced."""
         return nick in self.voices
+
     def isVoicePlus(self, nick):
+        """Returns whether the given nick is voiced, an halfop, or an op."""
         return nick in self.voices or nick in self.halfops or nick in self.ops
+
     def isHalfop(self, nick):
+        """Returns whether the given nick is an halfop."""
         return nick in self.halfops
+
     def isHalfopPlus(self, nick):
+        """Returns whether the given nick is an halfop, or an op."""
         return nick in self.halfops or nick in self.ops
 
     def addUser(self, user):
@@ -412,7 +475,11 @@ class ChannelState(utils.python.Object):
             ret = ret and getattr(self, name) == getattr(other, name)
         return ret
 
+
 Batch = collections.namedtuple('Batch', 'type arguments messages')
+"""Represents a batch of messages, see
+<https://ircv3.net/specs/extensions/batch-3.2>"""
+
 
 class IrcStateFsm(object):
     '''Finite State Machine keeping track of what part of the connection
@@ -421,6 +488,8 @@ class IrcStateFsm(object):
 
     @enum.unique
     class States(enum.Enum):
+        """Enumeration of all the states of an IRC connection."""
+
         UNINITIALIZED = 10
         '''Nothing received yet (except server notices)'''
 
@@ -534,8 +603,84 @@ class IrcStateFsm(object):
 
 class IrcState(IrcCommandDispatcher, log.Firewalled):
     """Maintains state of the Irc connection.  Should also become smarter.
+
+    .. attribute:: fsm
+
+        A finite-state machine representing the current state of the IRC
+        connection: various steps while connecting, then remains in the
+        CONNECTED state (or CONNECTED_SASL when doing SASL in the middle of a
+        connection).
+
+        :type: IrcStateFsm
+
+    .. attribute:: capabilities_req
+
+        Set of all capabilities requested from the server.
+        See <https://ircv3.net/specs/core/capability-negotiation>
+
+        :type: Set[str]
+
+    .. attribute:: capabilities_acq
+
+        Set of all capabilities requested from and acknowledged by the
+        server. See <https://ircv3.net/specs/core/capability-negotiation>
+
+        :type: Set[str]
+
+    .. attribute:: capabilities_nak
+
+        Set of all capabilities requested from and refused by the server.
+        This should always be empty unless the bot, a plugin, or the server is
+        misbehaving. See <https://ircv3.net/specs/core/capability-negotiation>
+
+        :type: Set[str]
+
+    .. attribute:: capabilities_ls
+
+        Stores all the capabilities advertised by the server, as well as their
+        value, if any.
+
+        :type: Dict[str, Optional[str]]
+
+    .. attribute:: ircd
+
+        Identification string of the software running the server we are
+        connected to. See
+        <https://defs.ircdocs.horse/defs/numerics.html#rpl-myinfo-004>
+
+        :type: str
+
+    .. attribute:: supported
+
+        Stores the value of ISUPPORT sent when connecting.
+        See <https://defs.ircdocs.horse/defs/isupport.html> for the list of
+        keys.
+
+        :type: utils.InsensitivePreservingDict[str, Any]
+
+    .. attribute:: history
+
+        History of messages received from the network. Automatically discards
+        messages so it doesn't exceed
+        ``supybot.protocols.irc.maxHistoryLength``.
+
+        :type: RingBuffer[ircmsgs.IrcMsg]
+
+    .. attribute:: channels
+
+        Store channel states.
+
+        :type: ircutils.IrcDict[str, ChannelState]
+
+    .. attribute:: nickToHostmask
+
+        Stores the last hostmask of a seen nick.
+
+        :type: ircutils.IrcDict[str, str]
     """
     __firewalled__ = {'addMsg': None}
+
+
     def __init__(self, history=None, supported=None,
                  nicksToHostmasks=None, channels=None,
                  capabilities_req=None,
@@ -899,6 +1044,76 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
     """The base class for an IRC connection.
 
     Handles PING commands already.
+
+    .. attribute:: zombie
+
+        Whether or not this object represents a living IRC connection.
+
+        :type: bool
+
+    .. attribute:: network
+
+        The name of the network this object is connected to.
+
+        :type: str
+
+    .. attribute:: startedAt
+
+        When this connection was (re)started.
+
+        :type: float
+
+    .. attribute:: callbacks
+
+        List of all callbacks (ie. plugins) currently loaded
+
+        :type: List[IrcCallback]
+
+    .. attribute:: queue
+
+        Queue of messages waiting to be sent. Plugins should use the
+        ``queueMsg`` method instead of accessing this directly.
+
+        :type: IrcMsgQueue
+
+    .. attribute:: fastqueue
+
+        Same as ``queue``, but for messages with high priority. Plugins should
+        use the ``sendMsg`` method instead of accessing this directly (or
+        `queueMsg` if the message isn't high priority).
+
+        :type: smallqueue
+
+    .. attribute:: driver
+
+        Driver of the IRC connection (normally, a
+        :py:class:`supybot.drivers.Socket.SocketDriver` object).
+        Plugins normally do not need to access this.
+
+    .. attribute:: startedSync
+
+        When joining a channel, a ``'#channel': time.time()`` entry is added
+        to this dict, which is then removed when the join is completed.
+        Plugins should not change this value, it is automatically handled when
+        they send a JOIN.
+
+        :type: ircutils.IrcDict[str, float]
+
+    .. attribute:: monitoring
+
+        A dict with nicks as keys and the number of plugins monitoring this
+        nick as value.
+        Plugins should not access this directly, and should use the ``monitor``
+        and ``unmonitor`` methods instead.
+
+        :type: ircutils.IrcDict[str, int]
+
+    .. attribute:: state
+
+        An :py:class:`supybot.irclib.IrcState` object, which stores all the
+        known information about the connection with the IRC network.
+
+        :type: supybot.irclib.IrcState
     """
     __firewalled__ = {'die': None,
                       'feedMsg': None,
@@ -934,6 +1149,9 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         return ircutils.isChannel(s, **kw)
 
     def isNick(self, s):
+        """Returns whether the given argument is a valid nick on this
+        network.
+        """
         kw = {}
         if 'nicklen' in self.state.supported:
             kw['nicklen'] = self.state.supported['nicklen']
@@ -1295,6 +1513,12 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         'userhost-in-names', 'invite-notify', 'server-time',
         'chghost', 'batch', 'away-notify', 'message-tags',
         'msgid', 'setname', 'labeled-response', 'echo-message'])
+    """IRCv3 capabilities requested when they are available.
+
+    echo-message is special-cased to be requested only with labeled-response.
+
+    To check if a capability was negotiated, use `irc.state.capabilities_ack`.
+    """
 
     def _queueConnectMessages(self):
         if self.zombie:
