@@ -81,7 +81,6 @@ class SchedulerTestCase(ChannelPluginTestCase):
         timeFastForward(2)
         self.assertResponse(' ', 'Reminder: testRemind')
 
-
     def testRepeat(self):
         self.assertRegexp('scheduler repeat repeater 5 echo testRepeat',
             'testRepeat')
