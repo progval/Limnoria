@@ -90,7 +90,12 @@ class Scheduler(callbacks.Plugin):
                         # though we'll never know for sure, because other
                         # plugins can schedule stuff, too.
                         n = int(name)
-                    self._add(network, event['msg'], event['time'], event['command'], n)
+                    # Here we use event.get() method instead of event[]
+                    # This is to maintain compatibility with older bots
+                    # lacking 'is_reminder' in their event dicts
+                    is_reminder = event.get('is_reminder', False)
+                    self._add(network, event['msg'], event['time'], event['command'],
+                              is_reminder, n)
                 elif event['type'] == 'repeat': # repeating event
                     now = time.time()
                     first_run = event.get('first_run')
@@ -145,13 +150,27 @@ class Scheduler(callbacks.Plugin):
             self.Proxy(irc, msg, tokens)
         return f
 
-    def _add(self, network, msg, t, command, name=None):
-        f = self._makeCommandFunction(network, msg, command)
+    def _makeReminderFunction(self, network, msg, text):
+        """Makes a function suitable for scheduling text"""
+        def f():
+            # If the network isn't available, pick any other one
+            irc = world.getIrc(network) or world.ircs[0]
+            replyIrc = callbacks.ReplyIrcProxy(irc, msg)
+            replyIrc.reply(_('Reminder: %s') % text, msg=msg, prefixNick=True)
+            del self.events[str(f.eventId)]
+        return f
+
+    def _add(self, network, msg, t, command, is_reminder=False, name=None):
+        if is_reminder:
+            f = self._makeReminderFunction(network, msg, command)
+        else:
+            f = self._makeCommandFunction(network, msg, command)
         id = schedule.addEvent(f, t, name)
         f.eventId = id
         self.events[str(id)] = {'command':command,
+                                'is_reminder':is_reminder,
                                 'msg':msg,
-                                'network': network,
+                                'network':network,
                                 'time':t,
                                 'type':'single'}
         return id
@@ -170,6 +189,19 @@ class Scheduler(callbacks.Plugin):
         id = self._add(irc.network, msg, t, command)
         irc.replySuccess(format(_('Event #%i added.'), id))
     add = wrap(add, ['positiveInt', 'text'])
+
+    @internationalizeDocstring
+    def remind(self, irc, msg, args, seconds, text):
+        """ <seconds> <text>
+
+        Sets a reminder with string <text> to run <seconds> seconds in the
+        future. For example, 'scheduler remind [seconds 30m] "Hello World"'
+        will return '<nick> Reminder: Hello World' 30 minutes after being set.
+        """
+        t = time.time() + seconds
+        id = self._add(irc.network, msg, t, text, is_reminder=True)
+        irc.replySuccess(format(_('Reminder Event #%i added.'), id))
+    remind = wrap(remind, ['positiveInt', 'text'])
 
     @internationalizeDocstring
     def remove(self, irc, msg, args, id):
@@ -200,7 +232,7 @@ class Scheduler(callbacks.Plugin):
         assert id == name
         self.events[name] = {'command':command,
                              'msg':msg,
-                             'network': network,
+                             'network':network,
                              'time':seconds,
                              'type':'repeat',
                              'first_run': first_run,
