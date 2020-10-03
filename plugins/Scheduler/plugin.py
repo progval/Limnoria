@@ -90,7 +90,9 @@ class Scheduler(callbacks.Plugin):
                         # though we'll never know for sure, because other
                         # plugins can schedule stuff, too.
                         n = int(name)
-                    self._add(network, event['msg'], event['time'], event['command'], n)
+                    isreminder = event.get('isreminder')
+                    self._add(irc, event['msg'], event['time'], event['command'],
+                              isreminder, n)
                 elif event['type'] == 'repeat': # repeating event
                     now = time.time()
                     first_run = event.get('first_run')
@@ -105,7 +107,7 @@ class Scheduler(callbacks.Plugin):
                     next_run_in = self._getNextRunIn(
                         first_run, now, event['time'], not_right_now=True)
 
-                    self._repeat(network, event['msg'], name,
+                    self._repeat(irc, event['msg'], name,
                                  event['time'], event['command'], first_run, next_run_in)
             except AssertionError as e:
                 if str(e) == 'An event with the same name has already been scheduled.':
@@ -133,11 +135,9 @@ class Scheduler(callbacks.Plugin):
         world.flushers.remove(self._flush)
         self.__parent.die()
 
-    def _makeCommandFunction(self, network, msg, command, remove=True):
+    def _makeCommandFunction(self, irc, msg, command, remove=True):
         """Makes a function suitable for scheduling from command."""
         def f():
-            # If the network isn't available, pick any other one
-            irc = world.getIrc(network) or world.ircs[0]
             tokens = callbacks.tokenize(command,
                 channel=msg.channel, network=irc.network)
             if remove:
@@ -145,13 +145,24 @@ class Scheduler(callbacks.Plugin):
             self.Proxy(irc, msg, tokens)
         return f
 
-    def _add(self, network, msg, t, command, name=None):
-        f = self._makeCommandFunction(network, msg, command)
+    def _makeReminderFunction(self, irc, msg, text):
+        """Makes a function suitable for scheduling text"""
+        def f():
+            irc.reply('Reminder: %s' % text, msg=msg, prefixNick=True)
+            del self.events[str(f.eventId)]
+        return f
+
+    def _add(self, irc, msg, t, command, isreminder=False, name=None):
+        if isreminder:
+            f = self._makeReminderFunction(irc, msg, command)
+        else:
+            f = self._makeCommandFunction(irc, msg, command)
         id = schedule.addEvent(f, t, name)
         f.eventId = id
         self.events[str(id)] = {'command':command,
+                                'isreminder':isreminder,
                                 'msg':msg,
-                                'network': network,
+                                'network':irc.network,
                                 'time':t,
                                 'type':'single'}
         return id
@@ -167,9 +178,23 @@ class Scheduler(callbacks.Plugin):
         echo).  Do pay attention to the quotes in that example.
         """
         t = time.time() + seconds
-        id = self._add(irc.network, msg, t, command)
+        id = self._add(irc, msg, t, command)
         irc.replySuccess(format(_('Event #%i added.'), id))
     add = wrap(add, ['positiveInt', 'text'])
+
+    @internationalizeDocstring
+    def remind(self, irc, msg, args, seconds, text):
+        """ <seconds> <text>
+
+        Sets a reminder with string <text> to run <seconds> seconds in the
+        future. For example, 'scheduler remind [seconds 30m] "Hello World"'
+        will return '<nick> Reminder: Hello World' 30 minutes after being set.
+        """
+        t = time.time() + seconds
+        isreminder = True
+        id = self._add(irc, msg, t, text, isreminder)
+        irc.replySuccess(format(_('Reminder Event #%i added.'), id))
+    remind = wrap(remind, ['positiveInt', 'text'])
 
     @internationalizeDocstring
     def remove(self, irc, msg, args, id):
@@ -192,15 +217,15 @@ class Scheduler(callbacks.Plugin):
             irc.error(_('Invalid event id.'))
     remove = wrap(remove, ['lowered'])
 
-    def _repeat(self, network, msg, name, seconds, command, first_run, next_run_in):
-        f = self._makeCommandFunction(network, msg, command, remove=False)
+    def _repeat(self, irc, msg, name, seconds, command, first_run, next_run_in):
+        f = self._makeCommandFunction(irc, msg, command, remove=False)
         f_wrapper = schedule.schedule.makePeriodicWrapper(f, seconds, name)
         assert first_run is not None
         id = schedule.addEvent(f_wrapper, time.time() + next_run_in, name)
         assert id == name
         self.events[name] = {'command':command,
                              'msg':msg,
-                             'network': network,
+                             'network': irc.network,
                              'time':seconds,
                              'type':'repeat',
                              'first_run': first_run,
@@ -224,7 +249,7 @@ class Scheduler(callbacks.Plugin):
         next_run_in = opts.get('delay', 0)
         first_run = time.time() + next_run_in
         self._repeat(
-            irc.network, msg, name, seconds, command, first_run, next_run_in)
+            irc, msg, name, seconds, command, first_run, next_run_in)
         # We don't reply because the command runs immediately.
         # But should we?  What if the command doesn't have visible output?
         # irc.replySuccess()
