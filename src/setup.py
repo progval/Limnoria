@@ -70,6 +70,7 @@ if setuptools:
             if os.path.isfile(readme_path):
                 with open(readme_path, 'r') as fd:
                     kwargs['long_description'] = fd.read()
+                    kwargs['long_description_content_type'] = 'text/markdown'
 
         module_name = kwargs['name'].replace('-', '_')
         kwargs.setdefault('packages', [module_name])
