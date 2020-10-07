@@ -85,6 +85,9 @@ class SchedulerTestCase(ChannelPluginTestCase):
         self.assertResponse(' ', 'Reminder: testRemind')
         timeFastForward(5)
         self.assertNoResponse(' ', timeout=1)
+        self.assertResponse(
+            'scheduler list', 'There are currently no scheduled commands.')
+
 
     def testRepeat(self):
         self.assertRegexp('scheduler repeat repeater 5 echo testRepeat',
