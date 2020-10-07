@@ -76,6 +76,9 @@ class SchedulerTestCase(ChannelPluginTestCase):
 
     def testRemind(self):
         self.assertNotError('scheduler remind 5 testRemind')
+        self.assertResponse(
+            'scheduler list',
+            '3 (in 4 seconds): "testRemind"')
         timeFastForward(3)
         self.assertNoResponse(' ', timeout=1)
         timeFastForward(3)
