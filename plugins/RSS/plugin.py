@@ -338,15 +338,21 @@ class RSS(callbacks.Plugin):
 
     @only_one_at_once
     def update_feeds(self):
-        announced_feeds = set()
+        announced_feeds = {}
         for irc in world.ircs:
             for channel in irc.state.channels:
-                announced_feeds |= self.registryValue('announce', channel, irc.network)
-        for name in announced_feeds:
+                channel_feed_names = self.registryValue(
+                    'announce', channel, irc.network)
+                for name in channel_feed_names:
+                    announced_feeds[name] = (channel, irc.network)
+        for (name, (channel, network)) in announced_feeds.items():
             feed = self.get_feed(name)
             if not feed:
-                self.log.warning('Feed %s is announced but does not exist.',
-                        name)
+                self.log.warning(
+                    'Feed %s is announced in %s@%s, but does not exist. '
+                    'Use "rss announce remove %s %s" to remove it from '
+                    'announcements.',
+                    name, channel, network, channel, name)
                 continue
             self.update_feed_if_needed(feed)
 
