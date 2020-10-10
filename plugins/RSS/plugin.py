@@ -527,10 +527,17 @@ class RSS(callbacks.Plugin):
             message isn't sent in the channel itself.
             """
             announce = conf.supybot.plugins.RSS.announce
-            S = announce.get(channel)()
-            for feed in feeds:
-                S.discard(feed)
-            announce.get(channel).setValue(S)
+
+            def remove_from_var(var):
+                S = var()
+                for feed in feeds:
+                    S.discard(feed)
+                var.setValue(S)
+
+            remove_from_var(announce.get(channel))
+            remove_from_var(announce.getSpecific(
+                channel=channel, network=irc.network))
+
             irc.replySuccess()
         remove = wrap(remove, [('checkChannelCapability', 'op'),
                                many(first('url', 'feedName'))])
