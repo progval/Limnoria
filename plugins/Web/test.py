@@ -37,6 +37,13 @@ class WebTestCase(ChannelPluginTestCase):
             self.assertError('headers ftp://ftp.cdrom.com/pub/linux')
             self.assertNotError('headers http://www.slashdot.org/')
 
+        def testLocation(self):
+            self.assertError('location ftp://ftp.cdrom.com/pub/linux')
+            self.assertResponse(
+                'location http://limnoria.net/', 'https://limnoria.net/')
+            self.assertResponse(
+                'location https://www.limnoria.net/', 'https://limnoria.net/')
+
         def testDoctype(self):
             self.assertError('doctype ftp://ftp.cdrom.com/pub/linux')
             self.assertNotError('doctype http://www.slashdot.org/')

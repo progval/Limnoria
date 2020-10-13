@@ -275,6 +275,21 @@ class Web(callbacks.PluginRegexp):
         finally:
             fd.close()
 
+    @wrap(['httpUrl'])
+    @catch_web_errors
+    @fetch_sandbox
+    def location(self, irc, msg, args, url):
+        """<url>
+
+        If the <url> is redirected to another page, returns the URL of that
+        page. This works even if there are multiple redirects.
+        Only HTTP urls are valid.
+        Useful to "un-tinify" URLs."""
+        timeout = self.registryValue('timeout')
+        (target, text) = utils.web.getUrlTargetAndContent(url, size=60,
+            timeout=timeout)
+        irc.reply(target)
+
     _doctypeRe = re.compile(r'(<!DOCTYPE[^>]+>)', re.M)
     @wrap(['httpUrl'])
     @catch_web_errors
