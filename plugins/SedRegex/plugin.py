@@ -57,7 +57,7 @@ from .constants import SED_REGEX, TAG_SEEN, TAG_IS_REGEX
 # Replace newlines and friends with things like literal "\n" (backslash and "n")
 axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})
 
-class SearchNotFound(Exception):
+class SearchNotFoundError(Exception):
     pass
 
 class SedRegex(callbacks.PluginRegexp):
@@ -158,7 +158,7 @@ class SedRegex(callbacks.PluginRegexp):
                     timeout=regex_timeout, pn=self.name(), cn='replacer')
         except ProcessTimeoutError:
             irc.error(_("Search timed out."))
-        except SearchNotFound:
+        except SearchNotFoundError:
             irc.error(_("Search not found in the last %i IRC messages on this network.") %
                 len(irc.state.history))
         except Exception as e:
@@ -223,7 +223,7 @@ class SedRegex(callbacks.PluginRegexp):
 
         self.log.debug(_("SedRegex: Search %r not found in the last %i messages of %s."),
                          msg.args[1], len(irc.state.history), msg.args[0])
-        raise SearchNotFound()
+        raise SearchNotFoundError()
 
 Class = SedRegex
 
