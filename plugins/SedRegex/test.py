@@ -51,6 +51,15 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg(' ')
         self.assertIn('Abcd testefgh', str(m))
 
+    def testNoMatch(self):
+        self.feedMsg('hello world')
+        self.feedMsg('s/goodbye//')
+        m = self.getMsg(' ')
+        self.assertIn('Search not found', str(m))
+        self.feedMsg('s/Hello/hi/')  # wrong case
+        m = self.getMsg(' ')
+        self.assertIn('Search not found', str(m))
+
     def testCaseInsensitiveReplace(self):
         self.feedMsg('Aliens Are Invading, Help!')
         self.feedMsg('s/a/e/i')
