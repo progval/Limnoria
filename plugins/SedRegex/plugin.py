@@ -159,7 +159,7 @@ class SedRegex(callbacks.PluginRegexp):
         except ProcessTimeoutError:
             irc.error(_("Search timed out."))
         except SearchNotFound:
-            irc.error(_("Search not found in the last %i messages.") %
+            irc.error(_("Search not found in the last %i IRC messages on this network.") %
                 len(irc.state.history))
         except Exception as e:
             self.log.warning(_("SedRegex replacer error: %s"), e, exc_info=True)
