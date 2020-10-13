@@ -66,7 +66,7 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg(' ')
         self.assertIn('eliens', str(m))
 
-    def testIgnoreRegexpWithBadCase(self):
+    def testIgnoreRegexWithBadCase(self):
         self.feedMsg('aliens are invading, help!')
         self.assertSnarfNoResponse('S/aliens/monsters/')
 
@@ -224,6 +224,19 @@ class SedRegexTestCase(ChannelPluginTestCase):
         self.feedMsg('s/LTAER/later, bye/i <extra text>')
         m = self.getMsg(' ')
         self.assertIn('see you later, bye', str(m))
+
+    def testIgnoreRegexOnMessagesBeforeEnable(self):
+        # Before 2020-10-12 SedRegex used a single msg.tag() to track and ignore messages parsed as a regexp.
+        # However, a common complaint is that this doesn't catch regexps sent before SedRegex was loaded/enabled...
+        with conf.supybot.plugins.sedregex.enable.context(False):
+            self.feedMsg('foo')
+            self.feedMsg('barbell')
+            self.feedMsg('s/foo/bar/')
+            self.feedMsg('abcdef')
+        self.feedMsg('s/bar/door/')
+        m = self.getMsg(' ')
+        # The INCORRECT response would be "s/foo/door/"
+        self.assertIn('doorbell', str(m))
 
     # TODO: test ignores
 

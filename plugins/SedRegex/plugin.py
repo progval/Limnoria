@@ -52,7 +52,7 @@ if sys.version_info[0] < 3:
                       'supports Python 2, consult the python2-legacy branch at '
                       'https://github.com/jlu5/SupyPlugins/tree/python2-legacy')
 
-from .constants import *
+from .constants import SED_REGEX, TAG_SEEN, TAG_IS_REGEX
 
 # Replace newlines and friends with things like literal "\n" (backslash and "n")
 axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})
@@ -110,11 +110,30 @@ class SedRegex(callbacks.PluginRegexp):
 
         return (pattern, replacement, count, raw_flags)
 
+    # Tag all messages that SedRegex has seen before. This slightly optimizes the ignoreRegex
+    # feature as all messages tagged with SedRegex.seen but not SedRegex.isRegex is NOT a regexp.
+    # If we didn't have this tag, we'd have to run a regexp match on each message in the history
+    # to check if it's a regexp, as there could've been regexp-like messages sent before
+    # SedRegex was enabled.
+    def doNotice(self, irc, msg):
+        if self.registryValue('enable', msg.channel, irc.network):
+            msg.tag(TAG_SEEN)
+
+    def doPrivmsg(self, irc, msg):
+       # callbacks.PluginRegexp works by defining doPrivmsg(), we don't want to overwrite
+       # its behaviour
+       super().doPrivmsg(irc, msg)
+       self.doNotice(irc, msg)
+
+    # SedRegex main routine. This is called automatically by callbacks.PluginRegexp on every
+    # message that matches the SED_REGEX expression defined in constants.py
+    # The actual regexp is passed into PluginRegexp by setting __doc__ equal to the regexp.
     def replacer(self, irc, msg, regex):
         if not self.registryValue('enable', msg.channel, irc.network):
             return
+        self.log.debug("SedRegex: running on %s/%s for %s", irc.network, msg.channel, regex)
         iterable = reversed(irc.state.history)
-        msg.tag('Replacer')
+        msg.tag(TAG_IS_REGEX)
 
         try:
             (pattern, replacement, count, flags) = self._unpack_sed(msg.args[1])
@@ -149,6 +168,7 @@ class SedRegex(callbacks.PluginRegexp):
                     e.__class__.__name__, e))
         else:
             irc.reply(message, prefixNick=False)
+    replacer.__doc__ = SED_REGEX.pattern
 
     def _replacer_process(self, irc, msg, target, pattern, replacement, count, messages):
         for m in messages:
@@ -168,8 +188,15 @@ class SedRegex(callbacks.PluginRegexp):
                 else:
                     text = m.args[1]
 
-                if self.registryValue('ignoreRegex', msg.channel, irc.network) and \
-                        m.tagged('Replacer'):
+                # Test messages sent before SedRegex was activated. Mark them all as seen
+                # so we only need to do this check once per message.
+                if not m.tagged(TAG_SEEN):
+                    m.tag(TAG_SEEN)
+                    if SED_REGEX.match(m.args[1]):
+                        m.tag(TAG_IS_REGEX)
+                # Ignore messages containing a regexp if ignoreRegex is on.
+                if self.registryValue('ignoreRegex', msg.channel, irc.network) and m.tagged(TAG_IS_REGEX):
+                    self.log.debug("Skipping message %s because it is tagged as isRegex", m.args[1])
                     continue
                 if m.nick == msg.nick:
                     messageprefix = msg.nick
@@ -197,7 +224,6 @@ class SedRegex(callbacks.PluginRegexp):
         self.log.debug(_("SedRegex: Search %r not found in the last %i messages of %s."),
                          msg.args[1], len(irc.state.history), msg.args[0])
         raise SearchNotFound()
-    replacer.__doc__ = SED_REGEX.pattern
 
 Class = SedRegex
 
