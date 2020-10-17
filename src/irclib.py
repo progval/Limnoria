@@ -1305,6 +1305,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 # echo-message is not implemented by server; let's emulate it
                 # here, just before sending it to the driver.
                 assert not msg.tagged('receivedAt')
+                msg.nick = self.nick
+                msg.prefix = self.prefix
                 self.feedMsg(msg, tag=False)
             else:
                 # I don't think we should do this.  Why should it matter?  If it's
