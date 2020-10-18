@@ -109,9 +109,15 @@ class SedRegexTestCase(ChannelPluginTestCase):
         self.feedMsg('ouch', frm=self.__class__.other2)
         self.feedMsg('poof', frm=self.__class__.other)
         self.feedMsg('wow!')
+
+        # This should work regardless of whether we use "nick," or "nick:" as prefix
         self.feedMsg('%s: s/^/p/' % ircutils.nickFromHostmask(self.__class__.other2))
         m = self.getMsg(' ')
         self.assertIn('pouch', str(m))
+
+        self.feedMsg('%s, s/^/c/' % ircutils.nickFromHostmask(self.__class__.other2))
+        m = self.getMsg(' ')
+        self.assertIn('couch', str(m))
 
     @unittest.skipUnless(sys.version_info[0] >= 3, 'Test fails on Python 2.')
     def testBoldReplacement(self):
