@@ -148,7 +148,7 @@ class SedRegex(callbacks.PluginRegexp):
             target = msg.nick
         else:
             target = regex.group('nick')
-        if not ircutils.isNick(str(target), strictRfc=True):
+        if not ircutils.isNick(str(target)):
             return
 
         regex_timeout = self.registryValue('processTimeout')

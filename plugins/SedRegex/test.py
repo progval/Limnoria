@@ -238,6 +238,40 @@ class SedRegexTestCase(ChannelPluginTestCase):
         # The INCORRECT response would be "s/foo/door/"
         self.assertIn('doorbell', str(m))
 
+    def testSeparatorPresentInNick(self):
+        # Check that replacement doesn't break if the target's nick contains the sed separator.
+        frm = 'hello|world!~hello@clk-12345678.example.com'
+        with conf.supybot.protocols.irc.strictRfc.context(False):
+            self.feedMsg('the quick brown fox jumps over the lazy hog', frm=frm)
+            # self replace
+            self.feedMsg('s|hog|dog', frm=frm)
+            m = self.getMsg(' ')
+            self.assertIn('the lazy dog', str(m))
+            # other replace
+            self.feedMsg('%s: s| hog| dog' % ircutils.nickFromHostmask(frm), frm=self.__class__.other2)
+            m = self.getMsg(' ')
+            self.assertIn('the lazy dog', str(m))
+
+    def testSlashInNicks(self):
+        # Slash in nicks should be accepted when strictRfc is off
+        frm = 'nick/othernet!hello@othernet.internal'
+        with conf.supybot.protocols.irc.strictRfc.context(False):
+            self.feedMsg('hello world', frm=frm)
+            self.feedMsg('abc 123', frm=frm)
+            # self replace
+            self.feedMsg('s/world/everyone/', frm=frm)
+            m = self.getMsg(' ')
+            self.assertIn('hello everyone', str(m))
+            # other replace
+            self.feedMsg('%s: s/123/321/' % ircutils.nickFromHostmask(frm), frm=self.__class__.other2)
+            m = self.getMsg(' ')
+            self.assertIn('abc 321', str(m))
+
+        # When strictRfc is on, nicks for explicit reference are checked but not
+        # the sender's own nick
+        with conf.supybot.protocols.irc.strictRfc.context(True):
+            self.assertSnarfNoResponse('%s: s/123/321/' % ircutils.nickFromHostmask(frm), frm=self.__class__.other2)
+
     # TODO: test ignores
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
