@@ -1172,17 +1172,24 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
     try:
         id = users.getUserId(hostmask)
         user = users.getUser(id)
-        if user._checkCapability('trusted'):
-            # Trusted users (including owners) shouldn't ever be ignored.
-            return False
-        elif user.ignore:
-            log.debug('Ignoring %s due to their IrcUser ignore flag.', hostmask)
-            return True
     except KeyError:
         # If there's no user...
         if conf.supybot.defaultIgnore():
             log.debug('Ignoring %s due to conf.supybot.defaultIgnore',
                      hostmask)
+            return True
+    else:
+        try:
+            is_trusted = user._checkCapability('trusted')
+        except KeyError:
+            # neither explicitly trusted or -trusted -> consider them not
+            # trusted
+            is_trusted = False
+        if is_trusted:
+            # Trusted users (including owners) shouldn't ever be ignored.
+            return False
+        elif user.ignore:
+            log.debug('Ignoring %s due to their IrcUser ignore flag.', hostmask)
             return True
     if ignores.checkIgnored(hostmask):
         log.debug('Ignoring %s due to ignore database.', hostmask)
