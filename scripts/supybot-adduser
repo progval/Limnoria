@@ -56,7 +56,7 @@ def main():
                       help='capability the user should have; '
                            'this option may be given multiple times.')
     (options, args) = parser.parse_args()
-    if len(args) is not 1:
+    if len(args) != 1:
         parser.error('Specify the users.conf file you\'d like to use.  '
                      'Be sure *not* to specify your registry file, generated '
                      'by supybot-wizard.  This is not the file you want.  '
