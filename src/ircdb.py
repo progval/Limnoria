@@ -1180,15 +1180,14 @@ def checkIgnored(hostmask, recipient='', users=users, channels=channels):
             return True
     else:
         try:
-            is_trusted = user._checkCapability('trusted')
+            if user._checkCapability('trusted'):
+                # Trusted users (including owners) shouldn't ever be ignored.
+                return False
         except KeyError:
             # neither explicitly trusted or -trusted -> consider them not
             # trusted
-            is_trusted = False
-        if is_trusted:
-            # Trusted users (including owners) shouldn't ever be ignored.
-            return False
-        elif user.ignore:
+            pass
+        if user.ignore:
             log.debug('Ignoring %s due to their IrcUser ignore flag.', hostmask)
             return True
     if ignores.checkIgnored(hostmask):
