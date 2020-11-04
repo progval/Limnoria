@@ -186,11 +186,11 @@ class IrcCallback(IrcCommandDispatcher, log.Firewalled):
         if not self.echoMessage and not self.echo_message \
                 and msg.command in ('PRIVMSG', 'NOTICE', 'TAGMSG') \
                 and ('label' in msg.server_tags
-                     or not msg.tagged('receivedAt')):
+                     or msg.tagged('emulatedEcho')):
             # This is an echo of a message we sent; and the plugin didn't
             # opt-in to receiving echos; ignoring it.
             # `'label' in msg.server_tags` detects echos when labeled-response
-            # is enabled; and `not msg.tag('receivedAt')` detects simulated
+            # is enabled; and `msg.tag('emulatedEcho')` detects simulated
             # echos. As we don't enable real echo-message unless
             # labeled-response is enabled; this is an exhaustive check of echos
             # in all cases.
@@ -1305,6 +1305,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 # echo-message is not implemented by server; let's emulate it
                 # here, just before sending it to the driver.
                 assert not msg.tagged('receivedAt')
+                assert not msg.tagged('emulatedEcho')
+                msg.tag('emulatedEcho', True)
                 self.feedMsg(msg, tag=False)
             else:
                 # I don't think we should do this.  Why should it matter?  If it's
