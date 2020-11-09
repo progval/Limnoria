@@ -39,7 +39,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
+from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization('Network')
 
 class Network(callbacks.Plugin):
@@ -54,7 +54,6 @@ class Network(callbacks.Plugin):
         else:
             raise callbacks.Error('I\'m not currently connected to %s.' % network)
 
-    @internationalizeDocstring
     def connect(self, irc, msg, args, opts, network, server, password):
         """[--nossl] <network> [<host[:port]>] [<password>]
 
@@ -106,7 +105,6 @@ class Network(callbacks.Plugin):
                              additional('something'),
                              additional('something', '')])
 
-    @internationalizeDocstring
     def disconnect(self, irc, msg, args, otherIrc, quitMsg):
         """<network> [<quit message>]
 
@@ -126,7 +124,6 @@ class Network(callbacks.Plugin):
                              otherIrc.network)
     disconnect = wrap(disconnect, ['owner', ('networkIrc', True), additional('text')])
 
-    @internationalizeDocstring
     def reconnect(self, irc, msg, args, otherIrc, quitMsg):
         """[<network>] [<quit message>]
 
@@ -146,7 +143,6 @@ class Network(callbacks.Plugin):
             irc.replySuccess()
     reconnect = wrap(reconnect, ['owner', 'networkIrc', additional('text')])
 
-    @internationalizeDocstring
     def command(self, irc, msg, args, otherIrc, commandAndArgs):
         """<network> <command> [<arg> ...]
 
@@ -217,7 +213,6 @@ class Network(callbacks.Plugin):
     do401 = do402
     do406 = do402
 
-    @internationalizeDocstring
     def whois(self, irc, msg, args, otherIrc, nick):
         """[<network>] <nick>
 
@@ -231,7 +226,6 @@ class Network(callbacks.Plugin):
         self._whois[(otherIrc, nick)] = (irc, msg, {}, 'whois')
     whois = wrap(whois, ['networkIrc', 'nick'])
 
-    @internationalizeDocstring
     def whowas(self, irc, msg, args, otherIrc, nick):
         """[<network>] <nick>
 
@@ -245,7 +239,6 @@ class Network(callbacks.Plugin):
         self._whois[(otherIrc, nick)] = (irc, msg, {}, 'whowas')
     whowas = wrap(whowas, ['networkIrc', 'nick'])
 
-    @internationalizeDocstring
     def networks(self, irc, msg, args, opts):
         """[--all]
 
@@ -269,7 +262,6 @@ class Network(callbacks.Plugin):
             (replyIrc, when) = self._latency.pop(irc)
             replyIrc.reply(_('%.2f seconds.') % (now-when))
 
-    @internationalizeDocstring
     def latency(self, irc, msg, args, otherIrc):
         """[<network>]
 
@@ -283,7 +275,6 @@ class Network(callbacks.Plugin):
         irc.noReply()
     latency = wrap(latency, ['networkIrc'])
 
-    @internationalizeDocstring
     def driver(self, irc, msg, args, otherIrc):
         """[<network>]
 
@@ -294,7 +285,6 @@ class Network(callbacks.Plugin):
         irc.reply(otherIrc.driver.__class__.__module__[8:])
     driver = wrap(driver, ['networkIrc'])
 
-    @internationalizeDocstring
     def uptime(self, irc, msg, args, otherIrc):
         """[<network>]
 
@@ -306,6 +296,15 @@ class Network(callbacks.Plugin):
         irc.reply(_("I've been connected to %s for %s.") %
                             (network, utils.timeElapsed(now - started)))
     uptime = wrap(uptime, ['networkIrc'])
+
+    def capabilities(self, irc, msg, args, otherIrc):
+        """[<network>]
+
+        Returns the list of IRCv3 capabilities available on the network.
+        """
+        irc.reply(format("%L", sorted(otherIrc.state.capabilities_ls)))
+    capabilities = wrap(capabilities, ['networkIrc'])
+
 
 Class = Network
 
