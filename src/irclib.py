@@ -1305,7 +1305,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 # echo-message is not implemented by server; let's emulate it
                 # here, just before sending it to the driver.
                 assert not msg.tagged('receivedAt')
-                assert not msg.tagged('emulatedEcho')
+                if not world.testing:
+                    assert not msg.tagged('emulatedEcho')
                 msg.tag('emulatedEcho', True)
                 self.feedMsg(msg, tag=False)
             else:
