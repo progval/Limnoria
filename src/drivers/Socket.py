@@ -267,7 +267,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             socks_proxy = ''
         else:
             try:
-                hostname = utils.net.getAddressFromHostname(
+                address = utils.net.getAddressFromHostname(
                     self.currentServer.hostname,
                     attempt=self._attempt)
             except (socket.gaierror, socket.error) as e:
@@ -277,7 +277,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         drivers.log.connect(self.currentServer)
         try:
             self.conn = utils.net.getSocket(
-                    self.currentServer.hostname,
+                    address,
                     port=self.currentServer.port,
                     socks_proxy=socks_proxy,
                     vhost=conf.supybot.protocols.irc.vhost(),
@@ -294,20 +294,19 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             # Connect before SSL, otherwise SSL is disabled if we use SOCKS.
             # See http://stackoverflow.com/q/16136916/539465
             self.conn.connect(
-                (self.currentServer.hostname, self.currentServer.port))
+                (address, self.currentServer.port))
             if network_config.ssl() or \
                     self.currentServer.force_tls_verification:
                 self.starttls()
 
             # Suppress this warning for loopback IPs.
-            targetip = hostname
             if sys.version_info[0] < 3:
                 # Backported Python 2 ipaddress demands unicode instead of str
-                targetip = targetip.decode('utf-8')
+                address = address.decode('utf-8')
             elif (not network_config.requireStarttls()) and \
                     (not network_config.ssl()) and \
                     (not self.currentServer.force_tls_verification) and \
-                    (ipaddress is None or not ipaddress.ip_address(targetip).is_loopback):
+                    (ipaddress is None or not ipaddress.ip_address(address).is_loopback):
                 drivers.log.warning(('Connection to network %s '
                     'does not use SSL/TLS, which makes it vulnerable to '
                     'man-in-the-middle attacks and passive eavesdropping. '
