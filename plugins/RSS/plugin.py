@@ -39,6 +39,7 @@ import string
 import socket
 import threading
 import feedparser
+import html
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -430,6 +431,7 @@ class RSS(callbacks.Plugin):
                     self.registryValue(key_name, channel, network)
         else:
             template = self.registryValue(key_name, channel, network)
+        entry['title'] = html.unescape(entry['title'])
         date = entry.get('published_parsed')
         date = utils.str.timestamp(date)
         s = string.Template(template).substitute(
