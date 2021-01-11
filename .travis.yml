@@ -40,11 +40,12 @@ matrix:
     - python: "pypy3"
       env: WITH_OPT_DEPS=false
       dist: trusty
-    - python: "pypy3"
+
+    - python: "nightly"
       env: WITH_OPT_DEPS=true
       dist: xenial
 
-#  allow_failures:
-    - python: "nightly"
+  allow_failures:
+    - python: "pypy3"
       env: WITH_OPT_DEPS=true
       dist: xenial
