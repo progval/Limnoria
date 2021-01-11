@@ -257,6 +257,10 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             return
         self.currentServer = server or self._getNextServer()
         network_config = getattr(conf.supybot.networks, self.irc.network)
+        if self.currentServer.attempt is None:
+            self.currentServer = self.currentServer._replace(attempt=self._attempt)
+        else:
+            self._attempt = self.currentServer.attempt
         socks_proxy = network_config.socksproxy()
         try:
             if socks_proxy:

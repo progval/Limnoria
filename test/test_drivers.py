@@ -49,17 +49,17 @@ class DriversTestCase(SupyTestCase):
 
             self.assertEqual(
                 driver._getNextServer(),
-                drivers.Server('example.com', 6697, True))
+                drivers.Server('example.com', 6697, None, True))
             driver.die()
 
             self.assertEqual(
                 driver._getNextServer(),
-                drivers.Server('example.org', 6667, False))
+                drivers.Server('example.org', 6667, None, False))
             driver.die()
 
             self.assertEqual(
                 driver._getNextServer(),
-                drivers.Server('example.com', 6697, True))
+                drivers.Server('example.com', 6697, None, True))
 
     def testExpiredStsPolicy(self):
         irc = irclib.Irc('test')
@@ -76,7 +76,7 @@ class DriversTestCase(SupyTestCase):
 
             self.assertEqual(
                 driver._getNextServer(),
-                drivers.Server('example.com', 6667, False))
+                drivers.Server('example.com', 6667, None, False))
 
     def testRescheduledStsPolicy(self):
         irc = irclib.Irc('test')
@@ -93,16 +93,16 @@ class DriversTestCase(SupyTestCase):
 
             self.assertEqual(
                 driver._getNextServer(),
-                drivers.Server('example.com', 6697, True))
+                drivers.Server('example.com', 6697, None, True))
             driver.die()
 
             self.assertEqual(
                 driver._getNextServer(),
-                drivers.Server('example.org', 6667, False))
+                drivers.Server('example.org', 6667, None, False))
             driver.die()
 
             timeFastForward(8)
 
             self.assertEqual(
                 driver._getNextServer(),
-                drivers.Server('example.com', 6697, True))
+                drivers.Server('example.com', 6697, None, True))

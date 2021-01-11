@@ -40,7 +40,7 @@ from .. import conf, ircdb, ircmsgs, ircutils, log as supylog, utils
 from ..utils import minisix
 
 
-Server = namedtuple('Server', 'hostname port force_tls_verification')
+Server = namedtuple('Server', 'hostname port attempt force_tls_verification')
 # force_tls_verification=True implies two things:
 # 1. force TLS to be enabled for this server
 # 2. ensure there is some kind of verification. If the user did not enable
@@ -118,7 +118,7 @@ class ServersMixin(object):
 
         # Change the port, and force TLS verification, as required by the STS
         # specification.
-        return Server(server.hostname, policy['port'],
+        return Server(server.hostname, policy['port'], server.attempt,
                       force_tls_verification=True)
 
     def die(self):

@@ -284,7 +284,7 @@ class Servers(registry.SpaceSeparatedListOfStrings):
             hostname = hostname[1:-1]
 
         port = int(port)
-        return Server(hostname, port, force_tls_verification=False)
+        return Server(hostname, port, None, force_tls_verification=False)
 
     def __call__(self):
         L = registry.SpaceSeparatedListOfStrings.__call__(self)

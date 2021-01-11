@@ -1823,14 +1823,17 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 self.driver.currentServer.hostname, policy)
         else:
             hostname = self.driver.currentServer.hostname
+            attempt = self.driver.currentServer.attempt
+
             log.info('Got STS policy over insecure connection; '
                      'reconnecting to secure port. %r',
                      self.driver.currentServer)
             # Reconnect to the server, but with TLS *and* certificate
             # validation this time.
             self.state.fsm.on_shutdown(self, msg)
+
             self.driver.reconnect(
-                server=Server(hostname, parsed_policy['port'], True),
+                server=Server(hostname, parsed_policy['port'], attempt, True),
                 wait=True)
 
     def _addCapabilities(self, capstring, msg):

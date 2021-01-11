@@ -696,7 +696,7 @@ class StsTestCase(SupyTestCase):
     def testStsInSecureConnection(self):
         self.irc.driver.anyCertValidationEnabled.return_value = True
         self.irc.driver.ssl = True
-        self.irc.driver.currentServer = drivers.Server('irc.test', 6697, False)
+        self.irc.driver.currentServer = drivers.Server('irc.test', 6697, None, False)
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
             args=('*', 'LS', 'sts=duration=42,port=6697')))
 
@@ -707,25 +707,25 @@ class StsTestCase(SupyTestCase):
     def testStsInInsecureTlsConnection(self):
         self.irc.driver.anyCertValidationEnabled.return_value = False
         self.irc.driver.ssl = True
-        self.irc.driver.currentServer = drivers.Server('irc.test', 6697, False)
+        self.irc.driver.currentServer = drivers.Server('irc.test', 6697, None, False)
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
             args=('*', 'LS', 'sts=duration=42,port=6697')))
 
         self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
         self.irc.driver.reconnect.assert_called_once_with(
-            server=drivers.Server('irc.test', 6697, True),
+            server=drivers.Server('irc.test', 6697, None, True),
             wait=True)
 
     def testStsInCleartextConnection(self):
         self.irc.driver.anyCertValidationEnabled.return_value = False
         self.irc.driver.ssl = True
-        self.irc.driver.currentServer = drivers.Server('irc.test', 6667, False)
+        self.irc.driver.currentServer = drivers.Server('irc.test', 6667, None, False)
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
             args=('*', 'LS', 'sts=duration=42,port=6697')))
 
         self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
         self.irc.driver.reconnect.assert_called_once_with(
-            server=drivers.Server('irc.test', 6697, True),
+            server=drivers.Server('irc.test', 6697, None, True),
             wait=True)
 
     def testStsInCleartextConnectionInvalidDuration(self):
@@ -733,13 +733,13 @@ class StsTestCase(SupyTestCase):
         # connected clients MUST ignore it."
         self.irc.driver.anyCertValidationEnabled.return_value = False
         self.irc.driver.ssl = True
-        self.irc.driver.currentServer = drivers.Server('irc.test', 6667, False)
+        self.irc.driver.currentServer = drivers.Server('irc.test', 6667, None, False)
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
             args=('*', 'LS', 'sts=duration=foo,port=6697')))
 
         self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
         self.irc.driver.reconnect.assert_called_once_with(
-            server=drivers.Server('irc.test', 6697, True),
+            server=drivers.Server('irc.test', 6697, None, True),
             wait=True)
 
     def testStsInCleartextConnectionNoDuration(self):
@@ -747,13 +747,13 @@ class StsTestCase(SupyTestCase):
         # connected clients MUST ignore it."
         self.irc.driver.anyCertValidationEnabled.return_value = False
         self.irc.driver.ssl = True
-        self.irc.driver.currentServer = drivers.Server('irc.test', 6667, False)
+        self.irc.driver.currentServer = drivers.Server('irc.test', 6667, None, False)
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
             args=('*', 'LS', 'sts=port=6697')))
 
         self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
         self.irc.driver.reconnect.assert_called_once_with(
-            server=drivers.Server('irc.test', 6697, True),
+            server=drivers.Server('irc.test', 6697, None, True),
             wait=True)
 
 class IrcTestCase(SupyTestCase):
