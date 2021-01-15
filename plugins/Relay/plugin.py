@@ -299,9 +299,13 @@ class Relay(callbacks.Plugin):
         msg = dynamic.msg
         if self.registryValue('noticeNonPrivmsgs', target, network) and \
            msg.command != 'PRIVMSG':
-            return ircmsgs.notice(target, s)
+            m = ircmsgs.notice(target, s)
         else:
-            return ircmsgs.privmsg(target, s)
+            m = ircmsgs.privmsg(target, s)
+
+        m.channel = target
+
+        return m
 
     def doJoin(self, irc, msg):
         irc = self._getRealIrc(irc)
