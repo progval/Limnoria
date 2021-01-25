@@ -52,6 +52,12 @@ class Services(callbacks.Plugin):
     configuration variables to match the NickServ and ChanServ nicks on your
     network.  Other commands such as identify, op, etc. should not be
     necessary if the bot is properly configured."""
+
+    # 10 minutes ought to be more than enough for the server to reply.
+    # Holds the (irc, nick) of the caller so we can notify them when the
+    # command either succeeds or fails.
+    _register = utils.structures.ExpiringDict(600)
+
     def __init__(self, irc):
         self.__parent = super(Services, self)
         self.__parent.__init__(irc)
@@ -578,7 +584,180 @@ class Services(callbacks.Plugin):
         else:
             irc.reply(_('I\'m not currently configured for any nicks.'))
     nicks = wrap(nicks, [('checkCapability', 'admin')])
-Services = internationalizeDocstring(Services)
+
+
+    def _checkCanRegister(self, irc, otherIrc):
+        if not conf.supybot.protocols.irc.experimentalExtensions():
+            irc.error(
+                _("Experimental IRC extensions are not enabled for this bot."),
+                Raise=True
+            )
+
+        if "draft/register" not in otherIrc.state.capabilities_ls:
+            irc.error(
+                _("This network does not support draft/register."),
+                Raise=True
+            )
+
+        if "labeled-response" not in otherIrc.state.capabilities_ls:
+            irc.error(
+                _("This network does not support labeled-response."),
+                Raise=True
+            )
+
+        if otherIrc.sasl_authenticated:
+            irc.error(
+                _("This bot is already authenticated on the network."),
+                Raise=True
+            )
+
+    def register(self, irc, msg, args, otherIrc, password, email):
+        """[<network>] <password> [<email>]
+
+        Uses the experimental REGISTER command to create an account for the bot
+        on the <network>, using the <password> and the <email> if provided.
+        Some networks may require the email.
+        You may need to use the 'network verify' command afterward to confirm
+        your email address."""
+        # Using this early draft specification:
+        # https://gist.github.com/edk0/bf3b50fc219fd1bed1aa15d98bfb6495
+        self._checkCanRegister(irc, otherIrc)
+
+        cap_values = (otherIrc.state.capabilities_ls["draft/register"] or "").split(",")
+        if "email-required" in cap_values and email is None:
+            irc.error(
+                _("This network requires an email address to register."),
+                Raise=True
+            )
+
+        label = ircutils.makeLabel()
+        self._register[label] = (irc, msg.nick)
+        otherIrc.queueMsg(ircmsgs.IrcMsg(
+            server_tags={"label": label},
+            command="REGISTER",
+            args=[email or "*", password],
+        ))
+    register = wrap(register, ["owner", "private", "networkIrc", "something", optional("email")])
+
+    def verify(self, irc, msg, args, otherIrc, account, code):
+        """[<network>] <account> <code>
+
+        If the <network> requires a verification code, you need to call this
+        command with the code the server gave you to finish the
+        registration."""
+        self._checkCanRegister(irc, otherIrc)
+
+        label = ircutils.makeLabel()
+        self._register[label] = (irc, msg.nick)
+        otherIrc.queueMsg(ircmsgs.IrcMsg(
+            server_tags={"label": label},
+            command="VERIFY",
+            args=[account, code]
+        ))
+    verify = wrap(verify, [
+        "owner", "private", "networkIrc", "somethingWithoutSpaces", "something"
+    ])
+
+    def _replyToRegister(self, irc, msg, command, reply):
+        if not conf.supybot.protocols.irc.experimentalExtensions:
+            self.log.warning(
+                "Got unexpected '%s' on %s, this should not "
+                "happen unless supybot.protocols.irc.experimentalExtensions "
+                "is enabled",
+                command, irc.network
+            )
+            return
+
+        label = msg.server_tags["label"]
+        if label not in self._register:
+            self.log.warning(
+                "Got '%s' on %s, but I don't remember using "
+                "REGISTER/VERIFY. "
+                "This may be caused by high latency from the server.",
+                command, irc.network
+            )
+            return
+
+        (initialIrc, initialNick) = self._register[label]
+        initialIrc.reply(reply)
+
+    def doFailRegister(self, irc, msg):
+        self._replyToRegister(
+            irc, msg, "FAIL %s" % msg.args[0],
+            format(
+                "Failed to register on %s; the server said: %s (%s)",
+                irc.network, msg.args[1], msg.args[-1]
+            )
+        )
+    doFailVerify = doFailRegister
+
+    # This should not be called, but you never know.
+    def doWarnRegister(self, irc, msg):
+        self._replyToRegister(
+            irc, msg, "WARN %s" % msg.args[0],
+            format(
+                "Registration warning from %s: %s (%s)",
+                irc.network, msg.args[1], msg.args[-1]
+            )
+        )
+    doWarnVerify = doWarnRegister
+
+    # This should not be called, but you never know.
+    def doNoteRegister(self, irc, msg):
+        self._replyToRegister(
+            irc, msg, "NOTE %s" % msg.args[0],
+            format(
+                "Registration note from %s: %s (%s)",
+                irc.network, msg.args[1], msg.args[-1]
+            )
+        )
+    doNoteVerify = doNoteRegister
+
+    def doRegister(self, irc, msg):
+        (subcommand, account, message) = msg.args
+        if subcommand == "SUCCESS":
+            self._replyToRegister(
+                irc, msg, "REGISTER SUCCESS",
+                format(
+                    "Registration of account %s on %s succeeded: %s",
+                    account, irc.network, message
+                )
+            )
+        elif subcommand == "VERIFICATION_REQUIRED":
+            self._replyToRegister(
+                irc, msg, "REGISTER VERIFICATION_REQUIRED",
+                format(
+                    "Registration of %s on %s requires verification to complete: %s",
+                    account, irc.network, message
+                )
+            )
+        else:
+            self._replyToRegister(
+                irc, msg, "REGISTER %s" % subcommand,
+                format(
+                    "Unknown reply while registering %s on %s: %s %s",
+                    account, irc.network, subcommand, message
+                )
+            )
+
+    def doVerify(self, irc, msg):
+        (subcommand, account, message) = msg.args
+        if subcommand == "SUCCESS":
+            self._replyToRegister(
+                irc, msg, "VERIFY SUCCESS",
+                format(
+                    "Verification of account %s on %s succeeded: %s",
+                    account, irc.network, message
+                )
+            )
+        else:
+            self._replyToRegister(
+                irc, msg, "VERIFY %s" % subcommand,
+                format(
+                    "Unknown reply while registering %s on %s: %s %s",
+                    account, irc.network, subcommand, message
+                )
+            )
 
 Class = Services
 

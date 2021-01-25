@@ -28,6 +28,8 @@
 ###
 
 from supybot.test import *
+import supybot.conf as conf
+from supybot.ircmsgs import IrcMsg
 
 class ServicesTestCase(PluginTestCase):
     plugins = ('Services', 'Config')
@@ -74,6 +76,119 @@ class ServicesTestCase(PluginTestCase):
         m = self.assertNotError('services identify')
         self.assertTrue(m.args[0] == 'NickServ')
         self.assertTrue(m.args[1].lower() == 'identify bar2')
+
+    def testRegisterNoExperimentalExtensions(self):
+        self.assertRegexp(
+            "register p4ssw0rd", "error: Experimental IRC extensions")
+
+        self.irc.feedMsg(IrcMsg(
+            command="FAIL", args=["REGISTER", "BLAH", "message"]))
+        self.assertIsNone(self.irc.takeMsg())
+
+        self.irc.feedMsg(IrcMsg(
+            command="REGISTER", args=["SUCCESS", "account", "msg"]))
+        self.assertIsNone(self.irc.takeMsg())
+
+        self.irc.feedMsg(IrcMsg(
+            command="REGISTER",
+            args=["VERIFICATION_REQUIRED", "account", "msg"]))
+        self.assertIsNone(self.irc.takeMsg())
+
+
+class ExperimentalServicesTestCase(PluginTestCase):
+    plugins = ["Services"]
+    timeout = 0.1
+
+    def setUp(self):
+        super().setUp()
+        conf.supybot.protocols.irc.experimentalExtensions.setValue(True)
+        self._initialCaps = self.irc.state.capabilities_ls.copy()
+        self.irc.state.capabilities_ls["draft/register"] = None
+        self.irc.state.capabilities_ls["labeled-response"] = None
+
+    def tearDown(self):
+        self.irc.state.capabilities_ls = self._initialCaps
+        conf.supybot.protocols.irc.experimentalExtensions.setValue(False)
+        super().tearDown()
+
+    def testRegisterSupportError(self):
+        old_caps = self.irc.state.capabilities_ls.copy()
+        try:
+            del self.irc.state.capabilities_ls["labeled-response"]
+            self.assertRegexp(
+                "register p4ssw0rd",
+                "error: This network does not support labeled-response.")
+
+            del self.irc.state.capabilities_ls["draft/register"]
+            self.assertRegexp(
+                "register p4ssw0rd",
+                "error: This network does not support draft/register.")
+        finally:
+            self.irc.state.capabilities_ls = old_caps
+
+    def testRegisterRequireEmail(self):
+        old_caps = self.irc.state.capabilities_ls.copy()
+        try:
+            self.irc.state.capabilities_ls["draft/register"] = "email-required"
+            self.assertRegexp(
+                "register p4ssw0rd",
+                "error: This network requires an email address to register.")
+        finally:
+            self.irc.state.capabilities_ls = old_caps
+
+    def testRegisterSuccess(self):
+        m = self.getMsg("register p4ssw0rd")
+        label = m.server_tags.pop("label")
+        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "p4ssw0rd"]))
+        self.irc.feedMsg(IrcMsg(
+            server_tags={"label": label},
+            command="REGISTER",
+            args=["SUCCESS", "accountname", "welcome!"]
+        ))
+        self.assertResponse(
+            "",
+            "Registration of account accountname on test succeeded: welcome!")
+
+    def testRegisterSuccessEmail(self):
+        m = self.getMsg("register p4ssw0rd foo@example.org")
+        label = m.server_tags.pop("label")
+        self.assertEqual(m, IrcMsg(
+            command="REGISTER", args=["foo@example.org", "p4ssw0rd"]))
+        self.irc.feedMsg(IrcMsg(
+            server_tags={"label": label},
+            command="REGISTER",
+            args=["SUCCESS", "accountname", "welcome!"]
+        ))
+        self.assertResponse(
+            "",
+            "Registration of account accountname on test succeeded: welcome!")
+
+    def testRegisterVerify(self):
+        m = self.getMsg("register p4ssw0rd")
+        label = m.server_tags.pop("label")
+        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "p4ssw0rd"]))
+        self.irc.feedMsg(IrcMsg(
+            server_tags={"label": label},
+            command="REGISTER",
+            args=["VERIFICATION_REQUIRED", "accountname", "check your emails"]
+        ))
+        self.assertResponse(
+            "",
+            "Registration of accountname on test requires verification "
+            "to complete: check your emails")
+
+        m = self.getMsg("verify accountname c0de")
+        label = m.server_tags.pop("label")
+        self.assertEqual(m, IrcMsg(
+            command="VERIFY", args=["accountname", "c0de"]))
+        self.irc.feedMsg(IrcMsg(
+            server_tags={"label": label},
+            command="VERIFY",
+            args=["SUCCESS", "accountname", "welcome!"]
+        ))
+        self.assertResponse(
+            "",
+            "Verification of account accountname on test succeeded: welcome!")
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
