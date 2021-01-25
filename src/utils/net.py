@@ -40,8 +40,7 @@ import contextlib
 
 from .web import _ipAddr, _domain
 
-emailRe = re.compile(r"^(\w&.+-]+!)*[\w&.+-]+@(%s|%s)$" % (_domain, _ipAddr),
-                     re.I)
+emailRe = re.compile(r"^\S+@(%s|%s)$" % (_domain, _ipAddr), re.I)
 
 def getAddressFromHostname(host, port=None, attempt=0):
     addrinfo = socket.getaddrinfo(host, port)
