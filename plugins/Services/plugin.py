@@ -668,7 +668,12 @@ class Services(callbacks.Plugin):
             )
             return
 
-        label = msg.server_tags["label"]
+        if "batch" in msg.server_tags:
+            # TODO: handle recursive batches
+            batch = irc.state.batches[msg.server_tags["batch"]]
+            label = batch.messages[0].server_tags["label"]
+        else:
+            label = msg.server_tags["label"]
         if label not in self._register:
             self.log.warning(
                 "Got '%s' on %s, but I don't remember using "

@@ -149,6 +149,37 @@ class ExperimentalServicesTestCase(PluginTestCase):
             "",
             "Registration of account accountname on test succeeded: welcome!")
 
+    def testRegisterSuccessBatch(self):
+        # oragono replies with a batch
+        m = self.getMsg("register p4ssw0rd")
+        label = m.server_tags.pop("label")
+        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "p4ssw0rd"]))
+
+        batch_name = "Services_testRegisterSuccessBatch"
+        self.irc.feedMsg(IrcMsg(
+            server_tags={"label": label},
+            command="BATCH",
+            args=["+" + batch_name, "labeled-response"]
+        ))
+        self.irc.feedMsg(IrcMsg(
+            server_tags={"batch": batch_name},
+            command="REGISTER",
+            args=["SUCCESS", "accountname", "welcome!"]
+        ))
+        self.irc.feedMsg(IrcMsg(
+            server_tags={"batch": batch_name},
+            command="NOTICE",
+            args=[self.irc.nick, "Registration succeeded blah blah blah"]
+        ))
+        self.irc.feedMsg(IrcMsg(
+            command="BATCH",
+            args=["-" + batch_name],
+        ))
+
+        self.assertResponse(
+            "",
+            "Registration of account accountname on test succeeded: welcome!")
+
     def testRegisterSuccessEmail(self):
         m = self.getMsg("register p4ssw0rd foo@example.org")
         label = m.server_tags.pop("label")
@@ -186,6 +217,50 @@ class ExperimentalServicesTestCase(PluginTestCase):
             command="VERIFY",
             args=["SUCCESS", "accountname", "welcome!"]
         ))
+        self.assertResponse(
+            "",
+            "Verification of account accountname on test succeeded: welcome!")
+
+    def testRegisterVerifyBatch(self):
+        m = self.getMsg("register p4ssw0rd")
+        label = m.server_tags.pop("label")
+        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "p4ssw0rd"]))
+        self.irc.feedMsg(IrcMsg(
+            server_tags={"label": label},
+            command="REGISTER",
+            args=["VERIFICATION_REQUIRED", "accountname", "check your emails"]
+        ))
+        self.assertResponse(
+            "",
+            "Registration of accountname on test requires verification "
+            "to complete: check your emails")
+
+        m = self.getMsg("verify accountname c0de")
+        label = m.server_tags.pop("label")
+        self.assertEqual(m, IrcMsg(
+            command="VERIFY", args=["accountname", "c0de"]))
+
+        batch_name = "Services_testVerifySuccessBatch"
+        self.irc.feedMsg(IrcMsg(
+            server_tags={"label": label},
+            command="BATCH",
+            args=["+" + batch_name, "labeled-response"]
+        ))
+        self.irc.feedMsg(IrcMsg(
+            server_tags={"batch": batch_name},
+            command="VERIFY",
+            args=["SUCCESS", "accountname", "welcome!"]
+        ))
+        self.irc.feedMsg(IrcMsg(
+            server_tags={"batch": batch_name},
+            command="NOTICE",
+            args=[self.irc.nick, "Verification succeeded blah blah blah"]
+        ))
+        self.irc.feedMsg(IrcMsg(
+            command="BATCH",
+            args=["-" + batch_name],
+        ))
+
         self.assertResponse(
             "",
             "Verification of account accountname on test succeeded: welcome!")
