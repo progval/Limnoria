@@ -30,7 +30,10 @@ matrix:
     - python: "3.7"
       env: WITH_OPT_DEPS=true
       dist: xenial
-    - python: "3.8-dev"
+    - python: "3.8"
+      env: WITH_OPT_DEPS=true
+      dist: xenial
+    - python: "3.9"
       env: WITH_OPT_DEPS=true
       dist: xenial
     - python: "nightly"
