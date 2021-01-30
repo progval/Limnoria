@@ -617,7 +617,7 @@ class Services(callbacks.Plugin):
         Uses the experimental REGISTER command to create an account for the bot
         on the <network>, using the <password> and the <email> if provided.
         Some networks may require the email.
-        You may need to use the 'network verify' command afterward to confirm
+        You may need to use the 'services verify' command afterward to confirm
         your email address."""
         # Using this early draft specification:
         # https://gist.github.com/edk0/bf3b50fc219fd1bed1aa15d98bfb6495
