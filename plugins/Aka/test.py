@@ -64,7 +64,7 @@ class AkaChannelTestCase(ChannelPluginTestCase):
                 r'\"echo test\" \"echo test\"] '
                 r'--regexp [concat \"m/$1/\" [re s/g// \"@2\"]]"')
         self.assertResponse('echo foo', 'foo')
-        self.assertResponse('histsearch .*', '@echo foo')
+        self.assertResponse('histsearch .*foo.*', '@echo foo')
 
     def testDoesNotOverwriteCommands(self):
         # We don't have dispatcher commands anymore
