@@ -869,6 +869,52 @@ class IrcTestCase(SupyTestCase):
         self.irc.feedMsg(ircmsgs.IrcMsg(command='372', args=['nick', 'some message']))
         self.irc.feedMsg(ircmsgs.IrcMsg(command='376', args=['nick']))
 
+    def testSetUmodes(self):
+        def assertSentModes(modes):
+            self.assertEqual(
+                self.irc.takeMsg(),
+                ircmsgs.IrcMsg(command='MODE', args=['test', modes]),
+            )
+
+        self.irc.reset()
+        while self.irc.takeMsg():
+            pass
+
+        self.irc.state.supported["BOT"] = "" # invalid
+        self.irc._setUmodes()
+        self.assertIsNone(self.irc.takeMsg())
+
+        self.irc.state.supported["BOT"] = "bB" # invalid too
+        self.irc._setUmodes()
+        self.assertIsNone(self.irc.takeMsg())
+
+        del self.irc.state.supported["BOT"]
+        self.irc._setUmodes()
+        self.assertIsNone(self.irc.takeMsg())
+
+        self.irc.state.supported["BOT"] = "B"
+        self.irc._setUmodes()
+        assertSentModes("+B")
+
+        self.irc.state.supported["BOT"] = "b"
+        self.irc._setUmodes()
+        assertSentModes("+b")
+
+        # merge with configured umodes
+        with conf.supybot.protocols.irc.umodes.context("+B"):
+            self.irc._setUmodes()
+            assertSentModes("+B+b")
+
+        # no duplicate if char is the same
+        with conf.supybot.protocols.irc.umodes.context("+b"):
+            self.irc._setUmodes()
+            assertSentModes("+b")
+
+        # no duplicate if explicitly disabled
+        with conf.supybot.protocols.irc.umodes.context("-b"):
+            self.irc._setUmodes()
+            assertSentModes("-b")
+
     def testMsgChannel(self):
         self.irc.reset()
 

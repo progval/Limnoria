@@ -2039,17 +2039,35 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.afterConnect = True
         # Let's reset nicks in case we had to use a weird one.
         self.alternateNicks = conf.supybot.nick.alternates()[:]
+
+        self._setUmodes()
+
+    do377 = do422 = do376
+
+    def _setUmodes(self):
+        # Get the configured umodes
         umodes = conf.supybot.networks.get(self.network).umodes()
         if umodes == '':
             umodes = conf.supybot.protocols.irc.umodes()
+
+        # Add the bot mode if the server advertizes one;
+        # and if the configured umode doesn't already have it
+        # explicitly set or unset
+        bot_mode = self.state.supported.get("BOT")
+        if bot_mode and len(bot_mode) == 1:
+            if bot_mode not in umodes:
+                umodes += "+" + bot_mode
+
+        # Filter out umodes not supported by the server
         supported = self.state.supported.get('umodes')
         if supported:
             acceptedchars = supported.union('+-')
             umodes = ''.join([m for m in umodes if m in acceptedchars])
+
+        # Send the umodes
         if umodes:
             log.info('Sending user modes to %s: %s', self.network, umodes)
             self.sendMsg(ircmsgs.mode(self.nick, umodes))
-    do377 = do422 = do376
 
     def do43x(self, msg, problem):
         if not self.afterConnect:
