@@ -29,6 +29,7 @@
 
 import copy
 import pickle
+import textwrap
 import unittest.mock
 
 from supybot.test import *
@@ -1012,7 +1013,77 @@ class IrcTestCase(SupyTestCase):
             self.irc.feedMsg(m4)
         finally:
             self.irc.removeCallback(c.name())
-        self.assertEqual(c.batch, irclib.Batch('netjoin', (), [m1, m2, m3, m4]))
+        self.assertEqual(
+            c.batch,
+            irclib.Batch('name', 'netjoin', (), [m1, m2, m3, m4], None),
+            repr(c.batch)
+        )
+
+    maxDiff = None
+
+    def testBatchNested(self):
+        self.irc.reset()
+        logs = textwrap.dedent('''
+            :irc.host BATCH +outer example.com/foo
+            @batch=outer :irc.host BATCH +inner example.com/bar
+            @batch=inner :nick!user@host PRIVMSG #channel :Hi
+            @batch=outer :irc.host BATCH -inner
+            :irc.host BATCH -outer
+        ''')
+        msgs = [ircmsgs.IrcMsg(s) for s in logs.split('\n') if s]
+
+        # Feed 'BATCH +outer', it should be added in state
+        self.irc.feedMsg(msgs[0])
+        outer = irclib.Batch('outer', 'example.com/foo', (), msgs[0:1], None)
+        self.assertEqual(self.irc.state.batches, {'outer': outer})
+        msg1 = self.irc.state.history[-1]
+        self.assertEqual(msg1.tagged('batch'), outer)
+        self.assertEqual(self.irc.state.getParentBatches(msg1), [outer])
+
+        # Feed 'BATCH +inner', it should be added in state
+        self.irc.feedMsg(msgs[1])
+        outer = irclib.Batch('outer', 'example.com/foo', (), msgs[0:2], None)
+        inner = irclib.Batch('inner', 'example.com/bar', (), msgs[1:2], outer)
+        self.assertIs(self.irc.state.batches['inner'].parent_batch,
+                      self.irc.state.batches['outer'])
+        self.assertEqual(dict(self.irc.state.batches),
+                         {'outer': outer, 'inner': inner})
+        msg2 = self.irc.state.history[-1]
+        self.assertEqual(msg2.tagged('batch'), inner)
+        self.assertEqual(self.irc.state.getParentBatches(msg2), [inner, outer])
+
+        # Feed 'PRIVMSG'
+        self.irc.feedMsg(msgs[2])
+        outer = irclib.Batch('outer', 'example.com/foo', (), msgs[0:3], None)
+        inner = irclib.Batch('inner', 'example.com/bar', (), msgs[1:3], outer)
+        self.assertIs(self.irc.state.batches['inner'].parent_batch,
+                      self.irc.state.batches['outer'])
+        self.assertEqual(self.irc.state.batches,
+                         {'outer': outer, 'inner': inner})
+        msg3 = self.irc.state.history[-1]
+        self.assertEqual(msg3.tagged('batch'), None)
+        self.assertEqual(self.irc.state.getParentBatches(msg3), [inner, outer])
+
+        # Feed 'BATCH -inner', it should be remove from state
+        self.irc.feedMsg(msgs[3])
+        outer = irclib.Batch('outer', 'example.com/foo', (), msgs[0:4], None)
+        inner = irclib.Batch('inner', 'example.com/bar', (), msgs[1:4], outer)
+        self.assertEqual(self.irc.state.batches, {'outer': outer})
+        self.assertIs(self.irc.state.history[-1].tagged('batch').parent_batch,
+                      self.irc.state.batches['outer'])
+        msg4 = self.irc.state.history[-1]
+        self.assertEqual(msg4.tagged('batch'), inner)
+        self.assertEqual(self.irc.state.getParentBatches(msg4), [inner, outer])
+
+        # Feed 'BATCH -outer', it should be remove from state
+        self.irc.feedMsg(msgs[4])
+        outer = irclib.Batch('outer', 'example.com/foo', (), msgs[0:5], None)
+        inner = irclib.Batch('inner', 'example.com/bar', (), msgs[1:4], outer)
+        self.assertEqual(self.irc.state.batches, {})
+        msg5 = self.irc.state.history[-1]
+        self.assertEqual(msg5.tagged('batch'), outer)
+        self.assertEqual(self.irc.state.getParentBatches(msg5), [outer])
+
 
 class SaslTestCase(SupyTestCase, CapNegMixin):
     def setUp(self):

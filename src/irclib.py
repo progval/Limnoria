@@ -476,9 +476,12 @@ class ChannelState(utils.python.Object):
         return ret
 
 
-Batch = collections.namedtuple('Batch', 'type arguments messages')
+Batch = collections.namedtuple('Batch', 'name type arguments messages parent_batch')
 """Represents a batch of messages, see
-<https://ircv3.net/specs/extensions/batch-3.2>"""
+<https://ircv3.net/specs/extensions/batch-3.2>
+
+Only access attributes by their name and do not create Batch objects
+in plugins; so we can extend the structure without breaking plugins."""
 
 
 class IrcStateFsm(object):
@@ -752,10 +755,11 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         if ircutils.isUserHostmask(msg.prefix) and not msg.command == 'NICK':
             self.nicksToHostmasks[msg.nick] = msg.prefix
         if 'batch' in msg.server_tags:
-            batch = msg.server_tags['batch']
-            assert batch in self.batches, \
-                    'Server references undeclared batch %s' % batch
-            self.batches[batch].messages.append(msg)
+            batch_name = msg.server_tags['batch']
+            assert batch_name in self.batches, \
+                'Server references undeclared batch %r' % batch_name
+            for batch in self.getParentBatches(msg):
+                batch.messages.append(msg)
         method = self.dispatchCommand(msg.command, msg.args)
         if method is not None:
             method(irc, msg)
@@ -767,6 +771,55 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
     def nickToHostmask(self, nick):
         """Returns the hostmask for a given nick."""
         return self.nicksToHostmasks[nick]
+
+    def getParentBatches(self, msg):
+        """Given an IrcMsg, returns a list of all batches that contain it,
+        innermost first.
+
+        Raises ValueError if ``msg`` is not in a batch;
+        or if it is in a batch that has already ended.
+        This restriction may be relaxed in the future.
+
+        This means that you should not call ``getParentBatches``
+        on a message that was already processed.
+
+        For example, assume Limnoria received the following::
+
+            :irc.host BATCH +outer example.com/foo
+            @batch=outer :irc.host BATCH +inner example.com/bar
+            @batch=inner :nick!user@host PRIVMSG #channel :Hi
+            @batch=outer :irc.host BATCH -inner
+            :irc.host BATCH -outer
+
+        If you call getParentBatches on any of the middle three messages,
+        you get ``[Batch(name='inner', ...), Batch(name='outer', ...)]``.
+        And if you call getParentBatches on either the first or the last
+        message, you get ``[Batch(name='outer', ...)]``
+
+        And you may only call `getParentBatches`` on the PRIVMSG
+        if only the first three messages were processed.
+        """
+        batch = msg.tagged('batch')
+        if not batch:
+            # msg is not a BATCH command
+            batch_name = msg.server_tags.get('batch')
+            if batch_name:
+                batch = self.batches.get(batch_name)
+                if not batch:
+                    raise ValueError(
+                        'Called getParentBatches for a message in a batch that '
+                        'already ended.'
+                    )
+            else:
+                raise ValueError(
+                    'Called getParentBatches for a message not in a batch.')
+
+        batches = []
+        while batch:
+            batches.append(batch)
+            batch = batch.parent_batch
+
+        return batches
 
     def do004(self, irc, msg):
         """Handles parsing the 004 reply
@@ -1017,8 +1070,20 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         if msg.args[0].startswith('+'):
             batch_type = msg.args[1]
             batch_arguments = tuple(msg.args[2:])
-            self.batches[batch_name] = Batch(type=batch_type,
-                    arguments=batch_arguments, messages=[msg])
+
+            # Both are possibly None:
+            parent_batch_name = msg.server_tags.get("batch")
+            parent_batch = self.batches.get(parent_batch_name)
+
+            batch = Batch(
+                name=batch_name,
+                type=batch_type,
+                arguments=batch_arguments,
+                messages=[msg],
+                parent_batch=parent_batch
+            )
+            msg.tag('batch', batch)
+            self.batches[batch_name] = batch
         elif msg.args[0].startswith('-'):
             batch = self.batches.pop(batch_name)
             batch.messages.append(msg)
