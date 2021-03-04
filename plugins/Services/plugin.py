@@ -659,7 +659,7 @@ class Services(callbacks.Plugin):
     ])
 
     def _replyToRegister(self, irc, msg, command, reply):
-        if not conf.supybot.protocols.irc.experimentalExtensions:
+        if not conf.supybot.protocols.irc.experimentalExtensions():
             self.log.warning(
                 "Got unexpected '%s' on %s, this should not "
                 "happen unless supybot.protocols.irc.experimentalExtensions "
