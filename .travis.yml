@@ -1,15 +1,15 @@
 language: python
 sudo: true
 install:
-  - if [ "$WITH_OPT_DEPS" = "true" ] ; then pip install -vr requirements.txt; fi
-  - pip install -v git+https://github.com/ProgVal/irctest.git
+  - if [ "$WITH_OPT_DEPS" = "true" ] ; then pip install -vr requirements.txt pytest; fi
+  - git clone https://github.com/ProgVal/irctest.git
   - echo "y" | pip uninstall limnoria || true
 # command to run tests, e.g. python setup.py test
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - python setup.py install
   - supybot-test test -v --plugins-dir=./plugins/ --no-network
-  - if [ "$WITH_OPT_DEPS" = "true" ] -a [[ "$TRAVIS_PYTHON_VERSION" =~ ^3\.[4-9] ]] ; then python -m irctest irctest.controllers.limnoria; fi
+  - if [ "$WITH_OPT_DEPS" = "true" ] -a [[ "$TRAVIS_PYTHON_VERSION" =~ ^3\.[4-9] ]] ; then cd irctest; pytest --controllers irctest.controllers.limnoria; fi
 notifications:
     email: false
 matrix:
