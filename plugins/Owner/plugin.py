@@ -44,7 +44,6 @@ import supybot.i18n as i18n
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircdb as ircdb
-from supybot.commands import *
 import supybot.irclib as irclib
 import supybot.plugin as plugin
 import supybot.plugins as plugins
@@ -54,6 +53,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
+from supybot.commands import additional, getopts, optional, wrap
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Owner')
 
@@ -226,11 +226,103 @@ class Owner(callbacks.Plugin):
 
     def setFloodQueueTimeout(self, *args, **kwargs):
         self.commands.timeout = conf.supybot.abuse.flood.interval()
+
+    def doBatch(self, irc, msg):
+        if not conf.supybot.protocols.irc.experimentalExtensions():
+            return
+
+        batch = msg.tagged('batch') # Always not-None on a BATCH message
+
+        if msg.args[0].startswith('+'):
+            # Start of a batch, we're not interested yet.
+            return
+        if batch.type != 'draft/multiline':
+            # This is not a multiline batch, also not interested.
+            return
+
+        assert msg.args[0].startswith("-"), (
+            "BATCH's first argument should start with either - or +, but "
+            "it is %s."
+        ) % msg.args[0]
+        # End of multiline batch. It may be a long command.
+
+        payloads = []
+        first_privmsg = None
+
+        for message in batch.messages:
+            if message.command != "PRIVMSG":
+                # We're only interested in PRIVMSGs for the payloads.
+                # (eg. exclude NOTICE)
+                continue
+            elif not payloads:
+                # This is the first PRIVMSG of the batch
+                first_privmsg = message
+                payloads.append(message.args[1])
+            elif 'draft/multiline-concat' in message.server_tags:
+                # This message is not a new line, but the continuation
+                # of the previous one.
+                payloads.append(message.args[1])
+            else:
+                # New line; stop here. We're not processing extra lines
+                # either as the rest of the command or as new commands.
+                # This may change in the future.
+                break
+
+        payload = ''.join(payloads)
+        if not payload:
+            self.log.error(
+                'Got empty multiline payload. This is a bug, please '
+                'report it along with logs.'
+            )
+            return
+
+        assert first_privmsg, "This shouldn't be None unless payload is empty"
+
+        # Let's build a synthetic message from the various parts of the
+        # batch, to look like the multiline batch was a single (large)
+        # PRIVMSG:
+        # * copy the tags and server tags of the 'BATCH +' command,
+        # * copy the prefix and channel of any of the PRIVMSGs
+        #   inside the batch
+        # * create a new args[1]
+        target = first_privmsg.args[0]
+        synthetic_msg = ircmsgs.IrcMsg(
+            msg=batch.messages[0],  # tags, server_tags, time
+            prefix=first_privmsg.prefix,
+            command='PRIVMSG',
+            args=(target, payload)
+        )
+
+        self._doPrivmsgs(irc, synthetic_msg)
+
     def doPrivmsg(self, irc, msg):
+        if conf.supybot.protocols.irc.experimentalExtensions():
+            if 'batch' in msg.server_tags \
+                    and any(batch.type =='draft/multiline'
+                            for batch in irc.state.getParentBatches(msg)):
+                # We will handle the message in doBatch when the entire batch ends.
+                return
+
+        self._doPrivmsgs(irc, msg)
+
+    def _doPrivmsgs(self, irc, msg):
+        """If the given message is a command, triggers Limnoria's
+        command-dispatching for that command.
+
+        Takes the same arguments as ``doPrivmsg`` would, but ``msg`` can
+        potentially be an artificial message synthesized in doBatch
+        from a multiline batch.
+
+        Usually, a command is a single message, so ``payload=msg.params[0]``
+        However, when ``msg`` is part of a multiline message, the payload
+        is the concatenation of multiple messages.
+        See <https://ircv3.net/specs/extensions/multiline>.
+        """
         assert self is irc.callbacks[0], \
                'Owner isn\'t first callback: %r' % irc.callbacks
         if ircmsgs.isCtcp(msg):
             return
+
         s = callbacks.addressed(irc, msg)
         if s:
             ignored = ircdb.checkIgnored(msg.prefix)

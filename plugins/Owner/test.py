@@ -118,4 +118,73 @@ class OwnerTestCase(PluginTestCase):
         self.assertError('defaultplugin foobar owner')
 
 
+class CommandsTestCase(PluginTestCase):
+    plugins = ('Owner', 'Utilities')
+
+    def testSimpleCommand(self):
+        self.irc.feedMsg(
+            ircmsgs.privmsg(self.irc.nick, 'echo foo $nick!$user@$host', self.prefix))
+        response = self.irc.takeMsg()
+        self.assertEqual(response.args, (self.nick, 'foo ' + self.prefix))
+
+    def testMultilineCommandDisabled(self):
+        self._sendBatch()
+
+        # response to 'echo '
+        self.assertRegexp('', '(echo <text>)')
+
+        # response to 'foo '
+        self.assertResponse('', 'Error: "foo" is not a valid command.')
+
+        # response to '$prefix'
+        self.assertResponse(
+            '', 'Error: "$nick!$user@$host" is not a valid command.')
+
+        # response to 'echo nope'
+        self.assertResponse('', 'nope')
+
+    def testMultilineCommand(self):
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            self._sendBatch()
+            response = self.irc.takeMsg()
+            self.assertEqual(response.args, (self.nick, 'foo ' + self.prefix))
+
+            response = self.irc.takeMsg()
+            self.assertIsNone(response, 'Should not respond to second line')
+
+    def _sendBatch(self):
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            command='BATCH',
+            args=('+123', 'draft/multiline', self.irc.nick)))
+
+        # one line
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'batch': '123'},
+            prefix=self.prefix,
+            command='PRIVMSG',
+            args=(self.irc.nick, 'echo ')))
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'batch': '123', 'draft/multiline-concat': None},
+            prefix=self.prefix,
+            command='PRIVMSG',
+            args=(self.irc.nick, 'foo ')))
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'batch': '123', 'draft/multiline-concat': None},
+            prefix=self.prefix,
+            command='PRIVMSG',
+            args=(self.irc.nick, '$nick!$user@$host')))
+
+        # an other line
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'batch': '123'},
+            prefix=self.prefix,
+            command='PRIVMSG',
+            args=(self.irc.nick, 'echo nope')))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            command='BATCH',
+            args=('-123',)))
+
+
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

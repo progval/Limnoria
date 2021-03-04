@@ -1588,6 +1588,10 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
     To check if a capability was negotiated, use `irc.state.capabilities_ack`.
     """
 
+    REQUEST_EXPERIMENTAL_CAPABILITIES = set(['draft/multiline'])
+    """Like REQUEST_CAPABILITIES, but these capabilities are only requested
+    if supybot.protocols.irc.experimentalExtensions is enabled."""
+
     def _queueConnectMessages(self):
         if self.zombie:
             self.driver.die()
@@ -1940,9 +1944,12 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             # Normally at this point, self.state.capabilities_ack should be
             # empty; but let's just make sure we're not requesting the same
             # caps twice for no reason.
+            want_capabilities = self.REQUEST_CAPABILITIES
+            if conf.supybot.protocols.irc.experimentalExtensions():
+                want_capabilities |= self.REQUEST_EXPERIMENTAL_CAPABILITIES
             new_caps = (
                 set(self.state.capabilities_ls) &
-                self.REQUEST_CAPABILITIES -
+                want_capabilities -
                 self.state.capabilities_ack)
             # NOTE: Capabilities are requested in alphabetic order, because
             # sets are unordered, and their "order" is nondeterministic.
@@ -2138,7 +2145,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         if not self.afterConnect:
             self.triedNicks.add(self.nick)
             newNick = self._getNextNick()
-            assert newNick != self.nick
+            assert newNick != self.nick, \
+                (self.nick, self.alternateNicks, self.triedNicks)
             log.info('Got %s: %s %s.  Trying %s.',
                      msg.command, self.nick, problem, newNick)
             self.sendMsg(ircmsgs.nick(newNick))
