@@ -2136,6 +2136,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
     def do43x(self, msg, problem):
         if not self.afterConnect:
+            self.triedNicks.add(self.nick)
             newNick = self._getNextNick()
             assert newNick != self.nick
             log.info('Got %s: %s %s.  Trying %s.',
