@@ -21,7 +21,7 @@ matrix:
       env: WITH_OPT_DEPS=false
       dist: trusty
     - python: "3.6"
-      env: WITH_OPT_DEPS=true
+      env: WITH_OPT_DEPS=false
       dist: trusty
 
     - python: "3.7"
