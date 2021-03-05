@@ -534,6 +534,35 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertRegexp('help first firstcmd', 'First', 0) # no re.I flag.
         self.assertRegexp('help firstrepeat firstcmd', 'FirstRepeat', 0)
 
+    def testReplyInstant(self):
+        self.assertNoResponse(' ')
+        print(conf.supybot.reply.mores.instant())
+        self.assertResponse(
+            "eval 'foo '*300",
+            "'" + "foo " * 110 + " \x02(2 more messages)\x02")
+        self.assertNoResponse(' ')
+
+        with conf.supybot.reply.mores.instant.context(2):
+            self.assertResponse(
+                "eval 'foo '*300",
+                "'" + "foo " * 110 + " \x02(2 more messages)\x02")
+            self.assertResponse(
+                " ",
+                "foo " * 111 + "\x02(1 more message)\x02")
+            self.assertNoResponse(" ")
+
+        with conf.supybot.reply.mores.instant.context(3):
+            self.assertResponse(
+                "eval 'foo '*300",
+                "'" + "foo " * 110 + " \x02(2 more messages)\x02")
+            self.assertResponse(
+                " ",
+                "foo " * 111 + "\x02(1 more message)\x02")
+            self.assertResponse(
+                " ",
+                " " + "foo " * 79 + "'")
+            self.assertNoResponse(" ")
+
     def testClientTagReply(self):
         self.irc.addCallback(self.First(self.irc))
 
