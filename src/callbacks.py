@@ -999,10 +999,17 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     # (which is used like a stack)
                     chunks.reverse()
 
+                    instant = conf.get(conf.supybot.reply.mores.instant,
+                        channel=target, network=self.irc.network)
+
                     msgs = []
                     for (i, chunk) in enumerate(chunks):
                         if i == 0:
                             pass # last message, no suffix to add
+                        elif len(chunks) - i < instant:
+                            # one of the first messages, and the next one will
+                            # also be sent immediately, so no suffix
+                            pass
                         else:
                             if i == 1:
                                 more = _('more message')
@@ -1012,8 +1019,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                             chunk = '%s %s' % (chunk, n)
                         msgs.append(_makeReply(self, msg, chunk, **replyArgs))
 
-                    instant = conf.get(conf.supybot.reply.mores.instant,
-                        channel=target, network=self.irc.network)
                     while instant > 1 and msgs:
                         instant -= 1
                         response = msgs.pop()

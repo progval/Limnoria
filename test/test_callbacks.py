@@ -540,28 +540,28 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertResponse(
             "eval 'foo '*300",
             "'" + "foo " * 110 + " \x02(2 more messages)\x02")
-        self.assertNoResponse(' ')
+        self.assertNoResponse(" ", timeout=0.1)
 
         with conf.supybot.reply.mores.instant.context(2):
             self.assertResponse(
                 "eval 'foo '*300",
-                "'" + "foo " * 110 + " \x02(2 more messages)\x02")
+                "'" + "foo " * 110)
             self.assertResponse(
                 " ",
                 "foo " * 111 + "\x02(1 more message)\x02")
-            self.assertNoResponse(" ")
+            self.assertNoResponse(" ", timeout=0.1)
 
         with conf.supybot.reply.mores.instant.context(3):
             self.assertResponse(
                 "eval 'foo '*300",
-                "'" + "foo " * 110 + " \x02(2 more messages)\x02")
+                "'" + "foo " * 110)
             self.assertResponse(
                 " ",
-                "foo " * 111 + "\x02(1 more message)\x02")
+                "foo " * 110 + "foo")
             self.assertResponse(
                 " ",
                 " " + "foo " * 79 + "'")
-            self.assertNoResponse(" ")
+            self.assertNoResponse(" ", timeout=0.1)
 
     def testClientTagReply(self):
         self.irc.addCallback(self.First(self.irc))
