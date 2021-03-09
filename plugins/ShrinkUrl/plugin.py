@@ -48,12 +48,23 @@ class CdbShrunkenUrlDB(object):
     def __init__(self, filename):
         self.dbs = {}
         cdb = conf.supybot.databases.types.cdb
-        def register_service(service):
+
+        services = list(conf.supybot.plugins.ShrinkUrl.default.validStrings)
+        services.append('Expand')
+        for service in services:
             dbname = filename.replace('.db', service.capitalize() + '.db')
-            self.dbs[service] = cdb.connect(dbname)
-        for service in conf.supybot.plugins.ShrinkUrl.default.validStrings:
-            register_service(service)
-        register_service('Expand')
+            try:
+                self.dbs[service] = cdb.connect(dbname)
+            except OSError as e:
+                log.error(
+                    'ShrinkUrl: Can not open database %s: %s',
+                    dbname, e)
+                raise KeyError("Could not open %s" % dbname)
+            except:
+                log.exception(
+                    'ShrinkUrl: Can not read database %s (data corruption?)',
+                    dbname)
+                raise KeyError("Could not open %s" % dbname)
 
     def get(self, service, url):
         return self.dbs[service][url]
