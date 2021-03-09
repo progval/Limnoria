@@ -468,7 +468,24 @@ def startServer():
             for x in configGroup.hosts6() if x != '']
     http_servers = []
     for protocol, address in (addresses4 + addresses6):
-        server = SupyHTTPServer(address, protocol, SupyHTTPRequestHandler)
+        try:
+            server = SupyHTTPServer(address, protocol, SupyHTTPRequestHandler)
+        except OSError as e:
+            log.error(
+                'Failed to start HTTP server with protocol %s at address: %s',
+                protocol, address, e)
+            if e.args[0] == 98:
+                log.error(
+                    'This means the port (and address) is already in use by an '
+                    'other process. Either find the process using the port '
+                    'and stop it, or change the port configured in '
+                    'supybot.servers.http.port.')
+            continue
+        except:
+            log.exception(
+                "Failed to start HTTP server with protocol %s at address",
+                protocol, address)
+            continue
         Thread(target=server.serve_forever, name='HTTP Server').start()
         http_servers.append(server)
         log.info('Starting HTTP server: %s' % str(server))
