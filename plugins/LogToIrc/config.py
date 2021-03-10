@@ -29,13 +29,12 @@
 
 import logging
 
-
 import supybot.log as log
 import supybot.conf as conf
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 
-from .plugin import _ircHandler
+from .handler import _ircHandler
 
 
 class IrcLogLevel(log.ValidLogLevel):
