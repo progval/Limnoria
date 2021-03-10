@@ -28,7 +28,7 @@
 ###
 
 import logging
-from itertools import imap
+
 
 import supybot.log as log
 import supybot.conf as conf
@@ -97,7 +97,7 @@ def configure(advanced):
             targets = anything('Which channels or users would you like to '
                                'send log messages to?')
             conf.supybot.plugins.LogToIrc.targets.set(targets)
-        except registry.InvalidRegistryValue, e:
+        except registry.InvalidRegistryValue as e:
             output(str(e))
             targets = ''
     colorized = yn('Would you like these messages to be colored?')
@@ -109,6 +109,6 @@ def configure(advanced):
                 level = something('What would you like the minimum priority '
                                   'level to be which will be logged to IRC?')
                 conf.supybot.plugins.LogToIrc.level.set(level)
-            except registry.InvalidRegistryValue, e:
+            except registry.InvalidRegistryValue as e:
                 output(str(e))
                 level = ''

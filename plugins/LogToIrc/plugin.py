@@ -67,8 +67,8 @@ class IrcHandler(logging.Handler):
                 try:
                     if not irc.driver.connected:
                         continue
-                except AttributeError, e:
-                    print '*** AttributeError, shouldn\'t happen: %s' % e
+                except AttributeError as e:
+                    print('*** AttributeError, shouldn\'t happen: %s' % e)
                     continue
                 networks = conf.supybot.plugins.LogToIrc.networks()
                 if networks and irc.network not in networks:
@@ -96,22 +96,24 @@ class IrcHandler(logging.Handler):
                     # baaaaaad.
                     irc.sendMsg(msg)
                 else:
-                    print '*** Not sending to %s' % utils.quoted(target)
+                    print('*** Not sending to %s' % utils.quoted(target))
 
 
 class IrcFormatter(log.Formatter):
-    def formatException(self, (E, e, tb)):
+    def formatException(self, xxx_todo_changeme):
+        (E, e, tb) = xxx_todo_changeme
         L = [utils.exnToString(e), '::']
         frames = utils.stackTrace(frame=tb.tb_frame).split()
         L.extend(frames)
         del tb
-        while sum(imap(len, L)) > 350:
+        while sum(map(len, L)) > 350:
             L.pop()
         return ' '.join(L)
 
 
 class ColorizedIrcFormatter(IrcFormatter):
-    def formatException(self, (E, e, tb)):
+    def formatException(self, xxx_todo_changeme1):
+        (E, e, tb) = xxx_todo_changeme1
         if conf.supybot.plugins.LogToIrc.color():
             s = IrcFormatter.formatException(self, (E, e, tb))
             return ircutils.mircColor(s, fg='red')

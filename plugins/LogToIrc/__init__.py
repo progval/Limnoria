@@ -35,6 +35,7 @@ Allows for sending the bot's logging output to channels or users.
 
 import supybot
 import supybot.world as world
+import importlib
 
 __author__ = supybot.authors.jemfinch
 __maintainer__ = supybot.authors.limnoria_core
@@ -50,7 +51,7 @@ __contributors__ = {}
 from . import config
 from . import plugin
 from importlib import reload
-reload(plugin) # In case we're being reloaded.
+importlib.reload(plugin) # In case we're being reloaded.
 
 if world.testing:
     from . import test
