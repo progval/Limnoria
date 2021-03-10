@@ -53,7 +53,7 @@ class String(callbacks.Plugin):
     def ord(self, irc, msg, args, letter):
         """<letter>
 
-        Returns the 8-bit value of <letter>.
+        Returns the unicode codepoint of <letter>.
         """
         irc.reply(str(ord(letter)))
     ord = wrap(ord, ['letter'])
@@ -62,12 +62,12 @@ class String(callbacks.Plugin):
     def chr(self, irc, msg, args, i):
         """<number>
 
-        Returns the character associated with the 8-bit value <number>
+        Returns the unicode character associated with codepoint <number>
         """
         try:
             irc.reply(chr(i), stripCtcp=False)
         except ValueError:
-            irc.error(_('That number doesn\'t map to an 8-bit character.'))
+            irc.error(_('That number doesn\'t map to a unicode character.'))
     chr = wrap(chr, ['int'])
 
     @internationalizeDocstring
