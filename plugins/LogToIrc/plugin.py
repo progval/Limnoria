@@ -51,11 +51,13 @@ from .handler import _ircHandler
 
 class LogToIrc(callbacks.Privmsg):
     threaded = True
-    def __init__(self):
-        callbacks.Privmsg.__init__(self)
+    def __init__(self, irc):
+        self.__parent = super(LogToIrc, self)
+        self.__parent.__init__(irc)
         log._logger.addHandler(_ircHandler)
 
     def die(self):
+        self.__parent.die()
         log._logger.removeHandler(_ircHandler)
 
     def do376(self, irc, msg):
