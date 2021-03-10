@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2004, Stéphan Kochen
+# Copyright (c) 2021, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -57,11 +58,14 @@ class IrcHandler(logging.Handler):
                 msgmaker = ircmsgs.notice
             msg = msgmaker(target, s)
             for irc in world.ircs:
+                if irc.driver is None:
+                    continue
                 try:
                     if not irc.driver.connected:
                         continue
                 except AttributeError as e:
-                    print('*** AttributeError, shouldn\'t happen: %s' % e)
+                    import traceback
+                    traceback.print_exc()
                     continue
                 networks = conf.supybot.plugins.LogToIrc.networks()
                 if networks and irc.network not in networks:
