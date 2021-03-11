@@ -98,6 +98,15 @@ class StringTestCase(PluginTestCase):
             i = ord(c)
             self.assertResponse('ord %s' % utils.str.dqrepr(c), str(i))
 
+
+    def testUnicode(self):
+        self.assertResponse('unicodename ☃', 'SNOWMAN')
+        self.assertResponse('unicodesearch SNOWMAN', '☃')
+        #self.assertResponse('unicodename ?',
+        #    'No name found for this character.')
+        self.assertResponse('unicodesearch FOO',
+            'Error: No character found with this name.')
+
     def testMd5(self):
         self.assertResponse('md5 supybot', '1360578d1276e945cc235654a53f9c65')
 

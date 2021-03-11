@@ -34,6 +34,7 @@ import types
 import codecs
 import base64
 import binascii
+import unicodedata
 
 import supybot.utils as utils
 from supybot.commands import *
@@ -42,14 +43,13 @@ import supybot.plugins as plugins
 import supybot.commands as commands
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
+from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization('String')
 
 import multiprocessing
 
 class String(callbacks.Plugin):
     """Provides useful commands for manipulating characters and strings."""
-    @internationalizeDocstring
     def ord(self, irc, msg, args, letter):
         """<letter>
 
@@ -58,7 +58,6 @@ class String(callbacks.Plugin):
         irc.reply(str(ord(letter)))
     ord = wrap(ord, ['letter'])
 
-    @internationalizeDocstring
     def chr(self, irc, msg, args, i):
         """<number>
 
@@ -70,7 +69,28 @@ class String(callbacks.Plugin):
             irc.error(_('That number doesn\'t map to a unicode character.'))
     chr = wrap(chr, ['int'])
 
-    @internationalizeDocstring
+    def unicodename(self, irc, msg, args, character):
+        """<character>
+
+        Returns the name of the given unicode <character>."""
+        if len(character) != 1:
+            irc.errorInvalid('character', character)
+        try:
+            irc.reply(unicodedata.name(character))
+        except ValueError:
+            irc.error(_('No name found for this character.'))
+    unicodename = wrap(unicodename, ['something'])
+
+    def unicodesearch(self, irc, msg, args, name):
+        """<name>
+
+        Searches for a unicode character from its <name>."""
+        try:
+            irc.reply(unicodedata.lookup(name))
+        except KeyError:
+            irc.error(_('No character found with this name.'))
+    unicodesearch = wrap(unicodesearch, ['text'])
+
     def encode(self, irc, msg, args, encoding, text):
         """<encoding> <text>
 
@@ -108,7 +128,6 @@ class String(callbacks.Plugin):
         irc.reply(text.rstrip('\n'))
     encode = wrap(encode, ['something', 'text'])
 
-    @internationalizeDocstring
     def decode(self, irc, msg, args, encoding, text):
         """<encoding> <text>
 
@@ -152,7 +171,6 @@ class String(callbacks.Plugin):
         irc.reply(text)
     decode = wrap(decode, ['something', 'text'])
 
-    @internationalizeDocstring
     def levenshtein(self, irc, msg, args, s1, s2):
         """<string1> <string2>
 
@@ -167,7 +185,6 @@ class String(callbacks.Plugin):
             irc.reply(str(utils.str.distance(s1, s2)))
     levenshtein = thread(wrap(levenshtein, ['something', 'text']))
 
-    @internationalizeDocstring
     def soundex(self, irc, msg, args, text, length):
         """<string> [<length>]
 
@@ -181,7 +198,6 @@ class String(callbacks.Plugin):
         irc.reply(utils.str.soundex(text, length))
     soundex = wrap(soundex, ['somethingWithoutSpaces', additional('int', 4)])
 
-    @internationalizeDocstring
     def len(self, irc, msg, args, text):
         """<text>
 
@@ -190,7 +206,6 @@ class String(callbacks.Plugin):
         irc.reply(str(len(text)))
     len = wrap(len, ['text'])
 
-    @internationalizeDocstring
     def re(self, irc, msg, args, f, text):
         """<regexp> <text>
 
@@ -226,7 +241,6 @@ class String(callbacks.Plugin):
         irc.reply(''.join(ret))
     xor = wrap(xor, ['something', 'text'])
 
-    @internationalizeDocstring
     def md5(self, irc, msg, args, text):
         """<text>
 
@@ -235,7 +249,6 @@ class String(callbacks.Plugin):
         irc.reply(utils.crypt.md5(text.encode('utf8')).hexdigest())
     md5 = wrap(md5, ['text'])
 
-    @internationalizeDocstring
     def sha(self, irc, msg, args, text):
         """<text>
 
