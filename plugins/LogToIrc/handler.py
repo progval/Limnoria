@@ -52,14 +52,16 @@ class IrcHandler(logging.Handler):
         except:
             self.handleError(record)
             return
-        for target in config.targets():
-            msgmaker = ircmsgs.privmsg
-            if config.notice() and not ircutils.isChannel(target):
-                msgmaker = ircmsgs.notice
-            msg = msgmaker(target, s)
-            for irc in world.ircs:
-                if irc.driver is None:
-                    continue
+        for irc in world.ircs:
+            network = irc.network
+            if irc.driver is None:
+                continue
+            for target in config.targets.getSpecific(network=irc.network)():
+                msgmaker = ircmsgs.privmsg
+                if config.notice.getSpecific(target, network)() \
+                        and not irc.isChannel(target):
+                    msgmaker = ircmsgs.notice
+                msg = msgmaker(target, s)
                 try:
                     if not irc.driver.connected:
                         continue
@@ -73,11 +75,13 @@ class IrcHandler(logging.Handler):
                 msgOk = True
                 if target in irc.state.channels:
                     channel = irc.state.channels[target]
-                    for modeChar in config.channelModesRequired():
+                    modes = config.channelModesRequired.getSpecific(
+                        network=network)()
+                    for modeChar in modes:
                         if modeChar not in channel.modes:
                             msgOk = False
                 else:
-                    capability = config.userCapabilityRequired()
+                    capability = config.userCapabilityRequired.getSpecific()
                     if capability:
                         try:
                             hostmask = irc.state.nicksToHostmasks[target]

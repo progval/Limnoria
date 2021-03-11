@@ -55,11 +55,12 @@ class Targets(registry.SpaceSeparatedListOfStrings):
     Value = ValidChannelOrNick
 
 conf.registerPlugin('LogToIrc')
-conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'level',
+conf.registerChannelValue(conf.supybot.plugins.LogToIrc, 'level',
     IrcLogLevel(logging.WARNING, """Determines what the minimum priority
     level logged will be to IRC. See supybot.log.level for possible
-    values.  DEBUG is disabled due to the large quantity of output."""))
-conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'targets',
+    values.  DEBUG is disabled due to the large quantity of output."""),
+    opSettable=False)
+conf.registerNetworkValue(conf.supybot.plugins.LogToIrc, 'targets',
     Targets([], """Determines which channels/nicks the bot should
     log to.  If no channels/nicks are set, this plugin will effectively be
     turned off."""))
@@ -67,7 +68,7 @@ conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'networks',
     registry.SpaceSeparatedSetOfStrings([], """Determines what networks the
     bot should log to.  If no networks are set, the bot will log on one network
     (whichever happens to be around at the time it feels like logging)."""))
-conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'channelModesRequired',
+conf.registerNetworkValue(conf.supybot.plugins.LogToIrc, 'channelModesRequired',
     registry.String('s', """Determines what channel modes a channel will be
     required to have for the bot to log to the channel.  If this string is
     empty, no modes will be checked."""))
@@ -75,10 +76,10 @@ conf.registerGlobalValue(conf.supybot.plugins.LogToIrc,
     'userCapabilityRequired', registry.String('owner', """Determines what
     capability is required for the bot to log to in private messages to the
     user.  If this is empty, there will be no capability that's checked."""))
-conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'color',
+conf.registerChannelValue(conf.supybot.plugins.LogToIrc, 'color',
     registry.Boolean(False, """Determines whether the bot's logs to IRC will be
     colorized with mIRC colors."""))
-conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'notice',
+conf.registerChannelValue(conf.supybot.plugins.LogToIrc, 'notice',
     registry.Boolean(False, """Determines whether the bot's logs to IRC will be
     sent via NOTICE instead of PRIVMSG.  Channels will always be PRIVMSGed,
     regardless of this variable; NOTICEs will only be used if this variable is
