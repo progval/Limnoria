@@ -708,7 +708,7 @@ def unbans(channel, hostmasks, prefix='', msg=None):
                   args=[channel] + ircutils.joinModes(modes), msg=msg)
 
 def kick(channel, nick, s='', prefix='', msg=None):
-    """Returns a KICK to kick nick from channel with the message msg."""
+    """Returns a KICK to kick nick from channel with the message s."""
     if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
         assert isNick(nick), repr(nick)
@@ -725,7 +725,7 @@ def kick(channel, nick, s='', prefix='', msg=None):
                       args=(channel, nick), msg=msg)
 
 def kicks(channels, nicks, s='', prefix='', msg=None):
-    """Returns a KICK to kick each of nicks from channel with the message msg.
+    """Returns a KICK to kick each of nicks from channel with the message s.
     """
     if isinstance(channels, str): # Backward compatibility
         channels = [channels]
@@ -747,7 +747,7 @@ def kicks(channels, nicks, s='', prefix='', msg=None):
                           args=(channel, ','.join(nicks)), msg=msg)
 
 def privmsg(recipient, s, prefix='', msg=None):
-    """Returns a PRIVMSG to recipient with the message msg."""
+    """Returns a PRIVMSG to recipient with the message s."""
     if conf.supybot.protocols.irc.strictRfc():
         assert (areReceivers(recipient)), repr(recipient)
         assert s, 's must not be empty.'
@@ -770,7 +770,7 @@ def dcc(recipient, kind, *args, **kwargs):
                   args=(recipient, ' '.join(args)))
 
 def action(recipient, s, prefix='', msg=None):
-    """Returns a PRIVMSG ACTION to recipient with the message msg."""
+    """Returns a PRIVMSG ACTION to recipient with the message s."""
     if conf.supybot.protocols.irc.strictRfc():
         assert (isChannel(recipient) or isNick(recipient)), repr(recipient)
     if msg and not prefix:
@@ -779,7 +779,7 @@ def action(recipient, s, prefix='', msg=None):
                   args=(recipient, '\x01ACTION %s\x01' % s), msg=msg)
 
 def notice(recipient, s, prefix='', msg=None):
-    """Returns a NOTICE to recipient with the message msg."""
+    """Returns a NOTICE to recipient with the message s."""
     if conf.supybot.protocols.irc.strictRfc():
         assert areReceivers(recipient), repr(recipient)
         assert s, 'msg must not be empty.'
@@ -828,7 +828,7 @@ def joins(channels, keys=None, prefix='', msg=None):
                       args=(','.join(channels), ','.join(keys)), msg=msg)
 
 def part(channel, s='', prefix='', msg=None):
-    """Returns a PART from channel with the message msg."""
+    """Returns a PART from channel with the message s."""
     if conf.supybot.protocols.irc.strictRfc():
         assert isChannel(channel), repr(channel)
     if msg and not prefix:
@@ -844,7 +844,7 @@ def part(channel, s='', prefix='', msg=None):
                       args=(channel,), msg=msg)
 
 def parts(channels, s='', prefix='', msg=None):
-    """Returns a PART from each of channels with the message msg."""
+    """Returns a PART from each of channels with the message s."""
     if conf.supybot.protocols.irc.strictRfc():
         assert all(isChannel, channels), channels
     if msg and not prefix:
@@ -860,7 +860,7 @@ def parts(channels, s='', prefix='', msg=None):
                       args=(','.join(channels),), msg=msg)
 
 def quit(s='', prefix='', msg=None):
-    """Returns a QUIT with the message msg."""
+    """Returns a QUIT with the message s."""
     if msg and not prefix:
         prefix = msg.prefix
     if s:
