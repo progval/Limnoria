@@ -1084,6 +1084,29 @@ class IrcTestCase(SupyTestCase):
         self.assertEqual(msg5.tagged('batch'), outer)
         self.assertEqual(self.irc.state.getParentBatches(msg5), [outer])
 
+    def testTruncate(self):
+        self.irc = irclib.Irc('test')
+
+        while self.irc.takeMsg():
+            pass
+
+        # over 512 bytes
+        msg = ircmsgs.IrcMsg(command='PRIVMSG', args=('#test2', 'é'*256))
+        self.irc.sendMsg(msg)
+        m = self.irc.takeMsg()
+        remaining_payload = 'é' * ((512 - len('PRIVMSG #test2 :\r\n'))//2)
+        self.assertEqual(
+                str(m), 'PRIVMSG #test2 :%s\r\n' % remaining_payload)
+
+        # over 512 bytes, make sure it doesn't truncate in the middle of
+        # a character
+        msg = ircmsgs.IrcMsg(command='PRIVMSG', args=('#test', 'é'*256))
+        self.irc.sendMsg(msg)
+        m = self.irc.takeMsg()
+        remaining_payload = 'é' * ((512 - len('PRIVMSG #test :\r\n'))//2)
+        self.assertEqual(
+                str(m), 'PRIVMSG #test :%s\r\n' % remaining_payload)
+
 
 class SaslTestCase(SupyTestCase, CapNegMixin):
     def setUp(self):

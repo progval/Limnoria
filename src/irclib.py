@@ -1306,7 +1306,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         else:
             msg_tags_str = ''
             msg_rest_str = msg_str
-        if len(msg_rest_str) > MAX_LINE_SIZE:
+        msg_rest_bytes = msg_rest_str.encode()
+        if len(msg_rest_bytes) > MAX_LINE_SIZE:
             # Yes, this violates the contract, but at this point it doesn't
             # matter.  That's why we gotta go munging in private attributes
             #
@@ -1315,7 +1316,19 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             # this issue, there's no fundamental reason to make it a
             # warning.
             log.debug('Truncating %r, message is too long.', msg)
-            msg._str = msg_tags_str + msg_rest_str[:MAX_LINE_SIZE-2] + '\r\n'
+
+            # Truncate to 512 bytes (minus 2 for '\r\n')
+            msg_rest_bytes = msg_rest_bytes[:MAX_LINE_SIZE-2]
+
+            # The above truncation may have truncated in the middle of a
+            # multi-byte character.
+            # I was about to write a UTF-8 decoder here just to trim them
+            # properly, but fortunately there is a neat trick to trim it
+            # while decoding: just ignore invalid bytes!
+            # https://stackoverflow.com/a/1820949/539465
+            msg_rest_str = msg_rest_bytes.decode(errors="ignore")
+
+            msg._str = msg_tags_str + msg_rest_str + '\r\n'
             msg._len = len(str(msg))
         # TODO: truncate tags
 
