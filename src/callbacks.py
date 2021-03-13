@@ -1114,19 +1114,31 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         # It's not optimal, but close enough and simplifies the code.
         messages_per_batch = max_bytes_per_batch // allowedLength
 
+        # "Clients MUST NOT send tags other than draft/multiline-concat and
+        # batch on messages within the batch. In particular, all client-only
+        # tags associated with the message must be sent attached to the initial
+        # BATCH command."
+        # -- <https://ircv3.net/specs/extensions/multiline>
+        # So we copy the tags of the first message, discard the tags of all
+        # other messages, and apply the tags to the opening BATCH
+        server_tags = msgs[0].server_tags
+
         for batch_msgs in utils.iter.grouper(msgs, messages_per_batch):
             # TODO: should use sendBatch instead of queueBatch if
             # sendImmediately is True
             batch_name = ircutils.makeLabel()
             batch = []
-            batch.append(ircmsgs.IrcMsg(command='BATCH', args=(
-                '+' + batch_name, 'draft/multiline', target)))
+            batch.append(ircmsgs.IrcMsg(command='BATCH',
+                args=('+' + batch_name, 'draft/multiline', target),
+                server_tags=server_tags))
 
             for (i, batch_msg) in enumerate(batch_msgs):
                 if batch_msg is None:
                     continue  # 'grouper' generates None at the end
                 assert 'batch' not in batch_msg.server_tags
-                batch_msg.server_tags['batch'] = batch_name
+
+                # Discard the existing tags, and add the batch ones.
+                batch_msg.server_tags = {'batch': batch_name}
                 if concat and i > 0:
                     # Tell clients not to add a newline after this
                     batch_msg.server_tags['draft/multiline-concat'] = None
