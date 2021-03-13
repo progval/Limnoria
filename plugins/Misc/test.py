@@ -277,6 +277,48 @@ class MiscTestCase(ChannelPluginTestCase):
                 m, ircmsgs.IrcMsg(command='BATCH', args=(
                     '-' + batch_name,)))
 
+    def testMoreBatchMaxLines(self):
+        self.irc.state.capabilities_ack.add('batch')
+        self.irc.state.capabilities_ack.add('draft/multiline')
+        self.irc.state.capabilities_ls['draft/multiline'] = \
+            'max-bytes=4096,max-lines=2'
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Misc.mores.context(3):
+                self.assertResponse('echo %s' % ('abc '*400),
+                                    'abc '*112 + ' \x02(3 more messages)\x02')
+                self.irc.feedMsg(ircmsgs.privmsg(
+                    self.channel, "@more", prefix=self.prefix))
+
+            # First message opens the batch
+            m = self.irc.takeMsg()
+            self.assertEqual(m.command, 'BATCH', m)
+            batch_name = m.args[0][1:]
+            self.assertEqual(
+                m, ircmsgs.IrcMsg(command='BATCH',
+                    args=('+' + batch_name,
+                        'draft/multiline', self.channel)))
+
+            # Second message, first PRIVMSG
+            m = self.irc.takeMsg()
+            self.assertEqual(
+                m, ircmsgs.IrcMsg(command='PRIVMSG',
+                    args=(self.channel, "abc " * 112 + " \x02(2 more messages)\x02"),
+                    server_tags={'batch': batch_name}))
+
+            # Third message, last PRIVMSG
+            m = self.irc.takeMsg()
+            self.assertEqual(
+                m, ircmsgs.IrcMsg(command='PRIVMSG',
+                    args=(self.channel,
+                        "abc " * 112 + " \x02(1 more message)\x02"),
+                    server_tags={'batch': batch_name}))
+
+            # Last message, closes the batch
+            m = self.irc.takeMsg()
+            self.assertEqual(
+                m, ircmsgs.IrcMsg(command='BATCH', args=(
+                    '-' + batch_name,)))
+
     def testClearMores(self):
         self.assertRegexp('echo %s' % ('abc'*700), 'more')
         self.assertRegexp('more', 'more')
