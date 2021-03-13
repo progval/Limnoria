@@ -1455,7 +1455,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                     return None
                 if msg.args[0].startswith('+'):
                     # Start of a batch; created by self.queueBatch. We need to
-                    # add *prepend* the rest of the batch to the fastqueue
+                    # *prepend* the rest of the batch to the fastqueue
                     # so that no other message is sent while the batch is
                     # open.
                     # "Clients MUST NOT send messages other than PRIVMSG while
