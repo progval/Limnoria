@@ -914,10 +914,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
         self.repliedTo = True
-        if sendImmediately:
-            sendMsg = self.irc.sendMsg
-        else:
-            sendMsg = self.irc.queueMsg
         if msg is None:
             msg = self.msg
         if prefixNick is not None:
@@ -936,115 +932,11 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         if not isinstance(s, minisix.string_types): # avoid trying to str() unicode
             s = str(s) # Allow non-string esses.
 
-        replyArgs = dict(
-            to=self.to,
-            notice=self.notice,
-            action=self.action,
-            private=self.private,
-            prefixNick=self.prefixNick,
-            stripCtcp=stripCtcp
-        )
-
         if self.finalEvaled:
             try:
-                if isinstance(self.irc, self.__class__):
-                    s = s[:conf.supybot.reply.maximumLength()]
-                    return self.irc.reply(s,
-                                          noLengthCheck=self.noLengthCheck,
-                                          **replyArgs)
-                elif self.noLengthCheck:
-                    # noLengthCheck only matters to NestedCommandsIrcProxy, so
-                    # it's not used here.  Just in case you were wondering.
-                    m = _makeReply(self, msg, s, **replyArgs)
-                    sendMsg(m)
-                    return m
-                else:
-                    s = ircutils.safeArgument(s)
-                    allowedLength = conf.get(conf.supybot.reply.mores.length,
-                        channel=target, network=self.irc.network)
-                    if not allowedLength: # 0 indicates this.
-                        allowedLength = (512
-                                - len(':') - len(self.irc.prefix)
-                                - len(' PRIVMSG ')
-                                - len(target)
-                                - len(' :')
-                                - len('\r\n')
-                                )
-                        if self.prefixNick:
-                            allowedLength -= len(msg.nick) + len(': ')
-                    maximumMores = conf.get(conf.supybot.reply.mores.maximum,
-                        channel=target, network=self.irc.network)
-                    maximumLength = allowedLength * maximumMores
-                    if len(s) > maximumLength:
-                        log.warning('Truncating to %s bytes from %s bytes.',
-                                    maximumLength, len(s))
-                        s = s[:maximumLength]
-                    s_size = len(s.encode()) if minisix.PY3 else len(s)
-                    if s_size <= allowedLength or \
-                       not conf.get(conf.supybot.reply.mores,
-                            channel=target, network=self.irc.network):
-                        # There's no need for action=self.action here because
-                        # action implies noLengthCheck, which has already been
-                        # handled.  Let's stick an assert in here just in case.
-                        assert not self.action
-                        m = _makeReply(self, msg, s, **replyArgs)
-                        sendMsg(m)
-                        return m
-                    # The '(XX more messages)' may have not the same
-                    # length in the current locale
-                    allowedLength -= len(_('(XX more messages)')) + 1 # bold
-                    chunks = ircutils.wrap(s, allowedLength)
-
-                    # Last messages to display at the beginning of the list
-                    # (which is used like a stack)
-                    chunks.reverse()
-
-                    instant = conf.get(conf.supybot.reply.mores.instant,
-                        channel=target, network=self.irc.network)
-
-                    msgs = []
-                    for (i, chunk) in enumerate(chunks):
-                        if i == 0:
-                            pass # last message, no suffix to add
-                        elif len(chunks) - i < instant:
-                            # one of the first messages, and the next one will
-                            # also be sent immediately, so no suffix
-                            pass
-                        else:
-                            if i == 1:
-                                more = _('more message')
-                            else:
-                                more = _('more messages')
-                            n = ircutils.bold('(%i %s)' % (len(msgs), more))
-                            chunk = '%s %s' % (chunk, n)
-                        msgs.append(_makeReply(self, msg, chunk, **replyArgs))
-
-                    while instant > 1 and msgs:
-                        instant -= 1
-                        response = msgs.pop()
-                        sendMsg(response)
-                        # XXX We should somehow allow these to be returned, but
-                        #     until someone complains, we'll be fine :)  We
-                        #     can't return from here, though, for obvious
-                        #     reasons.
-                        # return m
-                    if not msgs:
-                        return
-                    response = msgs.pop()
-                    prefix = msg.prefix
-                    if self.to and ircutils.isNick(self.to):
-                        try:
-                            state = self.getRealIrc().state
-                            prefix = state.nickToHostmask(self.to)
-                        except KeyError:
-                            pass # We'll leave it as it is.
-                    mask = prefix.split('!', 1)[1]
-                    self._mores[mask] = msgs
-                    public = bool(self.msg.channel)
-                    private = self.private or not public
-                    self._mores[msg.nick] = (private, msgs)
-                    sendMsg(response)
-                    return response
+                self._sendReply(
+                    s=s, target=target, msg=msg,
+                    sendImmediately=sendImmediately, stripCtcp=stripCtcp)
             finally:
                 self._resetReplyAttributes()
         else:
@@ -1057,6 +949,128 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             else:
                 self.args[self.counter] = s
             self.evalArgs()
+
+    def _replyOverhead(self, target, msg):
+        """Returns the number of bytes added to a PRIVMSG payload, either by
+        Limnoria itself or by the server.
+        Ignores tag bytes, as they are accounted for separatly."""
+        overhead = (
+            len(':')
+            + len(self.irc.prefix)
+            + len(' PRIVMSG ')
+            + len(target)
+            + len(' :')
+            + len('\r\n')
+        )
+        if self.prefixNick:
+            overhead += len(msg.nick) + len(': ')
+        return overhead
+
+    def _sendReply(self, s, target, msg, sendImmediately, stripCtcp):
+        if sendImmediately:
+            sendMsg = self.irc.sendMsg
+        else:
+            sendMsg = self.irc.queueMsg
+
+        replyArgs = dict(
+            to=self.to,
+            notice=self.notice,
+            action=self.action,
+            private=self.private,
+            prefixNick=self.prefixNick,
+            stripCtcp=stripCtcp
+        )
+
+        if isinstance(self.irc, self.__class__):
+            s = s[:conf.supybot.reply.maximumLength()]
+            return self.irc.reply(s,
+                                  noLengthCheck=self.noLengthCheck,
+                                  **replyArgs)
+        elif self.noLengthCheck:
+            # noLengthCheck only matters to NestedCommandsIrcProxy, so
+            # it's not used here.  Just in case you were wondering.
+            m = _makeReply(self, msg, s, **replyArgs)
+            sendMsg(m)
+            return m
+        else:
+            s = ircutils.safeArgument(s)
+            allowedLength = conf.get(conf.supybot.reply.mores.length,
+                channel=target, network=self.irc.network)
+            if not allowedLength: # 0 indicates this.
+                allowedLength = 512 - self._replyOverhead(target, msg)
+            maximumMores = conf.get(conf.supybot.reply.mores.maximum,
+                channel=target, network=self.irc.network)
+            maximumLength = allowedLength * maximumMores
+            if len(s) > maximumLength:
+                log.warning('Truncating to %s bytes from %s bytes.',
+                            maximumLength, len(s))
+                s = s[:maximumLength]
+            s_size = len(s.encode()) if minisix.PY3 else len(s)
+            if s_size <= allowedLength or \
+               not conf.get(conf.supybot.reply.mores,
+                    channel=target, network=self.irc.network):
+                # There's no need for action=self.action here because
+                # action implies noLengthCheck, which has already been
+                # handled.  Let's stick an assert in here just in case.
+                assert not self.action
+                m = _makeReply(self, msg, s, **replyArgs)
+                sendMsg(m)
+                return m
+            # The '(XX more messages)' may have not the same
+            # length in the current locale
+            allowedLength -= len(_('(XX more messages)')) + 1 # bold
+            chunks = ircutils.wrap(s, allowedLength)
+
+            # Last messages to display at the beginning of the list
+            # (which is used like a stack)
+            chunks.reverse()
+
+            instant = conf.get(conf.supybot.reply.mores.instant,
+                channel=target, network=self.irc.network)
+
+            msgs = []
+            for (i, chunk) in enumerate(chunks):
+                if i == 0:
+                    pass # last message, no suffix to add
+                elif len(chunks) - i < instant:
+                    # one of the first messages, and the next one will
+                    # also be sent immediately, so no suffix
+                    pass
+                else:
+                    if i == 1:
+                        more = _('more message')
+                    else:
+                        more = _('more messages')
+                    n = ircutils.bold('(%i %s)' % (len(msgs), more))
+                    chunk = '%s %s' % (chunk, n)
+                msgs.append(_makeReply(self, msg, chunk, **replyArgs))
+
+            while instant > 1 and msgs:
+                instant -= 1
+                response = msgs.pop()
+                sendMsg(response)
+                # XXX We should somehow allow these to be returned, but
+                #     until someone complains, we'll be fine :)  We
+                #     can't return from here, though, for obvious
+                #     reasons.
+                # return m
+            if not msgs:
+                return
+            response = msgs.pop()
+            prefix = msg.prefix
+            if self.to and ircutils.isNick(self.to):
+                try:
+                    state = self.getRealIrc().state
+                    prefix = state.nickToHostmask(self.to)
+                except KeyError:
+                    pass # We'll leave it as it is.
+            mask = prefix.split('!', 1)[1]
+            self._mores[mask] = msgs
+            public = bool(self.msg.channel)
+            private = self.private or not public
+            self._mores[msg.nick] = (private, msgs)
+            sendMsg(response)
+            return response
 
     def noReply(self, msg=None):
         if msg is None:
