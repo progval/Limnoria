@@ -1453,8 +1453,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         if msg:
             if msg.command.upper() == 'BATCH':
                 if not conf.supybot.protocols.irc.experimentalExtensions():
-                    log.error('Dropping outgoing batch.'
-                              'supybot.protocols.irc.experimentalExtensions'
+                    log.error('Dropping outgoing batch. '
+                              'supybot.protocols.irc.experimentalExtensions '
                               'is disabled, so plugins should not send '
                               'batches. This is a bug, please report it.')
                     return None

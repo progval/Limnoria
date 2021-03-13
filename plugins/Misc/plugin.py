@@ -393,8 +393,18 @@ class Misc(callbacks.Plugin):
         msgs.reverse()
         L[-number:] = []
         if msgs:
-            for msg in msgs:
-                irc.queueMsg(msg)
+            if conf.supybot.protocols.irc.experimentalExtensions() \
+                    and 'draft/multiline' in irc.state.capabilities_ack \
+                    and len(msgs) > 1:
+                # If draft/multiline is available, use it.
+                # TODO: set concat=True. For now we can't, because every
+                # message has "(XX more messages)" at the end, so it would be
+                # unreadable if the messages were concatenated
+                irc.queueMultilineBatches(msgs, target=msgs[0].args[0],
+                        targetNick=msg.nick, concat=False)
+            else:
+                for msg in msgs:
+                    irc.queueMsg(msg)
         else:
             irc.error(_('That\'s all, there is no more.'))
     more = wrap(more, [additional('seenNick')])

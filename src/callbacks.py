@@ -953,7 +953,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 self.args[self.counter] = s
             self.evalArgs()
 
-    def _replyOverhead(self, target, msg):
+    def _replyOverhead(self, target, targetNick):
         """Returns the number of bytes added to a PRIVMSG payload, either by
         Limnoria itself or by the server.
         Ignores tag bytes, as they are accounted for separatly."""
@@ -965,8 +965,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             + len(' :')
             + len('\r\n')
         )
-        if self.prefixNick:
-            overhead += len(msg.nick) + len(': ')
+        if self.prefixNick and targetNick is not None:
+            overhead += len(targetNick) + len(': ')
         return overhead
 
     def _sendReply(self, s, target, msg, sendImmediately, stripCtcp):
@@ -1000,7 +1000,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             allowedLength = conf.get(conf.supybot.reply.mores.length,
                 channel=target, network=self.irc.network)
             if not allowedLength: # 0 indicates this.
-                allowedLength = 512 - self._replyOverhead(target, msg)
+                allowedLength = 512 - self._replyOverhead(target, msg.nick)
             maximumMores = conf.get(conf.supybot.reply.mores.maximum,
                 channel=target, network=self.irc.network)
             maximumLength = allowedLength * maximumMores
@@ -1066,7 +1066,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 # More than one message to send now, and we are allowed to use
                 # multiline batches, so let's do it
                 self.queueMultilineBatches(
-                    instant_messages, target, allowedLength, sendImmediately)
+                    instant_messages, target, msg.nick, concat=True,
+                    allowedLength=allowedLength, sendImmediately=sendImmediately)
             else:
                 for instant_msg in instant_messages:
                     sendMsg(instant_msg)
@@ -1087,8 +1088,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             self._mores[msg.nick] = (private, msgs)
             return response
 
-    def queueMultilineBatches(self, msgs, target, allowedLength=0,
-                               sendImmediately=False):
+    def queueMultilineBatches(self, msgs, target, targetNick, concat,
+                              allowedLength=0, sendImmediately=False):
         """Queues the msgs passed as argument in batches using draft/multiline
         batches.
 
@@ -1098,7 +1099,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         assert 'draft/multiline' in self.state.capabilities_ack
 
         if not allowedLength: # 0 indicates this.
-            allowedLength = 512 - self._replyOverhead(target, msg)
+            allowedLength = 512 - self._replyOverhead(target, targetNick)
 
         multiline_cap_values = ircutils.parseCapabilityKeyValue(
             self.state.capabilities_ls['draft/multiline'])
@@ -1126,7 +1127,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     continue  # 'grouper' generates None at the end
                 assert 'batch' not in batch_msg.server_tags
                 batch_msg.server_tags['batch'] = batch_name
-                if i > 0:
+                if concat and i > 0:
                     # Tell clients not to add a newline after this
                     batch_msg.server_tags['draft/multiline-concat'] = None
                 batch.append(batch_msg)
