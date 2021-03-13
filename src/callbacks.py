@@ -937,6 +937,9 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 self._sendReply(
                     s=s, target=target, msg=msg,
                     sendImmediately=sendImmediately, stripCtcp=stripCtcp)
+            except:
+                log.exception('Error while sending reply')
+                raise
             finally:
                 self._resetReplyAttributes()
         else:
@@ -1045,15 +1048,29 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     chunk = '%s %s' % (chunk, n)
                 msgs.append(_makeReply(self, msg, chunk, **replyArgs))
 
+            instant_messages = []
+
             while instant > 0 and msgs:
                 instant -= 1
                 response = msgs.pop()
-                sendMsg(response)
+                instant_messages.append(response)
                 # XXX We should somehow allow these to be returned, but
                 #     until someone complains, we'll be fine :)  We
                 #     can't return from here, though, for obvious
                 #     reasons.
                 # return m
+
+            if conf.supybot.protocols.irc.experimentalExtensions() \
+                    and 'draft/multiline' in self.state.capabilities_ack \
+                    and len(instant_messages) > 1:
+                # More than one message to send now, and we are allowed to use
+                # multiline batches, so let's do it
+                self.queueMultilineBatches(
+                    instant_messages, target, allowedLength, sendImmediately)
+            else:
+                for instant_msg in instant_messages:
+                    sendMsg(instant_msg)
+
             if not msgs:
                 return
             prefix = msg.prefix
@@ -1069,6 +1086,55 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             private = self.private or not public
             self._mores[msg.nick] = (private, msgs)
             return response
+
+    def queueMultilineBatches(self, msgs, target, allowedLength=0,
+                               sendImmediately=False):
+        """Queues the msgs passed as argument in batches using draft/multiline
+        batches.
+
+        This errors if experimentalExtensions is disabled or draft/multiline
+        was not negotiated."""
+        assert conf.supybot.protocols.irc.experimentalExtensions()
+        assert 'draft/multiline' in self.state.capabilities_ack
+
+        if not allowedLength: # 0 indicates this.
+            allowedLength = 512 - self._replyOverhead(target, msg)
+
+        multiline_cap_values = ircutils.parseCapabilityKeyValue(
+            self.state.capabilities_ls['draft/multiline'])
+
+        # All the messages in instant_messages are to be sent
+        # immediately, in multiline batches.
+        max_bytes_per_batch = int(multiline_cap_values['max-bytes'])
+
+        # We have to honor max_bytes_per_batch, but I don't want to
+        # encode messages again here just to have their length, so
+        # let's assume they all have the maximum length.
+        # It's not optimal, but close enough and simplifies the code.
+        messages_per_batch = max_bytes_per_batch // allowedLength
+
+        for batch_msgs in utils.iter.grouper(msgs, messages_per_batch):
+            # TODO: should use sendBatch instead of queueBatch if
+            # sendImmediately is True
+            batch_name = ircutils.makeLabel()
+            batch = []
+            batch.append(ircmsgs.IrcMsg(command='BATCH', args=(
+                '+' + batch_name, 'draft/multiline', target)))
+
+            for (i, batch_msg) in enumerate(batch_msgs):
+                if batch_msg is None:
+                    continue  # 'grouper' generates None at the end
+                assert 'batch' not in batch_msg.server_tags
+                batch_msg.server_tags['batch'] = batch_name
+                if i > 0:
+                    # Tell clients not to add a newline after this
+                    batch_msg.server_tags['draft/multiline-concat'] = None
+                batch.append(batch_msg)
+
+            batch.append(ircmsgs.IrcMsg(
+                command='BATCH', args=('-' + batch_name,)))
+
+            self.queueBatch(batch)
 
     def noReply(self, msg=None):
         if msg is None:
