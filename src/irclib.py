@@ -1350,7 +1350,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 'IRC specifications. If you know what you are doing, '
                 'set supybot.protocols.irc.experimentalExtensions.')
 
-        if len(msg) < 2:
+        if len(msgs) < 2:
             raise ValueError(
                 'queueBatch called with less than two messages.')
         if msgs[0].command.upper() != 'BATCH' or msgs[0].args[0][0] != '+':
@@ -1362,16 +1362,17 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
         batch_name = msgs[0].args[0][1:]
 
-        if msgs[0].args[0][1:] != batch_name:
+        if msgs[-1].args[0][1:] != batch_name:
             raise ValueError(
                 'queueBatch called with mismatched BATCH name args.')
-        if any(msg.server_tags.get('batch') != batch_name for msg in msgs):
+        if any(msg.server_tags['batch'] != batch_name for msg in msgs[1:-1]):
             raise ValueError(
                 'queueBatch called with mismatched batch names.')
             return
         if batch_name in self._queued_batches:
             raise ValueError(
                 'queueBatch called with a batch name already in flight')
+
         self._queued_batches[batch_name] = msgs
 
         # Enqueue only the start of the batch. When takeMsg sees it, it will
@@ -1472,7 +1473,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                     # regular queue, which means the fastqueue is empty.
                     # But let's not take any risk, eg. if race condition
                     # with a plugin appending directly to the fastqueue.)
-                    batch_messages = self._queued_batches
+                    batch_name = msg.args[0][1:]
+                    batch_messages = self._queued_batches.pop(batch_name)
                     if batch_messages[0] != msg:
                         log.error('Enqueue "BATCH +" message does not match '
                                   'the one of the batch in flight.')
