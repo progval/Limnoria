@@ -936,14 +936,22 @@ class AuthenticateDecoder(object):
         return base64.b64decode(b''.join(self.chunks))
 
 
-def parseStsPolicy(logger, policy, parseDuration):
-    parsed_policy = {}
-    for kv in policy.split(','):
+def parseCapabilityKeyValue(s):
+    """Parses a key-value string, in the format used by 'sts' and
+    'draft/multiline."""
+    d = {}
+    for kv in s.split(','):
         if '=' in kv:
             (k, v) = kv.split('=', 1)
-            parsed_policy[k] = v
+            d[k] = v
         else:
-            parsed_policy[kv] = None
+            d[kv] = None
+
+    return d
+
+
+def parseStsPolicy(logger, policy, parseDuration):
+    parsed_policy = parseCapabilityKeyValue(policy)
 
     for key in ('port', 'duration'):
         if key == 'duration' and not parseDuration:
