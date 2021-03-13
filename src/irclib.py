@@ -1378,6 +1378,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         # TODO: the batch will be ordered with the priority of a BATCH
         # message (ie. normal), but if the batch is made only of low-priority
         # messages like PRIVMSG, it should have that priority.
+        # (or maybe order on the batch type instead of commands inside
+        # the batch?)
         self.queue.enqueue(msgs[0])
 
     def _truncateMsg(self, msg):
