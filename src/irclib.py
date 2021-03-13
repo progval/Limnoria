@@ -1345,29 +1345,33 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         -- <https://ircv3.net/specs/extensions/multiline>
         """
         if not conf.supybot.protocols.irc.experimentalExtensions():
-            log.error('queueBatch is disabled because it depends on draft '
-                      'IRC specifications. If you know what you are doing, '
-                      'set supybot.protocols.irc.experimentalExtensions.')
-            return
+            raise ValueError(
+                'queueBatch is disabled because it depends on draft '
+                'IRC specifications. If you know what you are doing, '
+                'set supybot.protocols.irc.experimentalExtensions.')
+
         if len(msg) < 2:
-            log.error('queueBatch called with less than two messages.')
-            return
+            raise ValueError(
+                'queueBatch called with less than two messages.')
         if msgs[0].command.upper() != 'BATCH' or msgs[0].args[0][0] != '+':
-            log.error('queueBatch called with non-"BATCH +" as first message.')
-            return
+            raise ValueError(
+                'queueBatch called with non-"BATCH +" as first message.')
         if msgs[-1].command.upper() != 'BATCH' or msgs[-1].args[0][0] != '-':
-            log.error('queueBatch called with non-"BATCH -" as last message.')
-            return
+            raise ValueError(
+                'queueBatch called with non-"BATCH -" as last message.')
+
         batch_name = msgs[0].args[0][1:]
+
         if msgs[0].args[0][1:] != batch_name:
-            log.error('queueBatch called with mismatched BATCH name args.')
-            return
+            raise ValueError(
+                'queueBatch called with mismatched BATCH name args.')
         if any(msg.server_tags.get('batch') != batch_name for msg in msgs):
-            log.error('queueBatch called with mismatched batch names.')
+            raise ValueError(
+                'queueBatch called with mismatched batch names.')
             return
         if batch_name in self._queued_batches:
-            log.error('queueBatch called with a batch name already in flight')
-            return
+            raise ValueError(
+                'queueBatch called with a batch name already in flight')
         self._queued_batches[batch_name] = msgs
 
         # Enqueue only the start of the batch. When takeMsg sees it, it will
