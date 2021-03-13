@@ -956,9 +956,9 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         Ignores tag bytes, as they are accounted for separatly."""
         overhead = (
             len(':')
-            + len(self.irc.prefix)
+            + len(self.irc.prefix.encode())
             + len(' PRIVMSG ')
-            + len(target)
+            + len(target.encode())
             + len(' :')
             + len('\r\n')
         )
