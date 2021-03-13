@@ -1045,7 +1045,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     chunk = '%s %s' % (chunk, n)
                 msgs.append(_makeReply(self, msg, chunk, **replyArgs))
 
-            while instant > 1 and msgs:
+            while instant > 0 and msgs:
                 instant -= 1
                 response = msgs.pop()
                 sendMsg(response)
@@ -1056,7 +1056,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 # return m
             if not msgs:
                 return
-            response = msgs.pop()
             prefix = msg.prefix
             if self.to and ircutils.isNick(self.to):
                 try:
@@ -1069,7 +1068,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             public = bool(self.msg.channel)
             private = self.private or not public
             self._mores[msg.nick] = (private, msgs)
-            sendMsg(response)
             return response
 
     def noReply(self, msg=None):
