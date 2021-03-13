@@ -389,13 +389,22 @@ class Misc(callbacks.Plugin):
                       'to see someone else\'s more.  To do so, call this '
                       'command with that person\'s nick.'), Raise=True)
         number = self.registryValue('mores', msg.channel, irc.network)
+
+        if conf.supybot.protocols.irc.experimentalExtensions() \
+                and 'draft/multiline' in irc.state.capabilities_ack:
+            use_multiline = True
+            multiline_cap_values = ircutils.parseCapabilityKeyValue(
+                irc.state.capabilities_ls['draft/multiline'])
+            if multiline_cap_values.get('max-lines', '').isnumeric():
+                number = min(number, int(multiline_cap_values['max-lines']))
+        else:
+            use_multiline = False
+
         msgs = L[-number:]
         msgs.reverse()
         L[-number:] = []
         if msgs:
-            if conf.supybot.protocols.irc.experimentalExtensions() \
-                    and 'draft/multiline' in irc.state.capabilities_ack \
-                    and len(msgs) > 1:
+            if use_multiline and len(msgs) > 1:
                 # If draft/multiline is available, use it.
                 # TODO: set concat=True. For now we can't, because every
                 # message has "(XX more messages)" at the end, so it would be
