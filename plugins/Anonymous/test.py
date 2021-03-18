@@ -1,6 +1,7 @@
 ###
 # Copyright (c) 2005, Daniel DiPaolo
 # Copyright (c) 2014, James McCoy
+# Copyright (c) 2021, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,6 +29,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import supybot.conf as conf
 from supybot.test import *
 
 class AnonymousTestCase(ChannelPluginTestCase):
@@ -55,6 +57,58 @@ class AnonymousTestCase(ChannelPluginTestCase):
             m = self.assertNotError('anonymous do %s loves you!'%self.channel)
             self.assertEqual(m.args, ircmsgs.action(self.channel,
                                                     'loves you!').args)
+
+    def testReact(self):
+        with self.subTest('nick not in channel'):
+            self.assertRegexp('anonymous react :) blah',
+                              'blah is not in %s' % self.channel)
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            ':blah!foo@example JOIN %s' % self.channel))
+
+        with self.subTest('require registration'):
+            self.assertRegexp('anonymous react :) blah',
+                              'must be registered')
+            self.assertIsNone(self.irc.takeMsg())
+
+        with conf.supybot.plugins.Anonymous.requireRegistration.context(False):
+            with self.subTest('experimental extensions disabled'):
+                self.assertRegexp('anonymous react :) blah',
+                                  'protocols.irc.experimentalExtensions is disabled')
+                self.assertIsNone(self.irc.takeMsg())
+
+        with conf.supybot.plugins.Anonymous.requireRegistration.context(False), \
+                conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with self.subTest('server support missing'):
+                self.assertRegexp('anonymous react :) blah',
+                                  'network does not support message-tags')
+                self.assertIsNone(self.irc.takeMsg())
+
+            self.irc.state.capabilities_ack.add('message-tags')
+
+            with self.subTest('no message from the target'):
+                self.assertRegexp('anonymous react :) blah',
+                                  'couldn\'t find a message')
+                self.assertIsNone(self.irc.takeMsg())
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                ':blah!foo@example PRIVMSG %s :hello' % self.channel))
+
+            with self.subTest('original message not tagged with msgid'):
+                self.assertRegexp('anonymous react :) blah',
+                                  'not have a message id')
+                self.assertIsNone(self.irc.takeMsg())
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                '@msgid=123 :blah!foo@example PRIVMSG %s :hello'
+                % self.channel))
+
+            # Works
+            with self.subTest('canonical working case'):
+                m = self.getMsg('anonymous react :) blah')
+                self.assertEqual(m, ircmsgs.IrcMsg(
+                    '@+draft/reply=123;+draft/react=:) TAGMSG %s'
+                    % self.channel))
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

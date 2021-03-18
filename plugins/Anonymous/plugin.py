@@ -1,6 +1,7 @@
 ###
 # Copyright (c) 2005, Daniel DiPaolo
 # Copyright (c) 2014, James McCoy
+# Copyright (c) 2021, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,6 +29,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import functools
+
+import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
 from supybot.commands import *
@@ -113,6 +117,69 @@ class Anonymous(callbacks.Plugin):
                       text, channel, msg.prefix)
         irc.reply(text, action=True, to=channel)
     do = wrap(do, ['inChannel', 'text'])
+
+    def react(self, irc, msg, args, channel, reaction, nick):
+        """<channel> <reaction> <nick>
+
+        Sends the <reaction> to <nick>'s last message.
+        <reaction> is typically a smiley or an emoji.
+
+        This may not be supported on the current network, as this
+        command depends on IRCv3 features.
+        This is also not supported if
+        supybot.protocols.irc.experimentalExtensions disabled
+        (don't enable it unless you know what you are doing).
+        """
+        self._preCheck(irc, msg, channel, 'react')
+
+        if not conf.supybot.protocols.irc.experimentalExtensions():
+            irc.error(_('Unable to react, '
+                        'supybot.protocols.irc.experimentalExtensions is '
+                        'disabled.'), Raise=True)
+
+        if not 'message-tags' in irc.state.capabilities_ack:
+            irc.error(_('Unable to react, the network does not support '
+                        'message-tags.'), Raise=True)
+
+        if irc.state.getClientTagDenied('draft/reply') \
+                or irc.state.getClientTagDenied('draft/react'):
+            irc.error(_('Unable to react, the network does not allow '
+                        'draft/reply and/or draft/react.'), Raise=True)
+
+        iterable = filter(functools.partial(self._validLastMsg, irc),
+                          reversed(irc.state.history))
+        for react_to_msg in iterable:
+            if react_to_msg.nick == nick:
+                break
+        else:
+            irc.error(_('I couldn\'t find a message from %s in '
+                      'my history of %s messages.')
+                      % (nick, len(irc.state.history)),
+                      Raise=True)
+
+        react_to_msgid = react_to_msg.server_tags.get('msgid')
+
+        if not react_to_msgid:
+            irc.error(_('Unable to react, %s\'s last message does not have '
+                        'a message id.') % nick, Raise=True)
+
+        self.log.info('Reacting with %q in %s due to %s.',
+                      reaction, channel, msg.prefix)
+
+        reaction_msg = ircmsgs.IrcMsg(command='TAGMSG', args=(channel,),
+            server_tags={'+draft/reply': react_to_msgid,
+                         '+draft/react': reaction})
+
+        irc.queueMsg(reaction_msg)
+    react = wrap(
+        react, ['inChannel', 'somethingWithoutSpaces', 'nickInChannel'])
+
+    def _validLastMsg(self, irc, msg):
+        return msg.prefix and \
+               msg.command == 'PRIVMSG' and \
+               msg.channel
+
+
 Anonymous = internationalizeDocstring(Anonymous)
 
 Class = Anonymous
