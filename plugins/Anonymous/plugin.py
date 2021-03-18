@@ -78,7 +78,6 @@ class Anonymous(callbacks.Plugin):
             irc.error(_('This command is disabled (supybot.plugins.Anonymous.'
                       'allowPrivateTarget is False).'), Raise=True)
 
-    @internationalizeDocstring
     def say(self, irc, msg, args, target, text):
         """<channel> <text>
 
@@ -104,7 +103,6 @@ class Anonymous(callbacks.Plugin):
         irc.noReply()
     tell = wrap(tell, ['nick', 'text'])
 
-    @internationalizeDocstring
     def do(self, irc, msg, args, channel, text):
         """<channel> <action>
 

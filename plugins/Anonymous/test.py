@@ -34,38 +34,27 @@ class AnonymousTestCase(ChannelPluginTestCase):
     plugins = ('Anonymous',)
     def testSay(self):
         self.assertError('anonymous say %s I love you!' % self.channel)
-        origreg = conf.supybot.plugins.Anonymous.requireRegistration()
-        try:
-            conf.supybot.plugins.Anonymous.requireRegistration.setValue(False)
+
+        with conf.supybot.plugins.Anonymous.requireRegistration.context(False):
             m = self.assertNotError('anonymous say %s foo!' % self.channel)
             self.assertTrue(m.args[1] == 'foo!')
-        finally:
-            conf.supybot.plugins.Anonymous.requireRegistration.setValue(origreg)
 
     def testTell(self):
         self.assertError('anonymous tell %s I love you!' % self.nick)
-        origreg = conf.supybot.plugins.Anonymous.requireRegistration()
-        origpriv = conf.supybot.plugins.Anonymous.allowPrivateTarget()
-        try:
-            conf.supybot.plugins.Anonymous.requireRegistration.setValue(False)
+
+        with conf.supybot.plugins.Anonymous.requireRegistration.context(False):
             self.assertError('anonymous tell %s foo!' % self.channel)
-            conf.supybot.plugins.Anonymous.allowPrivateTarget.setValue(True)
-            m = self.assertNotError('anonymous tell %s foo!' % self.nick)
-            self.assertTrue(m.args[1] == 'foo!')
-        finally:
-            conf.supybot.plugins.Anonymous.requireRegistration.setValue(origreg)
-            conf.supybot.plugins.Anonymous.allowPrivateTarget.setValue(origpriv)
+            with conf.supybot.plugins.Anonymous.allowPrivateTarget.context(True):
+                m = self.assertNotError('anonymous tell %s foo!' % self.nick)
+                self.assertTrue(m.args[1] == 'foo!')
 
     def testAction(self):
         m = self.assertError('anonymous do %s loves you!' % self.channel)
-        try:
-            orig = conf.supybot.plugins.Anonymous.requireRegistration()
-            conf.supybot.plugins.Anonymous.requireRegistration.setValue(False)
+
+        with conf.supybot.plugins.Anonymous.requireRegistration.context(False):
             m = self.assertNotError('anonymous do %s loves you!'%self.channel)
             self.assertEqual(m.args, ircmsgs.action(self.channel,
                                                     'loves you!').args)
-        finally:
-            conf.supybot.plugins.Anonymous.requireRegistration.setValue(orig)
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
