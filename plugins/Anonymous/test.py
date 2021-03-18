@@ -111,4 +111,38 @@ class AnonymousTestCase(ChannelPluginTestCase):
                     % self.channel))
 
 
+    def testReactClienttagdeny(self):
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            ':blah!foo@example JOIN %s' % self.channel))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            '@msgid=123 :blah!foo@example PRIVMSG %s :hello'
+            % self.channel))
+        self.irc.state.capabilities_ack.add('message-tags')
+
+        with conf.supybot.plugins.Anonymous.requireRegistration.context(False), \
+                conf.supybot.protocols.irc.experimentalExtensions.context(True):
+
+            # Works
+            self.irc.state.supported['CLIENTTAGDENY'] = 'foo,bar'
+
+            for value in ('draft/reply', 'draft/react', '*,-draft/reply',
+                          '*,draft/react'):
+                self.irc.state.supported['CLIENTTAGDENY'] = value
+                with self.subTest('denied by CLIENTTAGDENY=%s' % value):
+                    self.assertRegexp('anonymous react :) blah',
+                                      'draft/reply and/or draft/react')
+                    self.assertIsNone(self.irc.takeMsg())
+
+            # Works
+            for value in ('foo,bar', '*,-draft/reply,-draft/react'):
+                self.irc.state.supported['CLIENTTAGDENY'] = value
+                with self.subTest('allowed by CLIENTTAGDENY=%s' % value):
+                    m = self.getMsg('anonymous react :) blah')
+                    self.assertEqual(m, ircmsgs.IrcMsg(
+                        '@+draft/reply=123;+draft/react=:) TAGMSG %s'
+                        % self.channel))
+
+
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
