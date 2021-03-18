@@ -420,6 +420,29 @@ class IrcStateTestCase(SupyTestCase):
         self.assertEqual(state.supported['chanmodes'],
                          frozenset('biklmnopstveI'))
 
+    def testClientTagDenied(self):
+        state = irclib.IrcState()
+
+        # By default, every tag is assumed allowed
+        self.assertEqual(state.getClientTagDenied('foo'), False)
+        self.assertEqual(state.getClientTagDenied('bar'), False)
+
+        # Blacklist
+        state.addMsg(self.irc, ircmsgs.IrcMsg(
+            ':example.org 005 mybot CLIENTTAGDENY=foo :are supported by this server'))
+        self.assertEqual(state.getClientTagDenied('foo'), True)
+        self.assertEqual(state.getClientTagDenied('bar'), False)
+        self.assertEqual(state.getClientTagDenied('+foo'), True)
+        self.assertEqual(state.getClientTagDenied('+bar'), False)
+
+        # Whitelist
+        state.addMsg(self.irc, ircmsgs.IrcMsg(
+            ':example.org 005 mybot CLIENTTAGDENY=*,-foo :are supported by this server'))
+        self.assertEqual(state.getClientTagDenied('foo'), False)
+        self.assertEqual(state.getClientTagDenied('bar'), True)
+        self.assertEqual(state.getClientTagDenied('+foo'), False)
+        self.assertEqual(state.getClientTagDenied('+bar'), True)
+
     def testShort004(self):
         state = irclib.IrcState()
         state.addMsg(self.irc, ircmsgs.IrcMsg(':coulomb.oftc.net 004 testnick coulomb.oftc.net hybrid-7.2.2+oftc1.6.8'))

@@ -821,6 +821,27 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
 
         return batches
 
+    def getClientTagDenied(self, tag):
+        """Returns whether the given tag is denied by the server, according
+        to its CLIENTTAGDENY policy.
+        This is only informative, and servers may still allow or deny tags
+        at their discretion.
+
+        For details, see the RPL_ISUPPORT section in
+        <https://ircv3.net/specs/extensions/message-tags>
+        """
+        tag = tag.lstrip("+")
+
+        denied_tags = self.supported.get('CLIENTTAGDENY')
+        if not denied_tags:
+            return False
+        denied_tags = denied_tags.split(',')
+        if '*' in denied_tags:
+            # All tags are denied by default, check the whitelist
+            return ('-' + tag) not in denied_tags
+        else:
+            return tag in denied_tags
+
     def do004(self, irc, msg):
         """Handles parsing the 004 reply
 
