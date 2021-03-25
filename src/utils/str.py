@@ -320,31 +320,28 @@ def splitBytes(word, size):
             return (word[0:size-i], word[size-i:])
     assert False, (word, size)
 
+
+class ByteTextWrapper(textwrap.TextWrapper):
+    def _wrap_chunks(self, words):
+        words.reverse() # use it as a stack
+        words = [w.encode() for w in words]
+        lines = [b'']
+        while words:
+            word = words.pop(-1)
+            if len(word) > self.width:
+                (before, after) = splitBytes(word, self.width)
+                words.append(after)
+                word = before
+            if len(lines[-1]) + len(word) <= self.width:
+                lines[-1] += word
+            else:
+                lines.append(word)
+        return [l.decode() for l in lines]
+
 def byteTextWrap(text, size, break_on_hyphens=False):
     """Similar to textwrap.wrap(), but considers the size of strings (in bytes)
     instead of their length (in characters)."""
-    try:
-        words = textwrap.TextWrapper()._split_chunks(text)
-    except AttributeError: # Python 2
-        words = textwrap.TextWrapper()._split(text)
-    words.reverse() # use it as a stack
-    if sys.version_info[0] >= 3:
-        words = [w.encode() for w in words]
-    lines = [b'']
-    while words:
-        word = words.pop(-1)
-        if len(word) > size:
-            (before, after) = splitBytes(word, size)
-            words.append(after)
-            word = before
-        if len(lines[-1]) + len(word) <= size:
-            lines[-1] += word
-        else:
-            lines.append(word)
-    if sys.version_info[0] >= 3:
-        return [l.decode() for l in lines]
-    else:
-        return lines
+    return ByteTextWrapper(width=size).wrap(text)
 
 def commaAndify(seq, comma=',', And=None):
     """Given a a sequence, returns an English clause for that sequence.
