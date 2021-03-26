@@ -188,6 +188,7 @@ class Config(callbacks.Plugin):
         preceded by an '@' sign.  If a variable is a 'ChannelValue', that is,
         it can be separately configured for each channel using the 'channel'
         command in this plugin, it is preceded by an '#' sign.
+        And if a variable is a 'NetworkValue', it is preceded by a ':' sign.
         """
         L = self._list(irc, group)
         if L:
