@@ -1131,6 +1131,153 @@ class IrcTestCase(SupyTestCase):
                 str(m), 'PRIVMSG #test :%s\r\n' % remaining_payload)
 
 
+class BatchTestCase(SupyTestCase):
+    def setUp(self):
+        self.irc = irclib.Irc('test')
+        conf.supybot.protocols.irc.experimentalExtensions.setValue(True)
+        while self.irc.takeMsg() is not None:
+            self.irc.takeMsg()
+
+    def tearDown(self):
+        conf.supybot.protocols.irc.experimentalExtensions.setValue(False)
+
+    def testQueueBatch(self):
+        """Basic operation of queueBatch"""
+        msgs = [
+            ircmsgs.IrcMsg('BATCH +label batchtype'),
+            ircmsgs.IrcMsg('@batch=label PRIVMSG #channel :hello'),
+            ircmsgs.IrcMsg('@batch=label PRIVMSG #channel :there'),
+            ircmsgs.IrcMsg('BATCH -label'),
+        ]
+
+        self.irc.queueBatch(copy.deepcopy(msgs))
+        for msg in msgs:
+            self.assertEqual(msg, self.irc.takeMsg())
+
+    def testQueueBatchStartMinus(self):
+        msgs = [
+            ircmsgs.IrcMsg('BATCH -label batchtype'),
+            ircmsgs.IrcMsg('@batch=label PRIVMSG #channel :hello'),
+            ircmsgs.IrcMsg('BATCH -label'),
+        ]
+
+        with self.assertRaises(ValueError):
+            self.irc.queueBatch(msgs)
+        self.assertIsNone(self.irc.takeMsg())
+
+    def testQueueBatchEndPlus(self):
+        msgs = [
+            ircmsgs.IrcMsg('BATCH +label batchtype'),
+            ircmsgs.IrcMsg('@batch=label PRIVMSG #channel :hello'),
+            ircmsgs.IrcMsg('BATCH +label'),
+        ]
+
+        with self.assertRaises(ValueError):
+            self.irc.queueBatch(msgs)
+        self.assertIsNone(self.irc.takeMsg())
+
+    def testQueueBatchMismatchStartEnd(self):
+        msgs = [
+            ircmsgs.IrcMsg('BATCH +label batchtype'),
+            ircmsgs.IrcMsg('@batch=label PRIVMSG #channel :hello'),
+            ircmsgs.IrcMsg('BATCH -label2'),
+        ]
+
+        with self.assertRaises(ValueError):
+            self.irc.queueBatch(msgs)
+        self.assertIsNone(self.irc.takeMsg())
+
+    def testQueueBatchMismatchInner(self):
+        msgs = [
+            ircmsgs.IrcMsg('BATCH +label batchtype'),
+            ircmsgs.IrcMsg('@batch=label2 PRIVMSG #channel :hello'),
+            ircmsgs.IrcMsg('BATCH -label'),
+        ]
+
+        with self.assertRaises(ValueError):
+            self.irc.queueBatch(msgs)
+        self.assertIsNone(self.irc.takeMsg())
+
+    def testQueueBatchTwice(self):
+        """Basic operation of queueBatch"""
+        all_msgs = []
+        for label in ('label1', 'label2'):
+            msgs = [
+                ircmsgs.IrcMsg('BATCH +%s batchtype' % label),
+                ircmsgs.IrcMsg('@batch=%s PRIVMSG #channel :hello' % label),
+                ircmsgs.IrcMsg('@batch=%s PRIVMSG #channel :there' % label),
+                ircmsgs.IrcMsg('BATCH -%s' % label),
+            ]
+            all_msgs.extend(msgs)
+            self.irc.queueBatch(copy.deepcopy(msgs))
+
+        for msg in all_msgs:
+            self.assertEqual(msg, self.irc.takeMsg())
+
+    def testQueueBatchDuplicate(self):
+        msgs = [
+            ircmsgs.IrcMsg('BATCH +label batchtype'),
+            ircmsgs.IrcMsg('@batch=label PRIVMSG #channel :hello'),
+            ircmsgs.IrcMsg('BATCH -label'),
+        ]
+
+        self.irc.queueBatch(copy.deepcopy(msgs))
+
+        with self.assertRaises(ValueError):
+            self.irc.queueBatch(copy.deepcopy(msgs))
+
+        for msg in msgs:
+            self.assertEqual(msg, self.irc.takeMsg())
+        self.assertIsNone(self.irc.takeMsg())
+
+    def testQueueBatchReuse(self):
+        """We can reuse the same label after the batch is closed."""
+        msgs = [
+            ircmsgs.IrcMsg('BATCH +label batchtype'),
+            ircmsgs.IrcMsg('@batch=label PRIVMSG #channel :hello'),
+            ircmsgs.IrcMsg('BATCH -label'),
+        ]
+
+        self.irc.queueBatch(copy.deepcopy(msgs))
+        for msg in msgs:
+            self.assertEqual(msg, self.irc.takeMsg())
+
+        self.irc.queueBatch(copy.deepcopy(msgs))
+        for msg in msgs:
+            self.assertEqual(msg, self.irc.takeMsg())
+
+    def testBatchInterleaved(self):
+        """Make sure it's not possible for an unrelated message to be sent
+        while a batch is open"""
+        msgs = [
+            ircmsgs.IrcMsg('BATCH +label batchtype'),
+            ircmsgs.IrcMsg('@batch=label PRIVMSG #channel :hello'),
+            ircmsgs.IrcMsg('BATCH -label'),
+        ]
+        msg = ircmsgs.IrcMsg('PRIVMSG #channel :unrelated message')
+
+        with self.subTest('sendMsg called before "BATCH +" is dequeued'):
+            self.irc.queueBatch(copy.deepcopy(msgs))
+            self.irc.sendMsg(msg)
+
+            self.assertEqual(msg, self.irc.takeMsg())
+            self.assertEqual(msgs[0], self.irc.takeMsg())
+            self.assertEqual(msgs[1], self.irc.takeMsg())
+            self.assertEqual(msgs[2], self.irc.takeMsg())
+            self.assertIsNone(self.irc.takeMsg())
+
+        with self.subTest('sendMsg called after "BATCH +" is dequeued'):
+            self.irc.queueBatch(copy.deepcopy(msgs))
+            self.assertEqual(msgs[0], self.irc.takeMsg())
+
+            self.irc.sendMsg(msg)
+
+            self.assertEqual(msgs[1], self.irc.takeMsg())
+            self.assertEqual(msgs[2], self.irc.takeMsg())
+            self.assertEqual(msg, self.irc.takeMsg())
+            self.assertIsNone(self.irc.takeMsg())
+
+
 class SaslTestCase(SupyTestCase, CapNegMixin):
     def setUp(self):
         pass

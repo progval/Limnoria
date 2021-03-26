@@ -161,4 +161,14 @@ def limited(iterable, limit):
         raise ValueError('Expected %s elements in iterable (%r), got %s.' % \
               (limit, iterable, limit-i))
 
+
+def grouper(iterable, n, fillvalue=None):
+    """Collect data into fixed-length chunks or blocks
+
+    grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
+
+    From https://docs.python.org/3/library/itertools.html#itertools-recipes"""
+    args = [iter(iterable)] * n
+    return zip_longest(*args, fillvalue=fillvalue)
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

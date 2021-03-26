@@ -318,7 +318,6 @@ class FunctionsTestCase(SupyTestCase):
         irc.state.supported['statusmsg'] = '+'
         msg = ircmsgs.privmsg('+#foo', 'bar baz', prefix=prefix)
         irc._tagMsg(msg)
-        print(msg.channel)
         self.assertEqual(ircmsgs.privmsg('+#foo', '%s: foo' % msg.nick),
                          callbacks._makeReply(irc, msg, 'foo'))
 
@@ -536,7 +535,6 @@ class PrivmsgTestCase(ChannelPluginTestCase):
 
     def testReplyInstant(self):
         self.assertNoResponse(' ')
-        print(conf.supybot.reply.mores.instant())
         self.assertResponse(
             "eval 'foo '*300",
             "'" + "foo " * 110 + " \x02(2 more messages)\x02")
@@ -693,6 +691,234 @@ class PrivmsgTestCase(ChannelPluginTestCase):
                     expectException=True)
         finally:
             conf.supybot.reply.whenNotCommand.set(original)
+
+
+class MultilinePrivmsgTestCase(ChannelPluginTestCase):
+    plugins = ('Utilities', 'Misc', 'Web', 'String')
+    conf.allowEval = True
+
+    def setUp(self):
+        super().setUp()
+
+        # Enable multiline
+        self.irc.state.capabilities_ack.add('batch')
+        self.irc.state.capabilities_ack.add('draft/multiline')
+        self.irc.state.capabilities_ls['draft/multiline'] = 'max-bytes=4096'
+
+        # Enable msgid and +draft/reply
+        self.irc.state.capabilities_ack.add('message-tags')
+
+        conf.supybot.protocols.irc.experimentalExtensions.setValue(True)
+
+    def tearDown(self):
+        conf.supybot.protocols.irc.experimentalExtensions.setValue(False)
+        conf.supybot.reply.mores.instant.setValue(1)
+        super().tearDown()
+
+    def testReplyInstantSingle(self):
+        self.assertIsNone(self.irc.takeMsg())
+
+        # Single message as reply, no batch
+        self.irc.feedMsg(ircmsgs.privmsg(
+            self.channel, "@eval 'foo '*300", prefix=self.prefix))
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='PRIVMSG', args=(self.channel,
+                "test: '" + "foo " * 110 + " \x02(2 more messages)\x02")))
+        self.assertIsNone(self.irc.takeMsg())
+
+    def testReplyInstantBatchPartial(self):
+        """response is shared as a batch + (1 more message)"""
+        self.assertIsNone(self.irc.takeMsg())
+
+        conf.supybot.reply.mores.instant.setValue(2)
+        self.irc.feedMsg(ircmsgs.privmsg(
+            self.channel, "@eval 'foo '*300", prefix=self.prefix))
+
+        # First message opens the batch
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'BATCH', m)
+        batch_name = m.args[0][1:]
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='BATCH',
+                args=('+' + batch_name,
+                    'draft/multiline', self.channel)))
+
+        # Second message, first PRIVMSG
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='PRIVMSG',
+                args=(self.channel, "test: '" + "foo " * 110),
+                server_tags={'batch': batch_name}))
+
+        # Third message, last PRIVMSG
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='PRIVMSG',
+                args=(self.channel,
+                    "test: " + "foo " * 111 + "\x02(1 more message)\x02"),
+                server_tags={'batch': batch_name,
+                    'draft/multiline-concat': None}))
+
+        # Last message, closes the batch
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='BATCH', args=(
+                '-' + batch_name,)))
+
+    def testReplyInstantBatchFull(self):
+        """response is entirely instant"""
+        self.assertIsNone(self.irc.takeMsg())
+
+        conf.supybot.reply.mores.instant.setValue(3)
+        self.irc.feedMsg(ircmsgs.privmsg(
+            self.channel, "@eval 'foo '*300", prefix=self.prefix))
+
+        # First message opens the batch
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'BATCH', m)
+        batch_name = m.args[0][1:]
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='BATCH',
+                args=('+' + batch_name,
+                    'draft/multiline', self.channel)))
+
+        # Second message, first PRIVMSG
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='PRIVMSG',
+                args=(self.channel, "test: '" + "foo " * 110),
+                server_tags={'batch': batch_name}))
+
+        # Third message, a PRIVMSG
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='PRIVMSG',
+                args=(self.channel,
+                    "test: " + "foo " * 110 + "foo"),
+                server_tags={'batch': batch_name,
+                    'draft/multiline-concat': None}))
+
+        # Fourth message, last PRIVMSG
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='PRIVMSG',
+                args=(self.channel,
+                    "test:  " + "foo " * 79 + "'"),
+                server_tags={'batch': batch_name,
+                    'draft/multiline-concat': None}))
+
+        # Last message, closes the batch
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='BATCH', args=(
+                '-' + batch_name,)))
+
+    def testReplyInstantBatchFullMaxBytes(self):
+        """response is entirely instant, but does not fit in a single batch"""
+        self.irc.state.capabilities_ls['draft/multiline'] = 'max-bytes=900'
+        self.assertIsNone(self.irc.takeMsg())
+
+        conf.supybot.reply.mores.instant.setValue(3)
+        self.irc.feedMsg(ircmsgs.privmsg(
+            self.channel, "@eval 'foo '*300", prefix=self.prefix))
+
+        # First message opens the first batch
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'BATCH', m)
+        batch_name = m.args[0][1:]
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='BATCH',
+                args=('+' + batch_name,
+                    'draft/multiline', self.channel)))
+
+        # Second message, first PRIVMSG
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='PRIVMSG',
+                args=(self.channel, "test: '" + "foo " * 110),
+                server_tags={'batch': batch_name}))
+
+        # Third message, a PRIVMSG
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='PRIVMSG',
+                args=(self.channel,
+                    "test: " + "foo " * 110 + "foo"),
+                server_tags={'batch': batch_name,
+                    'draft/multiline-concat': None}))
+
+        # closes the first batch
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='BATCH', args=(
+                '-' + batch_name,)))
+
+        # opens the second batch
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'BATCH', m)
+        batch_name = m.args[0][1:]
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='BATCH',
+                args=('+' + batch_name,
+                    'draft/multiline', self.channel)))
+
+        # last PRIVMSG (and also the first of its batch)
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='PRIVMSG',
+                args=(self.channel,
+                    "test:  " + "foo " * 79 + "'"),
+                server_tags={'batch': batch_name}))
+
+        # Last message, closes the second batch
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='BATCH', args=(
+                '-' + batch_name,)))
+
+    def testReplyInstantBatchTags(self):
+        """check a message's tags are 'lifted' to the initial BATCH
+        command."""
+        self.assertIsNone(self.irc.takeMsg())
+
+        conf.supybot.reply.mores.instant.setValue(2)
+        m = ircmsgs.privmsg(
+            self.channel, "@eval 'foo '*300", prefix=self.prefix)
+        m.server_tags['msgid'] = 'initialmsgid'
+        self.irc.feedMsg(m)
+
+        # First message opens the batch
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'BATCH', m)
+        batch_name = m.args[0][1:]
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='BATCH',
+                args=('+' + batch_name,
+                    'draft/multiline', self.channel),
+                server_tags={'+draft/reply': 'initialmsgid'}))
+
+        # Second message, first PRIVMSG
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='PRIVMSG',
+                args=(self.channel, "test: '" + "foo " * 110),
+                server_tags={'batch': batch_name}))
+
+        # Third message, last PRIVMSG
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='PRIVMSG',
+                args=(self.channel,
+                    "test: " + "foo " * 111 + "\x02(1 more message)\x02"),
+                server_tags={'batch': batch_name,
+                    'draft/multiline-concat': None}))
+
+        # Last message, closes the batch
+        m = self.irc.takeMsg()
+        self.assertEqual(
+            m, ircmsgs.IrcMsg(command='BATCH', args=(
+                '-' + batch_name,)))
 
 
 class PluginRegexpTestCase(PluginTestCase):

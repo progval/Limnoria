@@ -240,7 +240,10 @@ def newDriver(irc, moduleName=None):
     return driver
 
 def parseMsg(s):
-    s = s.strip()
+    # It may be tempting to strip all whitespaces here, but it's important
+    # to preserve them, because they matter for multiline messages.
+    # https://ircv3.net/specs/extensions/multiline
+    s = s.strip('\r\n')
     if s:
         msg = ircmsgs.IrcMsg(s)
         return msg
