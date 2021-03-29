@@ -57,7 +57,7 @@ class GitRepository(VersionnedRepository):
     pass
 
 class GithubRepository(GitRepository):
-    def __init__(self, username, reponame, path='/', branch='master'):
+    def __init__(self, username, reponame, path='/', branch='HEAD'):
         self._username = username
         self._reponame = reponame
         self._branch = branch
