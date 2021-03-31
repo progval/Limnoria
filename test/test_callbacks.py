@@ -756,7 +756,7 @@ class MultilinePrivmsgTestCase(ChannelPluginTestCase):
         self.assertEqual(
             m, ircmsgs.IrcMsg(command='PRIVMSG',
                 args=(self.channel,
-                    "test: " + "foo " * 111 + "\x02(1 more message)\x02"),
+                    "foo " * 111 + "\x02(1 more message)\x02"),
                 server_tags={'batch': batch_name,
                     'draft/multiline-concat': None}))
 
@@ -795,7 +795,7 @@ class MultilinePrivmsgTestCase(ChannelPluginTestCase):
         self.assertEqual(
             m, ircmsgs.IrcMsg(command='PRIVMSG',
                 args=(self.channel,
-                    "test: " + "foo " * 110 + "foo"),
+                    "foo " * 110 + "foo"),
                 server_tags={'batch': batch_name,
                     'draft/multiline-concat': None}))
 
@@ -804,7 +804,7 @@ class MultilinePrivmsgTestCase(ChannelPluginTestCase):
         self.assertEqual(
             m, ircmsgs.IrcMsg(command='PRIVMSG',
                 args=(self.channel,
-                    "test:  " + "foo " * 79 + "'"),
+                    " " + "foo " * 79 + "'"),
                 server_tags={'batch': batch_name,
                     'draft/multiline-concat': None}))
 
@@ -844,7 +844,7 @@ class MultilinePrivmsgTestCase(ChannelPluginTestCase):
         self.assertEqual(
             m, ircmsgs.IrcMsg(command='PRIVMSG',
                 args=(self.channel,
-                    "test: " + "foo " * 110 + "foo"),
+                    "foo " * 110 + "foo"),
                 server_tags={'batch': batch_name,
                     'draft/multiline-concat': None}))
 
@@ -868,7 +868,7 @@ class MultilinePrivmsgTestCase(ChannelPluginTestCase):
         self.assertEqual(
             m, ircmsgs.IrcMsg(command='PRIVMSG',
                 args=(self.channel,
-                    "test:  " + "foo " * 79 + "'"),
+                    " " + "foo " * 79 + "'"),
                 server_tags={'batch': batch_name}))
 
         # Last message, closes the second batch
@@ -910,7 +910,7 @@ class MultilinePrivmsgTestCase(ChannelPluginTestCase):
         self.assertEqual(
             m, ircmsgs.IrcMsg(command='PRIVMSG',
                 args=(self.channel,
-                    "test: " + "foo " * 111 + "\x02(1 more message)\x02"),
+                    "foo " * 111 + "\x02(1 more message)\x02"),
                 server_tags={'batch': batch_name,
                     'draft/multiline-concat': None}))
 

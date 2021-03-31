@@ -1031,11 +1031,46 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             instant = conf.get(conf.supybot.reply.mores.instant,
                 channel=target, network=self.irc.network)
 
+            # Big complex loop ahead, with lots of cases and opportunities for
+            # off-by-one errors. Here is the meaning of each of the variables
+            #
+            # * 'i' is the number of chunks after the current one
+            #
+            # * 'is_first' is True when the message is the very first message
+            #   (so last iteration of the loop)
+            #
+            # * 'is_last' is True when the message is the very last (so first
+            #   iteration of the loop)
+            #
+            # * 'is_instant' is True when the message is in one of the messages
+            #   sent immediately when the command is called, ie. without
+            #   calling @misc more. (when supybot.reply.mores.instant is 1,
+            #   which is the default, this is equivalent to 'is_first')
+            #
+            # * 'is_last_instant' is True when the message is the last of the
+            #   instant message (so the first iteration of the loop with an
+            #   instant message).
+            #
+            # We need all this complexity because pagination is hard, and we
+            # want:
+            #
+            # * the '(XX more messages)' suffix on the last instant message,
+            #   and every other message (mandatory, it's a great feature),
+            #   but not on the other instant messages (mandatory when
+            #   multiline is enabled, but very nice to have in general)
+            # * the nick prefix on the first message and every other message
+            #   that isn't instant (mandatory), but not on the other instant
+            #   messages (also mandatory only when multiline is enabled)
             msgs = []
             for (i, chunk) in enumerate(chunks):
-                if i == 0:
-                    pass # last message, no suffix to add
-                elif len(chunks) - i < instant:
+                is_first = i == len(chunks) - 1
+                is_last = i == 0
+                is_instant = len(chunks) - i <= instant
+                is_last_instant = len(chunks) - i == instant
+                if is_last:
+                    # last message, no suffix to add
+                    pass
+                elif is_instant and not is_last_instant:
                     # one of the first messages, and the next one will
                     # also be sent immediately, so no suffix
                     pass
@@ -1046,7 +1081,12 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                         more = _('more messages')
                     n = ircutils.bold('(%i %s)' % (len(msgs), more))
                     chunk = '%s %s' % (chunk, n)
-                msgs.append(_makeReply(self, msg, chunk, **replyArgs))
+
+                if is_instant and not is_first:
+                    msgs.append(_makeReply(self, msg, chunk, **{
+                        **replyArgs, "prefixNick": False}))
+                else:
+                    msgs.append(_makeReply(self, msg, chunk, **replyArgs))
 
             instant_messages = []
 
