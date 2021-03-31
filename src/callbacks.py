@@ -1083,8 +1083,9 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     chunk = '%s %s' % (chunk, n)
 
                 if is_instant and not is_first:
-                    msgs.append(_makeReply(self, msg, chunk, **{
-                        **replyArgs, "prefixNick": False}))
+                    d = replyArgs.copy()
+                    d['prefixNick'] = False
+                    msgs.append(_makeReply(self, msg, chunk, **d))
                 else:
                     msgs.append(_makeReply(self, msg, chunk, **replyArgs))
 
