@@ -1406,8 +1406,16 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 assert not msg.tagged('receivedAt')
                 if not world.testing:
                     assert not msg.tagged('emulatedEcho')
-                msg.tag('emulatedEcho', True)
-                self.feedMsg(msg, tag=False)
+
+                # Copy the msg before echoing it back. Without a copy, it
+                # can cause all sorts of issues if the msg is reused (eg. Relay
+                # sends the same message object to the same network, so when
+                # sending the msg for the second time, it would already be
+                # tagged with emulatedEcho and fail the assertion above)
+                echo_msg = ircmsgs.IrcMsg(msg=msg)
+
+                echo_msg.tag('emulatedEcho', True)
+                self.feedMsg(echo_msg, tag=False)
             else:
                 # I don't think we should do this.  Why should it matter?  If it's
                 # something important, then the server will send it back to us,
