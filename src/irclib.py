@@ -1451,6 +1451,14 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 self.queueMsg(ircmsgs.ping(now))
 
         if msg:
+            # Copy the msg before altering it back. Without a copy, it
+            # can cause all sorts of issues if the msg is reused (eg. Relay
+            # sends the same message object to the same network, so when
+            # sending the msg for the second time, it would already be
+            # tagged with emulatedEcho and fail the assertion; or it can be
+            # added a label because we have labeled-response on a network)
+            msg = ircmsgs.IrcMsg(msg=msg)
+
             if msg.command.upper() == 'BATCH':
                 if not conf.supybot.protocols.irc.experimentalExtensions():
                     log.error('Dropping outgoing batch. '
@@ -1505,15 +1513,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 if not world.testing:
                     assert not msg.tagged('emulatedEcho')
 
-                # Copy the msg before echoing it back. Without a copy, it
-                # can cause all sorts of issues if the msg is reused (eg. Relay
-                # sends the same message object to the same network, so when
-                # sending the msg for the second time, it would already be
-                # tagged with emulatedEcho and fail the assertion above)
-                echo_msg = ircmsgs.IrcMsg(msg=msg)
-
-                echo_msg.tag('emulatedEcho', True)
-                self.feedMsg(echo_msg, tag=False)
+                msg.tag('emulatedEcho', True)
+                self.feedMsg(msg, tag=False)
             else:
                 # I don't think we should do this.  Why should it matter?  If it's
                 # something important, then the server will send it back to us,
