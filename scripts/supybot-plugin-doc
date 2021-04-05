@@ -33,6 +33,7 @@
 import os
 import sys
 import shutil
+import string
 
 import supybot
 
@@ -77,12 +78,15 @@ import supybot.registry as registry
 
 world.documenting = True
 
+TITLE_TEMPLATE = 'Documentation for the $name plugin for Supybot'
+
 class PluginDoc(object):
-    def __init__(self, mod):
+    def __init__(self, mod, titleTemplate):
         self.mod = mod
         self.inst = self.mod.Class(None)
         self.name = self.mod.Class.__name__
         self.appendExtraBlankLine = False
+        self.titleTemplate = string.Template(titleTemplate)
         self.lines = []
 
     def appendLine(self, line, indent=0):
@@ -97,7 +101,7 @@ class PluginDoc(object):
 
     def renderRST(self):
         self.appendExtraBlankLine = False
-        s = 'Documentation for the %s plugin for Supybot' % self.name
+        s = self.titleTemplate.substitute(name=self.name)
         self.appendLine(s)
         self.appendLine('=' * len(s))
         self.lines.append('')
@@ -156,8 +160,7 @@ class PluginDoc(object):
 
     def renderSTX(self):
         self.appendExtraBlankLine = True
-        self.appendLine('Documentation for the %s plugin for '
-                        'Supybot' % self.name)
+        self.appendLine(self.titleTemplate.substitute(name=self.name))
         self.appendLine('Purpose', 1)
         pdoc = getattr(self.mod, '__doc__',
                        'My author didn\'t give me a purpose.')
@@ -227,7 +230,7 @@ class PluginDoc(object):
                 yield confValues
 
 def genDoc(m, options):
-    Plugin = PluginDoc(m)
+    Plugin = PluginDoc(m, options.titleTemplate)
     print('Generating documentation for %s...' % Plugin.name)
     path = os.path.join(options.outputDir, '%s.%s' % (Plugin.name,
                                                       options.format))
@@ -265,6 +268,9 @@ if __name__ == '__main__':
                       action='append', dest='pluginsDirs', default=[],
                       help='Looks in in the given directory for plugins and '
                       'generates documentation for all of them.')
+    parser.add_option('--title-template',
+                      default=TITLE_TEMPLATE, dest='titleTemplate',
+                      help='Template string for the title of generated files')
     (options, args) = parser.parse_args()
 
     # This must go before checking for args, of course.
