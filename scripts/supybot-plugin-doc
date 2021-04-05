@@ -55,7 +55,7 @@ supybot.log.stdout: False
 supybot.log.level: DEBUG
 supybot.log.format: %(levelname)s %(message)s
 supybot.log.plugins.individualLogfiles: False
-supybot.databases: sqlite anydbm cdb flat pickle
+supybot.databases: sqlite3 anydbm cdb flat pickle
 """)
     fd.close()
 except EnvironmentError as e:
