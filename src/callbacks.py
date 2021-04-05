@@ -477,6 +477,15 @@ class RichReplyMethods(object):
             channel=self.msg.channel, network=self.irc.network)
 
     def replySuccess(self, s='', **kwargs):
+        r"""Replies with a success message, configurable with
+        ``supybot.replies.success`` or the Success plugin.
+
+        :arg str s:
+            Text to append to the standard success message
+
+        :arg \**kwargs:
+            See :meth:`NestedCommandsIrcProxy.reply`'s keyword arguments
+        """
         v = self._getConfig(conf.supybot.replies.success)
         if v:
             s = self.__makeReply(v, s)
@@ -1226,6 +1235,18 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 oneToOne=oneToOne, **kwargs)
 
     def error(self, s='', Raise=False, **kwargs):
+        r"""Replies with an error.
+
+        :arg str s:
+            The error message
+
+        :arg bool Raise:
+            If True, this will raise :class:`Error` that will propagate so
+            that the caller of this function immediately terminates
+
+        :arg \**kwargs:
+            See :meth:`NestedCommandsIrcProxy.reply`'s keyword arguments
+        """
         self.repliedTo = True
         if Raise:
             raise Error(s)
