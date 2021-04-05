@@ -291,14 +291,16 @@ if __name__ == '__main__':
     pluginNames = set([os.path.basename(s) for s in args])
     plugins = set([])
     for pluginName in pluginNames:
+        if pluginName == '__pycache__':
+            continue
         if pluginName.endswith('.py'):
             pluginName = pluginName[:-3]
         try:
             pluginModule = plugin.loadPluginModule(pluginName)
         except ImportError as e:
             s = 'Failed to load plugin %s: %s\n' \
-                '%s(pluginDirs: %s)' % (pluginName, e, s,
-                                        conf.supybot.directories.plugins())
+                '(pluginDirs: %s)' % (pluginName, e,
+                                      conf.supybot.directories.plugins())
             error(s)
         plugins.add(pluginModule)
 
