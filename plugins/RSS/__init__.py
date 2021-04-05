@@ -28,7 +28,11 @@
 ###
 
 """
-Provides basic functionality for handling RSS/RDF feeds.
+Provides basic functionality for handling RSS/RDF feeds, and allows announcing
+them periodically to channels.
+In order to use this plugin you must have the following modules
+installed:
+* feedparser: http://feedparser.org/
 """
 
 import supybot

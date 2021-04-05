@@ -28,8 +28,9 @@
 ###
 
 """
-The Success plugin spices up success replies just like Dunno spices up
-"no such command" replies.
+The Success plugin spices up success replies by allowing custom messages
+instead of the default 'The operation succeeded.' message;
+like Dunno does for "no such command" replies.
 """
 
 import supybot

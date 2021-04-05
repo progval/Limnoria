@@ -28,7 +28,9 @@
 ###
 
 """
-This plugin handles channel limits (MODE +l).
+This plugin sets channel limits (MODE +l) based on
+``plugins.Limiter.MaximumExcess`` plus the current number of users
+in the channel. This is useful to prevent flood attacks.
 """
 
 import supybot

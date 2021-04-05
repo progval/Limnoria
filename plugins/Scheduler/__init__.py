@@ -29,7 +29,9 @@
 
 """
 Gives the user the ability to schedule commands to run at a particular time,
-or repeatedly run at a particular interval.
+or repeatedly run at a particular interval. For example,
+``scheduler add [time seconds 30m] "utilities echo [status cpu]"``
+will schedule the command `cpu` to be sent to the channel in 30 minutes.
 """
 
 import supybot

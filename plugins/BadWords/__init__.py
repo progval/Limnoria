@@ -30,6 +30,8 @@
 """
 Filters bad words on outgoing messages from the bot, so the bot can't be made
 to say bad words.
+As an additional capability, it can (optionally) kick users who
+use such words from channels that have that capability enabled.
 """
 
 import supybot

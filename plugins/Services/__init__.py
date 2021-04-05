@@ -28,7 +28,8 @@
 ###
 
 """
-Services: Handles management of nicks with NickServ, and ops with ChanServ.
+Services: Handles management of nicks with NickServ, and ops with ChanServ;
+to (re)gain access to its own nick and channels.
 """
 
 import supybot

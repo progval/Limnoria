@@ -42,7 +42,8 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Anonymous')
 
 class Anonymous(callbacks.Plugin):
-    """This plugin allows users to act through the bot anonymously.  The 'do'
+    """
+    This plugin allows users to act through the bot anonymously.  The 'do'
     command has the bot perform an anonymous action in a given channel, and
     the 'say' command allows other people to speak through the bot.  Since
     this can be fairly well abused, you might want to set
@@ -52,6 +53,31 @@ class Anonymous(callbacks.Plugin):
     supybot.plugins.Anonymous.requirePresenceInChannel, or you can require
     that the user be registered by setting
     supybot.plugins.Anonymous.requireRegistration.
+
+    Example: Proving that you are the owner
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    When you ask for cloak/vhost for your bot, the network operators will
+    often ask you to prove that you own the bot. You can do this for example
+    with the following method::
+
+        @load Anonymous
+        @config plugins.anonymous.requirecapability owner
+        @config plugins.anonymous.allowprivatetarget True
+        @anonymous say <operator nick> Hi, my owner is <your nick> :)
+
+    This
+    * Loads the plugin.
+    * Makes the plugin require that you are the owner
+
+      * If anyone could send private messages as the bot, they could also
+        access network services.
+
+    * Allows sending private messages
+    * Sends message ``Hi, my owner is <your nick> :)`` to ``operator nick``.
+
+      * Note that you won't see the messages that are sent to the bot.
+
     """
     def _preCheck(self, irc, msg, target, action):
         if self.registryValue('requireRegistration', target, irc.network):

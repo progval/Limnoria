@@ -1,1 +1,0 @@
-Allows you to send notes to other users.

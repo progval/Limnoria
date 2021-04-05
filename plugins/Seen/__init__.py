@@ -28,7 +28,9 @@
 ###
 
 """
-Keeps track of the last time a user was seen on a channel.
+Keeps track of the last time a user was seen on a channel
+and what they last said.
+It also allows you to see what you missed since you parted the channel.
 """
 
 import supybot

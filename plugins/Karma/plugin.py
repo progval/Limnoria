@@ -225,7 +225,22 @@ KarmaDB = plugins.DB('Karma',
                      {'sqlite3': SqliteKarmaDB})
 
 class Karma(callbacks.Plugin):
-    """Provides a simple tracker for setting Karma (thing++, thing--)."""
+    """
+    Provides a simple tracker for setting Karma (thing++, thing--).
+    If ``config plugins.karma.allowUnaddressedKarma`` is set to ``True``
+    (default since 2014.05.07), saying `boats++` will give 1 karma
+    to ``boats``, and ``ships--`` will subtract 1 karma from ``ships``.
+
+    However, if you use this in a sentence, like
+    ``That deserves a ++. Kevin++``, 1 karma will be added to
+    ``That deserves a ++. Kevin``, so you should only add or subtract karma
+    in a line that doesn't have anything else in it.
+    Alternatively, you can restrict karma tracking to nicks in the current
+    channel by setting `config plugins.Karma.onlyNicks` to ``True``.
+
+    If ``config plugins.karma.allowUnaddressedKarma` is set to `False``,
+    you must address the bot with nick or prefix to add or subtract karma.
+    """
     callBefore = ('Factoids', 'MoobotFactoids', 'Infobot')
     def __init__(self, irc):
         self.__parent = super(Karma, self)

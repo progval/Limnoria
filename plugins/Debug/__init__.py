@@ -30,6 +30,7 @@
 """
 This is for developers debugging their plugins; it provides an eval command
 as well as some other useful commands.
+It should not be loaded with a default installation.
 """
 
 import supybot

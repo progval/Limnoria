@@ -28,7 +28,12 @@
 ###
 
 """
-Commands that use the dictd protocol to define word.
+Commands that use the dictd protocol to define words.
+
+In order to use this plugin you must have the following modules
+installed:
+
+* dictclient: http://quux.org:70/devel/dictclient
 """
 
 import supybot

@@ -29,7 +29,7 @@
 
 """
 Defends a channel against actions by people who don't have the proper
-capabilities.
+capabilities, even if they have +o or +h.
 """
 
 import supybot

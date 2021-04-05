@@ -118,7 +118,6 @@ filename = conf.supybot.directories.data.dirize('Topic.pickle')
 
 
 class Topic(callbacks.Plugin):
-
     """This plugin allows you to use many topic-related functions,
     such as Add, Undo, and Remove."""
 

@@ -36,10 +36,17 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Praise')
 
 class Praise(plugins.ChannelIdDatabasePlugin):
-    """Praise is a plugin for ... well, praising things.  Feel free to add
+    """
+    Praise is a plugin for ... well, praising things.  Feel free to add
     your own flavor to it by customizing what praises it gives.  Use "praise
     add <text>" to add new ones, making sure to include "$who" in <text> where
     you want to insert the thing being praised.
+
+    Example:
+
+    * If you add ``hugs $who``
+    * Someone says ``@praise ChanServ``.
+    * ``* bot hugs ChanServ``
     """
     _meRe = re.compile(r'\bme\b', re.I)
     _myRe = re.compile(r'\bmy\b', re.I)

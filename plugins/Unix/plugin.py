@@ -205,7 +205,7 @@ class Unix(callbacks.Plugin):
     def fortune(self, irc, msg, args):
         """takes no arguments
 
-        Returns a fortune from the *nix fortune program.
+        Returns a fortune from the Unix fortune program.
         """
         channel = msg.channel
         network = irc.network
@@ -248,8 +248,8 @@ class Unix(callbacks.Plugin):
     def wtf(self, irc, msg, args, foo, something):
         """[is] <something>
 
-        Returns wtf <something> is.  'wtf' is a *nix command that first
-        appeared in NetBSD 1.5.  In most *nices, it's available in some sort
+        Returns wtf <something> is.  'wtf' is a Unix command that first
+        appeared in NetBSD 1.5.  In most Unices, it's available in some sort
         of 'bsdgames' package.
         """
         wtfCmd = self.registryValue('wtf.command')

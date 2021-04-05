@@ -28,7 +28,7 @@
 ###
 
 """
-Plugin for handling Karma stuff for a channel.
+Plugin for keeping track of Karma for users and things in a channel.
 """
 
 import supybot

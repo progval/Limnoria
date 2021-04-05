@@ -29,7 +29,7 @@
 
 """
 A simple module to handle various informational commands querying the bot's
-current status and statistics.
+current status and statistics, like its uptime.
 """
 
 import supybot

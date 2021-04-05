@@ -235,11 +235,29 @@ def makeNewAlias(name, alias):
     return f
 
 class Alias(callbacks.Plugin):
-    """This plugin allows users to define aliases to commands and combinations
+    """
+    This plugin allows users to define aliases to commands and combinations
     of commands (via nesting).
     This plugin is only kept for backward compatibility, you should use the
     built-in Aka plugin instead (you can migrate your existing aliases using
-    the 'importaliasdatabase' command."""
+    the 'importaliasdatabase' command.
+
+    To add an alias, `trout`, which expects a word as an argument::
+
+        <jamessan> @alias add trout "action slaps $1 with a large trout"
+        <bot> jamessan: The operation succeeded.
+        <jamessan> @trout me
+        * bot slaps me with a large trout
+
+    To add an alias, `lastfm`, which expects a last.fm user and replies with
+    their recently played items::
+
+        @alias add lastfm "rss [format concat http://ws.audioscrobbler.com/1.0/user/ [format concat [urlquote $1] /recenttracks.rss]]"
+
+    Note that if the nested commands being aliased hadn't been quoted, then
+    those commands would have been run immediately, and `@lastfm` would always
+    reply with the same information, the result of those commands.
+    """
     def __init__(self, irc):
         self.__parent = super(Alias, self)
         self.__parent.__init__(irc)

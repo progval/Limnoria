@@ -28,7 +28,10 @@
 ###
 
 """
-Provides simple commands for formatting text on IRC.
+Provides simple commands for formatting text on IRC (like bold),
+and to change the output of the bot for a particular command.
+See also the :ref:`Filter plugin <plugin-Filter>` to configure
+the output format for all commands.
 """
 
 import supybot

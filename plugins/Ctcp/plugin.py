@@ -40,8 +40,13 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Ctcp')
 
 class Ctcp(callbacks.PluginRegexp):
-    """Provides replies to common CTCPs (version, time, etc.), and a command
-    to fetch version responses from channels."""
+    """
+    Provides replies to common CTCPs (version, time, etc.), and a command
+    to fetch version responses from channels.
+
+    Please note that the command `ctcp version` cannot receive any responses if the channel is
+    mode +C or similar which prevents CTCP requests to channel.
+    """
     public = False
     regexps = ('ctcpPing', 'ctcpVersion', 'ctcpUserinfo',
                'ctcpTime', 'ctcpFinger', 'ctcpSource')
@@ -106,7 +111,7 @@ class Ctcp(callbacks.PluginRegexp):
     def ctcpFinger(self, irc, msg, match):
         "^\x01FINGER\x01$"
         self.log.info('Received CTCP FINGER from %s', msg.prefix)
-        self._reply(irc, msg, 'FINGER ' + 
+        self._reply(irc, msg, 'FINGER ' +
                     _('Supybot, the best Python IRC bot in existence!'))
 
     def ctcpSource(self, irc, msg, match):

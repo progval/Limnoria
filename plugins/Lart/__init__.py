@@ -28,7 +28,8 @@
 ###
 
 """
-This plugin keeps a database of larts, and larts with it.
+This plugin keeps a database of larts (Luser Attitude Readjustment Tool),
+and larts with it.
 """
 
 import supybot

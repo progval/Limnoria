@@ -31,6 +31,7 @@
 The Dunno module is used to spice up the reply when given an invalid command
 with random 'I dunno'-like responses.  If you want something spicier than
 '<x> is not a valid command'-like responses, use this plugin.
+Like Success does for the  'The operation succeeded.' reply.
 """
 
 import supybot

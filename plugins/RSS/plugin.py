@@ -183,10 +183,45 @@ def save_announces_db(db, fd):
 
 
 class RSS(callbacks.Plugin):
-    """This plugin is useful both for announcing updates to RSS feeds in a
+    """
+    This plugin is useful both for announcing updates to RSS feeds in a
     channel, and for retrieving the headlines of RSS feeds via command.  Use
     the "add" command to add feeds to this plugin, and use the "announce"
-    command to determine what feeds should be announced in a given channel."""
+    command to determine what feeds should be announced in a given channel.
+
+    Basic usage
+    ^^^^^^^^^^^
+
+    1. Add a feed using
+       ``@rss add limnoria https://github.com/ProgVal/Limnoria/tags.atom``.
+
+       * This is RSS feed of Limnoria's stable releases.
+       * You can now check the latest news from the feed with ``@limnoria``.
+
+    2. To have new news automatically announced on the channel, use
+       ``@rss announce add Limnoria``.
+
+    To add another feed, simply replace limnoria and the address using name
+    of the feed and address of the feed. For example, YLE News:
+
+    1. ``@rss add yle http://yle.fi/uutiset/rss/uutiset.rss?osasto=news``
+    2. ``@rss announce add yle``
+
+    News on their own lines
+    ^^^^^^^^^^^^^^^^^^^^^^^
+
+    If you want the feed topics to be on their own lines instead of being separated by
+    the separator which you have configured you can set `reply.onetoone` to False.
+
+    Please first read the help for that configuration variable
+
+    ``@config help reply.onetoone``
+
+    and understand what it says and then you can do
+
+    ``@config reply.onetoone False``
+
+    """
     threaded = True
     def __init__(self, irc):
         self.__parent = super(RSS, self)

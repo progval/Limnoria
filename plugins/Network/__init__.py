@@ -29,7 +29,8 @@
 
 """
 Includes commands for connecting, disconnecting, and reconnecting to multiple
-networks, as well as several other utility functions related to IRC networks.
+networks, as well as several other utility functions related to IRC networks
+like showing the latency.
 """
 
 import supybot

@@ -28,7 +28,7 @@
 ###
 
 """
-Provides various hash-related commands.
+Provides various hash- and encryption-related commands.
 """
 
 import supybot

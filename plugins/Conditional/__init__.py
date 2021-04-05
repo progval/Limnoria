@@ -32,6 +32,9 @@
 """
 Contains numerous conditional commands (such as 'if', 'and', and 'or'),
 which can be used on their own or with another plugin.
+Also provides logic operators for writing conditions.
+
+Useful for bot scripting / nested commands.
 """
 
 import supybot

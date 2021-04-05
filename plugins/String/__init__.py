@@ -28,7 +28,7 @@
 ###
 
 """
-Provides various string-related commands.
+Provides various commands to manipulate characters and strings.
 """
 
 import supybot

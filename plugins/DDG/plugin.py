@@ -50,7 +50,15 @@ from .parser import DDGHTMLParser
 
 
 class DDG(callbacks.Plugin):
-    """Searches for results on DuckDuckGo."""
+    """
+    Searches for results on DuckDuckGo.
+
+    Example::
+
+        <+GLolol> %ddg search eiffel tower
+        <@Atlas> The Eiffel Tower is an iron lattice tower located on the Champ de Mars in Paris. It was named after the engineer Gustave Eiffel, whose company designed and built the tower. - <https://en.wikipedia.org/wiki/Eiffel_Tower>
+
+    """
     threaded = True
 
     @staticmethod

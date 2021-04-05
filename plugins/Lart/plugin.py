@@ -36,8 +36,16 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Lart')
 
 class Lart(plugins.ChannelIdDatabasePlugin):
-    """Provides an implementation of the Luser Attitude Readjustment Tool
-    for users."""
+    """
+    Provides an implementation of the Luser Attitude Readjustment Tool
+    for users.
+
+    Example:
+
+    * If you add ``slaps $who``.
+    * And Someone says ``@lart ChanServ``.
+    * ``* bot slaps ChanServ``.
+    """
     _meRe = re.compile(r'\bme\b', re.I)
     _myRe = re.compile(r'\bmy\b', re.I)
     def _replaceFirstPerson(self, s, nick):

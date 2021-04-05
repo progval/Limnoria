@@ -1,1 +1,0 @@
-This plugin allows you to use many topic-related functions, such as Add, Undo, and Remove.

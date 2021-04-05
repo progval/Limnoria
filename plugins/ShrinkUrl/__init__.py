@@ -29,7 +29,7 @@
 ###
 
 """
-Shrinks URLs using various URL shrinking services.
+Shrinks URLs using various URL shortening services, like tinyurl.
 """
 
 import supybot

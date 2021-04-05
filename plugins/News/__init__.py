@@ -30,6 +30,7 @@
 """
 A module to allow each channel to have "news".  News items may have expiration
 dates.
+It was partially inspired by the news system used on #debian's bot.
 """
 
 import supybot
