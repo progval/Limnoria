@@ -323,7 +323,9 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.connected = True
             self.resetDelay()
         except socket.error as e:
-            if e.args[0] == 115:
+            if len(e.args) >= 1 and e.args[0] == 115:
+                # e.args may be () in some circumstances,
+                # eg. when e is an instance of socks.GeneralProxyError
                 now = time.time()
                 when = now + 60
                 whenS = log.timestamp(when)
