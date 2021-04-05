@@ -234,8 +234,9 @@ class PluginDoc(object):
 def genDoc(m, options):
     Plugin = PluginDoc(m, options.titleTemplate)
     print('Generating documentation for %s...' % Plugin.name)
-    path = os.path.join(options.outputDir, '%s.%s' % (Plugin.name,
-                                                      options.format))
+    outputFilename = string.Template(options.outputFilename).substitute(
+        name=Plugin.name, format=options.format)
+    path = os.path.join(options.outputDir, outputFilename)
     try:
         fd = open(path, 'w')
     except EnvironmentError as e:
@@ -263,6 +264,12 @@ if __name__ == '__main__':
     parser.add_option('-o', '--output-dir', dest='outputDir', default='.',
                       help='Specifies the directory in which to write the '
                       'documentation for the plugin.')
+    parser.add_option('--output-filename', dest='outputFilename',
+                      default='$name.$format',
+                      help='Specifies the path of individual output files. '
+                      'If present in the value, "$name" will be substituted '
+                      'with the plugin\'s name and "$format" with the value '
+                      'if --format.')
     parser.add_option('-f', '--format', dest='format', choices=['rst', 'stx'],
                       default='stx', help='Specifies which output format to '
                       'use.')
