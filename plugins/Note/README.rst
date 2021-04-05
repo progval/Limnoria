@@ -12,25 +12,41 @@ Usage
 -----
 Allows you to send notes to other users.
 
+.. _commands-Note:
+
 Commands
 --------
+.. _command-Note-list:
+
 list [--{old,sent}] [--{from,to} <user>]
   Retrieves the ids of all your unread notes. If --old is given, list read notes. If --sent is given, list notes that you have sent. If --from is specified, only lists notes sent to you from <user>. If --to is specified, only lists notes sent by you to <user>.
+
+.. _command-Note-next:
 
 next takes no arguments
   Retrieves your next unread note, if any.
 
+.. _command-Note-note:
+
 note <id>
   Retrieves a single note by its unique note id. Use the 'note list' command to see what unread notes you have.
+
+.. _command-Note-reply:
 
 reply <id> <text>
   Sends a note in reply to <id>.
 
+.. _command-Note-search:
+
 search [--{regexp} <value>] [--sent] [<glob>]
   Searches your received notes for ones matching <glob>. If --regexp is given, its associated value is taken as a regexp and matched against the notes. If --sent is specified, only search sent notes.
 
+.. _command-Note-send:
+
 send <recipient>,[<recipient>,[...]] <text>
   Sends a new note to the user specified. Multiple recipients may be specified by separating their names by commas.
+
+.. _command-Note-unsend:
 
 unsend <id>
   Unsends the note with the id given. You must be the author of the note, and it must be unread.

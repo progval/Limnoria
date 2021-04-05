@@ -16,13 +16,21 @@ Maintains a list of words that the bot is not allowed to say.
 Can also be used to kick people that say these words, if the bot
 has op.
 
+.. _commands-BadWords:
+
 Commands
 --------
+.. _command-BadWords-add:
+
 add <word> [<word> ...]
   Adds all <word>s to the list of words being censored.
 
+.. _command-BadWords-list:
+
 list takes no arguments
   Returns the list of words being censored.
+
+.. _command-BadWords-remove:
 
 remove <word> [<word> ...]
   Removes <word>s from the list of words being censored.

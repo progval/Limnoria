@@ -33,16 +33,26 @@ Usage
 -----
 Fetches information from ActivityPub servers.
 
+.. _commands-Fediverse:
+
 Commands
 --------
+.. _command-Fediverse-featured:
+
 featured <@user@instance>
   Returnes the featured statuses of @user@instance (aka. pinned toots).
+
+.. _command-Fediverse-profile:
 
 profile <@user@instance>
   Returns generic information on the account @user@instance.
 
+.. _command-Fediverse-status:
+
 status <url>
   Shows the content of the status at <url>.
+
+.. _command-Fediverse-statuses:
 
 statuses <@user@instance>
   Returned the last statuses of @user@instance.

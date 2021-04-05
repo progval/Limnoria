@@ -32,19 +32,31 @@ Note that if the nested commands being aliased hadn't been quoted, then
 those commands would have been run immediately, and `@lastfm` would always
 reply with the same information, the result of those commands.
 
+.. _commands-Alias:
+
 Commands
 --------
+.. _command-Alias-add:
+
 add <name> <command>
   Defines an alias <name> that executes <command>. The <command> should be in the standard "command argument [nestedcommand argument]" arguments to the alias; they'll be filled with the first, second, etc. arguments. $1, $2, etc. can be used for required arguments. @1, @2, etc. can be used for optional arguments. $* simply means "all remaining arguments," and cannot be combined with optional arguments.
+
+.. _command-Alias-list:
 
 list [--locked|--unlocked]
   Lists alias names of a particular type, defaults to all aliases if no --locked or --unlocked option is given.
 
+.. _command-Alias-lock:
+
 lock <alias>
   Locks an alias so that no one else can change it.
 
+.. _command-Alias-remove:
+
 remove <name>
   Removes the given alias, if unlocked.
+
+.. _command-Alias-unlock:
 
 unlock <alias>
   Unlocks an alias so that people can define new aliases over it.

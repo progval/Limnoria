@@ -18,22 +18,36 @@ Basically, it replaces the standard 'Error: <x> is not a valid command.'
 messages with messages kept in a database, able to give more personable
 responses.
 
+.. _commands-Dunno:
+
 Commands
 --------
+.. _command-Dunno-add:
+
 add [<channel>] <text>
   Adds <text> to the dunno database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
+
+.. _command-Dunno-change:
 
 change [<channel>] <id> <regexp>
   Changes the dunno with id <id> according to the regular expression <regexp>. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _command-Dunno-get:
+
 get [<channel>] <id>
   Gets the dunno with id <id> from the dunno database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
+
+.. _command-Dunno-remove:
 
 remove [<channel>] <id>
   Removes the dunno with id <id> from the dunno database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _command-Dunno-search:
+
 search [<channel>] [--{regexp,by} <value>] [<glob>]
   Searches for dunnos matching the criteria given.
+
+.. _command-Dunno-stats:
 
 stats [<channel>]
   Returns the number of dunnos in the database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.

@@ -17,22 +17,36 @@ Basically, it replaces the standard 'The operation succeeded.' messages
 with messages kept in a database, able to give more personable
 responses.
 
+.. _commands-Success:
+
 Commands
 --------
+.. _command-Success-add:
+
 add [<channel>] <text>
   Adds <text> to the success database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
+
+.. _command-Success-change:
 
 change [<channel>] <id> <regexp>
   Changes the success with id <id> according to the regular expression <regexp>. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _command-Success-get:
+
 get [<channel>] <id>
   Gets the success with id <id> from the success database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
+
+.. _command-Success-remove:
 
 remove [<channel>] <id>
   Removes the success with id <id> from the success database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _command-Success-search:
+
 search [<channel>] [--{regexp,by} <value>] [<glob>]
   Searches for successes matching the criteria given.
+
+.. _command-Success-stats:
 
 stats [<channel>]
   Returns the number of successes in the database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.

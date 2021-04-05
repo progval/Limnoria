@@ -16,8 +16,12 @@ Example::
     <+GLolol> %ddg search eiffel tower
     <@Atlas> The Eiffel Tower is an iron lattice tower located on the Champ de Mars in Paris. It was named after the engineer Gustave Eiffel, whose company designed and built the tower. - <https://en.wikipedia.org/wiki/Eiffel_Tower>
 
+.. _commands-DDG:
+
 Commands
 --------
+.. _command-DDG-search:
+
 search <text>
   Searches for <text> on DuckDuckGo's web search.
 

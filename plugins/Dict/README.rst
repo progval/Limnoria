@@ -17,16 +17,26 @@ Usage
 This plugin provides a function to look up words from different
 dictionaries.
 
+.. _commands-Dict:
+
 Commands
 --------
+.. _command-Dict-dict:
+
 dict [<dictionary>] <word>
   Looks up the definition of <word> on the dictd server specified by the supybot.plugins.Dict.server config variable.
+
+.. _command-Dict-dictionaries:
 
 dictionaries takes no arguments
   Returns the dictionaries valid for the dict command.
 
+.. _command-Dict-random:
+
 random takes no arguments
   Returns a random valid dictionary.
+
+.. _command-Dict-synonym:
 
 synonym <word> [<word> ...]
   Gets a random synonym from the Moby Thesaurus (moby-thesaurus) database. If given many words, gets a random synonym for each of them. Quote phrases to have them treated as one lookup word.

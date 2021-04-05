@@ -20,25 +20,41 @@ Example:
 * Someone says ``@praise ChanServ``.
 * ``* bot hugs ChanServ``
 
+.. _commands-Praise:
+
 Commands
 --------
+.. _command-Praise-add:
+
 add [<channel>] <text>
   Adds <text> to the praise database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
+
+.. _command-Praise-change:
 
 change [<channel>] <id> <regexp>
   Changes the praise with id <id> according to the regular expression <regexp>. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _command-Praise-get:
+
 get [<channel>] <id>
   Gets the praise with id <id> from the praise database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
+
+.. _command-Praise-praise:
 
 praise [<channel>] [<id>] <who|what> [for <reason>]
   Praises <who|what> (for <reason>, if given). If <id> is given, uses that specific praise. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _command-Praise-remove:
+
 remove [<channel>] <id>
   Removes the praise with id <id> from the praise database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _command-Praise-search:
+
 search [<channel>] [--{regexp,by} <value>] [<glob>]
   Searches for praises matching the criteria given.
+
+.. _command-Praise-stats:
 
 stats [<channel>]
   Returns the number of praises in the database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.

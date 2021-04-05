@@ -12,13 +12,21 @@ Usage
 This plugin features commands to shorten URLs through different services,
 like tinyurl.
 
+.. _commands-ShrinkUrl:
+
 Commands
 --------
+.. _command-ShrinkUrl-tiny:
+
 tiny <url>
   Returns a TinyURL.com version of <url>
 
+.. _command-ShrinkUrl-ur1:
+
 ur1 <url>
   Returns an ur1 version of <url>.
+
+.. _command-ShrinkUrl-x0:
 
 x0 <url>
   Returns an x0.no version of <url>.

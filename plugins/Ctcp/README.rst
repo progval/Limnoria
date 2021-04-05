@@ -16,8 +16,12 @@ to fetch version responses from channels.
 Please note that the command `ctcp version` cannot receive any responses if the channel is
 mode +C or similar which prevents CTCP requests to channel.
 
+.. _commands-Ctcp:
+
 Commands
 --------
+.. _command-Ctcp-version:
+
 version [<channel>] [--nicks]
   Sends a CTCP VERSION to <channel>, returning the various version strings returned. It waits for 10 seconds before returning the versions received at that point. If --nicks is given, nicks are associated with the version strings; otherwise, only the version strings are given.
 

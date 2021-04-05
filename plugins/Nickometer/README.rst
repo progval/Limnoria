@@ -13,8 +13,12 @@ Usage
 -----
 Will tell you how lame a nick is by the command 'nickometer [nick]'.
 
+.. _commands-Nickometer:
+
 Commands
 --------
+.. _command-Nickometer-nickometer:
+
 nickometer [<nick>]
   Tells you how lame said nick is. If <nick> is not given, uses the nick of the person giving the command.
 

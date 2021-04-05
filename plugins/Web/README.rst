@@ -11,28 +11,46 @@ Usage
 -----
 Add the help for 'help Web' here.
 
+.. _commands-Web:
+
 Commands
 --------
+.. _command-Web-doctype:
+
 doctype <url>
   Returns the DOCTYPE string of <url>. Only HTTP urls are valid, of course.
+
+.. _command-Web-fetch:
 
 fetch <url>
   Returns the contents of <url>, or as much as is configured in supybot.plugins.Web.fetch.maximum. If that configuration variable is set to 0, this command will be effectively disabled.
 
+.. _command-Web-headers:
+
 headers <url>
   Returns the HTTP headers of <url>. Only HTTP urls are valid, of course.
+
+.. _command-Web-location:
 
 location <url>
   If the <url> is redirected to another page, returns the URL of that page. This works even if there are multiple redirects. Only HTTP urls are valid. Useful to "un-tinify" URLs.
 
+.. _command-Web-size:
+
 size <url>
   Returns the Content-Length header of <url>. Only HTTP urls are valid, of course.
+
+.. _command-Web-title:
 
 title [--no-filter] <url>
   Returns the HTML <title>...</title> of a URL. If --no-filter is given, the bot won't strip special chars (action, DCC, ...).
 
+.. _command-Web-urlquote:
+
 urlquote <text>
   Returns the URL quoted form of the text.
+
+.. _command-Web-urlunquote:
 
 urlunquote <text>
   Returns the text un-URL quoted.

@@ -18,31 +18,51 @@ Usage
 This plugin can set regexp triggers to activate the bot.
 Use 'add' command to add regexp trigger, 'remove' to remove.
 
+.. _commands-MessageParser:
+
 Commands
 --------
+.. _command-MessageParser-add:
+
 add [<channel>|global] <regexp> <action>
   Associates <regexp> with <action>. <channel> is only necessary if the message isn't sent on the channel itself. Action is echoed upon regexp match, with variables $1, $2, etc. being interpolated from the regexp match groups.
+
+.. _command-MessageParser-info:
 
 info [<channel>|global] [--id] <regexp>
   Display information about <regexp> in the triggers database. <channel> is only necessary if the message isn't sent in the channel itself. If option --id specified, will retrieve by regexp id, not content.
 
+.. _command-MessageParser-list:
+
 list [<channel>|global]
   Lists regexps present in the triggers database. <channel> is only necessary if the message isn't sent in the channel itself. Regexp ID listed in parentheses.
+
+.. _command-MessageParser-lock:
 
 lock [<channel>|global] <regexp>
   Locks the <regexp> so that it cannot be removed or overwritten to. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _command-MessageParser-rank:
+
 rank [<channel>|global]
   Returns a list of top-ranked regexps, sorted by usage count (rank). The number of regexps returned is set by the rankListLength registry value. <channel> is only necessary if the message isn't sent in the channel itself.
+
+.. _command-MessageParser-remove:
 
 remove [<channel>|global] [--id] <regexp>]
   Removes the trigger for <regexp> from the triggers database. <channel> is only necessary if the message isn't sent in the channel itself. If option --id specified, will retrieve by regexp id, not content.
 
+.. _command-MessageParser-show:
+
 show [<channel>|global] [--id] <regexp>
   Looks up the value of <regexp> in the triggers database. <channel> is only necessary if the message isn't sent in the channel itself. If option --id specified, will retrieve by regexp id, not content.
 
+.. _command-MessageParser-unlock:
+
 unlock [<channel>|global] <regexp>
   Unlocks the entry associated with <regexp> so that it can be removed or overwritten. <channel> is only necessary if the message isn't sent in the channel itself.
+
+.. _command-MessageParser-vacuum:
 
 vacuum [<channel>|global]
   Vacuums the database for <channel>. See SQLite vacuum doc here: http://www.sqlite.org/lang_vacuum.html <channel> is only necessary if the message isn't sent in the channel itself. First check if user has the required capability specified in plugin config requireVacuumCapability.

@@ -39,16 +39,26 @@ and allows only users to send notes.
 The only people who are able to read notes are the sender, receiver,
 and the owner.
 
+.. _commands-Later:
+
 Commands
 --------
+.. _command-Later-notes:
+
 notes [<nick>]
   If <nick> is given, replies with what notes are waiting on <nick>, otherwise, replies with the nicks that have notes waiting for them.
+
+.. _command-Later-remove:
 
 remove <nick>
   Removes the notes waiting on <nick>.
 
+.. _command-Later-tell:
+
 tell <nick1[,nick2[,...]]> <text>
   Tells each <nickX> <text> the next time <nickX> is seen. <nickX> can contain wildcard characters, and the first matching nick will be given the note.
+
+.. _command-Later-undo:
 
 undo <nick>
   Removes the latest note you sent to <nick>.

@@ -36,25 +36,41 @@ Check: `Supported language codes`_
 
 .. _Supported language codes: <https://cloud.google.com/translate/v2/using_rest#language-params>`
 
+.. _commands-Google:
+
 Commands
 --------
+.. _command-Google-cache:
+
 cache <url>
   Returns a link to the cached version of <url> if it is available.
+
+.. _command-Google-calc:
 
 calc <expression>
   Uses Google's calculator to calculate the value of <expression>.
 
+.. _command-Google-fight:
+
 fight <search string> <search string> [<search string> ...]
   Returns the results of each search, in order, from greatest number of results to least.
+
+.. _command-Google-google:
 
 google <search> [--{filter,language} <value>]
   Searches google.com for the given string. As many results as can fit are included. --language accepts a language abbreviation; --filter accepts a filtering level ('active', 'moderate', 'off').
 
+.. _command-Google-lucky:
+
 lucky [--snippet] <search>
   Does a google search, but only returns the first result. If option --snippet is given, returns also the page text snippet.
 
+.. _command-Google-phonebook:
+
 phonebook <phone number>
   Looks <phone number> up on Google.
+
+.. _command-Google-translate:
 
 translate <source language> [to] <target language> <text>
   Returns <text> translated from <source language> into <target language>. <source language> and <target language> take language codes (not language names), which are listed here: https://cloud.google.com/translate/docs/languages

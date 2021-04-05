@@ -13,13 +13,21 @@ Usage
 Provides commands to query DNS, search WHOIS databases,
 and convert IPs to hex.
 
+.. _commands-Internet:
+
 Commands
 --------
+.. _command-Internet-dns:
+
 dns <host|ip>
   Returns the ip of <host> or the reverse DNS hostname of <ip>.
 
+.. _command-Internet-hexip:
+
 hexip <ip>
   Returns the hexadecimal IP for that IP.
+
+.. _command-Internet-whois:
 
 whois <domain>
   Returns WHOIS information on the registration of <domain>.

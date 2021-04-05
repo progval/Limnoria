@@ -19,34 +19,56 @@ configuration variables to match the NickServ and ChanServ nicks on your
 network.  Other commands such as identify, op, etc. should not be
 necessary if the bot is properly configured.
 
+.. _commands-Services:
+
 Commands
 --------
+.. _command-Services-ghost:
+
 ghost [<nick>]
   Ghosts the bot's given nick and takes it. If no nick is given, ghosts the bot's configured nick and takes it.
+
+.. _command-Services-identify:
 
 identify takes no arguments
   Identifies with NickServ using the current nick.
 
+.. _command-Services-invite:
+
 invite [<channel>]
   Attempts to get invited by ChanServ to <channel>. <channel> is only necessary if the message isn't sent in the channel itself, but chances are, if you need this command, you're not sending it in the channel itself.
+
+.. _command-Services-nicks:
 
 nicks takes no arguments
   Returns the nicks that this plugin is configured to identify and ghost with.
 
+.. _command-Services-op:
+
 op [<channel>]
   Attempts to get opped by ChanServ in <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
+
+.. _command-Services-password:
 
 password <nick> [<password>]
   Sets the NickServ password for <nick> to <password>. If <password> is not given, removes <nick> from the configured nicks.
 
+.. _command-Services-register:
+
 register [<network>] <password> [<email>]
   Uses the experimental REGISTER command to create an account for the bot on the <network>, using the <password> and the <email> if provided. Some networks may require the email. You may need to use the 'services verify' command afterward to confirm your email address.
+
+.. _command-Services-unban:
 
 unban [<channel>]
   Attempts to get unbanned by ChanServ in <channel>. <channel> is only necessary if the message isn't sent in the channel itself, but chances are, if you need this command, you're not sending it in the channel itself.
 
+.. _command-Services-verify:
+
 verify [<network>] <account> <code>
   If the <network> requires a verification code, you need to call this command with the code the server gave you to finish the registration.
+
+.. _command-Services-voice:
 
 voice [<channel>]
   Attempts to get voiced by ChanServ in <channel>. <channel> is only necessary if the message isn't sent in the channel itself.

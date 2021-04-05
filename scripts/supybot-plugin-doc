@@ -126,10 +126,13 @@ class PluginDoc(object):
             self.lines.append('')
         commands = self.inst.listCommands()
         if len(commands):
+            self.lines.append('.. _commands-%s:\n' % self.name)
             self.appendLine('Commands')
             self.appendLine('--------')
             for command in commands:
                 log.debug('command: %s', command)
+                self.lines.append('.. _command-%s-%s:\n' %
+                    (self.name.lower(), command.replace(' ', '.')))
                 line = '%s ' % command
                 command = command.split()
                 doc = self.inst.getCommandHelp(command)
@@ -147,14 +150,17 @@ class PluginDoc(object):
         # now the config
         try:
             confs = conf.supybot.plugins.get(self.name)
+            self.lines.append('.. _conf-%s:\n' % self.name)
             self.appendLine('Configuration')
             self.appendLine('-------------')
+            self.lines.append('')
         except registry.NonExistentRegistryEntry:
             log.info('No configuration for plugin %s', plugin)
             self.appendLine('No configuration for this plugin')
         else:
             for confValues in self.genConfig(confs, 0):
                 (name, isChan, isNet, help, default, indent) = confValues
+                self.lines.append('.. _conf-%s:\n' % name)
                 self.appendLine('%s' % name, indent - 1)
                 self.appendLine(
                     ('This config variable defaults to %s, '

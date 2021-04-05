@@ -50,28 +50,46 @@ and understand what it says and then you can do
 
 ``@config reply.onetoone False``
 
+.. _commands-RSS:
+
 Commands
 --------
+.. _command-RSS-add:
+
 add <name> <url>
   Adds a command to this plugin that will look up the RSS feed at the given URL.
+
+.. _command-RSS-announce.add:
 
 announce add [<channel>] <name|url> [<name|url> ...]
   Adds the list of feeds to the current list of announced feeds in <channel>. Valid feeds include the names of registered feeds as well as URLs for RSS feeds. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _command-RSS-announce.channels:
+
 announce channels <name|url>
   Returns a list of channels that the given feed name or URL is being announced to.
+
+.. _command-RSS-announce.list:
 
 announce list [<channel>]
   Returns the list of feeds announced in <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _command-RSS-announce.remove:
+
 announce remove [<channel>] <name|url> [<name|url> ...]
   Removes the list of feeds from the current list of announced feeds in <channel>. Valid feeds include the names of registered feeds as well as URLs for RSS feeds. <channel> is only necessary if the message isn't sent in the channel itself.
+
+.. _command-RSS-info:
 
 info <url|feed>
   Returns information from the given RSS feed, namely the title, URL, description, and last update date, if available.
 
+.. _command-RSS-remove:
+
 remove <name>
   Removes the command for looking up RSS feeds at <name> from this plugin.
+
+.. _command-RSS-rss:
 
 rss <name|url> [<number of headlines>]
   Gets the title components of the given RSS feed. If <number of headlines> is given, return only that many headlines.
