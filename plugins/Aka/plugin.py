@@ -498,10 +498,8 @@ class AkaHTTPCallback(httpserver.SupyHTTPServerCallback):
 
 
 class Aka(callbacks.Plugin):
-    """Aka is the improved version of the Alias plugin. It stores akas outside
-    of the bot.conf, which doesn't have risk of corrupting the bot.conf file
-    (this often happens when there are Unicode issues). Aka also
-    introduces multi-worded akas."""
+    """This plugin allows users to define aliases to commands and combinations
+    of commands (via nesting)."""
 
     def __init__(self, irc):
         self.__parent = super(Aka, self)

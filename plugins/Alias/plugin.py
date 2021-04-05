@@ -236,7 +236,10 @@ def makeNewAlias(name, alias):
 
 class Alias(callbacks.Plugin):
     """This plugin allows users to define aliases to commands and combinations
-    of commands (via nesting)."""
+    of commands (via nesting).
+    This plugin is only kept for backward compatibility, you should use the
+    built-in Aka plugin instead (you can migrate your existing aliases using
+    the 'importaliasdatabase' command."""
     def __init__(self, irc):
         self.__parent = super(Alias, self)
         self.__parent.__init__(irc)
