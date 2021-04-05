@@ -92,9 +92,12 @@ class PluginDoc(object):
     def appendLine(self, line, indent=0):
         line = line.strip()
         indent = '  ' * indent
-        lines = textwrap.wrap(line, 79,
-                              initial_indent=indent,
-                              subsequent_indent=indent)
+        # this looked like a good idea, but it's actually breaking lines
+        # in the middle of ReST elements:
+        #lines = textwrap.wrap(line, 79,
+        #                      initial_indent=indent,
+        #                      subsequent_indent=indent)
+        lines = [indent + line.replace('\n', '\n' + indent)]
         self.lines.extend(lines)
         if self.appendExtraBlankLine:
             self.lines.append('')
@@ -117,7 +120,9 @@ class PluginDoc(object):
         if cdoc is not None:
             self.appendLine('Usage')
             self.appendLine('-----')
-            self.appendLine(cdoc)
+            # We add spaces at the beginning in case the docstring does not
+            # start with a newline (the default, unfortunately)
+            self.appendLine(textwrap.dedent(" "* 1000 + cdoc).lstrip())
             self.lines.append('')
         commands = self.inst.listCommands()
         if len(commands):
@@ -218,9 +223,7 @@ class PluginDoc(object):
             name = v._name
             indent = origindent + 1
             try:
-                default = str(v)
-                if not isinstance(v._default, str):
-                    default = utils.str.dqrepr(default)
+                default = utils.str.dqrepr(str(v))
                 help = v.help()
             except registry.NonExistentRegistryEntry:
                 pass
