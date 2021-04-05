@@ -894,19 +894,30 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         """
         Keyword arguments:
 
-        * `noLengthCheck=False`:   True if the length shouldn't be checked
-                                   (used for 'more' handling)
-        * `prefixNick=True`:       False if the nick shouldn't be prefixed to the
-                                   reply.
-        * `action=False`:          True if the reply should be an action.
-        * `private=False`:         True if the reply should be in private.
-        * `notice=False`:          True if the reply should be noticed when the
-                                   bot is configured to do so.
-        * `to=<nick|channel>`:     The nick or channel the reply should go to.
-                                   Defaults to msg.args[0] (or msg.nick if private)
-        * `sendImmediately=False`: True if the reply should use sendMsg() which
-                                   bypasses conf.supybot.protocols.irc.throttleTime
-                                   and gets sent before any queued messages
+        :arg bool noLengthCheck:
+            True if the length shouldn't be checked (used for 'more' handling)
+
+        :arg bool prefixNick:
+            False if the nick shouldn't be prefixed to the reply.
+
+        :arg bool action:
+            True if the reply should be an action.
+
+        :arg bool private:
+            True if the reply should be in private.
+
+        :arg bool notice:
+            True if the reply should be noticed when the bot is configured
+            to do so.
+
+        :arg str to:
+            The nick or channel the reply should go to.
+            Defaults to msg.args[0] (or msg.nick if private)
+
+        :arg bool sendImmediately:
+            True if the reply should use sendMsg() which
+            bypasses conf.supybot.protocols.irc.throttleTime
+            and gets sent before any queued messages
         """
         # These use and or or based on whether or not they default to True or
         # False.  Those that default to True use and; those that default to
@@ -1369,16 +1380,22 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
     _disabled = DisabledCommands()
     pre_command_callbacks = []
     def name(self):
+        """Returns the name of this Commands object (usually the plugin
+        name)."""
         return self.__class__.__name__
 
     def canonicalName(self):
+        """Same as :py:meth:`name`, but normalized."""
         return canonicalName(self.name())
 
     def isDisabled(self, command):
+        """Returns whether the given ``command`` is disabled."""
         return self._disabled.disabled(command, self.name())
 
     def isCommandMethod(self, name):
-        """Returns whether a given method name is a command in this plugin."""
+        """Returns whether a given method name is a command in this plugin.
+        Plugins only need to implement this if they have a dynamic set of
+        commands."""
         # This function is ugly, but I don't want users to call methods like
         # doPrivmsg or __init__ or whatever, and this is good to stop them.
 
@@ -1409,6 +1426,9 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
             return self.getCommand(command) == command
 
     def getCommand(self, args, stripOwnName=True):
+        """Among all the commands in this Commands object, recursively
+        searches for the command whose name is the longst substring
+        of ``args``, and returns its name, splitted on spaces."""
         assert args == list(map(canonicalName, args))
         first = args[0]
         for cb in self.cbs:
@@ -1424,7 +1444,10 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
         return []
 
     def getCommandMethod(self, command):
-        """Gets the given command from this plugin."""
+        """Gets the given command from this plugin, using
+        :py:meth:`getCommand`.
+        Plugins only need to implement this if they have a dynamic set of
+        commands."""
         #print '*** %s.getCommandMethod(%r)' % (self.name(), command)
         assert not isinstance(command, minisix.string_types)
         assert command == list(map(canonicalName, command))
@@ -1445,6 +1468,9 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
                     raise AttributeError
 
     def listCommands(self, pluginCommands=[]):
+        """List all the commands in this ``Commands`` object.
+        Plugins only need to implement this if they have a dynamic set of
+        commands."""
         commands = set(pluginCommands)
         for s in dir(self):
             if self.isCommandMethod(s):
@@ -1461,6 +1487,8 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
         return L
 
     def callCommand(self, command, irc, msg, *args, **kwargs):
+        """Given a command name, gets the method with
+        :py:meth:`getCommandMethod` and calls it."""
         # We run all callbacks before checking if one of them returned True
         if any(bool, list(cb(self, command, irc, msg, *args, **kwargs)
                     for cb in self.pre_command_callbacks)):
@@ -1526,6 +1554,8 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
                 irc.replyError(msg=msg)
 
     def getCommandHelp(self, command, simpleSyntax=None):
+        """Returns the help string of the given command, using
+        :py:meth:`getCommandMethod`."""
         method = self.getCommandMethod(command)
         help = getHelp
         chan = None
@@ -1581,6 +1611,16 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
             self.__parent.__call__(irc, msg)
 
     def registryValue(self, name, channel=None, network=None, *, value=True):
+        """Returns the value of a configuration variable specified by
+        ``name``.
+
+        If the configuration variable has a channel- or network-specific
+        variable (ie. if its value can change across channels or networks),
+        ``channel`` and ``network`` allow getting the most specific value.
+        If neither is given, returns the generic value.
+
+        If ``value=False``, returns the variable itself (an instance
+        of :py:class:`supybot.registry.Value`) instead of its value."""
         if isinstance(network, bool):
             # Network-unaware plugin that uses 'value' as a positional
             # argument.
@@ -1598,6 +1638,7 @@ class PluginMixin(BasePlugin, irclib.IrcCallback):
             return group
 
     def setRegistryValue(self, name, value, channel=None, network=None):
+        """Sets a configuration variable. See :py:meth:`registryValue`"""
         plugin = self.name()
         group = conf.supybot.plugins.get(plugin)
         names = registry.split(name)
