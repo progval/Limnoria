@@ -314,9 +314,20 @@ class Misc(callbacks.Plugin):
             s = format(_('There is no command %q.'),
                         callbacks.formatCommand(command))
             if command[0].lower() in map(str.lower, plugins):
-                s += (' However, "{0}" is the name of a loaded plugin, and '
-                    'you may be able to find its provided commands '
-                    'using \'list {0}\'.'.format(command[0].title()))
+                if "Plugin" in plugins:
+                    template = _(
+                        " However, '{0}' is the name of a loaded plugin, and "
+                        "you may be able to find its help using "
+                        "'plugin help {0}' and its provided commands using "
+                        "'list {0}'."
+                    )
+                else:
+                    template = _(
+                        " However, '{0}' is the name of a loaded plugin, and "
+                        "you may be able to find its provided commands using "
+                        "'list {0}'."
+                    )
+                s += template.format(command[0].title())
             irc.error(s)
     help = wrap(help, [any('something')])
 

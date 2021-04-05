@@ -83,6 +83,20 @@ class MiscTestCase(ChannelPluginTestCase):
         #self.assertRegexp('help misc help', r'^\(\x02misc help')
         self.assertError('help nonExistentCommand')
 
+    def testPluginHelp(self):
+        self.assertResponse('help Misc',
+            'Error: There is no command "misc". '
+            "However, 'Misc' is the name of a loaded plugin, "
+            "and you may be able to find its help using "
+            "'plugin help Misc' and its provided "
+            "commands using 'list Misc'.")
+        self.assertNotError('unload Plugin')
+        self.assertResponse('help Misc',
+            'Error: There is no command "misc". '
+            "However, 'Misc' is the name of a loaded plugin, "
+            "and you may be able to find its provided commands using "
+            "'list Misc'.")
+
     def testHelpIncludeFullCommandName(self):
         self.assertHelp('help channel capability add')
         m = self.getMsg('help channel capability add')
