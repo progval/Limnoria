@@ -56,7 +56,7 @@ class Plugin(callbacks.Plugin):
         """
         doc = cb.getPluginHelp()
         if doc:
-            irc.reply(utils.str.normalizeWhitespace(doc))
+            irc.reply(utils.str.normalizeWhitespace(doc.split("\n\n")[0]))
         else:
             irc.reply(_('That plugin is loaded, but has no plugin help.'))
     help = wrap(help, ['plugin'])
