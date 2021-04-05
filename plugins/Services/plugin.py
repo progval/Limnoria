@@ -61,7 +61,8 @@ class Services(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Services, self)
         self.__parent.__init__(irc)
-        for nick in self.registryValue('nicks', network=irc.network):
+        network = irc.network if irc else None
+        for nick in self.registryValue('nicks', network=network):
             config.registerNick(nick)
         self.reset()
 

@@ -262,8 +262,10 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             s = self.registryValue('learnSeparator', chan, network)
             help = callbacks.getHelp
             if simpleSyntax is None:
+                irc = dynamic.irc
+                network = irc.network if irc else None
                 simpleSyntax = conf.supybot.reply.showSimpleSyntax.getSpecific(
-                    dynamic.irc.network, chan)()
+                    network, chan)()
             if simpleSyntax:
                 help = callbacks.getSyntax
             return help(method,
