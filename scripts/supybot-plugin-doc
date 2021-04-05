@@ -101,6 +101,8 @@ class PluginDoc(object):
 
     def renderRST(self):
         self.appendExtraBlankLine = False
+        self.appendLine('.. _plugin-%s:' % self.name)
+        self.lines.append('')
         s = self.titleTemplate.substitute(name=self.name)
         self.appendLine(s)
         self.appendLine('=' * len(s))
