@@ -446,12 +446,13 @@ class RealSupyHTTPServer(HTTPServer):
 class TestSupyHTTPServer(RealSupyHTTPServer):
     def __init__(self, *args, **kwargs):
         self.callbacks = {}
+        self.server_address = ("0.0.0.0", 0)
     def serve_forever(self, *args, **kwargs):
         pass
     def shutdown(self, *args, **kwargs):
         pass
 
-if world.testing:
+if world.testing or world.documenting:
     SupyHTTPServer = TestSupyHTTPServer
 else:
     SupyHTTPServer = RealSupyHTTPServer
