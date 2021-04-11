@@ -65,12 +65,18 @@ if setuptools:
             kwargs.setdefault('url', url)
 
         if 'long_description' not in kwargs:
-            readme_path = os.path.join(
-                os.path.dirname(plugin.__file__), 'README.md')
-            if os.path.isfile(readme_path):
-                with open(readme_path, 'r') as fd:
-                    kwargs['long_description'] = fd.read()
-                    kwargs['long_description_content_type'] = 'text/markdown'
+            readme_files = [
+                ('text/x-rst', 'README.rst'),
+                ('text/markdown', 'README.md'),
+            ]
+            for (mimetype, filename) in readme_files:
+                readme_path = os.path.join(
+                    os.path.dirname(plugin.__file__), filename)
+                if os.path.isfile(readme_path):
+                    with open(readme_path, 'r') as fd:
+                        kwargs['long_description'] = fd.read()
+                        kwargs['long_description_content_type'] = mimetype
+                    break
 
         module_name = kwargs['name'].replace('-', '_')
         kwargs.setdefault('packages', [module_name])
