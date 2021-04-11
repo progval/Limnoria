@@ -30,6 +30,7 @@
 import os
 import re
 import sys
+import time
 import os.path
 import linecache
 import importlib.util
@@ -147,6 +148,7 @@ def registerRename(plugin, command=None, newName=None):
 
 def loadPluginClass(irc, module, register=None):
     """Loads the plugin Class from the given module into the given Irc."""
+    loadedAt = time.time()
     try:
         cb = module.Class(irc)
     except TypeError as e:
@@ -179,6 +181,13 @@ def loadPluginClass(irc, module, register=None):
     if hasattr(cb, 'public'):
         public = cb.public
     conf.registerPlugin(plugin, register, public)
+
+    loadTime = time.time() - loadedAt
+    if loadTime > 1:
+        log.warning("Loaded plugin %s in %s ms.", plugin, int(loadTime*1000))
+    else:
+        log.debug("Loaded plugin %s in %s ms", plugin, int(loadTime*1000))
+
     assert not irc.getCallback(plugin), \
            'There is already a %r plugin registered.' % plugin
     try:
