@@ -175,6 +175,17 @@ for plugin in plugins:
     if files:
         package_data.update({plugin_name: files})
 
+if 'bdist_wheel' in sys.argv:
+    # Add support for bdist_wheel. Unlike setuptools, distutils does not
+    # support it out of the box.
+    # However, we should not import it in a regular install, because
+    # it breaks script install:
+    # pkg_resources.ResolutionError: Script 'scripts/supybot' not found in metadata at None
+    import distutils_commands
+    @distutils_commands.command('bdist_wheel')
+    def bdist_wheel():
+        distutils_commands.bdist_wheel()
+
 setup(
     # Metadata
     name='limnoria',
