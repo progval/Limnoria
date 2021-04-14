@@ -894,7 +894,7 @@ registerGlobalValue(supybot.drivers, 'poll',
 
 class ValidDriverModule(registry.OnlySomeStrings):
     __slots__ = ()
-    validStrings = ('default', 'Socket')
+    validStrings = ('default', 'Socket', 'PyodideWebsocket')
 
 registerGlobalValue(supybot.drivers, 'module',
     ValidDriverModule('default', _("""Determines what driver module the 
