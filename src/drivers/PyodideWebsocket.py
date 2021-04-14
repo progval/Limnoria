@@ -57,7 +57,6 @@ class SynchronousWebsocket:
         self.ws.onopen = self._onopen
 
         self.inbuffer = []
-        self.errors = []
         self.closed = False
         self.open = False
 
@@ -65,7 +64,7 @@ class SynchronousWebsocket:
         self.inbuffer.append(event.data)
 
     def _onerror(self, event):
-        self.errors.append(event.message)
+        drivers.log.error("Websocket error: %s", event)
 
     def _onclose(self, event):
         self.closed = True
