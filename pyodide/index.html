@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"></script>
+        <script type="text/javascript">
+            async function main(){
+                await loadPyodide({ indexURL : 'https://cdn.jsdelivr.net/pyodide/dev/full/' });
+                await pyodide.runPythonAsync(`
+                    import pyodide
+                    import micropip
+
+                    # Use micropip to install a Limnoria wheel
+                    await micropip.install(
+                        'http://[fdfe:6f1:908a:1fbe:c713:7c74:d786:8f15]:8081/%(WHEEL_PATH)s'
+                    )
+                    # Check we can indeed import Limnoria
+                    import supybot.version
+                    print(supybot.version.version)
+
+                    # Load config file
+                    config = pyodide.open_url('/limnoria.conf').read()
+                    with open('limnoria.conf', 'a') as fd:
+                        fd.write(config)
+
+                    # Inject arguments to pretend it's called from the CLI
+                    import sys
+                    sys.argv = ['supybot', '--allow-root', '--single-loop', 'limnoria.conf']
+
+                    # Initialize the bot
+                    import supybot._main
+                    supybot._main.main()
+                `);
+
+                while (1) {
+                    // Hacky!!! We're taking the main loop away from Limnoria
+                    // so the Python code releases control to the JS interpreter
+                    await pyodide.runPythonAsync(`
+                        import supybot._main
+                        supybot._main._main(singleLoop=True)
+                    `);
+                }
+            }
+            main();
+        </script>
+    </head>
+    <body>
+    </body>
+</html>
+
