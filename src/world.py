@@ -63,6 +63,12 @@ class SupyThread(threading.Thread, object):
         super(SupyThread, self).__init__(*args, **kwargs)
         log.debug('Spawning thread %q.', self.getName())
 
+    def start(self):
+        if disableThreading:
+            self.run()
+        else:
+            super().start()
+
 processesSpawned = 1 # Starts at one for the initial process.
 class SupyProcess(multiprocessing.Process):
     def __init__(self, *args, **kwargs):

@@ -163,6 +163,7 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
 
     world.disableMultiprocessing = options.disableMultiprocessing
+    world.disableThreading = False
 
     # This must go before checking for args, of course.
     if options.excludePlugins:

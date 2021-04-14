@@ -765,6 +765,10 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             if hasattr(cb, 'invalidCommand'):
                 cbs.append(cb)
                 threaded = threaded or cb.threaded
+
+        if world.disableThreading:
+            threaded = False
+
         def callInvalidCommands():
             self.repliedTo = False
             for cb in cbs:

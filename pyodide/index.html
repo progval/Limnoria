@@ -23,7 +23,14 @@
 
                     # Inject arguments to pretend it's called from the CLI
                     import sys
-                    sys.argv = ['supybot', '--allow-root', '--single-loop', '--disable-multiprocessing', 'limnoria.conf']
+                    sys.argv = [
+                        'supybot',
+                        '--allow-root',
+                        '--single-loop',
+                        '--disable-multiprocessing',
+                        '--disable-threading',
+                        'limnoria.conf'
+                    ]
 
                     # Initialize the bot
                     import supybot._main

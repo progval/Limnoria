@@ -29,6 +29,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(fd.read())
         elif self.path == '/limnoria.conf':
             self.send_response(200)
+            self.send_header('Content-Type', 'text/plain')
             with open(CONF_PATH, 'rb') as fd:
                 self.wfile.write(fd.read())
         elif self.path == '/favicon.ico':

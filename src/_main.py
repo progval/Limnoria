@@ -171,6 +171,10 @@ def main():
                       dest='disableMultiprocessing',
                       help='Disables multiprocessing stuff. May lead to '
                       'vulnerabilities.')
+    parser.add_option('', '--disable-threading', action='store_true',
+                      dest='disableThreading',
+                      help='Disables multiprocessing stuff. May lead to '
+                      'inefficiencies and denial of service.')
     parser.add_option('', '--single-loop', action='store_true',
                       dest='singleLoop',
                       help='Do not use this unless you understand what it is.')
@@ -325,6 +329,7 @@ def main():
 
     conf.allowDefaultOwner = options.allowDefaultOwner
     world.disableMultiprocessing = options.disableMultiprocessing
+    world.disableThreading = options.disableThreading
 
     if not os.path.exists(conf.supybot.directories.log()):
         os.mkdir(conf.supybot.directories.log())
