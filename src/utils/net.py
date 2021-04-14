@@ -33,10 +33,15 @@ Simple utility modules.
 """
 
 import re
-import ssl
 import socket
 import hashlib
 import contextlib
+try:
+    import ssl
+except ImportError:
+    # Not available in some environments. This is going to be an issue,
+    # but it shouldn't stop this module from being importable
+    ssl = None
 
 from .web import _ipAddr, _domain
 
@@ -149,50 +154,57 @@ normalize_fingerprint = lambda fp: fp.replace(':', '').lower()
 
 FINGERPRINT_ALGORITHMS = ('md5', 'sha1', 'sha224', 'sha256', 'sha384',
         'sha512')
-def check_certificate_fingerprint(conn, trusted_fingerprints):
-    trusted_fingerprints = set(normalize_fingerprint(fp)
-            for fp in trusted_fingerprints)
-    cert = conn.getpeercert(binary_form=True)
-    for algorithm in FINGERPRINT_ALGORITHMS:
-        h = hashlib.new(algorithm)
-        h.update(cert)
-        if h.hexdigest() in trusted_fingerprints:
-            return
-    raise ssl.CertificateError('No matching fingerprint.')
 
-@contextlib.contextmanager
-def _prefix_ssl_error(prefix):
-    try:
-        yield
-    except ssl.SSLError as e:
-        raise ssl.SSLError(
-            e.args[0], '%s failed: %s' % (prefix, e.args[1]), *e.args[2:]) \
-            from None
+if ssl is None:
+    def check_certificate_fingerprint(*args, **kwargs):
+        raise NotImplementedError("ssl module not available")
+    def ssl_wrap_socket(*args, **kwargs):
+        raise NotImplementedError("ssl module not available")
+else:
+    def check_certificate_fingerprint(conn, trusted_fingerprints):
+        trusted_fingerprints = set(normalize_fingerprint(fp)
+                for fp in trusted_fingerprints)
+        cert = conn.getpeercert(binary_form=True)
+        for algorithm in FINGERPRINT_ALGORITHMS:
+            h = hashlib.new(algorithm)
+            h.update(cert)
+            if h.hexdigest() in trusted_fingerprints:
+                return
+        raise ssl.CertificateError('No matching fingerprint.')
 
-def ssl_wrap_socket(conn, hostname, logger, certfile=None,
-        trusted_fingerprints=None, verify=True, ca_file=None,
-        **kwargs):
-    with _prefix_ssl_error('creating SSL context'):
-        context = ssl.create_default_context(**kwargs)
+    @contextlib.contextmanager
+    def _prefix_ssl_error(prefix):
+        try:
+            yield
+        except ssl.SSLError as e:
+            raise ssl.SSLError(
+                e.args[0], '%s failed: %s' % (prefix, e.args[1]), *e.args[2:]) \
+                from None
 
-    if ca_file:
-        with _prefix_ssl_error('loading CA certificate'):
-            context.load_verify_locations(cafile=ca_file)
-    elif trusted_fingerprints or not verify:
-        # Do not use Certification Authorities
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
+    def ssl_wrap_socket(conn, hostname, logger, certfile=None,
+            trusted_fingerprints=None, verify=True, ca_file=None,
+            **kwargs):
+        with _prefix_ssl_error('creating SSL context'):
+            context = ssl.create_default_context(**kwargs)
 
-    if certfile:
-        with _prefix_ssl_error('loading client certfile'):
-            context.load_cert_chain(certfile)
+        if ca_file:
+            with _prefix_ssl_error('loading CA certificate'):
+                context.load_verify_locations(cafile=ca_file)
+        elif trusted_fingerprints or not verify:
+            # Do not use Certification Authorities
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
 
-    with _prefix_ssl_error('establishing TLS connection'):
-        conn = context.wrap_socket(conn, server_hostname=hostname)
+        if certfile:
+            with _prefix_ssl_error('loading client certfile'):
+                context.load_cert_chain(certfile)
 
-    if trusted_fingerprints:
-        check_certificate_fingerprint(conn, trusted_fingerprints)
+        with _prefix_ssl_error('establishing TLS connection'):
+            conn = context.wrap_socket(conn, server_hostname=hostname)
 
-    return conn
+        if trusted_fingerprints:
+            check_certificate_fingerprint(conn, trusted_fingerprints)
+
+        return conn
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
