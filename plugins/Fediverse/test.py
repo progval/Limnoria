@@ -29,6 +29,7 @@
 ###
 
 import os
+import copy
 import json
 import functools
 import contextlib
@@ -50,6 +51,7 @@ from .test_data import (
     OUTBOX_DATA,
     STATUS_URL,
     STATUS_DATA,
+    STATUS_VALUE,
     STATUS_WITH_PHOTO_URL,
     STATUS_WITH_PHOTO_DATA,
     OUTBOX_FIRSTPAGE_URL,
@@ -449,6 +451,36 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                     "\x02someuser\x02 (@someuser@example.org): "
                     + "@ FirstAuthor I am replying to you",
                 )
+
+    def testStatusUrlSnarferMore(self):
+        # Actually this is a test for src/callbacks.py, but it's easier to
+        # stick it here.
+        status_value = copy.deepcopy(STATUS_VALUE)
+        str_long = "l" + ("o" * 400) + "ng"
+        str_message = "mess" + ("a" * 400) + "ge"
+        status_obj = status_value["object"]
+        status_obj["content"] = status_obj["content"].replace(
+            "to you", "to you with a " + str_long + " " + str_message
+        )
+        with conf.supybot.plugins.Fediverse.snarfers.status.context(True):
+            expected_requests = [
+                (STATUS_URL, json.dumps(status_value).encode()),
+                (ACTOR_URL, ACTOR_DATA),
+            ]
+
+            with self.mockWebfingerSupport(True), self.mockRequests(
+                expected_requests
+            ):
+                self.assertSnarfResponse(
+                    "aaa https://example.org/users/someuser/statuses/1234 bbb",
+                    "\x02someuser\x02 (@someuser@example.org): "
+                    + "@ FirstAuthor I am replying to you with a "
+                    + " \x02(2 more messages)\x02",
+                )
+
+        self.assertNoResponse(" ")
+        self.assertResponse("more", str_long + "  \x02(1 more message)\x02")
+        self.assertResponse("more", str_message)
 
     def testStatusUrlSnarferErrors(self):
         with conf.supybot.plugins.Fediverse.snarfers.status.context(True):

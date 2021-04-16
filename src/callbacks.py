@@ -627,6 +627,7 @@ class ReplyIrcProxy(RichReplyMethods):
     """This class is a thin wrapper around an irclib.Irc object that gives it
     the reply() and error() methods (as well as everything in RichReplyMethods,
     based on those two)."""
+    _mores = ircutils.IrcDict()
     def __init__(self, irc, msg):
         self.irc = irc
         self.msg = msg
@@ -660,24 +661,295 @@ class ReplyIrcProxy(RichReplyMethods):
             self.irc.queueMsg(m)
             return m
 
+    def _defaultPrefixNick(self, msg):
+        if msg.channel:
+            return conf.get(conf.supybot.reply.withNickPrefix,
+                channel=msg.channel, network=self.irc.network)
+        else:
+            return conf.supybot.reply.withNickPrefix()
+
     def reply(self, s, msg=None, **kwargs):
+        """
+        Keyword arguments:
+
+        :arg bool noLengthCheck:
+            True if the length shouldn't be checked (used for 'more' handling)
+
+        :arg bool prefixNick:
+            False if the nick shouldn't be prefixed to the reply.
+
+        :arg bool action:
+            True if the reply should be an action.
+
+        :arg bool private:
+            True if the reply should be in private.
+
+        :arg bool notice:
+            True if the reply should be noticed when the bot is configured
+            to do so.
+
+        :arg str to:
+            The nick or channel the reply should go to.
+            Defaults to msg.args[0] (or msg.nick if private)
+
+        :arg bool sendImmediately:
+            True if the reply should use sendMsg() which
+            bypasses conf.supybot.protocols.irc.throttleTime
+            and gets sent before any queued messages
+        """
         if msg is None:
             msg = self.msg
         assert not isinstance(s, ircmsgs.IrcMsg), \
                'Old code alert: there is no longer a "msg" argument to reply.'
         kwargs.pop('noLengthCheck', None)
-        m = _makeReply(self, msg, s, **kwargs)
-        self.irc.queueMsg(m)
-        return m
+        if 'target' not in kwargs:
+            target = kwargs.get('private', False) and kwargs.get('to', None) \
+                    or msg.args[0]
+        if 'prefixNick' not in kwargs:
+            kwargs['prefixNick'] = self._defaultPrefixNick(msg)
+        self._sendReply(s, target=target, msg=msg, **kwargs)
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
+
+    def _replyOverhead(self, target, targetNick, prefixNick):
+        """Returns the number of bytes added to a PRIVMSG payload, either by
+        Limnoria itself or by the server.
+        Ignores tag bytes, as they are accounted for separatly."""
+        overhead = (
+            len(':')
+            + len(self.irc.prefix.encode())
+            + len(' PRIVMSG ')
+            + len(target.encode())
+            + len(' :')
+            + len('\r\n')
+        )
+        if prefixNick and targetNick is not None:
+            overhead += len(targetNick) + len(': ')
+        return overhead
+
+    def _sendReply(self, s, target, msg, sendImmediately=False,
+                   noLengthCheck=False, **kwargs):
+        if sendImmediately:
+            sendMsg = self.irc.sendMsg
+        else:
+            sendMsg = self.irc.queueMsg
+
+        if isinstance(self.irc, self.__class__):
+            s = s[:conf.supybot.reply.maximumLength()]
+            return self.irc.reply(s,
+                                  noLengthCheck=noLengthCheck,
+                                  **kwargs)
+        elif noLengthCheck:
+            # noLengthCheck only matters to NestedCommandsIrcProxy, so
+            # it's not used here.  Just in case you were wondering.
+            m = _makeReply(self, msg, s, **kwargs)
+            sendMsg(m)
+            return m
+        else:
+            s = ircutils.safeArgument(s)
+            allowedLength = conf.get(conf.supybot.reply.mores.length,
+                channel=target, network=self.irc.network)
+            if not allowedLength: # 0 indicates this.
+                allowedLength = 512 - self._replyOverhead(
+                        target, msg.nick, prefixNick=kwargs['prefixNick'])
+            maximumMores = conf.get(conf.supybot.reply.mores.maximum,
+                channel=target, network=self.irc.network)
+            maximumLength = allowedLength * maximumMores
+            if len(s) > maximumLength:
+                log.warning('Truncating to %s bytes from %s bytes.',
+                            maximumLength, len(s))
+                s = s[:maximumLength]
+            s_size = len(s.encode()) if minisix.PY3 else len(s)
+            if s_size <= allowedLength or \
+               not conf.get(conf.supybot.reply.mores,
+                    channel=target, network=self.irc.network):
+                # There's no need for action=self.action here because
+                # action implies noLengthCheck, which has already been
+                # handled.  Let's stick an assert in here just in case.
+                assert not kwargs.get('action')
+                m = _makeReply(self, msg, s, **kwargs)
+                sendMsg(m)
+                return m
+            # The '(XX more messages)' may have not the same
+            # length in the current locale
+            allowedLength -= len(_('(XX more messages)')) + 1 # bold
+            chunks = ircutils.wrap(s, allowedLength)
+
+            # Last messages to display at the beginning of the list
+            # (which is used like a stack)
+            chunks.reverse()
+
+            instant = conf.get(conf.supybot.reply.mores.instant,
+                channel=target, network=self.irc.network)
+
+            # Big complex loop ahead, with lots of cases and opportunities for
+            # off-by-one errors. Here is the meaning of each of the variables
+            #
+            # * 'i' is the number of chunks after the current one
+            #
+            # * 'is_first' is True when the message is the very first message
+            #   (so last iteration of the loop)
+            #
+            # * 'is_last' is True when the message is the very last (so first
+            #   iteration of the loop)
+            #
+            # * 'is_instant' is True when the message is in one of the messages
+            #   sent immediately when the command is called, ie. without
+            #   calling @misc more. (when supybot.reply.mores.instant is 1,
+            #   which is the default, this is equivalent to 'is_first')
+            #
+            # * 'is_last_instant' is True when the message is the last of the
+            #   instant message (so the first iteration of the loop with an
+            #   instant message).
+            #
+            # We need all this complexity because pagination is hard, and we
+            # want:
+            #
+            # * the '(XX more messages)' suffix on the last instant message,
+            #   and every other message (mandatory, it's a great feature),
+            #   but not on the other instant messages (mandatory when
+            #   multiline is enabled, but very nice to have in general)
+            # * the nick prefix on the first message and every other message
+            #   that isn't instant (mandatory), but not on the other instant
+            #   messages (also mandatory only when multiline is enabled)
+            msgs = []
+            for (i, chunk) in enumerate(chunks):
+                is_first = i == len(chunks) - 1
+                is_last = i == 0
+                is_instant = len(chunks) - i <= instant
+                is_last_instant = len(chunks) - i == instant
+                if is_last:
+                    # last message, no suffix to add
+                    pass
+                elif is_instant and not is_last_instant:
+                    # one of the first messages, and the next one will
+                    # also be sent immediately, so no suffix
+                    pass
+                else:
+                    if i == 1:
+                        more = _('more message')
+                    else:
+                        more = _('more messages')
+                    n = ircutils.bold('(%i %s)' % (len(msgs), more))
+                    chunk = '%s %s' % (chunk, n)
+
+                if is_instant and not is_first:
+                    d = kwargs.copy()
+                    d['prefixNick'] = False
+                    msgs.append(_makeReply(self, msg, chunk, **d))
+                else:
+                    msgs.append(_makeReply(self, msg, chunk, **kwargs))
+
+            instant_messages = []
+
+            while instant > 0 and msgs:
+                instant -= 1
+                response = msgs.pop()
+                instant_messages.append(response)
+                # XXX We should somehow allow these to be returned, but
+                #     until someone complains, we'll be fine :)  We
+                #     can't return from here, though, for obvious
+                #     reasons.
+                # return m
+
+            if conf.supybot.protocols.irc.experimentalExtensions() \
+                    and 'draft/multiline' in self.state.capabilities_ack \
+                    and len(instant_messages) > 1:
+                # More than one message to send now, and we are allowed to use
+                # multiline batches, so let's do it
+                self.queueMultilineBatches(
+                    instant_messages, target, msg.nick, concat=True,
+                    allowedLength=allowedLength, sendImmediately=sendImmediately)
+            else:
+                for instant_msg in instant_messages:
+                    sendMsg(instant_msg)
+
+            if not msgs:
+                return
+            prefix = msg.prefix
+            if target and ircutils.isNick(target):
+                try:
+                    state = self.getRealIrc().state
+                    prefix = state.nickToHostmask(target)
+                except KeyError:
+                    pass # We'll leave it as it is.
+            mask = prefix.split('!', 1)[1]
+            self._mores[mask] = msgs
+            public = bool(self.msg.channel)
+            private = kwargs.get('private', False) or not public
+            self._mores[msg.nick] = (private, msgs)
+            return response
+
+    def queueMultilineBatches(self, msgs, target, targetNick, concat,
+                              allowedLength=0, sendImmediately=False):
+        """Queues the msgs passed as argument in batches using draft/multiline
+        batches.
+
+        This errors if experimentalExtensions is disabled or draft/multiline
+        was not negotiated."""
+        assert conf.supybot.protocols.irc.experimentalExtensions()
+        assert 'draft/multiline' in self.state.capabilities_ack
+
+        if not allowedLength: # 0 indicates this.
+            # We're only interested in the overhead outside the payload,
+            # regardless of the entire payload (nick prefix included),
+            # so prefixNick=False
+            allowedLength = 512 - self._replyOverhead(
+                    target, targetNick, prefixNick=False)
+
+        multiline_cap_values = ircutils.parseCapabilityKeyValue(
+            self.state.capabilities_ls['draft/multiline'])
+
+        # All the messages in instant_messages are to be sent
+        # immediately, in multiline batches.
+        max_bytes_per_batch = int(multiline_cap_values['max-bytes'])
+
+        # We have to honor max_bytes_per_batch, but I don't want to
+        # encode messages again here just to have their length, so
+        # let's assume they all have the maximum length.
+        # It's not optimal, but close enough and simplifies the code.
+        messages_per_batch = max_bytes_per_batch // allowedLength
+
+        # "Clients MUST NOT send tags other than draft/multiline-concat and
+        # batch on messages within the batch. In particular, all client-only
+        # tags associated with the message must be sent attached to the initial
+        # BATCH command."
+        # -- <https://ircv3.net/specs/extensions/multiline>
+        # So we copy the tags of the first message, discard the tags of all
+        # other messages, and apply the tags to the opening BATCH
+        server_tags = msgs[0].server_tags
+
+        for batch_msgs in utils.iter.grouper(msgs, messages_per_batch):
+            # TODO: should use sendBatch instead of queueBatch if
+            # sendImmediately is True
+            batch_name = ircutils.makeLabel()
+            batch = []
+            batch.append(ircmsgs.IrcMsg(command='BATCH',
+                args=('+' + batch_name, 'draft/multiline', target),
+                server_tags=server_tags))
+
+            for (i, batch_msg) in enumerate(batch_msgs):
+                if batch_msg is None:
+                    continue  # 'grouper' generates None at the end
+                assert 'batch' not in batch_msg.server_tags
+
+                # Discard the existing tags, and add the batch ones.
+                batch_msg.server_tags = {'batch': batch_name}
+                if concat and i > 0:
+                    # Tell clients not to add a newline after this
+                    batch_msg.server_tags['draft/multiline-concat'] = None
+                batch.append(batch_msg)
+
+            batch.append(ircmsgs.IrcMsg(
+                command='BATCH', args=('-' + batch_name,)))
+
+            self.queueBatch(batch)
 
 SimpleProxy = ReplyIrcProxy # Backwards-compatibility
 
 class NestedCommandsIrcProxy(ReplyIrcProxy):
     "A proxy object to allow proper nesting of commands (even threaded ones)."
-    _mores = ircutils.IrcDict()
     def __init__(self, irc, msg, args, nested=0):
         assert isinstance(args, list), 'Args should be a list, not a string.'
         super(NestedCommandsIrcProxy, self).__init__(irc, msg)
@@ -721,11 +993,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         self.notice = None
         self.private = None
         self.noLengthCheck = None
-        if self.msg.channel:
-            self.prefixNick = conf.get(conf.supybot.reply.withNickPrefix,
-                channel=self.msg.channel, network=self.irc.network)
-        else:
-            self.prefixNick = conf.supybot.reply.withNickPrefix()
+        self.prefixNick = self._defaultPrefixNick(self.msg)
 
     def evalArgs(self, withClass=None):
         while self.counter < len(self.args):
@@ -900,34 +1168,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
     def reply(self, s, noLengthCheck=False, prefixNick=None, action=None,
               private=None, notice=None, to=None, msg=None,
               sendImmediately=False, stripCtcp=True):
-        """
-        Keyword arguments:
-
-        :arg bool noLengthCheck:
-            True if the length shouldn't be checked (used for 'more' handling)
-
-        :arg bool prefixNick:
-            False if the nick shouldn't be prefixed to the reply.
-
-        :arg bool action:
-            True if the reply should be an action.
-
-        :arg bool private:
-            True if the reply should be in private.
-
-        :arg bool notice:
-            True if the reply should be noticed when the bot is configured
-            to do so.
-
-        :arg str to:
-            The nick or channel the reply should go to.
-            Defaults to msg.args[0] (or msg.nick if private)
-
-        :arg bool sendImmediately:
-            True if the reply should use sendMsg() which
-            bypasses conf.supybot.protocols.irc.throttleTime
-            and gets sent before any queued messages
-        """
         # These use and or or based on whether or not they default to True or
         # False.  Those that default to True use and; those that default to
         # False use or.
@@ -980,241 +1220,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             else:
                 self.args[self.counter] = s
             self.evalArgs()
-
-    def _replyOverhead(self, target, targetNick, prefixNick):
-        """Returns the number of bytes added to a PRIVMSG payload, either by
-        Limnoria itself or by the server.
-        Ignores tag bytes, as they are accounted for separatly."""
-        overhead = (
-            len(':')
-            + len(self.irc.prefix.encode())
-            + len(' PRIVMSG ')
-            + len(target.encode())
-            + len(' :')
-            + len('\r\n')
-        )
-        if prefixNick and targetNick is not None:
-            overhead += len(targetNick) + len(': ')
-        return overhead
-
-    def _sendReply(self, s, target, msg, sendImmediately,
-                   noLengthCheck, **kwargs):
-        if sendImmediately:
-            sendMsg = self.irc.sendMsg
-        else:
-            sendMsg = self.irc.queueMsg
-
-        if isinstance(self.irc, self.__class__):
-            s = s[:conf.supybot.reply.maximumLength()]
-            return self.irc.reply(s,
-                                  noLengthCheck=self.noLengthCheck,
-                                  **kwargs)
-        elif noLengthCheck:
-            # noLengthCheck only matters to NestedCommandsIrcProxy, so
-            # it's not used here.  Just in case you were wondering.
-            m = _makeReply(self, msg, s, **kwargs)
-            sendMsg(m)
-            return m
-        else:
-            s = ircutils.safeArgument(s)
-            allowedLength = conf.get(conf.supybot.reply.mores.length,
-                channel=target, network=self.irc.network)
-            if not allowedLength: # 0 indicates this.
-                allowedLength = 512 - self._replyOverhead(
-                        target, msg.nick, prefixNick=kwargs['prefixNick'])
-            maximumMores = conf.get(conf.supybot.reply.mores.maximum,
-                channel=target, network=self.irc.network)
-            maximumLength = allowedLength * maximumMores
-            if len(s) > maximumLength:
-                log.warning('Truncating to %s bytes from %s bytes.',
-                            maximumLength, len(s))
-                s = s[:maximumLength]
-            s_size = len(s.encode()) if minisix.PY3 else len(s)
-            if s_size <= allowedLength or \
-               not conf.get(conf.supybot.reply.mores,
-                    channel=target, network=self.irc.network):
-                # There's no need for action=self.action here because
-                # action implies noLengthCheck, which has already been
-                # handled.  Let's stick an assert in here just in case.
-                assert not kwargs.get('action')
-                m = _makeReply(self, msg, s, **kwargs)
-                sendMsg(m)
-                return m
-            # The '(XX more messages)' may have not the same
-            # length in the current locale
-            allowedLength -= len(_('(XX more messages)')) + 1 # bold
-            chunks = ircutils.wrap(s, allowedLength)
-
-            # Last messages to display at the beginning of the list
-            # (which is used like a stack)
-            chunks.reverse()
-
-            instant = conf.get(conf.supybot.reply.mores.instant,
-                channel=target, network=self.irc.network)
-
-            # Big complex loop ahead, with lots of cases and opportunities for
-            # off-by-one errors. Here is the meaning of each of the variables
-            #
-            # * 'i' is the number of chunks after the current one
-            #
-            # * 'is_first' is True when the message is the very first message
-            #   (so last iteration of the loop)
-            #
-            # * 'is_last' is True when the message is the very last (so first
-            #   iteration of the loop)
-            #
-            # * 'is_instant' is True when the message is in one of the messages
-            #   sent immediately when the command is called, ie. without
-            #   calling @misc more. (when supybot.reply.mores.instant is 1,
-            #   which is the default, this is equivalent to 'is_first')
-            #
-            # * 'is_last_instant' is True when the message is the last of the
-            #   instant message (so the first iteration of the loop with an
-            #   instant message).
-            #
-            # We need all this complexity because pagination is hard, and we
-            # want:
-            #
-            # * the '(XX more messages)' suffix on the last instant message,
-            #   and every other message (mandatory, it's a great feature),
-            #   but not on the other instant messages (mandatory when
-            #   multiline is enabled, but very nice to have in general)
-            # * the nick prefix on the first message and every other message
-            #   that isn't instant (mandatory), but not on the other instant
-            #   messages (also mandatory only when multiline is enabled)
-            msgs = []
-            for (i, chunk) in enumerate(chunks):
-                is_first = i == len(chunks) - 1
-                is_last = i == 0
-                is_instant = len(chunks) - i <= instant
-                is_last_instant = len(chunks) - i == instant
-                if is_last:
-                    # last message, no suffix to add
-                    pass
-                elif is_instant and not is_last_instant:
-                    # one of the first messages, and the next one will
-                    # also be sent immediately, so no suffix
-                    pass
-                else:
-                    if i == 1:
-                        more = _('more message')
-                    else:
-                        more = _('more messages')
-                    n = ircutils.bold('(%i %s)' % (len(msgs), more))
-                    chunk = '%s %s' % (chunk, n)
-
-                if is_instant and not is_first:
-                    d = kwargs.copy()
-                    d['prefixNick'] = False
-                    msgs.append(_makeReply(self, msg, chunk, **d))
-                else:
-                    msgs.append(_makeReply(self, msg, chunk, **kwargs))
-
-            instant_messages = []
-
-            while instant > 0 and msgs:
-                instant -= 1
-                response = msgs.pop()
-                instant_messages.append(response)
-                # XXX We should somehow allow these to be returned, but
-                #     until someone complains, we'll be fine :)  We
-                #     can't return from here, though, for obvious
-                #     reasons.
-                # return m
-
-            if conf.supybot.protocols.irc.experimentalExtensions() \
-                    and 'draft/multiline' in self.state.capabilities_ack \
-                    and len(instant_messages) > 1:
-                # More than one message to send now, and we are allowed to use
-                # multiline batches, so let's do it
-                self.queueMultilineBatches(
-                    instant_messages, target, msg.nick, concat=True,
-                    allowedLength=allowedLength, sendImmediately=sendImmediately)
-            else:
-                for instant_msg in instant_messages:
-                    sendMsg(instant_msg)
-
-            if not msgs:
-                return
-            prefix = msg.prefix
-            to = kwargs['to']
-            if to and ircutils.isNick(to):
-                try:
-                    state = self.getRealIrc().state
-                    prefix = state.nickToHostmask(to)
-                except KeyError:
-                    pass # We'll leave it as it is.
-            mask = prefix.split('!', 1)[1]
-            self._mores[mask] = msgs
-            public = bool(self.msg.channel)
-            private = kwargs['private'] or not public
-            self._mores[msg.nick] = (private, msgs)
-            return response
-
-    def queueMultilineBatches(self, msgs, target, targetNick, concat,
-                              allowedLength=0, sendImmediately=False):
-        """Queues the msgs passed as argument in batches using draft/multiline
-        batches.
-
-        This errors if experimentalExtensions is disabled or draft/multiline
-        was not negotiated."""
-        assert conf.supybot.protocols.irc.experimentalExtensions()
-        assert 'draft/multiline' in self.state.capabilities_ack
-
-        if not allowedLength: # 0 indicates this.
-            # We're only interested in the overhead outside the payload,
-            # regardless of the entire payload (nick prefix included),
-            # so prefixNick=False
-            allowedLength = 512 - self._replyOverhead(
-                    target, targetNick, prefixNick=False)
-
-        multiline_cap_values = ircutils.parseCapabilityKeyValue(
-            self.state.capabilities_ls['draft/multiline'])
-
-        # All the messages in instant_messages are to be sent
-        # immediately, in multiline batches.
-        max_bytes_per_batch = int(multiline_cap_values['max-bytes'])
-
-        # We have to honor max_bytes_per_batch, but I don't want to
-        # encode messages again here just to have their length, so
-        # let's assume they all have the maximum length.
-        # It's not optimal, but close enough and simplifies the code.
-        messages_per_batch = max_bytes_per_batch // allowedLength
-
-        # "Clients MUST NOT send tags other than draft/multiline-concat and
-        # batch on messages within the batch. In particular, all client-only
-        # tags associated with the message must be sent attached to the initial
-        # BATCH command."
-        # -- <https://ircv3.net/specs/extensions/multiline>
-        # So we copy the tags of the first message, discard the tags of all
-        # other messages, and apply the tags to the opening BATCH
-        server_tags = msgs[0].server_tags
-
-        for batch_msgs in utils.iter.grouper(msgs, messages_per_batch):
-            # TODO: should use sendBatch instead of queueBatch if
-            # sendImmediately is True
-            batch_name = ircutils.makeLabel()
-            batch = []
-            batch.append(ircmsgs.IrcMsg(command='BATCH',
-                args=('+' + batch_name, 'draft/multiline', target),
-                server_tags=server_tags))
-
-            for (i, batch_msg) in enumerate(batch_msgs):
-                if batch_msg is None:
-                    continue  # 'grouper' generates None at the end
-                assert 'batch' not in batch_msg.server_tags
-
-                # Discard the existing tags, and add the batch ones.
-                batch_msg.server_tags = {'batch': batch_name}
-                if concat and i > 0:
-                    # Tell clients not to add a newline after this
-                    batch_msg.server_tags['draft/multiline-concat'] = None
-                batch.append(batch_msg)
-
-            batch.append(ircmsgs.IrcMsg(
-                command='BATCH', args=('-' + batch_name,)))
-
-            self.queueBatch(batch)
 
     def noReply(self, msg=None):
         if msg is None:
