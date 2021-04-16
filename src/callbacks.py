@@ -973,7 +973,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 self.args[self.counter] = s
             self.evalArgs()
 
-    def _replyOverhead(self, target, targetNick):
+    def _replyOverhead(self, target, targetNick, prefixNick):
         """Returns the number of bytes added to a PRIVMSG payload, either by
         Limnoria itself or by the server.
         Ignores tag bytes, as they are accounted for separatly."""
@@ -985,7 +985,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             + len(' :')
             + len('\r\n')
         )
-        if self.prefixNick and targetNick is not None:
+        if prefixNick and targetNick is not None:
             overhead += len(targetNick) + len(': ')
         return overhead
 
@@ -1020,7 +1020,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             allowedLength = conf.get(conf.supybot.reply.mores.length,
                 channel=target, network=self.irc.network)
             if not allowedLength: # 0 indicates this.
-                allowedLength = 512 - self._replyOverhead(target, msg.nick)
+                allowedLength = 512 - self._replyOverhead(
+                        target, msg.nick, prefixNick=self.prefixNick)
             maximumMores = conf.get(conf.supybot.reply.mores.maximum,
                 channel=target, network=self.irc.network)
             maximumLength = allowedLength * maximumMores
@@ -1160,7 +1161,11 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         assert 'draft/multiline' in self.state.capabilities_ack
 
         if not allowedLength: # 0 indicates this.
-            allowedLength = 512 - self._replyOverhead(target, targetNick)
+            # We're only interested in the overhead outside the payload,
+            # regardless of the entire payload (nick prefix included),
+            # so prefixNick=False
+            allowedLength = 512 - self._replyOverhead(
+                    target, targetNick, prefixNick=False)
 
         multiline_cap_values = ircutils.parseCapabilityKeyValue(
             self.state.capabilities_ls['draft/multiline'])
