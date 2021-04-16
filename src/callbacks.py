@@ -956,7 +956,15 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             try:
                 self._sendReply(
                     s=s, target=target, msg=msg,
-                    sendImmediately=sendImmediately, stripCtcp=stripCtcp)
+                    to=self.to,
+                    notice=self.notice,
+                    action=self.action,
+                    private=self.private,
+                    prefixNick=self.prefixNick,
+                    stripCtcp=stripCtcp,
+                    noLengthCheck=self.noLengthCheck,
+                    sendImmediately=sendImmediately,
+                )
             except:
                 log.exception('Error while sending reply')
                 raise
@@ -989,30 +997,22 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             overhead += len(targetNick) + len(': ')
         return overhead
 
-    def _sendReply(self, s, target, msg, sendImmediately, stripCtcp):
+    def _sendReply(self, s, target, msg, sendImmediately,
+                   noLengthCheck, **kwargs):
         if sendImmediately:
             sendMsg = self.irc.sendMsg
         else:
             sendMsg = self.irc.queueMsg
 
-        replyArgs = dict(
-            to=self.to,
-            notice=self.notice,
-            action=self.action,
-            private=self.private,
-            prefixNick=self.prefixNick,
-            stripCtcp=stripCtcp
-        )
-
         if isinstance(self.irc, self.__class__):
             s = s[:conf.supybot.reply.maximumLength()]
             return self.irc.reply(s,
                                   noLengthCheck=self.noLengthCheck,
-                                  **replyArgs)
-        elif self.noLengthCheck:
+                                  **kwargs)
+        elif noLengthCheck:
             # noLengthCheck only matters to NestedCommandsIrcProxy, so
             # it's not used here.  Just in case you were wondering.
-            m = _makeReply(self, msg, s, **replyArgs)
+            m = _makeReply(self, msg, s, **kwargs)
             sendMsg(m)
             return m
         else:
@@ -1021,7 +1021,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 channel=target, network=self.irc.network)
             if not allowedLength: # 0 indicates this.
                 allowedLength = 512 - self._replyOverhead(
-                        target, msg.nick, prefixNick=self.prefixNick)
+                        target, msg.nick, prefixNick=kwargs['prefixNick'])
             maximumMores = conf.get(conf.supybot.reply.mores.maximum,
                 channel=target, network=self.irc.network)
             maximumLength = allowedLength * maximumMores
@@ -1036,8 +1036,8 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 # There's no need for action=self.action here because
                 # action implies noLengthCheck, which has already been
                 # handled.  Let's stick an assert in here just in case.
-                assert not self.action
-                m = _makeReply(self, msg, s, **replyArgs)
+                assert not kwargs.get('action')
+                m = _makeReply(self, msg, s, **kwargs)
                 sendMsg(m)
                 return m
             # The '(XX more messages)' may have not the same
@@ -1104,11 +1104,11 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                     chunk = '%s %s' % (chunk, n)
 
                 if is_instant and not is_first:
-                    d = replyArgs.copy()
+                    d = kwargs.copy()
                     d['prefixNick'] = False
                     msgs.append(_makeReply(self, msg, chunk, **d))
                 else:
-                    msgs.append(_makeReply(self, msg, chunk, **replyArgs))
+                    msgs.append(_makeReply(self, msg, chunk, **kwargs))
 
             instant_messages = []
 
@@ -1137,16 +1137,17 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             if not msgs:
                 return
             prefix = msg.prefix
-            if self.to and ircutils.isNick(self.to):
+            to = kwargs['to']
+            if to and ircutils.isNick(to):
                 try:
                     state = self.getRealIrc().state
-                    prefix = state.nickToHostmask(self.to)
+                    prefix = state.nickToHostmask(to)
                 except KeyError:
                     pass # We'll leave it as it is.
             mask = prefix.split('!', 1)[1]
             self._mores[mask] = msgs
             public = bool(self.msg.channel)
-            private = self.private or not public
+            private = kwargs['private'] or not public
             self._mores[msg.nick] = (private, msgs)
             return response
 
