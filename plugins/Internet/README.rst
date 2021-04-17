@@ -17,23 +17,28 @@ and convert IPs to hex.
 
 Commands
 --------
-.. _command-Internet-dns:
+.. _command-internet-dns:
 
 dns <host|ip>
   Returns the ip of <host> or the reverse DNS hostname of <ip>.
 
-.. _command-Internet-hexip:
+.. _command-internet-hexip:
 
 hexip <ip>
   Returns the hexadecimal IP for that IP.
 
-.. _command-Internet-whois:
+.. _command-internet-whois:
 
 whois <domain>
   Returns WHOIS information on the registration of <domain>.
 
+.. _conf-Internet:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.Internet.public:
+
 supybot.plugins.Internet.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

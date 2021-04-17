@@ -19,33 +19,38 @@ command exists in.
 
 Commands
 --------
-.. _command-Plugin-author:
+.. _command-plugin-author:
 
 author <plugin>
   Returns the author of <plugin>. This is the person you should talk to if you have ideas, suggestions, or other comments about a given plugin.
 
-.. _command-Plugin-contributors:
+.. _command-plugin-contributors:
 
 contributors <plugin> [<name>]
   Replies with a list of people who made contributions to a given plugin. If <name> is specified, that person's specific contributions will be listed. You can specify a person's name by their full name or their nick, which is shown inside brackets if available.
 
-.. _command-Plugin-help:
+.. _command-plugin-help:
 
 help <plugin>
   Returns a useful description of how to use <plugin>, if the plugin has one.
 
-.. _command-Plugin-plugin:
+.. _command-plugin-plugin:
 
 plugin <command>
   Returns the name of the plugin that would be used to call <command>. If it is not uniquely determined, returns list of all plugins that contain <command>.
 
-.. _command-Plugin-plugins:
+.. _command-plugin-plugins:
 
 plugins <command>
   Returns the names of all plugins that contain <command>.
 
+.. _conf-Plugin:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.Plugin.public:
+
 supybot.plugins.Plugin.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

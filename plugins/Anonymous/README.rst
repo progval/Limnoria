@@ -48,47 +48,60 @@ This
 
 Commands
 --------
-.. _command-Anonymous-do:
+.. _command-anonymous-do:
 
 do <channel> <action>
   Performs <action> in <channel>.
 
-.. _command-Anonymous-react:
+.. _command-anonymous-react:
 
 react <channel> <reaction> <nick>
   Sends the <reaction> to <nick>'s last message. <reaction> is typically a smiley or an emoji. This may not be supported on the current network, as this command depends on IRCv3 features. This is also not supported if supybot.protocols.irc.experimentalExtensions disabled (don't enable it unless you know what you are doing).
 
-.. _command-Anonymous-say:
+.. _command-anonymous-say:
 
 say <channel> <text>
   Sends <text> to <channel>.
 
-.. _command-Anonymous-tell:
+.. _command-anonymous-tell:
 
 tell <nick> <text>
   Sends <text> to <nick>. Can only be used if supybot.plugins.Anonymous.allowPrivateTarget is True.
 
+.. _conf-Anonymous:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.Anonymous.allowPrivateTarget:
+
 supybot.plugins.Anonymous.allowPrivateTarget
   This config variable defaults to "False", is not network-specific, and is  not channel-specific.
 
   Determines whether the bot will allow the "tell" command to be used. If true, the bot will allow the "tell" command to send private messages to other users.
+
+.. _conf-supybot.plugins.Anonymous.public:
 
 supybot.plugins.Anonymous.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
+.. _conf-supybot.plugins.Anonymous.requireCapability:
+
 supybot.plugins.Anonymous.requireCapability
   This config variable defaults to "", is network-specific, and is  channel-specific.
 
   Determines what capability (if any) the bot should require people trying to use this plugin to have.
 
+.. _conf-supybot.plugins.Anonymous.requirePresenceInChannel:
+
 supybot.plugins.Anonymous.requirePresenceInChannel
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the bot should require people trying to use this plugin to be in the channel they wish to anonymously send to.
+
+.. _conf-supybot.plugins.Anonymous.requireRegistration:
 
 supybot.plugins.Anonymous.requireRegistration
   This config variable defaults to "True", is network-specific, and is  channel-specific.

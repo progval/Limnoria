@@ -53,23 +53,28 @@ Examples
 
 Commands
 --------
-.. _command-PluginDownloader-info:
+.. _command-plugindownloader-info:
 
 info <repository> <plugin>
   Displays informations on the <plugin> in the <repository>.
 
-.. _command-PluginDownloader-install:
+.. _command-plugindownloader-install:
 
 install <repository> <plugin>
   Downloads and installs the <plugin> from the <repository>.
 
-.. _command-PluginDownloader-repolist:
+.. _command-plugindownloader-repolist:
 
 repolist [<repository>]
   Displays the list of plugins in the <repository>. If <repository> is not given, returns a list of available repositories.
 
+.. _conf-PluginDownloader:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.PluginDownloader.public:
+
 supybot.plugins.PluginDownloader.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

@@ -26,148 +26,153 @@ Not very useful, but definitely quite fun :)
 
 Commands
 --------
-.. _command-Filter-aol:
+.. _command-filter-aol:
 
 aol <text>
   Returns <text> as if an AOL user had said it.
 
-.. _command-Filter-binary:
+.. _command-filter-binary:
 
 binary <text>
   Returns the binary representation of <text>.
 
-.. _command-Filter-caps:
+.. _command-filter-caps:
 
 caps <text>
   EVERYONE LOVES CAPS LOCK.
 
-.. _command-Filter-capwords:
+.. _command-filter-capwords:
 
 capwords <text>
   Capitalises the first letter of each word.
 
-.. _command-Filter-colorize:
+.. _command-filter-colorize:
 
 colorize <text>
   Returns <text> with each character randomly colorized.
 
-.. _command-Filter-gnu:
+.. _command-filter-gnu:
 
 gnu <text>
   Returns <text> as GNU/RMS would say it.
 
-.. _command-Filter-hebrew:
+.. _command-filter-hebrew:
 
 hebrew <text>
   Removes all the vowels from <text>. (If you're curious why this is named 'hebrew' it's because I (jemfinch) thought of it in Hebrew class, and printed Hebrew often elides the vowels.)
 
-.. _command-Filter-hexlify:
+.. _command-filter-hexlify:
 
 hexlify <text>
   Returns a hexstring from the given string; a hexstring is a string composed of the hexadecimal value of each character in the string
 
-.. _command-Filter-jeffk:
+.. _command-filter-jeffk:
 
 jeffk <text>
   Returns <text> as if JeffK had said it himself.
 
-.. _command-Filter-leet:
+.. _command-filter-leet:
 
 leet <text>
   Returns the l33tspeak version of <text>
 
-.. _command-Filter-morse:
+.. _command-filter-morse:
 
 morse <text>
   Gives the Morse code equivalent of a given string.
 
-.. _command-Filter-outfilter:
+.. _command-filter-outfilter:
 
 outfilter [<channel>] [<command>]
   Sets the outFilter of this plugin to be <command>. If no command is given, unsets the outFilter. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-Filter-rainbow:
+.. _command-filter-rainbow:
 
 rainbow <text>
   Returns <text> colorized like a rainbow.
 
-.. _command-Filter-reverse:
+.. _command-filter-reverse:
 
 reverse <text>
   Reverses <text>.
 
-.. _command-Filter-rot13:
+.. _command-filter-rot13:
 
 rot13 <text>
   Rotates <text> 13 characters to the right in the alphabet. Rot13 is commonly used for text that simply needs to be hidden from inadvertent reading by roaming eyes, since it's easily reversible.
 
-.. _command-Filter-scramble:
+.. _command-filter-scramble:
 
 scramble <text>
   Replies with a string where each word is scrambled; i.e., each internal letter (that is, all letters but the first and last) are shuffled.
 
-.. _command-Filter-shrink:
+.. _command-filter-shrink:
 
 shrink <text>
   Returns <text> with each word longer than supybot.plugins.Filter.shrink.minimum being shrunken (i.e., like "internationalization" becomes "i18n").
 
-.. _command-Filter-spellit:
+.. _command-filter-spellit:
 
 spellit <text>
   Returns <text>, phonetically spelled out.
 
-.. _command-Filter-squish:
+.. _command-filter-squish:
 
 squish <text>
   Removes all the spaces from <text>.
 
-.. _command-Filter-stripcolor:
+.. _command-filter-stripcolor:
 
 stripcolor <text>
   Returns <text> stripped of all color codes.
 
-.. _command-Filter-supa1337:
+.. _command-filter-supa1337:
 
 supa1337 <text>
   Replies with an especially k-rad translation of <text>.
 
-.. _command-Filter-unbinary:
+.. _command-filter-unbinary:
 
 unbinary <text>
   Returns the character representation of binary <text>. Assumes ASCII, 8 digits per character.
 
-.. _command-Filter-undup:
+.. _command-filter-undup:
 
 undup <text>
   Returns <text>, with all consecutive duplicated letters removed.
 
-.. _command-Filter-unhexlify:
+.. _command-filter-unhexlify:
 
 unhexlify <hexstring>
   Returns the string corresponding to <hexstring>. Obviously, <hexstring> must be a string of hexadecimal digits.
 
-.. _command-Filter-uniud:
+.. _command-filter-uniud:
 
 uniud <text>
   Returns <text> rotated 180 degrees. Only really works for ASCII printable characters.
 
-.. _command-Filter-unmorse:
+.. _command-filter-unmorse:
 
 unmorse <Morse code text>
   Does the reverse of the morse command.
 
-.. _command-Filter-uwu:
+.. _command-filter-uwu:
 
 uwu <text>
   Returns <text> in uwu-speak.
 
-.. _command-Filter-vowelrot:
+.. _command-filter-vowelrot:
 
 vowelrot <text>
   Returns <text> with vowels rotated
 
+.. _conf-Filter:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.Filter.public:
+
 supybot.plugins.Filter.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

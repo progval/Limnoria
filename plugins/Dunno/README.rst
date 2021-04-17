@@ -22,42 +22,49 @@ responses.
 
 Commands
 --------
-.. _command-Dunno-add:
+.. _command-dunno-add:
 
 add [<channel>] <text>
   Adds <text> to the dunno database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-Dunno-change:
+.. _command-dunno-change:
 
 change [<channel>] <id> <regexp>
   Changes the dunno with id <id> according to the regular expression <regexp>. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-Dunno-get:
+.. _command-dunno-get:
 
 get [<channel>] <id>
   Gets the dunno with id <id> from the dunno database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-Dunno-remove:
+.. _command-dunno-remove:
 
 remove [<channel>] <id>
   Removes the dunno with id <id> from the dunno database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-Dunno-search:
+.. _command-dunno-search:
 
 search [<channel>] [--{regexp,by} <value>] [<glob>]
   Searches for dunnos matching the criteria given.
 
-.. _command-Dunno-stats:
+.. _command-dunno-stats:
 
 stats [<channel>]
   Returns the number of dunnos in the database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _conf-Dunno:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.Dunno.prefixNick:
+
 supybot.plugins.Dunno.prefixNick
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the bot will prefix the nick of the user giving an invalid command to the "dunno" response.
+
+.. _conf-supybot.plugins.Dunno.public:
 
 supybot.plugins.Dunno.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

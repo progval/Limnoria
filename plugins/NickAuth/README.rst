@@ -20,28 +20,33 @@ identify to the bot.
 
 Commands
 --------
-.. _command-NickAuth-auth:
+.. _command-nickauth-auth:
 
 auth takes no argument
   Tries to authenticate you using network services. If you get no reply, it means you are not authenticated to the network services.
 
-.. _command-NickAuth-nick.add:
+.. _command-nickauth-nick.add:
 
 nick add [<network>] <user> <nick>
   Add <nick> to the list of nicks owned by the <user> on the <network>. You have to register this nick to the network services to be authenticated. <network> defaults to the current network.
 
-.. _command-NickAuth-nick.list:
+.. _command-nickauth-nick.list:
 
 nick list [<network>] [<user>]
   Lists nicks of the <user> on the network. <network> defaults to the current network.
 
-.. _command-NickAuth-nick.remove:
+.. _command-nickauth-nick.remove:
 
 nick remove [<network>] <user> <nick>
   Remove <nick> from the list of nicks owned by the <user> on the <network>. <network> defaults to the current network.
 
+.. _conf-NickAuth:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.NickAuth.public:
+
 supybot.plugins.NickAuth.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

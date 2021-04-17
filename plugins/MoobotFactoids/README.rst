@@ -29,67 +29,76 @@ If you want the bot to use /mes with Factoids, that is possible too.
 
 Commands
 --------
-.. _command-MoobotFactoids-factinfo:
+.. _command-moobotfactoids-factinfo:
 
 factinfo [<channel>] <factoid key>
   Returns the various bits of info on the factoid for the given key. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-MoobotFactoids-listauth:
+.. _command-moobotfactoids-listauth:
 
 listauth [<channel>] <author name>
   Lists the keys of the factoids with the given author. Note that if an author has an integer name, you'll have to use that author's id to use this function (so don't use integer usernames!). <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-MoobotFactoids-listkeys:
+.. _command-moobotfactoids-listkeys:
 
 listkeys [<channel>] <text>
   Lists the keys of the factoids whose key contains the provided text. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-MoobotFactoids-listvalues:
+.. _command-moobotfactoids-listvalues:
 
 listvalues [<channel>] <text>
   Lists the keys of the factoids whose value contains the provided text. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-MoobotFactoids-literal:
+.. _command-moobotfactoids-literal:
 
 literal [<channel>] <factoid key>
   Returns the literal factoid for the given factoid key. No parsing of the factoid value is done as it is with normal retrieval. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-MoobotFactoids-lock:
+.. _command-moobotfactoids-lock:
 
 lock [<channel>] <factoid key>
   Locks the factoid with the given factoid key. Requires that the user be registered and have created the factoid originally. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-MoobotFactoids-most:
+.. _command-moobotfactoids-most:
 
 most [<channel>] {popular|authored|recent}
   Lists the most {popular|authored|recent} factoids. "popular" lists the most frequently requested factoids. "authored" lists the author with the most factoids. "recent" lists the most recently created factoids. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-MoobotFactoids-random:
+.. _command-moobotfactoids-random:
 
 random [<channel>]
   Displays a random factoid (along with its key) from the database. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-MoobotFactoids-remove:
+.. _command-moobotfactoids-remove:
 
 remove [<channel>] <factoid key>
   Deletes the factoid with the given key. <channel> is only necessary if the message isn't sent in the channel itself.
 
-.. _command-MoobotFactoids-unlock:
+.. _command-moobotfactoids-unlock:
 
 unlock [<channel>] <factoid key>
   Unlocks the factoid with the given factoid key. Requires that the user be registered and have locked the factoid. <channel> is only necessary if the message isn't sent in the channel itself.
 
+.. _conf-MoobotFactoids:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.MoobotFactoids.mostCount:
+
 supybot.plugins.MoobotFactoids.mostCount
   This config variable defaults to "10", is network-specific, and is  channel-specific.
 
   Determines how many items are shown when the 'most' command is called.
 
+.. _conf-supybot.plugins.MoobotFactoids.public:
+
 supybot.plugins.MoobotFactoids.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
+
+.. _conf-supybot.plugins.MoobotFactoids.showFactoidIfOnlyOneMatch:
 
 supybot.plugins.MoobotFactoids.showFactoidIfOnlyOneMatch
   This config variable defaults to "True", is network-specific, and is  channel-specific.

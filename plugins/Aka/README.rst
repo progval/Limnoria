@@ -76,57 +76,64 @@ reply with the same information, the result of those commands.
 
 Commands
 --------
-.. _command-Aka-add:
+.. _command-aka-add:
 
 add [--channel <#channel>] <name> <command>
   Defines an alias <name> that executes <command>. The <command> should be in the standard "command argument [nestedcommand argument]" arguments to the alias; they'll be filled with the first, second, etc. arguments. $1, $2, etc. can be used for required arguments. @1, @2, etc. can be used for optional arguments. $* simply means "all arguments that have not replaced $1, $2, etc.", ie. it will also include optional arguments.
 
-.. _command-Aka-remove:
+.. _command-aka-remove:
 
 remove [--channel <#channel>] <name>
   Removes the given alias, if unlocked.
 
-.. _command-Aka-lock:
+.. _command-aka-lock:
 
 lock [--channel <#channel>] <alias>
   Locks an alias so that no one else can change it.
 
-.. _command-Aka-unlock:
+.. _command-aka-unlock:
 
 unlock [--channel <#channel>] <alias>
   Unlocks an alias so that people can define new aliases over it.
 
-.. _command-Aka-importaliasdatabase:
+.. _command-aka-importaliasdatabase:
 
 importaliasdatabase takes no arguments
   Imports the Alias database into Aka's, and clean the former.
 
-.. _command-Aka-show:
+.. _command-aka-show:
 
 show [--channel <#channel>] <alias>
   This command shows the content of an Aka.
 
-.. _command-Aka-list:
+.. _command-aka-list:
 
 list [--channel <#channel>] [--keys] [--unlocked|--locked]
   Lists all Akas defined for <channel>. If <channel> is not specified, lists all global Akas. If --keys is given, lists only the Aka names and not their commands.
 
-.. _command-Aka-set:
+.. _command-aka-set:
 
 set [--channel <#channel>] <name> <command>
   Overwrites an existing alias <name> to execute <command> instead. The <command> should be in the standard "command argument [nestedcommand argument]" arguments to the alias; they'll be filled with the first, second, etc. arguments. $1, $2, etc. can be used for required arguments. @1, @2, etc. can be used for optional arguments. $* simply means "all arguments that have not replaced $1, $2, etc.", ie. it will also include optional arguments.
 
-.. _command-Aka-search:
+.. _command-aka-search:
 
 search [--channel <#channel>] <query>
   Searches Akas defined for <channel>. If <channel> is not specified, searches all global Akas.
 
+.. _conf-Aka:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.Aka.maximumWordsInName:
+
 supybot.plugins.Aka.maximumWordsInName
   This config variable defaults to "5", is not network-specific, and is  not channel-specific.
 
   The maximum number of words allowed in a command name. Setting this to an high value may slow down your bot on long commands.
+
+.. _conf-supybot.plugins.Aka.public:
 
 supybot.plugins.Aka.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

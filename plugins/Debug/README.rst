@@ -18,58 +18,63 @@ should not be loaded with a default installation.
 
 Commands
 --------
-.. _command-Debug-channeldb:
+.. _command-debug-channeldb:
 
 channeldb [<channel>]
   Returns the result of the channeldb converter.
 
-.. _command-Debug-collect:
+.. _command-debug-collect:
 
 collect [<times>]
   Does <times> gc collections, returning the number of objects collected each time. <times> defaults to 1.
 
-.. _command-Debug-environ:
+.. _command-debug-environ:
 
 environ takes no arguments
   Returns the environment of the supybot process.
 
-.. _command-Debug-eval:
+.. _command-debug-eval:
 
 eval <expression>
   Evaluates <expression> (which should be a Python expression) and returns its value. If an exception is raised, reports the exception (and logs the traceback to the bot's logfile).
 
-.. _command-Debug-exec:
+.. _command-debug-exec:
 
 exec <statement>
   Execs <code>. Returns success if it didn't raise any exceptions.
 
-.. _command-Debug-exn:
+.. _command-debug-exn:
 
 exn <exception name>
   Raises the exception matching <exception name>.
 
-.. _command-Debug-sendquote:
+.. _command-debug-sendquote:
 
 sendquote <raw IRC message>
   Sends (not queues) the raw IRC message given.
 
-.. _command-Debug-settrace:
+.. _command-debug-settrace:
 
 settrace [<filename>]
   Starts tracing function calls to <filename>. If <filename> is not given, sys.stdout is used. This causes much output.
 
-.. _command-Debug-simpleeval:
+.. _command-debug-simpleeval:
 
 simpleeval <expression>
   Evaluates the given expression.
 
-.. _command-Debug-unsettrace:
+.. _command-debug-unsettrace:
 
 unsettrace takes no arguments
   Stops tracing function calls on stdout.
 
+.. _conf-Debug:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.Debug.public:
+
 supybot.plugins.Debug.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

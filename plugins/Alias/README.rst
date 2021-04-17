@@ -36,37 +36,44 @@ reply with the same information, the result of those commands.
 
 Commands
 --------
-.. _command-Alias-add:
+.. _command-alias-add:
 
 add <name> <command>
   Defines an alias <name> that executes <command>. The <command> should be in the standard "command argument [nestedcommand argument]" arguments to the alias; they'll be filled with the first, second, etc. arguments. $1, $2, etc. can be used for required arguments. @1, @2, etc. can be used for optional arguments. $* simply means "all remaining arguments," and cannot be combined with optional arguments.
 
-.. _command-Alias-list:
+.. _command-alias-list:
 
 list [--locked|--unlocked]
   Lists alias names of a particular type, defaults to all aliases if no --locked or --unlocked option is given.
 
-.. _command-Alias-lock:
+.. _command-alias-lock:
 
 lock <alias>
   Locks an alias so that no one else can change it.
 
-.. _command-Alias-remove:
+.. _command-alias-remove:
 
 remove <name>
   Removes the given alias, if unlocked.
 
-.. _command-Alias-unlock:
+.. _command-alias-unlock:
 
 unlock <alias>
   Unlocks an alias so that people can define new aliases over it.
 
+.. _conf-Alias:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.Alias.public:
+
 supybot.plugins.Alias.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
+
+.. _conf-supybot.plugins.Alias.validName:
 
 supybot.plugins.Alias.validName
   This config variable defaults to "^[^\\x00-\\x20]+$", is not network-specific, and is  not channel-specific.

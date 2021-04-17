@@ -17,13 +17,18 @@ Will tell you how lame a nick is by the command 'nickometer [nick]'.
 
 Commands
 --------
-.. _command-Nickometer-nickometer:
+.. _command-nickometer-nickometer:
 
 nickometer [<nick>]
   Tells you how lame said nick is. If <nick> is not given, uses the nick of the person giving the command.
 
+.. _conf-Nickometer:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.Nickometer.public:
+
 supybot.plugins.Nickometer.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

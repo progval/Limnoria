@@ -18,33 +18,38 @@ can be easily abused.
 
 Commands
 --------
-.. _command-Reply-action:
+.. _command-reply-action:
 
 action <text>
   Replies with <text> as an action. Use nested commands to your benefit here.
 
-.. _command-Reply-notice:
+.. _command-reply-notice:
 
 notice <text>
   Replies with <text> in a notice. Use nested commands to your benefit here. If you want a private notice, nest the private command.
 
-.. _command-Reply-private:
+.. _command-reply-private:
 
 private <text>
   Replies with <text> in private. Use nested commands to your benefit here.
 
-.. _command-Reply-replies:
+.. _command-reply-replies:
 
 replies <str> [<str> ...]
   Replies with each of its arguments <str> in separate replies, depending the configuration of supybot.reply.oneToOne.
 
-.. _command-Reply-reply:
+.. _command-reply-reply:
 
 reply <text>
   Replies with <text>. Equivalent to the alias, 'echo $nick: $1'.
 
+.. _conf-Reply:
+
 Configuration
 -------------
+
+.. _conf-supybot.plugins.Reply.public:
+
 supybot.plugins.Reply.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
