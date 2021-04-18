@@ -61,7 +61,9 @@ class FediverseHttp(httpserver.SupyHTTPServerCallback):
         if path == "/instance_actor":
             self.instance_actor(write_content)
         else:
-            assert False, repr(path)
+            self.send_response(404)
+            self.end_headers()
+            self.wfile.write(b"Error 404. There is nothing to see here.")
 
     def doWellKnown(self, handler, path):
         actor_url = ap.get_instance_actor_url()

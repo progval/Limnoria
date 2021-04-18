@@ -399,6 +399,7 @@ class SupyWellKnown(SupyHTTPServerCallback):
 
         handler.send_response(404)
         self.end_headers()
+        self.wfile.write(b"Error 404. There is nothing to see here.")
 
 
 DEFAULT_CALLBACKS = {'.well-known': SupyWellKnown()}
