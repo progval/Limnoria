@@ -159,15 +159,19 @@ class PluginDoc(object):
             self.appendLine('No configuration for this plugin')
         else:
             for confValues in self.genConfig(confs, 0):
-                (name, isChan, isNet, help, default, indent) = confValues
-                self.lines.append('.. _conf-%s:\n' % name)
+                (name, kind, help, default, indent) = confValues
+                self.appendLine('.. _conf-%s:' % name, indent - 1)
+                self.lines.append('\n')
                 self.appendLine('%s' % name, indent - 1)
-                self.appendLine(
-                    ('This config variable defaults to %s, '
-                     'is%s network-specific, and is %s channel-specific.')
-                    % (default, isNet, isChan), indent)
-                self.lines.append('')
-                self.appendLine(help, indent)
+                if default:
+                    self.appendLine(
+                        ('This config variable defaults to %s, %s')
+                        % (default, kind), indent)
+                else:
+                    self.appendLine('This %s' % kind, indent)
+                if help:
+                    self.lines.append('')
+                    self.appendLine(help, indent)
                 self.lines.append('')
         return '\n'.join(self.lines) + '\n'
 
@@ -209,12 +213,14 @@ class PluginDoc(object):
             self.appendLine('No configuration for this plugin', 2)
         else:
             for confValues in self.genConfig(confs, 2):
-                (name, isChan, isNet, help, default, indent) = confValues
+                (name, kind, help, default, indent) = confValues
                 self.appendLine('* %s' % name, indent - 1)
-                self.appendLine(
-                    ('This config variable defaults to %s, '
-                     'is%s network-specific, and is %s channel-specific.')
-                    % (default, isNet, isChan), indent)
+                if default:
+                    self.appendLine(
+                        ('This config variable defaults to %s, %s')
+                        % (default, kind), indent)
+                else:
+                    self.appendLine('This %s' % kind, indent)
                 self.appendLine(help, indent)
         return '\n'.join(self.lines) + '\n'
 
@@ -223,20 +229,26 @@ class PluginDoc(object):
         if not confVars:
             return
         for (c, v) in confVars:
-            if not isinstance(v, registry.Value):
-                # Don't log groups
-                continue
             name = v._name
             indent = origindent + 1
-            try:
-                default = utils.str.dqrepr(str(v))
-                help = v.help()
-            except registry.NonExistentRegistryEntry:
-                pass
+            if isinstance(v, registry.Value):
+                try:
+                    default = utils.str.dqrepr(str(v))
+                    help = v.help()
+                except registry.NonExistentRegistryEntry:
+                    pass
+                else:
+                    cv = '' if v._channelValue else ' not'
+                    nv = '' if v._networkValue else ' not'
+                    kind = (
+                        'is%s network-specific, and is %s channel-specific.'
+                        % (nv, cv)
+                    )
             else:
-                cv = '' if v._channelValue else ' not'
-                nv = '' if v._networkValue else ' not'
-                yield (name, cv, nv, help, default, indent)
+                help = ''
+                default = ''
+                kind = 'is a group of:'
+            yield (name, kind, help, default, indent)
             for confValues in self.genConfig(v, indent):
                 yield confValues
 
