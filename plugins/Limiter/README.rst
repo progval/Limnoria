@@ -25,12 +25,14 @@ Configuration
 
 .. _conf-supybot.plugins.Limiter.enable:
 
+
 supybot.plugins.Limiter.enable
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Determines whether the bot will maintain the channel limit to be slightly above the current number of people in the channel, in order to make clone/drone attacks harder.
 
 .. _conf-supybot.plugins.Limiter.maximumExcess:
+
 
 supybot.plugins.Limiter.maximumExcess
   This config variable defaults to "10", is network-specific, and is  channel-specific.
@@ -39,12 +41,14 @@ supybot.plugins.Limiter.maximumExcess
 
 .. _conf-supybot.plugins.Limiter.minimumExcess:
 
+
 supybot.plugins.Limiter.minimumExcess
   This config variable defaults to "5", is network-specific, and is  channel-specific.
 
   Determines the minimum number of free spots that will be saved when limits are being enforced. This should always be smaller than supybot.plugins.Limiter.limit.maximumExcess.
 
 .. _conf-supybot.plugins.Limiter.public:
+
 
 supybot.plugins.Limiter.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

@@ -75,6 +75,7 @@ Configuration
 
 .. _conf-supybot.plugins.Admin.public:
 
+
 supybot.plugins.Admin.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

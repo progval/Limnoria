@@ -56,7 +56,38 @@ unsend <id>
 Configuration
 -------------
 
+.. _conf-supybot.plugins.Note.notify:
+
+
+supybot.plugins.Note.notify
+  This is a group of:
+
+  .. _conf-supybot.plugins.Note.notify.autoSend:
+
+
+  supybot.plugins.Note.notify.autoSend
+    This config variable defaults to "0", is not network-specific, and is  not channel-specific.
+
+    Determines the upper limit for automatically sending messages instead of notifications. I.e., if this value is 2 and there are 2 new messages to notify a user about, instead of sending a notification message, the bot will simply send those new messages. If there are 3 new messages, however, the bot will send a notification message.
+
+  .. _conf-supybot.plugins.Note.notify.onJoin:
+
+
+  supybot.plugins.Note.notify.onJoin
+    This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+
+    Determines whether the bot will notify people of their new messages when they join the channel. Normally it will notify them when they send a message to the channel, since oftentimes joins are the result of netsplits and not the actual presence of the user.
+
+    .. _conf-supybot.plugins.Note.notify.onJoin.repeatedly:
+
+
+    supybot.plugins.Note.notify.onJoin.repeatedly
+      This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+
+      Determines whether the bot will repeatedly notify people of their new messages when they join the channel. That means when they join the channel, the bot will tell them they have unread messages, even if it's told them before.
+
 .. _conf-supybot.plugins.Note.public:
+
 
 supybot.plugins.Note.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

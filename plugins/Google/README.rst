@@ -82,12 +82,14 @@ Configuration
 
 .. _conf-supybot.plugins.Google.baseUrl:
 
+
 supybot.plugins.Google.baseUrl
   This config variable defaults to "google.com", is network-specific, and is  channel-specific.
 
   Determines the base URL used for requests.
 
 .. _conf-supybot.plugins.Google.bold:
+
 
 supybot.plugins.Google.bold
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -96,12 +98,14 @@ supybot.plugins.Google.bold
 
 .. _conf-supybot.plugins.Google.colorfulFilter:
 
+
 supybot.plugins.Google.colorfulFilter
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Determines whether the word 'google' in the bot's output will be made colorful (like Google's logo).
 
 .. _conf-supybot.plugins.Google.defaultLanguage:
+
 
 supybot.plugins.Google.defaultLanguage
   This config variable defaults to "lang_en", is network-specific, and is  channel-specific.
@@ -110,12 +114,14 @@ supybot.plugins.Google.defaultLanguage
 
 .. _conf-supybot.plugins.Google.maximumResults:
 
+
 supybot.plugins.Google.maximumResults
   This config variable defaults to "3", is network-specific, and is  channel-specific.
 
   Determines the maximum number of results returned from the google command.
 
 .. _conf-supybot.plugins.Google.oneToOne:
+
 
 supybot.plugins.Google.oneToOne
   This config variable defaults to "False", is network-specific, and is  channel-specific.
@@ -124,12 +130,14 @@ supybot.plugins.Google.oneToOne
 
 .. _conf-supybot.plugins.Google.public:
 
+
 supybot.plugins.Google.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.Google.referer:
+
 
 supybot.plugins.Google.referer
   This config variable defaults to "", is not network-specific, and is  not channel-specific.
@@ -138,12 +146,14 @@ supybot.plugins.Google.referer
 
 .. _conf-supybot.plugins.Google.searchFilter:
 
+
 supybot.plugins.Google.searchFilter
   This config variable defaults to "moderate", is network-specific, and is  channel-specific.
 
   Determines what level of search filtering to use by default. 'active' - most filtering, 'moderate' - default filtering, 'off' - no filtering  Valid strings: active, moderate, and off.
 
 .. _conf-supybot.plugins.Google.searchSnarfer:
+
 
 supybot.plugins.Google.searchSnarfer
   This config variable defaults to "False", is network-specific, and is  channel-specific.

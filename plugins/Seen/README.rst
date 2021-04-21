@@ -50,6 +50,7 @@ Configuration
 
 .. _conf-supybot.plugins.Seen.minimumNonWildcard:
 
+
 supybot.plugins.Seen.minimumNonWildcard
   This config variable defaults to "2", is network-specific, and is  channel-specific.
 
@@ -57,12 +58,14 @@ supybot.plugins.Seen.minimumNonWildcard
 
 .. _conf-supybot.plugins.Seen.public:
 
+
 supybot.plugins.Seen.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.Seen.showLastMessage:
+
 
 supybot.plugins.Seen.showLastMessage
   This config variable defaults to "True", is network-specific, and is  channel-specific.

@@ -85,10 +85,39 @@ xor <password> <text>
 Configuration
 -------------
 
+.. _conf-supybot.plugins.String.levenshtein:
+
+
+supybot.plugins.String.levenshtein
+  This is a group of:
+
+  .. _conf-supybot.plugins.String.levenshtein.max:
+
+
+  supybot.plugins.String.levenshtein.max
+    This config variable defaults to "256", is not network-specific, and is  not channel-specific.
+
+    Determines the maximum size of a string given to the levenshtein command. The levenshtein command uses an O(m*n) algorithm, which means that with strings of length 256, it can take 1.5 seconds to finish; with strings of length 384, though, it can take 4 seconds to finish, and with strings of much larger lengths, it takes more and more time. Using nested commands, strings can get quite large, hence this variable, to limit the size of arguments passed to the levenshtein command.
+
 .. _conf-supybot.plugins.String.public:
+
 
 supybot.plugins.String.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
+
+.. _conf-supybot.plugins.String.re:
+
+
+supybot.plugins.String.re
+  This is a group of:
+
+  .. _conf-supybot.plugins.String.re.timeout:
+
+
+  supybot.plugins.String.re.timeout
+    This config variable defaults to "0.1", is not network-specific, and is  not channel-specific.
+
+    Determines the maximum time, in seconds, that a regular expression is given to execute before being terminated. Since there is a possibility that user input for the re command can cause it to eat up large amounts of ram or cpu time, it's a good idea to keep this low. Most normal regexps should not take very long at all.
 

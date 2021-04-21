@@ -58,12 +58,14 @@ Configuration
 
 .. _conf-supybot.plugins.Success.prefixNick:
 
+
 supybot.plugins.Success.prefixNick
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the bot will prefix the nick of the user giving an invalid command to the success response.
 
 .. _conf-supybot.plugins.Success.public:
+
 
 supybot.plugins.Success.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

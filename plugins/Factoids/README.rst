@@ -78,12 +78,14 @@ Configuration
 
 .. _conf-supybot.plugins.Factoids.format:
 
+
 supybot.plugins.Factoids.format
   This config variable defaults to "$value", is network-specific, and is  channel-specific.
 
   Determines the format of the response given when a factoid's value is requested. All the standard substitutes apply, in addition to "$key" for the factoid's key and "$value" for the factoid's value.
 
 .. _conf-supybot.plugins.Factoids.keepRankInfo:
+
 
 supybot.plugins.Factoids.keepRankInfo
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -92,12 +94,14 @@ supybot.plugins.Factoids.keepRankInfo
 
 .. _conf-supybot.plugins.Factoids.learnSeparator:
 
+
 supybot.plugins.Factoids.learnSeparator
   This config variable defaults to "is", is network-specific, and is  channel-specific.
 
   Determines what separator must be used in the learn command. Defaults to 'is' -- learn <key> is <value>. Users might want to change this to something else, so it's configurable.
 
 .. _conf-supybot.plugins.Factoids.public:
+
 
 supybot.plugins.Factoids.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
@@ -106,12 +110,14 @@ supybot.plugins.Factoids.public
 
 .. _conf-supybot.plugins.Factoids.rankListLength:
 
+
 supybot.plugins.Factoids.rankListLength
   This config variable defaults to "20", is network-specific, and is  channel-specific.
 
   Determines the number of factoid keys returned by the factrank command.
 
 .. _conf-supybot.plugins.Factoids.replyApproximateSearchKeys:
+
 
 supybot.plugins.Factoids.replyApproximateSearchKeys
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -120,12 +126,14 @@ supybot.plugins.Factoids.replyApproximateSearchKeys
 
 .. _conf-supybot.plugins.Factoids.replyWhenInvalidCommand:
 
+
 supybot.plugins.Factoids.replyWhenInvalidCommand
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the bot will reply to invalid commands by searching for a factoid; basically making the whatis unnecessary when you want all factoids for a given key.
 
 .. _conf-supybot.plugins.Factoids.requireVoice:
+
 
 supybot.plugins.Factoids.requireVoice
   This config variable defaults to "False", is network-specific, and is  channel-specific.
@@ -134,8 +142,31 @@ supybot.plugins.Factoids.requireVoice
 
 .. _conf-supybot.plugins.Factoids.showFactoidIfOnlyOneMatch:
 
+
 supybot.plugins.Factoids.showFactoidIfOnlyOneMatch
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the bot will reply with the single matching factoid if only one factoid matches when using the search command.
+
+.. _conf-supybot.plugins.Factoids.web:
+
+
+supybot.plugins.Factoids.web
+  This is a group of:
+
+  .. _conf-supybot.plugins.Factoids.web.channel:
+
+
+  supybot.plugins.Factoids.web.channel
+    This config variable defaults to "False", is network-specific, and is  channel-specific.
+
+    Determines whether factoids can be displayed via the web server.
+
+  .. _conf-supybot.plugins.Factoids.web.enable:
+
+
+  supybot.plugins.Factoids.web.enable
+    This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+
+    Determines whether the Factoids plugins will be browsable on the HTTP server.
 

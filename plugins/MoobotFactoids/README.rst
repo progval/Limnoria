@@ -86,6 +86,7 @@ Configuration
 
 .. _conf-supybot.plugins.MoobotFactoids.mostCount:
 
+
 supybot.plugins.MoobotFactoids.mostCount
   This config variable defaults to "10", is network-specific, and is  channel-specific.
 
@@ -93,12 +94,14 @@ supybot.plugins.MoobotFactoids.mostCount
 
 .. _conf-supybot.plugins.MoobotFactoids.public:
 
+
 supybot.plugins.MoobotFactoids.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.MoobotFactoids.showFactoidIfOnlyOneMatch:
+
 
 supybot.plugins.MoobotFactoids.showFactoidIfOnlyOneMatch
   This config variable defaults to "True", is network-specific, and is  channel-specific.

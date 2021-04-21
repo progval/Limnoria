@@ -47,6 +47,7 @@ Configuration
 
 .. _conf-supybot.plugins.NickAuth.public:
 
+
 supybot.plugins.NickAuth.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

@@ -49,6 +49,7 @@ Configuration
 
 .. _conf-supybot.plugins.News.public:
 
+
 supybot.plugins.News.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

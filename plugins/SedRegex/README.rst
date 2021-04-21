@@ -43,12 +43,14 @@ Configuration
 
 .. _conf-supybot.plugins.SedRegex.boldReplacementText:
 
+
 supybot.plugins.SedRegex.boldReplacementText
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Should the replacement text be bolded?
 
 .. _conf-supybot.plugins.SedRegex.displayErrors:
+
 
 supybot.plugins.SedRegex.displayErrors
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -57,12 +59,14 @@ supybot.plugins.SedRegex.displayErrors
 
 .. _conf-supybot.plugins.SedRegex.enable:
 
+
 supybot.plugins.SedRegex.enable
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Should Perl/sed-style regex replacing work in this channel?
 
 .. _conf-supybot.plugins.SedRegex.ignoreRegex:
+
 
 supybot.plugins.SedRegex.ignoreRegex
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -71,12 +75,14 @@ supybot.plugins.SedRegex.ignoreRegex
 
 .. _conf-supybot.plugins.SedRegex.processTimeout:
 
+
 supybot.plugins.SedRegex.processTimeout
   This config variable defaults to "0.5", is not network-specific, and is  not channel-specific.
 
   Sets the timeout when processing a single regexp. The default should be adequate unless you have a busy or low-powered system that cannot process regexps quickly enough. However, you will not want to set this value too high as that would make your bot vulnerable to ReDoS attacks.
 
 .. _conf-supybot.plugins.SedRegex.public:
+
 
 supybot.plugins.SedRegex.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

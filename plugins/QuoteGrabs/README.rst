@@ -67,6 +67,7 @@ Configuration
 
 .. _conf-supybot.plugins.QuoteGrabs.public:
 
+
 supybot.plugins.QuoteGrabs.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
@@ -74,26 +75,30 @@ supybot.plugins.QuoteGrabs.public
 
 .. _conf-supybot.plugins.QuoteGrabs.randomGrabber:
 
+
 supybot.plugins.QuoteGrabs.randomGrabber
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Determines whether the bot will randomly grab possibly-suitable quotes on occasion. The suitability of a given message is determined by ...
 
-.. _conf-supybot.plugins.QuoteGrabs.randomGrabber.averageTimeBetweenGrabs:
+  .. _conf-supybot.plugins.QuoteGrabs.randomGrabber.averageTimeBetweenGrabs:
+
 
   supybot.plugins.QuoteGrabs.randomGrabber.averageTimeBetweenGrabs
     This config variable defaults to "864000", is network-specific, and is  channel-specific.
 
     Determines about how many seconds, on average, should elapse between random grabs. This is only an average value; grabs can happen from any time after half this time until never, although that's unlikely to occur.
 
-.. _conf-supybot.plugins.QuoteGrabs.randomGrabber.minimumCharacters:
+  .. _conf-supybot.plugins.QuoteGrabs.randomGrabber.minimumCharacters:
+
 
   supybot.plugins.QuoteGrabs.randomGrabber.minimumCharacters
     This config variable defaults to "8", is network-specific, and is  channel-specific.
 
     Determines the minimum number of characters in a message for it to be considered for random grabbing.
 
-.. _conf-supybot.plugins.QuoteGrabs.randomGrabber.minimumWords:
+  .. _conf-supybot.plugins.QuoteGrabs.randomGrabber.minimumWords:
+
 
   supybot.plugins.QuoteGrabs.randomGrabber.minimumWords
     This config variable defaults to "3", is network-specific, and is  channel-specific.

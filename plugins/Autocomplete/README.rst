@@ -26,12 +26,14 @@ Configuration
 
 .. _conf-supybot.plugins.Autocomplete.enabled:
 
+
 supybot.plugins.Autocomplete.enabled
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Whether the bot should reply to autocomplete requests from clients.
 
 .. _conf-supybot.plugins.Autocomplete.public:
+
 
 supybot.plugins.Autocomplete.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

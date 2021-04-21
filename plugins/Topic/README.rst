@@ -133,12 +133,14 @@ Configuration
 
 .. _conf-supybot.plugins.Topic.allowSeparatorinTopics:
 
+
 supybot.plugins.Topic.allowSeparatorinTopics
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the bot will allow topics containing the defined separator to be used. You may want to disable this if you are signing all topics by nick (see the 'format' option for ways to adjust this).
 
 .. _conf-supybot.plugins.Topic.alwaysSetOnJoin:
+
 
 supybot.plugins.Topic.alwaysSetOnJoin
   This config variable defaults to "False", is network-specific, and is  channel-specific.
@@ -147,12 +149,14 @@ supybot.plugins.Topic.alwaysSetOnJoin
 
 .. _conf-supybot.plugins.Topic.default:
 
+
 supybot.plugins.Topic.default
   This config variable defaults to "", is network-specific, and is  channel-specific.
 
   Determines what the default topic for the channel is. This is used by the default command to set this topic.
 
 .. _conf-supybot.plugins.Topic.format:
+
 
 supybot.plugins.Topic.format
   This config variable defaults to "$topic", is network-specific, and is  channel-specific.
@@ -161,12 +165,14 @@ supybot.plugins.Topic.format
 
 .. _conf-supybot.plugins.Topic.public:
 
+
 supybot.plugins.Topic.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.Topic.recognizeTopiclen:
+
 
 supybot.plugins.Topic.recognizeTopiclen
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -175,12 +181,14 @@ supybot.plugins.Topic.recognizeTopiclen
 
 .. _conf-supybot.plugins.Topic.requireManageCapability:
 
+
 supybot.plugins.Topic.requireManageCapability
   This config variable defaults to "channel,op; channel,halfop", is network-specific, and is  channel-specific.
 
   Determines the capabilities required (if any) to make any topic changes, (everything except for read-only operations). Use 'channel,capab' for channel-level capabilities. Note that absence of an explicit anticapability means user has capability.
 
 .. _conf-supybot.plugins.Topic.separator:
+
 
 supybot.plugins.Topic.separator
   This config variable defaults to " | ", is network-specific, and is  channel-specific.
@@ -189,8 +197,23 @@ supybot.plugins.Topic.separator
 
 .. _conf-supybot.plugins.Topic.setOnJoin:
 
+
 supybot.plugins.Topic.setOnJoin
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the bot will automatically set the topic on join if it is empty.
+
+.. _conf-supybot.plugins.Topic.undo:
+
+
+supybot.plugins.Topic.undo
+  This is a group of:
+
+  .. _conf-supybot.plugins.Topic.undo.max:
+
+
+  supybot.plugins.Topic.undo.max
+    This config variable defaults to "10", is network-specific, and is  channel-specific.
+
+    Determines the number of previous topics to keep around in case the undo command is called.
 

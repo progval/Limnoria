@@ -54,12 +54,14 @@ Configuration
 
 .. _conf-supybot.plugins.Todo.allowThirdpartyReader:
 
+
 supybot.plugins.Todo.allowThirdpartyReader
   This config variable defaults to "False", is not network-specific, and is  not channel-specific.
 
   Determines whether users can read the todo-list of another user.
 
 .. _conf-supybot.plugins.Todo.public:
+
 
 supybot.plugins.Todo.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

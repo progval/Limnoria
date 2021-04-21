@@ -60,12 +60,14 @@ Configuration
 
 .. _conf-supybot.plugins.Karma.allowSelfRating:
 
+
 supybot.plugins.Karma.allowSelfRating
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Determines whether users can adjust the karma of their nick.
 
 .. _conf-supybot.plugins.Karma.allowUnaddressedKarma:
+
 
 supybot.plugins.Karma.allowUnaddressedKarma
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -74,12 +76,14 @@ supybot.plugins.Karma.allowUnaddressedKarma
 
 .. _conf-supybot.plugins.Karma.decrementChars:
 
+
 supybot.plugins.Karma.decrementChars
   This config variable defaults to "--", is network-specific, and is  channel-specific.
 
   A space separated list of characters to decrease karma.
 
 .. _conf-supybot.plugins.Karma.incrementChars:
+
 
 supybot.plugins.Karma.incrementChars
   This config variable defaults to "++", is network-specific, and is  channel-specific.
@@ -88,12 +92,14 @@ supybot.plugins.Karma.incrementChars
 
 .. _conf-supybot.plugins.Karma.mostDisplay:
 
+
 supybot.plugins.Karma.mostDisplay
   This config variable defaults to "25", is network-specific, and is  channel-specific.
 
   Determines how many karma things are shown when the most command is called.
 
 .. _conf-supybot.plugins.Karma.onlyNicks:
+
 
 supybot.plugins.Karma.onlyNicks
   This config variable defaults to "False", is network-specific, and is  channel-specific.
@@ -102,12 +108,14 @@ supybot.plugins.Karma.onlyNicks
 
 .. _conf-supybot.plugins.Karma.public:
 
+
 supybot.plugins.Karma.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.Karma.rankingDisplay:
+
 
 supybot.plugins.Karma.rankingDisplay
   This config variable defaults to "3", is network-specific, and is  channel-specific.
@@ -116,12 +124,14 @@ supybot.plugins.Karma.rankingDisplay
 
 .. _conf-supybot.plugins.Karma.response:
 
+
 supybot.plugins.Karma.response
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Determines whether the bot will reply with a success message when something's karma is increased or decreased.
 
 .. _conf-supybot.plugins.Karma.simpleOutput:
+
 
 supybot.plugins.Karma.simpleOutput
   This config variable defaults to "False", is network-specific, and is  channel-specific.

@@ -66,7 +66,20 @@ unlock <alias>
 Configuration
 -------------
 
+.. _conf-supybot.plugins.Alias.aliases:
+
+
+supybot.plugins.Alias.aliases
+  This is a group of:
+
+.. _conf-supybot.plugins.Alias.escapedaliases:
+
+
+supybot.plugins.Alias.escapedaliases
+  This is a group of:
+
 .. _conf-supybot.plugins.Alias.public:
+
 
 supybot.plugins.Alias.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
@@ -74,6 +87,7 @@ supybot.plugins.Alias.public
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.Alias.validName:
+
 
 supybot.plugins.Alias.validName
   This config variable defaults to "^[^\\x00-\\x20]+$", is not network-specific, and is  not channel-specific.

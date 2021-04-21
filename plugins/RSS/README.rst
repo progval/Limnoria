@@ -101,12 +101,14 @@ Configuration
 
 .. _conf-supybot.plugins.RSS.announce:
 
+
 supybot.plugins.RSS.announce
   This config variable defaults to " ", is network-specific, and is  channel-specific.
 
   Determines which RSS feeds should be announced in the channel; valid input is a list of strings (either registered RSS feeds or RSS feed URLs) separated by spaces.
 
 .. _conf-supybot.plugins.RSS.announceFormat:
+
 
 supybot.plugins.RSS.announceFormat
   This config variable defaults to "News from $feed_name: $title <$link>", is network-specific, and is  channel-specific.
@@ -115,12 +117,14 @@ supybot.plugins.RSS.announceFormat
 
 .. _conf-supybot.plugins.RSS.defaultNumberOfHeadlines:
 
+
 supybot.plugins.RSS.defaultNumberOfHeadlines
   This config variable defaults to "1", is network-specific, and is  channel-specific.
 
   Indicates how many headlines an rss feed will output by default, if no number is provided.
 
 .. _conf-supybot.plugins.RSS.feeds:
+
 
 supybot.plugins.RSS.feeds
   This config variable defaults to " ", is not network-specific, and is  not channel-specific.
@@ -129,12 +133,14 @@ supybot.plugins.RSS.feeds
 
 .. _conf-supybot.plugins.RSS.format:
 
+
 supybot.plugins.RSS.format
   This config variable defaults to "$date: $title <$link>", is network-specific, and is  channel-specific.
 
   The format the bot will use for displaying headlines of a RSS feed that is triggered manually. In addition to fields defined by feedparser ($published (the entry date), $title, $link, $description, $id, etc.), the following variables can be used: $feed_name, $date (parsed date, as defined in supybot.reply.format.time)
 
 .. _conf-supybot.plugins.RSS.headlineSeparator:
+
 
 supybot.plugins.RSS.headlineSeparator
   This config variable defaults to " | ", is network-specific, and is  channel-specific.
@@ -143,12 +149,14 @@ supybot.plugins.RSS.headlineSeparator
 
 .. _conf-supybot.plugins.RSS.initialAnnounceHeadlines:
 
+
 supybot.plugins.RSS.initialAnnounceHeadlines
   This config variable defaults to "5", is network-specific, and is  channel-specific.
 
   Indicates how many headlines an rss feed will output when it is first added to announce for a channel.
 
 .. _conf-supybot.plugins.RSS.keywordBlacklist:
+
 
 supybot.plugins.RSS.keywordBlacklist
   This config variable defaults to " ", is network-specific, and is  channel-specific.
@@ -157,12 +165,14 @@ supybot.plugins.RSS.keywordBlacklist
 
 .. _conf-supybot.plugins.RSS.keywordWhitelist:
 
+
 supybot.plugins.RSS.keywordWhitelist
   This config variable defaults to " ", is network-specific, and is  channel-specific.
 
   Space separated list of strings, lets you filter headlines to those containing one or more items in this whitelist.
 
 .. _conf-supybot.plugins.RSS.maximumAnnounceHeadlines:
+
 
 supybot.plugins.RSS.maximumAnnounceHeadlines
   This config variable defaults to "5", is network-specific, and is  channel-specific.
@@ -171,12 +181,14 @@ supybot.plugins.RSS.maximumAnnounceHeadlines
 
 .. _conf-supybot.plugins.RSS.notice:
 
+
 supybot.plugins.RSS.notice
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Determines whether announces will be sent as notices instead of privmsgs.
 
 .. _conf-supybot.plugins.RSS.public:
+
 
 supybot.plugins.RSS.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
@@ -185,12 +197,14 @@ supybot.plugins.RSS.public
 
 .. _conf-supybot.plugins.RSS.sortFeedItems:
 
+
 supybot.plugins.RSS.sortFeedItems
   This config variable defaults to "asInFeed", is not network-specific, and is  not channel-specific.
 
   Determines whether feed items should be sorted by their publication/update timestamp or kept in the same order as they appear in a feed.  Valid strings: asInFeed, oldestFirst, newestFirst, outdatedFirst, and updatedFirst.
 
 .. _conf-supybot.plugins.RSS.waitPeriod:
+
 
 supybot.plugins.RSS.waitPeriod
   This config variable defaults to "1800", is not network-specific, and is  not channel-specific.

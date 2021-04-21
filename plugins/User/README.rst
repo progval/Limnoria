@@ -104,6 +104,7 @@ Configuration
 
 .. _conf-supybot.plugins.User.customWhoamiError:
 
+
 supybot.plugins.User.customWhoamiError
   This config variable defaults to "", is not network-specific, and is  not channel-specific.
 
@@ -111,12 +112,14 @@ supybot.plugins.User.customWhoamiError
 
 .. _conf-supybot.plugins.User.listInPrivate:
 
+
 supybot.plugins.User.listInPrivate
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the output of 'user list' will be sent in private. This prevents mass-highlights of people who use their nick as their bot username.
 
 .. _conf-supybot.plugins.User.public:
+
 
 supybot.plugins.User.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

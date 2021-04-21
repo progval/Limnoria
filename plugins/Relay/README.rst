@@ -46,12 +46,14 @@ Configuration
 
 .. _conf-supybot.plugins.Relay.channels:
 
+
 supybot.plugins.Relay.channels
   This config variable defaults to " ", is not network-specific, and is  not channel-specific.
 
   Determines which channels the bot will relay in.
 
-.. _conf-supybot.plugins.Relay.channels.joinOnAllNetworks:
+  .. _conf-supybot.plugins.Relay.channels.joinOnAllNetworks:
+
 
   supybot.plugins.Relay.channels.joinOnAllNetworks
     This config variable defaults to "False", is network-specific, and is  channel-specific.
@@ -60,12 +62,14 @@ supybot.plugins.Relay.channels
 
 .. _conf-supybot.plugins.Relay.color:
 
+
 supybot.plugins.Relay.color
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the bot will color relayed PRIVMSGs so as to make the messages easier to read.
 
 .. _conf-supybot.plugins.Relay.hostmasks:
+
 
 supybot.plugins.Relay.hostmasks
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -74,12 +78,14 @@ supybot.plugins.Relay.hostmasks
 
 .. _conf-supybot.plugins.Relay.ignores:
 
+
 supybot.plugins.Relay.ignores
   This config variable defaults to " ", is network-specific, and is  channel-specific.
 
   Determines what hostmasks will not be relayed on a channel.
 
 .. _conf-supybot.plugins.Relay.includeNetwork:
+
 
 supybot.plugins.Relay.includeNetwork
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -88,12 +94,14 @@ supybot.plugins.Relay.includeNetwork
 
 .. _conf-supybot.plugins.Relay.noticeNonPrivmsgs:
 
+
 supybot.plugins.Relay.noticeNonPrivmsgs
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Determines whether the bot will used NOTICEs rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, parts, nicks, quits, modes, etc.)
 
 .. _conf-supybot.plugins.Relay.public:
+
 
 supybot.plugins.Relay.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
@@ -102,12 +110,14 @@ supybot.plugins.Relay.public
 
 .. _conf-supybot.plugins.Relay.punishOtherRelayBots:
 
+
 supybot.plugins.Relay.punishOtherRelayBots
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the bot will detect other bots relaying and respond by kickbanning them.
 
 .. _conf-supybot.plugins.Relay.topicSync:
+
 
 supybot.plugins.Relay.topicSync
   This config variable defaults to "True", is network-specific, and is  channel-specific.

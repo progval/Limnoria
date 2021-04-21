@@ -50,6 +50,7 @@ Configuration
 
 .. _conf-supybot.plugins.Scheduler.public:
 
+
 supybot.plugins.Scheduler.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

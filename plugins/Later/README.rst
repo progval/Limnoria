@@ -68,7 +68,22 @@ undo <nick>
 Configuration
 -------------
 
+.. _conf-supybot.plugins.Later.format:
+
+
+supybot.plugins.Later.format
+  This is a group of:
+
+  .. _conf-supybot.plugins.Later.format.senderHostname:
+
+
+  supybot.plugins.Later.format.senderHostname
+    This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+
+    Determines whether senders' hostname will be shown in messages (instead of just the nick).
+
 .. _conf-supybot.plugins.Later.maximum:
+
 
 supybot.plugins.Later.maximum
   This config variable defaults to "0", is not network-specific, and is  not channel-specific.
@@ -77,12 +92,14 @@ supybot.plugins.Later.maximum
 
 .. _conf-supybot.plugins.Later.messageExpiry:
 
+
 supybot.plugins.Later.messageExpiry
   This config variable defaults to "30", is not network-specific, and is  not channel-specific.
 
   Determines the maximum number of days that a message will remain queued for a user. After this time elapses, the message will be deleted. If this value is 0, there is no maximum.
 
 .. _conf-supybot.plugins.Later.private:
+
 
 supybot.plugins.Later.private
   This config variable defaults to "False", is not network-specific, and is  not channel-specific.
@@ -91,12 +108,14 @@ supybot.plugins.Later.private
 
 .. _conf-supybot.plugins.Later.public:
 
+
 supybot.plugins.Later.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.Later.tellOnJoin:
+
 
 supybot.plugins.Later.tellOnJoin
   This config variable defaults to "False", is not network-specific, and is  not channel-specific.

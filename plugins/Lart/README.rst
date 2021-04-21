@@ -65,12 +65,14 @@ Configuration
 
 .. _conf-supybot.plugins.Lart.public:
 
+
 supybot.plugins.Lart.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.Lart.showIds:
+
 
 supybot.plugins.Lart.showIds
   This config variable defaults to "False", is network-specific, and is  channel-specific.

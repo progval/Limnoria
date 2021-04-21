@@ -62,12 +62,14 @@ Configuration
 
 .. _conf-supybot.plugins.Time.format:
 
+
 supybot.plugins.Time.format
   This config variable defaults to "%Y-%m-%dT%H:%M:%S%z", is network-specific, and is  channel-specific.
 
   Determines the format string for timestamps. Refer to the Python documentation for the time module to see what formats are accepted. If you set this variable to the empty string, the timestamp will not be shown.
 
 .. _conf-supybot.plugins.Time.public:
+
 
 supybot.plugins.Time.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

@@ -32,6 +32,7 @@ Configuration
 
 .. _conf-supybot.plugins.Ctcp.public:
 
+
 supybot.plugins.Ctcp.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
@@ -39,12 +40,14 @@ supybot.plugins.Ctcp.public
 
 .. _conf-supybot.plugins.Ctcp.userinfo:
 
+
 supybot.plugins.Ctcp.userinfo
   This config variable defaults to "", is not network-specific, and is  not channel-specific.
 
   Determines what will be sent when a USERINFO query is received.
 
 .. _conf-supybot.plugins.Ctcp.versionWait:
+
 
 supybot.plugins.Ctcp.versionWait
   This config variable defaults to "10", is not network-specific, and is  not channel-specific.

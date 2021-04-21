@@ -52,6 +52,7 @@ Configuration
 
 .. _conf-supybot.plugins.Hashes.public:
 
+
 supybot.plugins.Hashes.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

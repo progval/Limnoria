@@ -66,12 +66,14 @@ Configuration
 
 .. _conf-supybot.plugins.Praise.public:
 
+
 supybot.plugins.Praise.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.Praise.showIds:
+
 
 supybot.plugins.Praise.showIds
   This config variable defaults to "False", is network-specific, and is  channel-specific.

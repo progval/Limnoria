@@ -128,6 +128,7 @@ Configuration
 
 .. _conf-supybot.plugins.Aka.maximumWordsInName:
 
+
 supybot.plugins.Aka.maximumWordsInName
   This config variable defaults to "5", is not network-specific, and is  not channel-specific.
 
@@ -135,8 +136,23 @@ supybot.plugins.Aka.maximumWordsInName
 
 .. _conf-supybot.plugins.Aka.public:
 
+
 supybot.plugins.Aka.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
+
+.. _conf-supybot.plugins.Aka.web:
+
+
+supybot.plugins.Aka.web
+  This is a group of:
+
+  .. _conf-supybot.plugins.Aka.web.enable:
+
+
+  supybot.plugins.Aka.web.enable
+    This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+
+    Determines whether the Akas will be browsable through the HTTP server.
 

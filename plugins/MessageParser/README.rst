@@ -74,12 +74,14 @@ Configuration
 
 .. _conf-supybot.plugins.MessageParser.enable:
 
+
 supybot.plugins.MessageParser.enable
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the message parser is enabled. If enabled, will trigger on regexps added to the regexp db.
 
 .. _conf-supybot.plugins.MessageParser.enableForNotices:
+
 
 supybot.plugins.MessageParser.enableForNotices
   This config variable defaults to "False", is network-specific, and is  channel-specific.
@@ -88,12 +90,14 @@ supybot.plugins.MessageParser.enableForNotices
 
 .. _conf-supybot.plugins.MessageParser.keepRankInfo:
 
+
 supybot.plugins.MessageParser.keepRankInfo
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether we keep updating the usage count for each regexp, for popularity ranking.
 
 .. _conf-supybot.plugins.MessageParser.listSeparator:
+
 
 supybot.plugins.MessageParser.listSeparator
   This config variable defaults to ", ", is network-specific, and is  channel-specific.
@@ -102,12 +106,14 @@ supybot.plugins.MessageParser.listSeparator
 
 .. _conf-supybot.plugins.MessageParser.maxTriggers:
 
+
 supybot.plugins.MessageParser.maxTriggers
   This config variable defaults to "0", is network-specific, and is  channel-specific.
 
   Determines the maximum number of triggers in one message. Set this to 0 to allow an infinite number of triggers.
 
 .. _conf-supybot.plugins.MessageParser.public:
+
 
 supybot.plugins.MessageParser.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
@@ -116,6 +122,7 @@ supybot.plugins.MessageParser.public
 
 .. _conf-supybot.plugins.MessageParser.rankListLength:
 
+
 supybot.plugins.MessageParser.rankListLength
   This config variable defaults to "20", is network-specific, and is  channel-specific.
 
@@ -123,12 +130,14 @@ supybot.plugins.MessageParser.rankListLength
 
 .. _conf-supybot.plugins.MessageParser.requireManageCapability:
 
+
 supybot.plugins.MessageParser.requireManageCapability
   This config variable defaults to "admin; channel,op", is network-specific, and is  channel-specific.
 
   Determines the capabilities required (if any) to manage the regexp database, including add, remove, lock, unlock. Use 'channel,capab' for channel-level capabilities. Note that absence of an explicit anticapability means user has capability.
 
 .. _conf-supybot.plugins.MessageParser.requireVacuumCapability:
+
 
 supybot.plugins.MessageParser.requireVacuumCapability
   This config variable defaults to "admin", is network-specific, and is  channel-specific.

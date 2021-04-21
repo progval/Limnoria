@@ -93,6 +93,7 @@ Configuration
 
 .. _conf-supybot.plugins.Config.public:
 
+
 supybot.plugins.Config.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

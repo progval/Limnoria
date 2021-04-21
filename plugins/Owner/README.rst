@@ -104,6 +104,7 @@ Configuration
 
 .. _conf-supybot.plugins.Owner.announceFormat:
 
+
 supybot.plugins.Owner.announceFormat
   This config variable defaults to "Announcement from my owner ($owner): $text", is not network-specific, and is  not channel-specific.
 
@@ -111,12 +112,14 @@ supybot.plugins.Owner.announceFormat
 
 .. _conf-supybot.plugins.Owner.public:
 
+
 supybot.plugins.Owner.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.Owner.quitMsg:
+
 
 supybot.plugins.Owner.quitMsg
   This config variable defaults to "Limnoria $version", is not network-specific, and is  not channel-specific.

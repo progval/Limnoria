@@ -220,12 +220,14 @@ Configuration
 
 .. _conf-supybot.plugins.Channel.alwaysRejoin:
 
+
 supybot.plugins.Channel.alwaysRejoin
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the bot will always try to rejoin a channel whenever it's kicked from the channel.
 
 .. _conf-supybot.plugins.Channel.nicksInPrivate:
+
 
 supybot.plugins.Channel.nicksInPrivate
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -234,6 +236,7 @@ supybot.plugins.Channel.nicksInPrivate
 
 .. _conf-supybot.plugins.Channel.partMsg:
 
+
 supybot.plugins.Channel.partMsg
   This config variable defaults to "Limnoria $version", is network-specific, and is  channel-specific.
 
@@ -241,12 +244,14 @@ supybot.plugins.Channel.partMsg
 
 .. _conf-supybot.plugins.Channel.public:
 
+
 supybot.plugins.Channel.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.Channel.rejoinDelay:
+
 
 supybot.plugins.Channel.rejoinDelay
   This config variable defaults to "0", is network-specific, and is  channel-specific.

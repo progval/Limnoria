@@ -33,6 +33,7 @@ Configuration
 
 .. _conf-supybot.plugins.AutoMode.alternativeCapabilities:
 
+
 supybot.plugins.AutoMode.alternativeCapabilities
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
@@ -40,12 +41,14 @@ supybot.plugins.AutoMode.alternativeCapabilities
 
 .. _conf-supybot.plugins.AutoMode.ban:
 
+
 supybot.plugins.AutoMode.ban
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
   Determines whether the bot will automatically ban people who join the channel and are on the banlist.
 
-.. _conf-supybot.plugins.AutoMode.ban.period:
+  .. _conf-supybot.plugins.AutoMode.ban.period:
+
 
   supybot.plugins.AutoMode.ban.period
     This config variable defaults to "86400", is network-specific, and is  channel-specific.
@@ -54,12 +57,14 @@ supybot.plugins.AutoMode.ban
 
 .. _conf-supybot.plugins.AutoMode.delay:
 
+
 supybot.plugins.AutoMode.delay
   This config variable defaults to "0", is network-specific, and is  channel-specific.
 
   Determines how many seconds the bot will wait before applying a mode. Has no effect on bans.
 
 .. _conf-supybot.plugins.AutoMode.enable:
+
 
 supybot.plugins.AutoMode.enable
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -68,12 +73,14 @@ supybot.plugins.AutoMode.enable
 
 .. _conf-supybot.plugins.AutoMode.extra:
 
+
 supybot.plugins.AutoMode.extra
   This config variable defaults to " ", is network-specific, and is  channel-specific.
 
   Extra modes that will be applied to a user. Example syntax: user1+o-v user2+v user3-v
 
 .. _conf-supybot.plugins.AutoMode.fallthrough:
+
 
 supybot.plugins.AutoMode.fallthrough
   This config variable defaults to "True", is network-specific, and is  channel-specific.
@@ -82,12 +89,14 @@ supybot.plugins.AutoMode.fallthrough
 
 .. _conf-supybot.plugins.AutoMode.halfop:
 
+
 supybot.plugins.AutoMode.halfop
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Determines whether the bot will automatically halfop people with the <channel>,halfop capability when they join the channel.
 
 .. _conf-supybot.plugins.AutoMode.op:
+
 
 supybot.plugins.AutoMode.op
   This config variable defaults to "False", is network-specific, and is  channel-specific.
@@ -96,6 +105,7 @@ supybot.plugins.AutoMode.op
 
 .. _conf-supybot.plugins.AutoMode.owner:
 
+
 supybot.plugins.AutoMode.owner
   This config variable defaults to "False", is not network-specific, and is  not channel-specific.
 
@@ -103,12 +113,14 @@ supybot.plugins.AutoMode.owner
 
 .. _conf-supybot.plugins.AutoMode.public:
 
+
 supybot.plugins.AutoMode.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
 .. _conf-supybot.plugins.AutoMode.voice:
+
 
 supybot.plugins.AutoMode.voice
   This config variable defaults to "False", is network-specific, and is  channel-specific.

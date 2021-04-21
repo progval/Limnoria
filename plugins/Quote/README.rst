@@ -62,6 +62,7 @@ Configuration
 
 .. _conf-supybot.plugins.Quote.public:
 
+
 supybot.plugins.Quote.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

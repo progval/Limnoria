@@ -32,12 +32,14 @@ Configuration
 
 .. _conf-supybot.plugins.DDG.maxResults:
 
+
 supybot.plugins.DDG.maxResults
   This config variable defaults to "4", is network-specific, and is  channel-specific.
 
   Determines the maximum number of results the bot will respond with.
 
 .. _conf-supybot.plugins.DDG.public:
+
 
 supybot.plugins.DDG.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
@@ -46,6 +48,7 @@ supybot.plugins.DDG.public
 
 .. _conf-supybot.plugins.DDG.region:
 
+
 supybot.plugins.DDG.region
   This config variable defaults to "", is network-specific, and is  channel-specific.
 
@@ -53,12 +56,14 @@ supybot.plugins.DDG.region
 
 .. _conf-supybot.plugins.DDG.searchFilter:
 
+
 supybot.plugins.DDG.searchFilter
   This config variable defaults to "moderate", is network-specific, and is  channel-specific.
 
   Determines what level of search filtering to use by default. 'active' - most filtering, 'moderate' - default filtering, 'off' - no filtering  Valid strings: active, moderate, and off.
 
 .. _conf-supybot.plugins.DDG.showSnippet:
+
 
 supybot.plugins.DDG.showSnippet
   This config variable defaults to "True", is network-specific, and is  channel-specific.

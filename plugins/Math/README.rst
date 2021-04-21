@@ -54,6 +54,7 @@ Configuration
 
 .. _conf-supybot.plugins.Math.public:
 
+
 supybot.plugins.Math.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

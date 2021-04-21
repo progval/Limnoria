@@ -118,6 +118,7 @@ Configuration
 
 .. _conf-supybot.plugins.Conditional.public:
 
+
 supybot.plugins.Conditional.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

@@ -85,10 +85,157 @@ wtf [is] <something>
 Configuration
 -------------
 
+.. _conf-supybot.plugins.Unix.fortune:
+
+
+supybot.plugins.Unix.fortune
+  This is a group of:
+
+  .. _conf-supybot.plugins.Unix.fortune.command:
+
+
+  supybot.plugins.Unix.fortune.command
+    This config variable defaults to "", is not network-specific, and is  not channel-specific.
+
+    Determines what command will be called for the fortune command.
+
+  .. _conf-supybot.plugins.Unix.fortune.equal:
+
+
+  supybot.plugins.Unix.fortune.equal
+    This config variable defaults to "True", is network-specific, and is  channel-specific.
+
+    Determines whether fortune will give equal weight to the different fortune databases. If false, then larger databases will be given more weight. This sends the -e option to the fortune program.
+
+  .. _conf-supybot.plugins.Unix.fortune.files:
+
+
+  supybot.plugins.Unix.fortune.files
+    This config variable defaults to " ", is network-specific, and is  channel-specific.
+
+    Determines what specific file (if any) will be used with the fortune command; if none is given, the system-wide default will be used. Do note that this fortune file must be placed with the rest of your system's fortune files.
+
+  .. _conf-supybot.plugins.Unix.fortune.offensive:
+
+
+  supybot.plugins.Unix.fortune.offensive
+    This config variable defaults to "False", is network-specific, and is  channel-specific.
+
+    Determines whether fortune will retrieve offensive fortunes along with the normal fortunes. This sends the -a option to the fortune program.
+
+  .. _conf-supybot.plugins.Unix.fortune.short:
+
+
+  supybot.plugins.Unix.fortune.short
+    This config variable defaults to "True", is network-specific, and is  channel-specific.
+
+    Determines whether only short fortunes will be used if possible. This sends the -s option to the fortune program.
+
+.. _conf-supybot.plugins.Unix.ping:
+
+
+supybot.plugins.Unix.ping
+  This is a group of:
+
+  .. _conf-supybot.plugins.Unix.ping.command:
+
+
+  supybot.plugins.Unix.ping.command
+    This config variable defaults to "/bin/ping", is not network-specific, and is  not channel-specific.
+
+    Determines what command will be called for the ping command.
+
+  .. _conf-supybot.plugins.Unix.ping.defaultCount:
+
+
+  supybot.plugins.Unix.ping.defaultCount
+    This config variable defaults to "5", is not network-specific, and is  not channel-specific.
+
+    Determines what ping and ping6 counts (-c) will default to.
+
+.. _conf-supybot.plugins.Unix.ping6:
+
+
+supybot.plugins.Unix.ping6
+  This is a group of:
+
+  .. _conf-supybot.plugins.Unix.ping6.command:
+
+
+  supybot.plugins.Unix.ping6.command
+    This config variable defaults to "/bin/ping6", is not network-specific, and is  not channel-specific.
+
+    Determines what command will be called for the ping6 command.
+
 .. _conf-supybot.plugins.Unix.public:
+
 
 supybot.plugins.Unix.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin is publicly visible.
+
+.. _conf-supybot.plugins.Unix.spell:
+
+
+supybot.plugins.Unix.spell
+  This is a group of:
+
+  .. _conf-supybot.plugins.Unix.spell.command:
+
+
+  supybot.plugins.Unix.spell.command
+    This config variable defaults to "/usr/bin/aspell", is not network-specific, and is  not channel-specific.
+
+    Determines what command will be called for the spell command.
+
+  .. _conf-supybot.plugins.Unix.spell.language:
+
+
+  supybot.plugins.Unix.spell.language
+    This config variable defaults to "en", is not network-specific, and is  not channel-specific.
+
+    Determines what aspell dictionary will be used for spell checking.
+
+.. _conf-supybot.plugins.Unix.sysuname:
+
+
+supybot.plugins.Unix.sysuname
+  This is a group of:
+
+  .. _conf-supybot.plugins.Unix.sysuname.command:
+
+
+  supybot.plugins.Unix.sysuname.command
+    This config variable defaults to "/bin/uname", is not network-specific, and is  not channel-specific.
+
+    Determines what command will be called for the uname command.
+
+.. _conf-supybot.plugins.Unix.sysuptime:
+
+
+supybot.plugins.Unix.sysuptime
+  This is a group of:
+
+  .. _conf-supybot.plugins.Unix.sysuptime.command:
+
+
+  supybot.plugins.Unix.sysuptime.command
+    This config variable defaults to "/usr/bin/uptime", is not network-specific, and is  not channel-specific.
+
+    Determines what command will be called for the uptime command.
+
+.. _conf-supybot.plugins.Unix.wtf:
+
+
+supybot.plugins.Unix.wtf
+  This is a group of:
+
+  .. _conf-supybot.plugins.Unix.wtf.command:
+
+
+  supybot.plugins.Unix.wtf.command
+    This config variable defaults to "", is not network-specific, and is  not channel-specific.
+
+    Determines what command will be called for the wtf command.
 

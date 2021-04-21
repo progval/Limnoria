@@ -48,12 +48,14 @@ Configuration
 
 .. _conf-supybot.plugins.Dict.default:
 
+
 supybot.plugins.Dict.default
   This config variable defaults to "*", is network-specific, and is  channel-specific.
 
   Determines the default dictionary the bot will ask for definitions in. If this value is '*' (without the quotes) the bot will use all dictionaries to define words.
 
 .. _conf-supybot.plugins.Dict.public:
+
 
 supybot.plugins.Dict.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
@@ -62,12 +64,14 @@ supybot.plugins.Dict.public
 
 .. _conf-supybot.plugins.Dict.server:
 
+
 supybot.plugins.Dict.server
   This config variable defaults to "dict.org", is not network-specific, and is  not channel-specific.
 
   Determines what server the bot will retrieve definitions from.
 
 .. _conf-supybot.plugins.Dict.showDictName:
+
 
 supybot.plugins.Dict.showDictName
   This config variable defaults to "True", is network-specific, and is  channel-specific.

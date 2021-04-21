@@ -45,7 +45,36 @@ signing gettoken takes no arguments
 Configuration
 -------------
 
+.. _conf-supybot.plugins.GPG.auth:
+
+
+supybot.plugins.GPG.auth
+  This is a group of:
+
+  .. _conf-supybot.plugins.GPG.auth.sign:
+
+
+  supybot.plugins.GPG.auth.sign
+    This is a group of:
+
+    .. _conf-supybot.plugins.GPG.auth.sign.TokenTimeout:
+
+
+    supybot.plugins.GPG.auth.sign.TokenTimeout
+      This config variable defaults to "600", is not network-specific, and is  not channel-specific.
+
+      Determines the lifetime of a GPG signature authentication token (in seconds).
+
+    .. _conf-supybot.plugins.GPG.auth.sign.enable:
+
+
+    supybot.plugins.GPG.auth.sign.enable
+      This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+
+      Determines whether or not users are allowed to use GPG signing for authentication.
+
 .. _conf-supybot.plugins.GPG.public:
+
 
 supybot.plugins.GPG.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

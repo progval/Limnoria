@@ -20,6 +20,7 @@ Configuration
 
 .. _conf-supybot.plugins.Protector.enable:
 
+
 supybot.plugins.Protector.enable
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
@@ -27,12 +28,14 @@ supybot.plugins.Protector.enable
 
 .. _conf-supybot.plugins.Protector.immune:
 
+
 supybot.plugins.Protector.immune
   This config variable defaults to " ", is network-specific, and is  channel-specific.
 
   Determines what nicks the bot will consider to be immune from enforcement. These nicks will not even have their actions watched by this plugin. In general, only the ChanServ for this network will be in this list.
 
 .. _conf-supybot.plugins.Protector.public:
+
 
 supybot.plugins.Protector.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

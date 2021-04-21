@@ -111,6 +111,7 @@ Configuration
 
 .. _conf-supybot.plugins.Format.public:
 
+
 supybot.plugins.Format.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

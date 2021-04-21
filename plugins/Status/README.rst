@@ -72,7 +72,38 @@ uptime takes no arguments
 Configuration
 -------------
 
+.. _conf-supybot.plugins.Status.cpu:
+
+
+supybot.plugins.Status.cpu
+  This is a group of:
+
+  .. _conf-supybot.plugins.Status.cpu.children:
+
+
+  supybot.plugins.Status.cpu.children
+    This config variable defaults to "True", is network-specific, and is  channel-specific.
+
+    Determines whether the cpu command will list the time taken by children as well as the bot's process.
+
+  .. _conf-supybot.plugins.Status.cpu.memory:
+
+
+  supybot.plugins.Status.cpu.memory
+    This config variable defaults to "True", is network-specific, and is  channel-specific.
+
+    Determines whether the cpu command will report the amount of memory being used by the bot.
+
+  .. _conf-supybot.plugins.Status.cpu.threads:
+
+
+  supybot.plugins.Status.cpu.threads
+    This config variable defaults to "False", is network-specific, and is  channel-specific.
+
+    Determines whether the cpu command will provide the number of threads spawned and active.
+
 .. _conf-supybot.plugins.Status.public:
+
 
 supybot.plugins.Status.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.

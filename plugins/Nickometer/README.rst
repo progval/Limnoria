@@ -29,6 +29,7 @@ Configuration
 
 .. _conf-supybot.plugins.Nickometer.public:
 
+
 supybot.plugins.Nickometer.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 

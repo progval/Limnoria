@@ -38,12 +38,14 @@ Configuration
 
 .. _conf-supybot.plugins.ShrinkUrl.bold:
 
+
 supybot.plugins.ShrinkUrl.bold
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
 
   Determines whether this plugin will bold certain portions of its replies.
 
 .. _conf-supybot.plugins.ShrinkUrl.default:
+
 
 supybot.plugins.ShrinkUrl.default
   This config variable defaults to "x0", is network-specific, and is  channel-specific.
@@ -52,12 +54,14 @@ supybot.plugins.ShrinkUrl.default
 
 .. _conf-supybot.plugins.ShrinkUrl.minimumLength:
 
+
 supybot.plugins.ShrinkUrl.minimumLength
   This config variable defaults to "48", is network-specific, and is  channel-specific.
 
   The minimum length a URL must be before the bot will shrink it.
 
 .. _conf-supybot.plugins.ShrinkUrl.nonSnarfingRegexp:
+
 
 supybot.plugins.ShrinkUrl.nonSnarfingRegexp
   This config variable defaults to "", is network-specific, and is  channel-specific.
@@ -66,12 +70,14 @@ supybot.plugins.ShrinkUrl.nonSnarfingRegexp
 
 .. _conf-supybot.plugins.ShrinkUrl.outFilter:
 
+
 supybot.plugins.ShrinkUrl.outFilter
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Determines whether the bot will shrink the URLs of outgoing messages if those URLs are longer than supybot.plugins.ShrinkUrl.minimumLength.
 
 .. _conf-supybot.plugins.ShrinkUrl.public:
+
 
 supybot.plugins.ShrinkUrl.public
   This config variable defaults to "True", is not network-specific, and is  not channel-specific.
@@ -80,6 +86,7 @@ supybot.plugins.ShrinkUrl.public
 
 .. _conf-supybot.plugins.ShrinkUrl.serviceRotation:
 
+
 supybot.plugins.ShrinkUrl.serviceRotation
   This config variable defaults to " ", is network-specific, and is  channel-specific.
 
@@ -87,12 +94,14 @@ supybot.plugins.ShrinkUrl.serviceRotation
 
 .. _conf-supybot.plugins.ShrinkUrl.shrinkSnarfer:
 
+
 supybot.plugins.ShrinkUrl.shrinkSnarfer
   This config variable defaults to "False", is network-specific, and is  channel-specific.
 
   Determines whether the shrink snarfer is enabled. This snarfer will watch for URLs in the channel, and if they're sufficiently long (as determined by supybot.plugins.ShrinkUrl.minimumLength) it will post a smaller URL from the service as denoted in supybot.plugins.ShrinkUrl.default.
 
-.. _conf-supybot.plugins.ShrinkUrl.shrinkSnarfer.showDomain:
+  .. _conf-supybot.plugins.ShrinkUrl.shrinkSnarfer.showDomain:
+
 
   supybot.plugins.ShrinkUrl.shrinkSnarfer.showDomain
     This config variable defaults to "True", is network-specific, and is  channel-specific.
