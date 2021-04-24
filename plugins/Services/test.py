@@ -30,6 +30,7 @@
 from supybot.test import *
 import supybot.conf as conf
 from supybot.ircmsgs import IrcMsg
+from copy import copy
 
 class ServicesTestCase(PluginTestCase):
     plugins = ('Services', 'Config')
@@ -103,6 +104,72 @@ class ServicesTestCase(PluginTestCase):
             command="REGISTER",
             args=["VERIFICATION_REQUIRED", "account", "msg"]))
         self.assertIsNone(self.irc.takeMsg())
+
+
+class JoinsBeforeIdentifiedTestCase(PluginTestCase):
+    plugins = ('Services',)
+    config = {
+        'plugins.Services.noJoinsUntilIdentified': False,
+    }
+
+    def testSingleNetwork(self):
+        queuedJoin = ircmsgs.join('#test', prefix=self.prefix)
+        self.irc.queueMsg(queuedJoin)
+        self.assertEqual(self.irc.takeMsg(), queuedJoin,
+            'Join request did not go through.')
+
+
+class NoJoinsUntilIdentifiedTestCase(PluginTestCase):
+    plugins = ('Services',)
+    config = {
+        'plugins.Services.noJoinsUntilIdentified': True,
+    }
+
+    def _identify(self, irc):
+        irc.feedMsg(IrcMsg(command='376', args=(self.nick,)))
+        msg = irc.takeMsg()
+        self.assertEqual(msg.command, 'PRIVMSG')
+        self.assertEqual(msg.args[0], 'NickServ')
+        irc.feedMsg(ircmsgs.notice(self.nick, 'now identified', 'NickServ'))
+
+    def testSingleNetwork(self):
+        try:
+            self.assertNotError('services password %s secret' % self.nick)
+            queuedJoin = ircmsgs.join('#test', prefix=self.prefix)
+            self.irc.queueMsg(queuedJoin)
+            self.assertIsNone(self.irc.takeMsg(),
+                'Join request went through before identification.')
+            self._identify(self.irc)
+            self.assertEqual(self.irc.takeMsg(), queuedJoin,
+                'Join request did not go through after identification.')
+        finally:
+            self.assertNotError('services password %s ""' % self.nick)
+
+    def testMultipleNetworks(self):
+        try:
+            net1 = copy(self)
+            net1.irc = getTestIrc('testnet1')
+            net1.assertNotError('services password %s secret' % self.nick)
+            net2 = copy(self)
+            net2.irc = getTestIrc('testnet2')
+            net2.assertNotError('services password %s secret' % self.nick)
+            queuedJoin1 = ircmsgs.join('#testchan1', prefix=self.prefix)
+            net1.irc.queueMsg(queuedJoin1)
+            self.assertIsNone(net1.irc.takeMsg(),
+                'Join request 1 went through before identification.')
+            self._identify(net1.irc)
+            self.assertEqual(net1.irc.takeMsg(), queuedJoin1,
+                'Join request 1 did not go through after identification.')
+            queuedJoin2 = ircmsgs.join('#testchan2', prefix=self.prefix)
+            net2.irc.queueMsg(queuedJoin2)
+            self.assertIsNone(net2.irc.takeMsg(),
+                'Join request 2 went through before identification.')
+            self._identify(net2.irc)
+            self.assertEqual(net2.irc.takeMsg(), queuedJoin2,
+                'Join request 2 did not go through after identification.')
+        finally:
+            net1.assertNotError('services password %s ""' % self.nick)
+            net2.assertNotError('services password %s ""' % self.nick)
 
 
 class ExperimentalServicesTestCase(PluginTestCase):
