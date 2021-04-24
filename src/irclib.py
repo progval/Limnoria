@@ -1430,7 +1430,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         if self.fastqueue:
             msg = self.fastqueue.dequeue()
         elif self.queue:
-            if now-self.lastTake <= conf.supybot.protocols.irc.throttleTime():
+            if now-self.lastTake < conf.supybot.protocols.irc.throttleTime():
                 log.debug('Irc.takeMsg throttling.')
             else:
                 self.lastTake = now
