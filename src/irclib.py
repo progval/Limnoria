@@ -1564,6 +1564,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         received* tags."""
         if tag:
             self._tagMsg(msg)
+        channel = msg.channel  # used by dynamicScope (ew)
 
         preInFilter = str(msg).rstrip('\r\n')
         log.debug('Incoming message (%s): %s', self.network, preInFilter)
