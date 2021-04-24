@@ -39,43 +39,53 @@ class ServicesTestCase(PluginTestCase):
     }
 
     def testPasswordAndIdentify(self):
-        self.assertNotError('services password foo bar')
-        self.assertError('services identify') # Don't have a password.
-        self.assertNotError('services password %s baz' % self.nick)
-        m = self.assertNotError('services identify')
-        self.assertTrue(m.args[0] == 'NickServ')
-        self.assertTrue(m.args[1].lower() == 'identify baz')
-        self.assertNotError('services password %s biff' % self.nick)
-        m = self.assertNotError('services identify')
-        self.assertTrue(m.args[0] == 'NickServ')
-        self.assertTrue(m.args[1].lower() == 'identify biff')
+        try:
+            self.assertNotError('services password foo bar')
+            self.assertError('services identify') # Don't have a password.
+        finally:
+            self.assertNotError('services password foo ""')
+
+        try:
+            self.assertNotError('services password %s baz' % self.nick)
+            m = self.assertNotError('services identify')
+            self.assertTrue(m.args[0] == 'NickServ')
+            self.assertTrue(m.args[1].lower() == 'identify baz')
+            self.assertNotError('services password %s biff' % self.nick)
+            m = self.assertNotError('services identify')
+            self.assertTrue(m.args[0] == 'NickServ')
+            self.assertTrue(m.args[1].lower() == 'identify biff')
+        finally:
+            self.assertNotError('services password %s ""' % self.nick)
 
     def testPasswordConfig(self):
         self.assertNotError('config plugins.Services.nicks ""')
         self.assertNotError('config network plugins.Services.nicks ""')
 
-        self.assertNotError('services password %s bar' % self.nick)
+        try:
+            self.assertNotError('services password %s bar' % self.nick)
 
-        self.assertResponse(
-            'config plugins.Services.nicks',
-            'Global:  ; test: %s' % self.nick)
-        self.assertResponse(
-            'config plugins.Services.nickserv.password.%s' % self.nick,
-            'Global: bar; test: bar')
+            self.assertResponse(
+                'config plugins.Services.nicks',
+                'Global:  ; test: %s' % self.nick)
+            self.assertResponse(
+                'config plugins.Services.nickserv.password.%s' % self.nick,
+                'Global: bar; test: bar')
 
-        self.assertNotError(
-            'config network plugins.Services.nickserv.password.%s bar2'
-            % self.nick)
-        self.assertResponse(
-            'config plugins.Services.nickserv.password.%s' % self.nick,
-            'Global: bar; test: bar2')
-        self.assertResponse(
-            'config plugins.Services.nickserv.password.%s' % self.nick,
-            'Global: bar; test: bar2')
+            self.assertNotError(
+                'config network plugins.Services.nickserv.password.%s bar2'
+                % self.nick)
+            self.assertResponse(
+                'config plugins.Services.nickserv.password.%s' % self.nick,
+                'Global: bar; test: bar2')
+            self.assertResponse(
+                'config plugins.Services.nickserv.password.%s' % self.nick,
+                'Global: bar; test: bar2')
 
-        m = self.assertNotError('services identify')
-        self.assertTrue(m.args[0] == 'NickServ')
-        self.assertTrue(m.args[1].lower() == 'identify bar2')
+            m = self.assertNotError('services identify')
+            self.assertTrue(m.args[0] == 'NickServ')
+            self.assertTrue(m.args[1].lower() == 'identify bar2')
+        finally:
+            self.assertNotError('services password %s ""' % self.nick)
 
     def testRegisterNoExperimentalExtensions(self):
         self.assertRegexp(
