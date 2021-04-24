@@ -486,7 +486,7 @@ class ChannelPluginTestCase(PluginTestCase):
         if not forceSetup and \
                 self.__class__ in (PluginTestCase, ChannelPluginTestCase):
             return
-        PluginTestCase.setUp(self)
+        PluginTestCase.setUp(self, nick, forceSetup)
         self.irc.feedMsg(ircmsgs.join(self.channel, prefix=self.prefix))
         m = self.irc.takeMsg()
         self.assertFalse(m is None, 'No message back from joining channel.')
