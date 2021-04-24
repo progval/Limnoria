@@ -36,7 +36,7 @@ class ServicesTestCase(PluginTestCase):
     config = {
         'plugins.Services.NickServ': 'NickServ',
         'plugins.Services.ChanServ': 'ChanServ',
-        }
+    }
 
     def testPasswordAndIdentify(self):
         self.assertNotError('services password foo bar')
@@ -50,7 +50,7 @@ class ServicesTestCase(PluginTestCase):
         self.assertTrue(m.args[0] == 'NickServ')
         self.assertTrue(m.args[1].lower() == 'identify biff')
 
-    def testPasswordConfg(self):
+    def testPasswordConfig(self):
         self.assertNotError('config plugins.Services.nicks ""')
         self.assertNotError('config network plugins.Services.nicks ""')
 

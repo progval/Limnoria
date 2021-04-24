@@ -95,7 +95,7 @@ def open_registry(filename, clear=False):
         #     worse, the error will pass silently.
         #
         # If the line ends in an odd number of backslashes, then there is a
-        # line-continutation.
+        # line-continuation.
         m = slashEnd.search(line)
         if m and len(m.group(0)) % 2:
             acc += line[:-1]

@@ -280,7 +280,7 @@ class PluginTestCase(SupyTestCase):
 
     def tearDown(self):
         if self.__class__ in (PluginTestCase, ChannelPluginTestCase):
-            # Necessary because there's a test in here that shouldn\'t run.
+            # Necessary because there's a test in here that shouldn't run.
             return
         for (group, original) in self.originals.items():
             group.setValue(original)
