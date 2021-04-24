@@ -114,18 +114,10 @@ class AdminTestCase(PluginTestCase):
     def testNoJoinOnUnprivilegedInvite(self):
         try:
             world.testing = False
-            self.irc.feedMsg(ircmsgs.invite(conf.supybot.nick(), '#foo', prefix='foo!bar@baz'))
-            self.assertResponse('somecommand',
-                'Error: "somecommand" is not a valid command.')
-        finally:
-            world.testing = True
-
-    def testNoJoinOnUnprivilegedInvite(self):
-        try:
-            world.testing = False
-            self.irc.feedMsg(ircmsgs.invite(conf.supybot.nick(), '#foo\u0009', prefix='foo!bar@baz'))
-            self.assertResponse('somecommand',
-                'Error: "somecommand" is not a valid command.')
+            for channel in '#foo', '#foo\u0009':
+                self.irc.feedMsg(ircmsgs.invite(conf.supybot.nick(), channel, prefix='foo!bar@baz'))
+                self.assertResponse('somecommand',
+                    'Error: "somecommand" is not a valid command.')
         finally:
             world.testing = True
 
