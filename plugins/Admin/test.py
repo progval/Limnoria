@@ -95,7 +95,6 @@ class AdminTestCase(PluginTestCase):
         self.assertEqual(m.args[1], 'key')
 
     def testNick(self):
-        original = conf.supybot.nick()
         try:
             m = self.getMsg('nick foobar')
             self.assertEqual(m.command, 'NICK')

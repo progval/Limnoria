@@ -31,7 +31,7 @@
 import supybot.conf as conf
 import supybot.ircutils as ircutils
 import supybot.registry as registry
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
+from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization('Services')
 
 def registerNick(nick, password=''):
@@ -44,7 +44,7 @@ def registerNick(nick, password=''):
         v.setValue(password)
 
 def configure(advanced):
-    from supybot.questions import expect, anything, something, yn, getpass
+    from supybot.questions import something
     conf.registerPlugin('Services', True)
     nick = something(_('What is your registered nick?'))
     password = something(_('What is your password for that nick?'))
