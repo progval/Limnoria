@@ -70,6 +70,9 @@ def get_feedName(irc, msg, args, state):
     if not registry.isValidRegistryName(args[0]):
         state.errorInvalid('feed name', args[0],
                            'Feed names must not include spaces.')
+    if "." in args[0]:
+        state.errorInvalid('feed name', args[0],
+                           'Feed names must not include dots.')
     state.args.append(callbacks.canonicalName(args.pop(0)))
 addConverter('feedName', get_feedName)
 
