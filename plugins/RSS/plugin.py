@@ -414,8 +414,12 @@ class RSS(callbacks.Plugin):
         new_entries = sort_feed_items(new_entries, 'newestFirst')
         for irc in world.ircs:
             for channel in irc.state.channels:
-                if feed.name not in self.registryValue('announce',
-                                                       channel, irc.network):
+                # Old bots have it set in plugins.RSS.announce.#channel,
+                # new bots set it in plugins.RSS.announce.:network.#channel,
+                # so we want to read from both.
+                channel_feeds = self.registryValue('announce', channel) \
+                    | self.registryValue('announce', channel, irc.network)
+                if feed.name not in channel_feeds:
                     continue
                 if initial:
                     max_entries = self.registryValue(
@@ -537,7 +541,9 @@ class RSS(callbacks.Plugin):
             only necessary if the message isn't sent in the channel itself.
             """
             announce = conf.supybot.plugins.RSS.announce
-            feeds = format('%L', list(announce.get(channel)()))
+            channel_feeds = announce.getSpecific(channel=channel) \
+                | announce.getSpecific(channel=channel, network=irc.network)
+            feeds = format('%L', set(channel_feeds)) # set() to deduplicate
             irc.reply(feeds or _('I am currently not announcing any feeds.'))
         list = wrap(list, ['channel',])
 
@@ -557,10 +563,10 @@ class RSS(callbacks.Plugin):
                 irc.error(format(_('These feeds are unknown: %L'),
                     invalid_feeds), Raise=True)
             announce = conf.supybot.plugins.RSS.announce
-            S = announce.get(channel)()
+            S = announce.getSpecific(channel=channel, network=irc.network)()
             for name in feeds:
                 S.add(name)
-            announce.get(channel).setValue(S)
+            announce.getSpecific(channel=channel, network=irc.network).setValue(S)
             irc.replySuccess()
             for name in feeds:
                 feed = plugin.get_feed(name)
