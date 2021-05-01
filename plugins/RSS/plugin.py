@@ -514,6 +514,17 @@ class RSS(callbacks.Plugin):
             irc.error(_('That\'s not a valid RSS feed command name.'))
             return
         self.remove_feed(feed)
+
+        # If the feed was first created "anonymously", eg. with
+        # `@rss announce add http://example.org/rss`, then as a named feed
+        # with `@rss add example http://example.org/rss`,
+        # `self.get_feed(name)` above gets only one of them; so let's
+        # remove the aliased name or URL from the feed names too,
+        # or we would have a dangling entry here.
+        self.feed_names.pop(name, None)
+        self.feed_names.pop(feed.url, None)
+        assert self.get_feed(name) is None
+
         irc.replySuccess()
     remove = wrap(remove, ['feedName'])
 

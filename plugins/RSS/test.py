@@ -101,6 +101,17 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotError('rss remove xkcd')
 
     @mock_urllib
+    def testRemoveAliasedFeed(self, mock):
+        try:
+            self.assertNotError('rss announce add http://xkcd.com/rss.xml')
+            self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+        finally:
+            self.assertNotError('rss announce remove http://xkcd.com/rss.xml')
+            self.assertNotError('rss remove xkcd')
+        self.assertEqual(self.irc.getCallback('RSS').feed_names, {})
+        self.assertEqual(self.irc.getCallback('RSS').feeds, {})
+
+    @mock_urllib
     def testInitialAnnounceNewest(self, mock):
         mock._data = xkcd_new
         timeFastForward(1.1)
