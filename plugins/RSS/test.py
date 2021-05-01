@@ -109,7 +109,6 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotError('rss announce remove http://xkcd.com/rss.xml')
             self.assertNotError('rss remove xkcd')
         self.assertEqual(self.irc.getCallback('RSS').feed_names, {})
-        self.assertEqual(self.irc.getCallback('RSS').feeds, {})
 
     @mock_urllib
     def testInitialAnnounceNewest(self, mock):
@@ -213,6 +212,8 @@ class RSSTestCase(ChannelPluginTestCase):
                 self.assertNoResponse(' ', timeout=0.1)
                 timeFastForward(1.1)
                 self.assertRegexp(' ', 'Telescopes')
+                self.assertRegexp(' ', 'Chaos')
+                self.assertNoResponse(' ', timeout=0.1)
         finally:
             self._feedMsg('rss announce remove http://xkcd.com/rss.xml')
             self._feedMsg('rss remove http://xkcd.com/rss.xml')

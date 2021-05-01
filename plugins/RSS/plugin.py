@@ -290,11 +290,17 @@ class RSS(callbacks.Plugin):
         self.feeds[url] = Feed(name, url, initial,
                 plugin_is_loading, announced)
 
-    def remove_feed(self, feed):
-        del self.feed_names[feed.name]
-        del self.feeds[feed.url]
-        conf.supybot.plugins.RSS.feeds().remove(feed.name)
-        conf.supybot.plugins.RSS.feeds.unregister(feed.name)
+    def remove_feed(self, name_or_url):
+        self.feed_names.pop(name_or_url, None)
+        while True:
+            try:
+                conf.supybot.plugins.RSS.feeds().remove(name_or_url)
+            except KeyError:
+                break
+        try:
+            conf.supybot.plugins.RSS.feeds.unregister(name_or_url)
+        except (KeyError, registry.NonExistentRegistryEntry):
+            pass
 
     ##################
     # Methods handling
@@ -517,7 +523,6 @@ class RSS(callbacks.Plugin):
         if not feed:
             irc.error(_('That\'s not a valid RSS feed command name.'))
             return
-        self.remove_feed(feed)
 
         # If the feed was first created "anonymously", eg. with
         # `@rss announce add http://example.org/rss`, then as a named feed
@@ -525,8 +530,8 @@ class RSS(callbacks.Plugin):
         # `self.get_feed(name)` above gets only one of them; so let's
         # remove the aliased name or URL from the feed names too,
         # or we would have a dangling entry here.
-        self.feed_names.pop(name, None)
-        self.feed_names.pop(feed.url, None)
+        self.remove_feed(feed.url)
+        self.remove_feed(name)
         assert self.get_feed(name) is None
 
         irc.replySuccess()
