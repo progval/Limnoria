@@ -248,18 +248,18 @@ class Relay(callbacks.Plugin):
         for otherIrc in world.ircs:
             if otherIrc != irc and not otherIrc.zombie:
                 if msg.channel in otherIrc.state.channels:
-                    self._sendToOther(otherIrc, msg, nick)
+                    self._sendToOther(irc, otherIrc, msg, nick)
 
-    def _sendToOther(self, otherIrc, msg, nick):
+    def _sendToOther(self, sourceIrc, destIrc, msg, nick):
         msg = copy.deepcopy(msg)
         msg.tag('relayedMsg')
-        if 'message-tags' in otherIrc.state.capabilities_ack \
+        if 'message-tags' in destIrc.state.capabilities_ack \
                 and conf.supybot.protocols.irc.experimentalExtensions():
             displayName = self._formatDisplayName(
-                nick, otherIrc.network, msg.channel)
+                nick, sourceIrc.network, msg.channel)
             # https://github.com/ircv3/ircv3-specifications/pull/452
             msg.server_tags['+draft/display-name'] = displayName
-        otherIrc.queueMsg(msg)
+        destIrc.queueMsg(msg)
 
     def _checkRelayMsg(self, msg):
         channel = msg.channel
