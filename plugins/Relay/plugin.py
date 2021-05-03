@@ -399,6 +399,8 @@ class Relay(callbacks.Plugin):
         network = self._getIrcName(irc)
         s = format(_('nick change by %s to %s on %s'), msg.nick,newNick,network)
         for channel in self.registryValue('channels'):
+            if channel not in msg.tagged('channels'):
+                continue
             m = self._msgmaker(channel, network, s)
             self._sendToOthers(irc, m, msg.nick)
 
@@ -438,6 +440,8 @@ class Relay(callbacks.Plugin):
         else:
             s = format(_('%s has quit %s.'), msg.nick, network)
         for channel in self.registryValue('channels'):
+            if channel not in msg.tagged('channels'):
+                continue
             m = self._msgmaker(channel, network, s)
             self._sendToOthers(irc, m, msg.nick)
 
