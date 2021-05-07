@@ -1182,6 +1182,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             self.action = self.action or action
             if action:
                 self.prefixNick = False
+                self.noLengthCheck = True
         if notice is not None:
             self.notice = self.notice or notice
         if private is not None:
