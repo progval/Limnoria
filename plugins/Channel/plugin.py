@@ -941,7 +941,7 @@ class Channel(callbacks.Plugin):
                         getopts({'count':''})])
 
     @internationalizeDocstring
-    def alertOps(self, irc, channel, s, frm=None):
+    def alertOps(self, irc, msg, channel, s, frm=None):
         """Internal message for notifying all the #channel,ops in a channel of
         a given situation."""
         capability = ircdb.makeChannelCapability(channel, 'op')
@@ -960,7 +960,7 @@ class Channel(callbacks.Plugin):
         Sends <text> to all the users in <channel> who have the <channel>,op
         capability.
         """
-        self.alertOps(irc, channel, text, frm=msg.nick)
+        self.alertOps(irc, msg, channel, text, frm=msg.nick)
     alert = wrap(alert, ['inChannel', 'text'])
 
     @internationalizeDocstring
