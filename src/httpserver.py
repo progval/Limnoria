@@ -268,7 +268,8 @@ class SupyHTTPServerCallback(log.Firewalled):
     def doHead(self, handler, path):
         self.doGetOrHead(handler, path, write_content=False)
 
-    doPost = doGet
+    def doPost(self, handler, path, form=None):
+        self.doGetOrHead(handler, path, write_content=True)
 
     def doWellKnown(self, handler, path):
         """Handles GET request to /.well-known/"""
