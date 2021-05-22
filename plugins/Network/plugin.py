@@ -81,7 +81,7 @@ class Network(callbacks.Plugin):
                 ssl = False
         if server:
             if ':' in server:
-                (server, port) = server.split(':')
+                (server, port) = server.rsplit(':', 1)
                 port = int(port)
             elif ssl:
                 port = 6697
