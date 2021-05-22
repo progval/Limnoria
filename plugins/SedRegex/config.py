@@ -38,7 +38,7 @@ except:
     _ = lambda x: x
 
 def configure(advanced):
-    from supybot.questions import expect, anything, something, yn
+    from supybot.questions import expect, anything, something, yn, output
     conf.registerPlugin('SedRegex', True)
     if advanced:
         output("""The SedRegex plugin allows you to make Perl/sed-style regex
