@@ -42,8 +42,8 @@ read it.
 
 ### In English
 
-If you have any trouble, feel free to swing by [#limnoria](ircs://chat.freenode.net:6697/#limnoria) on
-[freenode](https://freenode.net/) and ask questions.  We'll be happy to help
+If you have any trouble, feel free to swing by [#limnoria](ircs://irc.libera.chat:6697/#limnoria) on
+[Libera.Chat](https://libera.chat/) and ask questions.  We'll be happy to help
 wherever we can.  And by all means, if you find anything hard to
 understand or think you know of a better way to do something,
 *please* post it on the [issue tracker] so we can improve the bot!
@@ -52,5 +52,5 @@ understand or think you know of a better way to do something,
 
 ### In Other languages
 
-Only in French at the moment, located at [#supybot-fr on freenode](ircs://chat.freenode.net:6697/#supybot-fr).
+Only in French at the moment, located at [#limnoria-fr on Libera.Chat](ircs://irc.libera.chat:6697/#libera-fr).
 

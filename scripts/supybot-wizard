@@ -407,8 +407,9 @@ def main():
     while not network:
         output("""First, we need to know the name of the network you'd like to
         connect to.  Not the server host, mind you, but the name of the
-        network.  If you plan to connect to chat.freenode.net, for instance,
-        you should answer this question with 'freenode' (without the quotes).
+        network.  If you plan to connect to irc.libera.chat, for instance,
+        you should answer this question with 'libera' or 'liberachat'
+        (without the quotes).
         """)
         network = something('What IRC network will you be connecting to?')
         if '.' in network:
