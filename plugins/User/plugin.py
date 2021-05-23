@@ -110,6 +110,7 @@ class User(callbacks.Plugin):
         user, or use the identify command to identify just for a session.
         This command (and all other commands that include a password) must be
         sent to the bot privately, not in a channel.
+        Use "!" instead of <password> to disable password authentication.
         """
         addHostmask = True
         try:
@@ -132,9 +133,17 @@ class User(callbacks.Plugin):
                 return
         except KeyError:
             pass
+
+        if password == "!":
+            password = None
+        elif len(password) < 3:
+            irc.error(_('The password must be at least 3 characters long.'),
+                    Raise=True)
+
         user = ircdb.users.newUser()
         user.name = name
-        user.setPassword(password)
+        if password:
+            user.setPassword(password)
         if addHostmask:
             user.addHostmask(msg.prefix)
         ircdb.users.setUser(user)

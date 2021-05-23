@@ -251,16 +251,19 @@ class IrcUser(object):
             return self.capabilities.check(capability, ignoreOwner=ignoreOwner)
 
     def setPassword(self, password, hashed=False):
-        """Sets the user's password."""
+        """Sets the user's password. If password is None, it will be disabled."""
         if hashed or self.hashed:
             self.hashed = True
-            self.password = utils.saltHash(password)
+            if password is None:
+                self.password = ""
+            else:
+                self.password = utils.saltHash(password)
         else:
             self.password = password
 
     def checkPassword(self, password):
         """Checks the user's password."""
-        if password is None:
+        if password is None or not self.password:
             return False
         if self.hashed:
             (salt, _) = self.password.split('|')
