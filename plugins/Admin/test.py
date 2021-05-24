@@ -30,7 +30,7 @@
 from supybot.test import *
 
 class AdminTestCase(PluginTestCase):
-    plugins = ('Admin',)
+    plugins = ('Admin', 'Utilities')
     def testChannels(self):
         def getAfterJoinMessages():
             m = self.irc.takeMsg()
@@ -120,6 +120,20 @@ class AdminTestCase(PluginTestCase):
                     'Error: "somecommand" is not a valid command.')
         finally:
             world.testing = True
+
+    def testAcmd(self):
+        self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))
+        self.irc.feedMsg(ircmsgs.join('#bar', prefix=self.prefix))
+        while self.irc.takeMsg():
+            pass
+        msgs = []
+        msg = self.getMsg('acmd echo hi $channel')
+        while msg:
+            msgs.append(msg)
+            msg = self.irc.takeMsg()
+        self.assertCountEqual(
+            [(msg.command, *msg.args) for msg in msgs],
+            [("PRIVMSG", "#foo", "hi #foo"), ("PRIVMSG", "#bar", "hi #bar")])
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 

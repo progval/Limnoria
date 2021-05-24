@@ -355,8 +355,8 @@ class Admin(callbacks.Plugin):
 
         Perform <command> (with associated <arg>s on all channels on current network."""
         for channel in irc.state.channels:
-            msg.args[0] = channel
-            self.Proxy(irc, msg, commandAndArgs)
+            msg = ircmsgs.IrcMsg(msg=msg, args=(channel, *msg.args[1:]))
+            self.Proxy(irc.getRealIrc(), msg, commandAndArgs)
     acmd = wrap(acmd, ['admin', many('something')])
 
 
