@@ -105,6 +105,14 @@ class UserTestCase(PluginTestCase):
         m = self.irc.takeMsg()
         self.assertFalse(m is not None, m)
 
+    def testRegisterPasswordLength(self):
+        self.assertRegexp('register foo aa', 'at least 3 characters long.')
+
+    def testRegisterNoPassword(self):
+        self.assertNotError('register foo !')
+        self.assertRegexp('identify foo bar', 'your password is wrong.')
+        self.assertRegexp('identify foo !', 'your password is wrong.')
+
     def testRegisterUnregister(self):
         self.prefix = self.prefix1
         self.assertNotError('register foo bar')
