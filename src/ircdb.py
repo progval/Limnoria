@@ -218,7 +218,8 @@ class IrcUser(object):
         else:
             self.hostmasks = hostmasks
         if nicks is None:
-            self.nicks = {} # {'network1': ['foo', 'bar'], 'network': ['baz']}
+            # {'network1': ['foo', 'bar'], 'network': ['baz']}
+            self.nicks = ircutils.IrcDict()
         else:
             self.nicks = nicks
         self.gpgkeys = [] # GPG key ids
