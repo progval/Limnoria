@@ -32,6 +32,35 @@ import re
 
 from supybot.test import *
 
+
+class MiscTestCase(PluginTestCase):
+    plugins = ('Misc', 'Utilities')
+    def testMore(self):
+        newprefix = 'fooo!bar@baaaaaaaaaaaaaaz'
+
+        # just for the sale of filling irc.state.nicksToHostmasks:
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CHGHOST', args=(self.nick, 'baz'),
+            prefix=self.prefix))
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CHGHOST', args=('foo', 'baz'),
+            prefix='foo!bar@oldbaz'))
+
+        self.assertResponse('echo %s' % ('abc '*400),
+                            'abc '*112 + ' \x02(3 more messages)\x02',
+                            frm=newprefix)
+        m = self.assertResponse('more',
+                            'abc '*112 + ' \x02(2 more messages)\x02',
+                            frm=newprefix)
+        self.assertResponse('more',
+                            'abc '*112 + ' \x02(1 more message)\x02',
+                            frm=newprefix)
+        self.assertResponse('more',
+                            ' '.join(['abc']*(400-112*3)),
+                            frm=newprefix)
+        self.assertResponse('more',
+                            "Error: That's all, there is no more.",
+                            frm=newprefix)
+
+
 class MiscTestCase(ChannelPluginTestCase):
     plugins = ('Misc', 'Utilities', 'Anonymous', 'Plugin',
                'Channel', 'Dict', 'User', 'String')

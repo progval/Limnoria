@@ -511,7 +511,10 @@ class RichReplyMethods(object):
         # change the state of this Irc object.
         if to is not None:
             self.to = self.to or to
-        target = self.private and self.to or self.msg.args[0]
+        if self.private or self.msg.channel is None:
+            target = self.msg.nick
+        else:
+            target = self.to or self.msg.args[0]
         return target
 
     def replies(self, L, prefixer=None, joiner=None,
@@ -703,11 +706,17 @@ class ReplyIrcProxy(RichReplyMethods):
                'Old code alert: there is no longer a "msg" argument to reply.'
         kwargs.pop('noLengthCheck', None)
         if 'target' not in kwargs:
-            target = kwargs.get('private', False) and kwargs.get('to', None) \
-                    or msg.args[0]
+            # TODO: deduplicate this with _getTarget
+            # TODO: it looks like 'target' is never in kwargs.
+            #       (an old version of this code crashed when 'target' was
+            #       not given, but no one complained). Remove the conditional?
+            if kwargs.get('private', False) or msg.channel is None:
+                kwargs['target'] = msg.nick
+            else:
+                kwargs['target'] = kwargs.get('to', None) or msg.args[0]
         if 'prefixNick' not in kwargs:
             kwargs['prefixNick'] = self._defaultPrefixNick(msg)
-        self._sendReply(s, target=target, msg=msg, **kwargs)
+        self._sendReply(s, msg=msg, **kwargs)
 
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
