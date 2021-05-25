@@ -132,7 +132,7 @@ class AdminTestCase(PluginTestCase):
             msgs.append(msg)
             msg = self.irc.takeMsg()
         self.assertCountEqual(
-            [(msg.command, *msg.args) for msg in msgs],
+            [(msg.command,) + msg.args for msg in msgs],
             [("PRIVMSG", "#foo", "hi #foo"), ("PRIVMSG", "#bar", "hi #bar")])
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

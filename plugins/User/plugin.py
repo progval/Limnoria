@@ -209,7 +209,14 @@ class User(callbacks.Plugin):
             password>. Obviously this message must be sent to the bot
             privately (not in a channel). If the requesting user is an owner
             user, then <old password> needn't be correct.
+            If the <new password> is "!", password login will be disabled.
             """
+            if password == "!":
+                password = None
+            elif len(password) < 3:
+                irc.error(_('The password must be at least 3 characters long.'),
+                        Raise=True)
+
             try:
                 u = ircdb.users.getUser(msg.prefix)
             except KeyError:
