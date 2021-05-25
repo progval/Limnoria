@@ -427,7 +427,7 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
         _("""Determines whether the bot will abort the connection if the
         none of the enabled SASL mechanism succeeded.""")))
     registerGlobalValue(network, 'socksproxy', registry.String('',
-        _("""If not empty, determines the hostname of the socks proxy that
+        _("""If not empty, determines the hostname:port of the socks proxy that
         will be used to connect to this network.""")))
     return network
 
