@@ -42,11 +42,7 @@ import threading
 import select
 import socket
 
-try:
-    import ipaddress  # Python >= 3.3 or backported ipaddress
-except ImportError:
-    # Python < 3.3
-    ipaddress = None
+import ipaddress
 
 from .. import (conf, drivers, log, utils, world)
 from ..utils import minisix
@@ -314,14 +310,21 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 address = address.decode('utf-8')
             elif (not network_config.requireStarttls()) and \
                     (not network_config.ssl()) and \
-                    (not self.currentServer.force_tls_verification) and \
-                    (ipaddress is None or not ipaddress.ip_address(address).is_loopback):
-                drivers.log.warning(('Connection to network %s '
-                    'does not use SSL/TLS, which makes it vulnerable to '
-                    'man-in-the-middle attacks and passive eavesdropping. '
-                    'You should consider upgrading your connection to SSL/TLS '
-                    '<http://docs.limnoria.net/en/latest/use/faq.html#how-to-make-a-connection-secure>')
-                    % self.irc.network)
+                    (not self.currentServer.force_tls_verification):
+
+                try:
+                    is_loopback = ipaddress.ip_address(address).is_loopback
+                except ValueError:
+                    # address is a hostname, eg. because we're using a SOCKS
+                    # proxy
+                    is_loopback = False
+                if not is_loopback:
+                    drivers.log.warning(('Connection to network %s '
+                        'does not use SSL/TLS, which makes it vulnerable to '
+                        'man-in-the-middle attacks and passive eavesdropping. '
+                        'You should consider upgrading your connection to SSL/TLS '
+                        '<http://docs.limnoria.net/en/latest/use/faq.html#how-to-make-a-connection-secure>')
+                        % self.irc.network)
 
             conf.supybot.drivers.poll.addCallback(self.setTimeout)
             self.setTimeout()
