@@ -269,6 +269,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             log.error('Cannot use socks proxy (SocksiPy not installed), '
                     'using direct connection instead.')
             socks_proxy = ''
+        if socks_proxy:
+            # Do not try to resolve, let the SOCKS proxy do it.
+            # (Avoids leaking DNS queries *and* is necessary for onion
+            # services)
+            address = self.currentServer.hostname
         else:
             try:
                 address = utils.net.getAddressFromHostname(
