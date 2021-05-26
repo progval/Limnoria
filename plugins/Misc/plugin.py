@@ -381,7 +381,10 @@ class Misc(callbacks.Plugin):
         If <nick> is given, it takes the continuation of the last command from
         <nick> instead of the person sending this message.
         """
-        userHostmask = msg.prefix.split('!', 1)[1]
+        if '!' in msg.prefix and '@' in msg.prefix:
+            userHostmask = msg.prefix.split('!', 1)[1]
+        else:
+            userHostmask = msg.nick
         if nick:
             try:
                 (private, L) = irc._mores[nick]

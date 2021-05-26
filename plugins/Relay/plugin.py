@@ -341,7 +341,7 @@ class Relay(callbacks.Plugin):
         if channel not in self.registryValue('channels'):
             return
         network = self._getIrcName(irc)
-        if self.registryValue('hostmasks', channel):
+        if self.registryValue('hostmasks', channel) and '!' in msg.prefix:
             hostmask = format(' (%s)', msg.prefix.split('!')[1])
         else:
             hostmask = ''
@@ -355,7 +355,7 @@ class Relay(callbacks.Plugin):
         if channel not in self.registryValue('channels'):
             return
         network = self._getIrcName(irc)
-        if self.registryValue('hostmasks', channel):
+        if self.registryValue('hostmasks', channel) and '!' in msg.prefix:
             hostmask = format(' (%s)', msg.prefix.split('!')[1])
         else:
             hostmask = ''

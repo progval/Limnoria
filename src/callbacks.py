@@ -883,8 +883,9 @@ class ReplyIrcProxy(RichReplyMethods):
                     prefix = state.nickToHostmask(target)
                 except KeyError:
                     pass # We'll leave it as it is.
-            mask = prefix.split('!', 1)[1]
-            self._mores[mask] = msgs
+            if '!' in prefix and '@' in prefix:
+                mask = prefix.split('!', 1)[1]
+                self._mores[mask] = msgs
             public = bool(self.msg.channel)
             private = kwargs.get('private', False) or not public
             self._mores[msg.nick] = (private, msgs)
