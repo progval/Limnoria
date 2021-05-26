@@ -173,9 +173,14 @@ def run():
 
 class Log(object):
     """This is used to have a nice, consistent interface for drivers to use."""
-    def connect(self, server):
-        self.info('Connecting to %s:%s.',
-                  server.hostname, server.port)
+    def connect(self, server, socks_proxy=None):
+        if socks_proxy:
+            socks_phrase = ' Via SOCKS proxy %s'
+        else:
+            socks_phrase = ''
+            socks_proxy = ''
+        self.info('Connecting to %s:%s.' + socks_phrase,
+                  server.hostname, server.port, socks_proxy)
 
     def connectError(self, server, e):
         if isinstance(e, Exception):

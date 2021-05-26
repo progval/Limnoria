@@ -278,7 +278,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 drivers.log.connectError(self.currentServer, e)
                 self.scheduleReconnect()
                 return
-        drivers.log.connect(self.currentServer)
+        drivers.log.connect(self.currentServer, socks_proxy=socks_proxy)
         try:
             self.conn = utils.net.getSocket(
                     address,
