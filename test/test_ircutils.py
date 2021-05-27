@@ -58,6 +58,21 @@ class FunctionsTestCase(SupyTestCase):
             'abr-ubr1.sbo-abr.ma.cable.rcn.com'
         self.assertTrue(ircutils.hostmaskPatternEqual(s, s))
 
+    def testHostmaskSet(self):
+        hs = ircutils.HostmaskSet()
+        self.assertEqual(hs.match("nick!user@host"), None)
+        hs.add("*!user@host")
+        hs.add("*!user@host2")
+        self.assertEqual(hs.match("nick!user@host"), "*!user@host")
+        self.assertEqual(hs.match("nick!user@host2"), "*!user@host2")
+        self.assertEqual(list(hs), ["*!user@host", "*!user@host2"])
+        hs.remove("*!user@host2")
+        self.assertEqual(hs.match("nick!user@host"), "*!user@host")
+        self.assertEqual(hs.match("nick!user@host2"), None)
+
+        hs = ircutils.HostmaskSet(["*!user@host"])
+        self.assertEqual(hs.match("nick!user@host"), "*!user@host")
+
     def testIsUserHostmask(self):
         self.assertTrue(ircutils.isUserHostmask(self.hostmask))
         self.assertTrue(ircutils.isUserHostmask('a!b@c'))

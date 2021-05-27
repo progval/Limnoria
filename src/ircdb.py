@@ -196,6 +196,7 @@ class UserCapabilitySet(CapabilitySet):
         assert capability != '-owner', '"-owner" disallowed.'
         self.__parent.add(capability)
 
+
 class IrcUser(object):
     """This class holds the capabilities and authentications for a user."""
     __slots__ = ('id', 'auth', 'name', 'ignore', 'secure', 'hashed',
@@ -213,10 +214,10 @@ class IrcUser(object):
         self.capabilities = UserCapabilitySet()
         for capability in capabilities:
             self.capabilities.add(capability)
-        if hostmasks is None:
-            self.hostmasks = ircutils.IrcSet() # hostmasks used for recognition
-        else:
-            self.hostmasks = hostmasks
+
+        # hostmasks used for recognition
+        self.hostmasks = ircutils.HostmaskSet(hostmasks or [])
+
         if nicks is None:
             # {'network1': ['foo', 'bar'], 'network': ['baz']}
             self.nicks = ircutils.IrcDict()
@@ -289,9 +290,9 @@ class IrcUser(object):
             finally:
                 while removals:
                     self.auth.remove(removals.pop())
-        for pat in self.hostmasks:
-            if ircutils.hostmaskPatternEqual(pat, hostmask):
-                return pat
+        matched_pattern = self.hostmasks.match(hostmask)
+        if matched_pattern is not None:
+            return matched_pattern
         return False
 
     def addHostmask(self, hostmask):
