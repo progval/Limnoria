@@ -65,7 +65,7 @@ class FunctionsTestCase(SupyTestCase):
         hs.add("*!user@host2")
         self.assertEqual(hs.match("nick!user@host"), "*!user@host")
         self.assertEqual(hs.match("nick!user@host2"), "*!user@host2")
-        self.assertEqual(list(hs), ["*!user@host", "*!user@host2"])
+        self.assertCountEqual(list(hs), ["*!user@host", "*!user@host2"])
         hs.remove("*!user@host2")
         self.assertEqual(hs.match("nick!user@host"), "*!user@host")
         self.assertEqual(hs.match("nick!user@host2"), None)
