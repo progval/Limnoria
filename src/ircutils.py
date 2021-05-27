@@ -169,9 +169,9 @@ def areReceivers(s, strictRfc=True, nicklen=None, chantypes='#&!',
     return all([nick(x) or chan(x) for x in s.split(',')])
 
 _patternCache = utils.structures.CacheDict(1000)
-def _hostmaskPatternEqual(pattern, hostmask):
+def compileHostmaskPattern(pattern):
     try:
-        return _patternCache[pattern](hostmask) is not None
+        return _patternCache[pattern]
     except KeyError:
         # We make our own regexps, rather than use fnmatch, because fnmatch's
         # case-insensitivity is not IRC's case-insensitity.
@@ -194,7 +194,7 @@ def _hostmaskPatternEqual(pattern, hostmask):
         fd.write('$')
         f = re.compile(fd.getvalue(), re.I).match
         _patternCache[pattern] = f
-        return f(hostmask) is not None
+        return f
 
 _hostmaskPatternEqualCache = utils.structures.CacheDict(1000)
 def hostmaskPatternEqual(pattern, hostmask):
@@ -203,9 +203,9 @@ def hostmaskPatternEqual(pattern, hostmask):
     try:
         return _hostmaskPatternEqualCache[(pattern, hostmask)]
     except KeyError:
-        b = _hostmaskPatternEqual(pattern, hostmask)
-        _hostmaskPatternEqualCache[(pattern, hostmask)] = b
-        return b
+        matched = compileHostmaskPattern(pattern)(hostmask) is not None
+        _hostmaskPatternEqualCache[(pattern, hostmask)] = matched
+        return matched
 
 def banmask(hostmask):
     """Returns a properly generic banning hostmask for a hostmask.
