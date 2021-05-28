@@ -40,6 +40,7 @@ import socket
 import threading
 import feedparser
 
+import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
@@ -344,6 +345,7 @@ class RSS(callbacks.Plugin):
     ###############
     # Feed fetching
 
+    @log.firewall
     def update_feed(self, feed):
         handlers = []
         if utils.web.proxy():
