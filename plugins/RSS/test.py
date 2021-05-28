@@ -191,7 +191,10 @@ class RSSTestCase(ChannelPluginTestCase):
                 self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
                 self.assertNotError('rss announce add buggy')
                 self.assertNotError('rss announce add xkcd')
-                self.assertNotError(' ')
+                try:
+                    self.assertNotError(' ', timeout=0.1)
+                except TimeoutError:
+                    pass
                 with conf.supybot.plugins.RSS.sortFeedItems.context('oldestFirst'):
                     with conf.supybot.plugins.RSS.waitPeriod.context(1):
                         timeFastForward(1.1)
