@@ -174,43 +174,6 @@ class RSSTestCase(ChannelPluginTestCase):
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
 
-    def testAnnounceError(self):
-        """Tests error from a single feed does not prevent other feeds from
-        being announced."""
-        mock = MockResponse()
-        mock._data = xkcd_old
-        def open(request):
-            if request.full_url == 'http://xkcd.com/rss.xml':
-                return mock
-            else:
-                raise Exception('oops, feed crashed')
-        with patch("urllib.request.OpenerDirector.open", side_effect=open):
-            timeFastForward(1.1)
-            try:
-                self.assertNotError('rss add buggy http://example.org/foo')
-                self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
-                self.assertNotError('rss announce add buggy')
-                self.assertNotError('rss announce add xkcd')
-                try:
-                    self.assertNotError(' ', timeout=0.1)
-                except TimeoutError:
-                    pass
-                with conf.supybot.plugins.RSS.sortFeedItems.context('oldestFirst'):
-                    with conf.supybot.plugins.RSS.waitPeriod.context(1):
-                        timeFastForward(1.1)
-                        self.assertNoResponse(' ', timeout=0.1)
-                        mock._data = xkcd_new
-                        self.assertNoResponse(' ', timeout=0.1)
-                        timeFastForward(1.1)
-                        self.assertRegexp(' ', 'Chaos')
-                        self.assertRegexp(' ', 'Telescopes')
-                        self.assertNoResponse(' ')
-            finally:
-                self._feedMsg('rss announce remove buggy')
-                self._feedMsg('rss remove buggy')
-                self._feedMsg('rss announce remove xkcd')
-                self._feedMsg('rss remove xkcd')
-
     @mock_urllib
     def testMaxAnnounces(self, mock):
         mock._data = xkcd_old
