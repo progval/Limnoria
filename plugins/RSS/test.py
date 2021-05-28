@@ -214,6 +214,7 @@ class RSSTestCase(ChannelPluginTestCase):
                 self.assertRegexp(' ', 'Telescopes')
                 self.assertRegexp(' ', 'Chaos')
                 self.assertNoResponse(' ', timeout=0.1)
+            self.assertResponse('announce list', 'http://xkcd.com/rss.xml')
         finally:
             self._feedMsg('rss announce remove http://xkcd.com/rss.xml')
             self._feedMsg('rss remove http://xkcd.com/rss.xml')
@@ -231,6 +232,7 @@ class RSSTestCase(ChannelPluginTestCase):
                 self.assertNoResponse(' ', timeout=0.1)
                 timeFastForward(1.1)
                 self.assertNoResponse(' ', timeout=0.1)
+            self.assertResponse('announce list', 'xkcd')
         finally:
             self._feedMsg('rss announce remove xkcd')
             self._feedMsg('rss remove xkcd')
