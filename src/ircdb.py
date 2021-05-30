@@ -385,7 +385,7 @@ class IrcChannel(object):
         self.defaultAllow = defaultAllow
         self.expiredBans = []
         self.bans = bans or {}
-        self.ignores = ignores or {}
+        self.ignores = ircutils.ExpiringHostmaskDict(ignores)
         self.silences = silences or []
         self.exceptions = exceptions or []
         self.capabilities = capabilities or CapabilitySet()
@@ -471,14 +471,8 @@ class IrcChannel(object):
         assert ircutils.isUserHostmask(hostmask), 'got %s' % hostmask
         if self.checkBan(hostmask):
             return True
-        now = time.time()
-        for (pattern, expiration) in list(self.ignores.items()):
-            if now < expiration or not expiration:
-                if ircutils.hostmaskPatternEqual(pattern, hostmask):
-                    return True
-            else:
-                del self.ignores[pattern]
-                # Later we may wish to keep expiredIgnores, but not now.
+        if self.ignores.match(hostmask):
+            return True
         return False
 
     def preserve(self, fd, indent=''):
@@ -1059,7 +1053,7 @@ class IgnoresDB(object):
     __slots__ = ('filename', 'hostmasks')
     def __init__(self):
         self.filename = None
-        self.hostmasks = {}
+        self.hostmasks = ircutils.ExpiringHostmaskDict()
 
     def open(self, filename):
         self.filename = filename
@@ -1098,26 +1092,20 @@ class IgnoresDB(object):
 
     def reload(self):
         if self.filename is not None:
-            oldhostmasks = self.hostmasks.copy()
+            oldhostmasks = list(self.hostmasks.items())
             self.hostmasks.clear()
             try:
                 self.open(self.filename)
             except EnvironmentError as e:
                 log.warning('IgnoresDB.reload failed: %s', e)
                 # Let's be somewhat transactional.
-                self.hostmasks.update(oldhostmasks)
+                for (hostmask, expiration) in oldhostmasks:
+                    self.hostmasks.add(hostmask, expiration)
         else:
             log.warning('IgnoresDB.reload called without self.filename.')
 
     def checkIgnored(self, prefix):
-        now = time.time()
-        for (hostmask, expiration) in list(self.hostmasks.items()):
-            if expiration and now > expiration:
-                del self.hostmasks[hostmask]
-            else:
-                if ircutils.hostmaskPatternEqual(hostmask, prefix):
-                    return True
-        return False
+        return bool(self.hostmasks.match(prefix))
 
     def add(self, hostmask, expiration=0):
         assert ircutils.isUserHostmask(hostmask), 'got %s' % hostmask

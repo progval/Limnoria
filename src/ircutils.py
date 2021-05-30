@@ -252,6 +252,60 @@ class HostmaskSet(collections.abc.MutableSet):
                 return pattern
         return None
 
+    def __repr__(self):
+        return 'HostmaskSet(%r)' % (list(self.data),)
+
+
+class ExpiringHostmaskDict(collections.abc.MutableMapping):
+    """Like HostmaskSet, but behaves like a dict with expiration timestamps
+    as values."""
+
+    # To keep it thread-safe, add to self.patterns first, then
+    # self.data; and remove from self.data first.
+    # And never iterate on self.patterns
+
+    def __init__(self, hostmasks=None):
+        if isinstance(hostmasks, (list, tuple)):
+            hostmasks = dict(hostmasks)
+        self.data = hostmasks or {}
+        self.patterns = HostmaskSet(list(self.data))
+
+    def __getitem__(self, hostmask):
+        return self.data[hostmask]
+
+    def __setitem__(self, hostmask, expiration):
+        """For backward compatibility, in case any plugin depends on it
+        being dict-like."""
+        self.patterns.add(hostmask)
+        self.data[hostmask] = expiration
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __delitem__(self, hostmask):
+        del self.data[hostmask]
+        self.patterns.discard(hostmask)
+
+    def expire(self):
+        now = time.time()
+        for (hostmask, expiration) in list(self.data.items()):
+            if now >= expiration and expiration:
+                self.pop(hostmask, None)
+
+    def match(self, hostname):
+        self.expire()
+        return self.patterns.match(hostname)
+
+    def clear(self):
+        self.data.clear()
+        self.patterns.clear()
+
+    def __repr__(self):
+        return 'ExpiringHostmaskSet(%r)' % (self.expirations,)
+
 
 def banmask(hostmask):
     """Returns a properly generic banning hostmask for a hostmask.
