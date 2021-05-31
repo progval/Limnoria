@@ -35,9 +35,9 @@ import os
 import sys
 import time
 import warnings
-import datetime
-import tempfile
 import subprocess
+
+from setuptools import setup
 
 warnings.filterwarnings('always', category=DeprecationWarning)
 
@@ -97,54 +97,11 @@ if sys.version_info < (3, 6, 0) \
     sys.stderr.write('====================================================\n')
     time.sleep(60)
 
-import textwrap
-
-clean = False
-while '--clean' in sys.argv:
-    clean = True
-    sys.argv.remove('--clean')
-
-import glob
-import shutil
-import os
-
-
 plugins = [s for s in os.listdir('plugins') if
            os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
 
 def normalizeWhitespace(s):
     return ' '.join(s.split())
-
-try:
-    from distutils.core import setup
-    from distutils.sysconfig import get_python_lib
-except ImportError as e:
-    s = normalizeWhitespace("""Supybot requires the distutils package to
-    install. This package is normally included with Python, but for some
-    unfathomable reason, many distributions to take it out of standard Python
-    and put it in another package, usually caled 'python-dev' or python-devel'
-    or something similar. This is one of the dumbest things a distribution can
-    do, because it means that developers cannot rely on *STANDARD* Python
-    modules to be present on systems of that distribution. Complain to your
-    distribution, and loudly. If you how much of our time we've wasted telling
-    people to install what should be included by default with Python you'd
-    understand why we're unhappy about this.  Anyway, to reiterate, install the
-    development package for Python that your distribution supplies.""")
-    sys.stderr.write(os.linesep*2)
-    sys.stderr.write(textwrap.fill(s))
-    sys.stderr.write(os.linesep*2)
-    sys.exit(-1)
-
-
-if clean:
-    previousInstall = os.path.join(get_python_lib(), 'supybot')
-    if os.path.exists(previousInstall):
-        try:
-            print('Removing current installation.')
-            shutil.rmtree(previousInstall)
-        except Exception as e:
-            print('Couldn\'t remove former installation: %s' % e)
-            sys.exit(-1)
 
 packages = ['supybot',
             'supybot.locales',
