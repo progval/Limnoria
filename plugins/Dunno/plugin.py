@@ -38,7 +38,9 @@ class Dunno(plugins.ChannelIdDatabasePlugin):
     of them to provide a similar-to-moobot-and-blootbot interface for factoids.
     Basically, it replaces the standard 'Error: <x> is not a valid command.'
     messages with messages kept in a database, able to give more personable
-    responses."""
+    responses.
+
+    ``$command`` in the message will be replaced by the command's name."""
 
     callAfter = ['MoobotFactoids', 'Factoids', 'Infobot']
     def invalidCommand(self, irc, msg, tokens):
