@@ -1973,7 +1973,14 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
     def do906(self, msg):
         log.warning('%s: SASL authentication aborted', self.network)
-        self.tryNextSaslMechanism(msg)  # TODO: should not try this in state INIT_WAITING_MOTD (set when sending CAP END because of exhausted list of SASL mechs)
+        if self.state.fsm.state == IrcStateFsm.States.INIT_WAITING_MOTD:
+            # This 906 was triggered by sending 'CAP END' after we exhausted
+            # all authentication mechanism; so it does not make sense to try
+            # self.tryNextSaslMechanism() again. And it would crash anyway,
+            # because it does not expect the connection to be in this state.
+            pass
+        else:
+            self.tryNextSaslMechanism(msg)
 
     def do907(self, msg):
         log.warning('%s: Attempted SASL authentication when we were already '
