@@ -1,11 +1,26 @@
-Supybot is a robust (it doesn't crash), user friendly (it's easy to
-configure) and programmer friendly (plugins are *extremely* easy to
-write) Python IRC bot.  It aims to be an adequate replacement for most
-existing IRC bots.  It includes a very flexible and powerful ACL system
-for controlling access to commands, as well as more than 50 builtin plugins
+Limnoria is a multipurpose Python IRC bot, designed for flexibility and robustness,
+while being easy to install, set up, and maintain.
+
+It aims to be an adequate replacement for most existing IRC bots.
+It includes a very flexible and powerful
+[ACL system](https://docs.limnoria.net/use/capabilities.html)
+for controlling access to commands,
+an equality powerful
+[configuration system](https://docs.limnoria.net/use/configuration.html)
+to customize your bot,
+as well as more than 60 builtin [plugins](https://limnoria.net/plugins.xhtml)
 providing around 400 actual commands.
 
-Limnoria is the project which continues development of Supybot since 2010.
+There are also dozens of third-party [plugins](https://limnoria.net/plugins.xhtml)
+written by dozens of independent developers,
+and it is very easy to
+[write your own](https://docs.limnoria.net/develop/plugin_tutorial.html)
+with only basic knowledge of Python.
+
+It is the successor of
+[Supybot](https://sourceforge.net/projects/supybot/)
+since 2010 and provides many new features, but keeps full compatibility
+with existing configurations and plugins.
 
 # Build status
 
