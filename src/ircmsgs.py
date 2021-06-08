@@ -272,7 +272,10 @@ class IrcMsg(object):
                 else:
                     self.reply_env = None
                 self.tags = msg.tags.copy()
-                self.server_tags = msg.server_tags
+                if server_tags is None:
+                    self.server_tags = msg.server_tags.copy()
+                else:
+                    self.server_tags = server_tags
                 self.time = msg.time
             else:
                 self.prefix = prefix

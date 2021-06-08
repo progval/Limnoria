@@ -721,21 +721,26 @@ class ReplyIrcProxy(RichReplyMethods):
     def __getattr__(self, attr):
         return getattr(self.irc, attr)
 
-    def _replyOverhead(self, target, targetNick, prefixNick):
+    def _replyOverhead(self, msg, **kwargs):
         """Returns the number of bytes added to a PRIVMSG payload, either by
         Limnoria itself or by the server.
-        Ignores tag bytes, as they are accounted for separatly."""
-        overhead = (
-            len(':')
-            + len(self.irc.prefix.encode())
-            + len(' PRIVMSG ')
-            + len(target.encode())
-            + len(' :')
-            + len('\r\n')
-        )
-        if prefixNick and targetNick is not None:
-            overhead += len(targetNick) + len(': ')
-        return overhead
+        Ignores tag bytes, as they are accounted for separately."""
+        # FIXME: big hack.
+        # _makeReply does a lot of internal state computation, especially
+        # related to the final target to use.
+        # I tried to get them out of _makeReply but it's a clusterfuck, so I
+        # gave up. Instead, we call _makeReply with a dummy payload to guess
+        # what overhead it will add.
+        payload = 'foo'
+        channel = msg.channel
+        msg = copy.deepcopy(msg)  # because _makeReply calls .tag('repliedTo')
+        msg.channel = channel  # ugh... copy.deepcopy uses msg.__reduce__
+        reply_msg = _makeReply(self, msg, payload, **kwargs)
+
+        # strip tags, add prefix
+        reply_msg = ircmsgs.IrcMsg(
+            msg=reply_msg, server_tags={}, prefix=self.prefix)
+        return len(str(reply_msg)) - len(payload)
 
     def _sendReply(self, s, target, msg, sendImmediately=False,
                    noLengthCheck=False, **kwargs):
@@ -760,8 +765,7 @@ class ReplyIrcProxy(RichReplyMethods):
             allowedLength = conf.get(conf.supybot.reply.mores.length,
                 channel=target, network=self.irc.network)
             if not allowedLength: # 0 indicates this.
-                allowedLength = 512 - self._replyOverhead(
-                        target, msg.nick, prefixNick=kwargs['prefixNick'])
+                allowedLength = 512 - self._replyOverhead(msg, **kwargs)
             maximumMores = conf.get(conf.supybot.reply.mores.maximum,
                 channel=target, network=self.irc.network)
             maximumLength = allowedLength * maximumMores
@@ -901,12 +905,12 @@ class ReplyIrcProxy(RichReplyMethods):
         assert conf.supybot.protocols.irc.experimentalExtensions()
         assert 'draft/multiline' in self.state.capabilities_ack
 
-        if not allowedLength: # 0 indicates this.
-            # We're only interested in the overhead outside the payload,
-            # regardless of the entire payload (nick prefix included),
-            # so prefixNick=False
-            allowedLength = 512 - self._replyOverhead(
-                    target, targetNick, prefixNick=False)
+        if allowedLength: # 0 indicates this.
+            largest_msg_size = allowedLength
+        else:
+            # Used as upper bound of each message's size to decide how many
+            # messages to put in each batch.
+            largest_msg_size = max(len(msg.args[1]) for msg in msgs)
 
         multiline_cap_values = ircutils.parseCapabilityKeyValue(
             self.state.capabilities_ls['draft/multiline'])
@@ -919,7 +923,7 @@ class ReplyIrcProxy(RichReplyMethods):
         # encode messages again here just to have their length, so
         # let's assume they all have the maximum length.
         # It's not optimal, but close enough and simplifies the code.
-        messages_per_batch = max_bytes_per_batch // allowedLength
+        messages_per_batch = max_bytes_per_batch // largest_msg_size
 
         # "Clients MUST NOT send tags other than draft/multiline-concat and
         # batch on messages within the batch. In particular, all client-only

@@ -561,6 +561,14 @@ class PrivmsgTestCase(ChannelPluginTestCase):
                 " " + "foo " * 79 + "'")
             self.assertNoResponse(" ", timeout=0.1)
 
+    def testReplyPrivate(self):
+        # Send from a very long nick, which should be taken into account when
+        # computing the reply overhead.
+        self.assertResponse(
+            "eval irc.reply('foo '*300, private=True)",
+            "foo " * 39 + "\x02(7 more messages)\x02",
+            frm='foo'*100 + '!bar@baz')
+
     def testClientTagReply(self):
         self.irc.addCallback(self.First(self.irc))
 
