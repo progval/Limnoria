@@ -511,7 +511,9 @@ class RichReplyMethods(object):
         # change the state of this Irc object.
         if to is not None:
             self.to = self.to or to
-        if self.private or self.msg.channel is None:
+        if self.private:
+            target = to or self.msg.nick
+        elif self.msg.channel is None:
             target = self.msg.nick
         else:
             target = self.to or self.msg.args[0]
