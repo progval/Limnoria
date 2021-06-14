@@ -558,6 +558,35 @@ class Services(callbacks.Plugin):
                       'I\'m able to ghost a nick.'))
     ghost = wrap(ghost, [('checkCapability', 'admin'), additional('nick')])
 
+    def nickserv(self, irc, msg, args, text):
+        """<text>
+
+        Sends the <text> to NickServ. For example, to register to NickServ
+        on Atheme, use: @nickserv REGISTER <password> <email-address>."""
+        nickserv = self.registryValue('NickServ', network=irc.network)
+        if nickserv:
+            irc.replySuccess()
+            irc.queueMsg(ircmsgs.privmsg(nickserv, text))
+        else:
+            irc.error(_('You must set supybot.plugins.Services.NickServ before '
+                      'I\'m able to message NickServ'))
+    nickserv = wrap(nickserv, ['owner', 'text'])
+
+    def chanserv(self, irc, msg, args, text):
+        """<text>
+
+        Sends the <text> to ChanServ. For example, to register a channel
+        on Atheme, use: @chanserv REGISTER <#channel>."""
+        chanserv = self.registryValue('ChanServ', network=irc.network)
+        if chanserv:
+            irc.replySuccess()
+            irc.queueMsg(ircmsgs.privmsg(chanserv, text))
+        else:
+            irc.error(_('You must set supybot.plugins.Services.ChanServ before '
+                      'I\'m able to message ChanServ'))
+    chanserv = wrap(chanserv, ['owner', 'text'])
+
+
     @internationalizeDocstring
     def password(self, irc, msg, args, nick, password):
         """<nick> [<password>]

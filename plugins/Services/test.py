@@ -88,6 +88,18 @@ class ServicesTestCase(PluginTestCase):
         finally:
             self.assertNotError('services password %s ""' % self.nick)
 
+    def testNickserv(self):
+        self.assertNotError('nickserv foo bar')
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'PRIVMSG', m)
+        self.assertEqual(m.args, ('NickServ', 'foo bar'), m)
+
+    def testChanserv(self):
+        self.assertNotError('chanserv foo bar')
+        m = self.irc.takeMsg()
+        self.assertEqual(m.command, 'PRIVMSG', m)
+        self.assertEqual(m.args, ('ChanServ', 'foo bar'), m)
+
     def testRegisterNoExperimentalExtensions(self):
         self.assertRegexp(
             "register p4ssw0rd", "error: Experimental IRC extensions")
