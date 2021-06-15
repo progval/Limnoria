@@ -192,7 +192,7 @@ class ExperimentalServicesTestCase(PluginTestCase):
         super().setUp()
         conf.supybot.protocols.irc.experimentalExtensions.setValue(True)
         self._initialCaps = self.irc.state.capabilities_ls.copy()
-        self.irc.state.capabilities_ls["draft/register"] = None
+        self.irc.state.capabilities_ls["draft/account-registration"] = None
         self.irc.state.capabilities_ls["labeled-response"] = None
 
     def tearDown(self):
@@ -208,17 +208,17 @@ class ExperimentalServicesTestCase(PluginTestCase):
                 "register p4ssw0rd",
                 "error: This network does not support labeled-response.")
 
-            del self.irc.state.capabilities_ls["draft/register"]
+            del self.irc.state.capabilities_ls["draft/account-registration"]
             self.assertRegexp(
                 "register p4ssw0rd",
-                "error: This network does not support draft/register.")
+                "error: This network does not support draft/account-registration.")
         finally:
             self.irc.state.capabilities_ls = old_caps
 
     def testRegisterRequireEmail(self):
         old_caps = self.irc.state.capabilities_ls.copy()
         try:
-            self.irc.state.capabilities_ls["draft/register"] = "email-required"
+            self.irc.state.capabilities_ls["draft/account-registration"] = "email-required"
             self.assertRegexp(
                 "register p4ssw0rd",
                 "error: This network requires an email address to register.")
@@ -228,7 +228,7 @@ class ExperimentalServicesTestCase(PluginTestCase):
     def testRegisterSuccess(self):
         m = self.getMsg("register p4ssw0rd")
         label = m.server_tags.pop("label")
-        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "p4ssw0rd"]))
+        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "*", "p4ssw0rd"]))
         self.irc.feedMsg(IrcMsg(
             server_tags={"label": label},
             command="REGISTER",
@@ -242,7 +242,7 @@ class ExperimentalServicesTestCase(PluginTestCase):
         # oragono replies with a batch
         m = self.getMsg("register p4ssw0rd")
         label = m.server_tags.pop("label")
-        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "p4ssw0rd"]))
+        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "*", "p4ssw0rd"]))
 
         batch_name = "Services_testRegisterSuccessBatch"
         self.irc.feedMsg(IrcMsg(
@@ -273,7 +273,7 @@ class ExperimentalServicesTestCase(PluginTestCase):
         m = self.getMsg("register p4ssw0rd foo@example.org")
         label = m.server_tags.pop("label")
         self.assertEqual(m, IrcMsg(
-            command="REGISTER", args=["foo@example.org", "p4ssw0rd"]))
+            command="REGISTER", args=["*", "foo@example.org", "p4ssw0rd"]))
         self.irc.feedMsg(IrcMsg(
             server_tags={"label": label},
             command="REGISTER",
@@ -286,7 +286,7 @@ class ExperimentalServicesTestCase(PluginTestCase):
     def testRegisterVerify(self):
         m = self.getMsg("register p4ssw0rd")
         label = m.server_tags.pop("label")
-        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "p4ssw0rd"]))
+        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "*", "p4ssw0rd"]))
         self.irc.feedMsg(IrcMsg(
             server_tags={"label": label},
             command="REGISTER",
@@ -313,7 +313,7 @@ class ExperimentalServicesTestCase(PluginTestCase):
     def testRegisterVerifyBatch(self):
         m = self.getMsg("register p4ssw0rd")
         label = m.server_tags.pop("label")
-        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "p4ssw0rd"]))
+        self.assertEqual(m, IrcMsg(command="REGISTER", args=["*", "*", "p4ssw0rd"]))
         self.irc.feedMsg(IrcMsg(
             server_tags={"label": label},
             command="REGISTER",

@@ -635,9 +635,9 @@ class Services(callbacks.Plugin):
                 Raise=True
             )
 
-        if "draft/register" not in otherIrc.state.capabilities_ls:
+        if "draft/account-registration" not in otherIrc.state.capabilities_ls:
             irc.error(
-                _("This network does not support draft/register."),
+                _("This network does not support draft/account-registration."),
                 Raise=True
             )
 
@@ -665,7 +665,7 @@ class Services(callbacks.Plugin):
         # https://gist.github.com/edk0/bf3b50fc219fd1bed1aa15d98bfb6495
         self._checkCanRegister(irc, otherIrc)
 
-        cap_values = (otherIrc.state.capabilities_ls["draft/register"] or "").split(",")
+        cap_values = (otherIrc.state.capabilities_ls["draft/account-registration"] or "").split(",")
         if "email-required" in cap_values and email is None:
             irc.error(
                 _("This network requires an email address to register."),
@@ -677,7 +677,7 @@ class Services(callbacks.Plugin):
         otherIrc.queueMsg(ircmsgs.IrcMsg(
             server_tags={"label": label},
             command="REGISTER",
-            args=[email or "*", password],
+            args=["*", email or "*", password],
         ))
     register = wrap(register, ["owner", "private", "networkIrc", "something", optional("email")])
 
