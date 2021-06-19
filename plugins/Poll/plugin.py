@@ -48,7 +48,41 @@ Poll = collections.namedtuple("Poll", "question answers votes open")
 
 
 class Poll_(callbacks.Plugin):
-    """Provides a simple way to vote on answers to a question"""
+    """Provides a simple way to vote on answers to a question
+
+    For example, this creates a poll::
+
+       <admin> @poll add "Is this a test?" "Yes" "No" "Maybe"
+       <bot> The operation succeeded.  Poll # 42 created.
+
+    Creates a poll that can be voted on in this way::
+
+       <citizen1> @vote 42 Yes
+       <citizen2> @vote 42 No
+       <citizen3> @vote 42 No
+
+    And results::
+
+        <admin> @poll results
+        <bot> 2 votes for No, 1 vote for Yes, and 0 votes for Maybe",
+
+    Longer answers are possible, and voters only need to use the first
+    word of each answer to vote. For example, this creates a poll that
+    can be voted on in the same way::
+
+       <admin> @poll add "Is this a test?" "Yes totally" "No no no" "Maybe"
+       <bot> The operation succeeded.  Poll # 43 created.
+
+    You can also add a number or letter at the beginning of each question to
+    make it easier::
+
+       <admin> @poll add "Who is the best captain?" "1 James T Kirk" "2 Jean-Luc Picard" "3 Benjamin Sisko" "4 Kathryn Janeway"
+       <bot> The operation succeeded.  Poll # 44 created.
+
+       <trekkie1> @vote 42 1
+       <trekkie2> @vote 42 4
+       <trekkie3> @vote 42 4
+    """
 
     def __init__(self, irc):
         super().__init__(irc)
