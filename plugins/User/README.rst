@@ -60,12 +60,12 @@ list [--capability=<capability>] [<glob>]
 .. _command-user-register:
 
 register <name> <password>
-  Registers <name> with the given password <password> and the current hostmask of the person registering. You shouldn't register twice; if you're not recognized as a user but you've already registered, use the hostmask add command to add another hostmask to your already-registered user, or use the identify command to identify just for a session. This command (and all other commands that include a password) must be sent to the bot privately, not in a channel.
+  Registers <name> with the given password <password> and the current hostmask of the person registering. You shouldn't register twice; if you're not recognized as a user but you've already registered, use the hostmask add command to add another hostmask to your already-registered user, or use the identify command to identify just for a session. This command (and all other commands that include a password) must be sent to the bot privately, not in a channel. Use "!" instead of <password> to disable password authentication.
 
 .. _command-user-set.password:
 
 set password [<name>] <old password> <new password>
-  Sets the new password for the user specified by <name> to <new password>. Obviously this message must be sent to the bot privately (not in a channel). If the requesting user is an owner user, then <old password> needn't be correct.
+  Sets the new password for the user specified by <name> to <new password>. Obviously this message must be sent to the bot privately (not in a channel). If the requesting user is an owner user, then <old password> needn't be correct. If the <new password> is "!", password login will be disabled.
 
 .. _command-user-set.secure:
 

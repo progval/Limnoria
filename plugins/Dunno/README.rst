@@ -18,6 +18,8 @@ Basically, it replaces the standard 'Error: <x> is not a valid command.'
 messages with messages kept in a database, able to give more personable
 responses.
 
+``$command`` in the message will be replaced by the command's name.
+
 .. _commands-Dunno:
 
 Commands
