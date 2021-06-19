@@ -117,7 +117,7 @@ class Poll_(callbacks.Plugin):
 
         irc.replySuccess(_("Poll # %d created.") % poll_id)
 
-    @wrap(["channel", "nonNegativeInt"])
+    @wrap(["channel", "positiveInt"])
     def close(self, irc, msg, args, channel, poll_id):
         """[<channel>] <poll_id>
 
@@ -138,7 +138,7 @@ class Poll_(callbacks.Plugin):
         self._polls[(irc.network, channel)][poll_id] = poll
         irc.replySuccess()
 
-    @wrap(["channel", "nonNegativeInt", "somethingWithoutSpaces"])
+    @wrap(["channel", "positiveInt", "somethingWithoutSpaces"])
     def vote(self, irc, msg, args, channel, poll_id, answer_id):
         """[<channel>] <poll_id> <answer_id>
 
@@ -167,7 +167,7 @@ class Poll_(callbacks.Plugin):
 
         irc.replySuccess()
 
-    @wrap(["channel", "nonNegativeInt"])
+    @wrap(["channel", "positiveInt"])
     def results(self, irc, msg, args, channel, poll_id):
         """[<channel>] <poll_id>
 
