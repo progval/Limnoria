@@ -23,6 +23,11 @@ necessary if the bot is properly configured.
 
 Commands
 --------
+.. _command-services-chanserv:
+
+chanserv <text>
+  Sends the <text> to ChanServ. For example, to register a channel on Atheme, use: @chanserv REGISTER <#channel>.
+
 .. _command-services-ghost:
 
 ghost [<nick>]
@@ -42,6 +47,11 @@ invite [<channel>]
 
 nicks takes no arguments
   Returns the nicks that this plugin is configured to identify and ghost with.
+
+.. _command-services-nickserv:
+
+nickserv <text>
+  Sends the <text> to NickServ. For example, to register to NickServ on Atheme, use: @nickserv REGISTER <password> <email-address>.
 
 .. _command-services-op:
 

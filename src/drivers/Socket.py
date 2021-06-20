@@ -318,7 +318,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     # address is a hostname, eg. because we're using a SOCKS
                     # proxy
                     is_loopback = False
-                if not is_loopback:
+                if not is_loopback and not address.endswith('.onion'):
                     drivers.log.warning(('Connection to network %s '
                         'does not use SSL/TLS, which makes it vulnerable to '
                         'man-in-the-middle attacks and passive eavesdropping. '

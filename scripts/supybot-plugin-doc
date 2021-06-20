@@ -84,7 +84,7 @@ class PluginDoc(object):
     def __init__(self, mod, titleTemplate):
         self.mod = mod
         self.inst = self.mod.Class(None)
-        self.name = self.mod.Class.__name__
+        self.name = self.inst.name()
         self.appendExtraBlankLine = False
         self.titleTemplate = string.Template(titleTemplate)
         self.lines = []

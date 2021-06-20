@@ -47,6 +47,7 @@ import random
 import string
 import textwrap
 import functools
+import collections.abc
 
 from . import utils
 from .utils import minisix
@@ -169,9 +170,9 @@ def areReceivers(s, strictRfc=True, nicklen=None, chantypes='#&!',
     return all([nick(x) or chan(x) for x in s.split(',')])
 
 _patternCache = utils.structures.CacheDict(1000)
-def _hostmaskPatternEqual(pattern, hostmask):
+def _compileHostmaskPattern(pattern):
     try:
-        return _patternCache[pattern](hostmask) is not None
+        return _patternCache[pattern]
     except KeyError:
         # We make our own regexps, rather than use fnmatch, because fnmatch's
         # case-insensitivity is not IRC's case-insensitity.
@@ -194,7 +195,7 @@ def _hostmaskPatternEqual(pattern, hostmask):
         fd.write('$')
         f = re.compile(fd.getvalue(), re.I).match
         _patternCache[pattern] = f
-        return f(hostmask) is not None
+        return f
 
 _hostmaskPatternEqualCache = utils.structures.CacheDict(1000)
 def hostmaskPatternEqual(pattern, hostmask):
@@ -203,9 +204,108 @@ def hostmaskPatternEqual(pattern, hostmask):
     try:
         return _hostmaskPatternEqualCache[(pattern, hostmask)]
     except KeyError:
-        b = _hostmaskPatternEqual(pattern, hostmask)
-        _hostmaskPatternEqualCache[(pattern, hostmask)] = b
-        return b
+        matched = _compileHostmaskPattern(pattern)(hostmask) is not None
+        _hostmaskPatternEqualCache[(pattern, hostmask)] = matched
+        return matched
+
+class HostmaskSet(collections.abc.MutableSet):
+    """Stores a set of hostmasks and caches their pattern as compiled
+    by _compileHostmaskPattern.
+
+    This is an alternative to hostmaskPatternEqual for sets of patterns that
+    do not change often, such as ircdb.IrcUser.
+    ircdb.IrcUser used to store a real set, of hostmasks as strings, then
+    call hostmaskPatternEqual on each of these strings. This is good enough
+    most of the time, as hostmaskPatternEqual has a cache.
+
+    Unfortunately, it is a LRU cache, and hostmasks are checked in order.
+    This means that as soon as you have most hostmasks than the size of the
+    cache, EVERY call to hostmaskPatternEqual will be a cache miss, so the
+    regexp will need to be recompile every time.
+    This is VERY expensive, because building the regexp is slow, and
+    re.compile() is even slower."""
+
+    def __init__(self, hostmasks=()):
+        self.data = {}  # {hostmask_str: _compileHostmaskPattern(hostmask_str)}
+        for hostmask in hostmasks:
+            self.add(hostmask)
+
+    def add(self, hostmask):
+        self.data[hostmask] = _compileHostmaskPattern(hostmask)
+
+    def discard(self, hostmask):
+        self.data.pop(hostmask, None)
+
+    def __contains__(self, hostmask):
+        return hostmask in self.data
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __len__(self):
+        return len(self.data)
+
+    def match(self, hostname):
+        # Potential optimization: join all the patterns into a single one.
+        for (pattern, compiled_pattern) in self.data.items():
+            if compiled_pattern(hostname) is not None:
+                return pattern
+        return None
+
+    def __repr__(self):
+        return 'HostmaskSet(%r)' % (list(self.data),)
+
+
+class ExpiringHostmaskDict(collections.abc.MutableMapping):
+    """Like HostmaskSet, but behaves like a dict with expiration timestamps
+    as values."""
+
+    # To keep it thread-safe, add to self.patterns first, then
+    # self.data; and remove from self.data first.
+    # And never iterate on self.patterns
+
+    def __init__(self, hostmasks=None):
+        if isinstance(hostmasks, (list, tuple)):
+            hostmasks = dict(hostmasks)
+        self.data = hostmasks or {}
+        self.patterns = HostmaskSet(list(self.data))
+
+    def __getitem__(self, hostmask):
+        return self.data[hostmask]
+
+    def __setitem__(self, hostmask, expiration):
+        """For backward compatibility, in case any plugin depends on it
+        being dict-like."""
+        self.patterns.add(hostmask)
+        self.data[hostmask] = expiration
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __delitem__(self, hostmask):
+        del self.data[hostmask]
+        self.patterns.discard(hostmask)
+
+    def expire(self):
+        now = time.time()
+        for (hostmask, expiration) in list(self.data.items()):
+            if now >= expiration and expiration:
+                self.pop(hostmask, None)
+
+    def match(self, hostname):
+        self.expire()
+        return self.patterns.match(hostname)
+
+    def clear(self):
+        self.data.clear()
+        self.patterns.clear()
+
+    def __repr__(self):
+        return 'ExpiringHostmaskSet(%r)' % (self.expirations,)
+
 
 def banmask(hostmask):
     """Returns a properly generic banning hostmask for a hostmask.

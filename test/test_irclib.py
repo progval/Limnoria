@@ -1042,8 +1042,6 @@ class IrcTestCase(SupyTestCase):
             repr(c.batch)
         )
 
-    maxDiff = None
-
     def testBatchNested(self):
         self.irc.reset()
         logs = textwrap.dedent('''
@@ -1106,6 +1104,42 @@ class IrcTestCase(SupyTestCase):
         msg5 = self.irc.state.history[-1]
         self.assertEqual(msg5.tagged('batch'), outer)
         self.assertEqual(self.irc.state.getParentBatches(msg5), [outer])
+
+    def testBatchError(self):
+        # Checks getting an ERROR message in a batch does not cause issues
+        # due to deinitializing the connection at the same time.
+        self.irc.reset()
+        m1 = ircmsgs.IrcMsg(':host BATCH +name batchtype')
+        self.irc.feedMsg(m1)
+        m2 = ircmsgs.IrcMsg('@batch=name :someuser2 NOTICE * :oh no')
+        self.irc.feedMsg(m2)
+        m3 = ircmsgs.IrcMsg('@batch=name ERROR :bye')
+        self.irc.feedMsg(m3)
+        class Callback(irclib.IrcCallback):
+            batch = None
+            def __call__(self, *args, **kwargs):
+                return super().__call__(*args, **kwargs)
+            def name(self):
+                return 'testcallback'
+            def doBatch(self2, irc, msg):
+                self2.batch = msg.tagged('batch')
+
+        # would usually be called by the driver upon reconnect() trigged
+        # by the ERROR:
+        self.irc.reset()
+
+        c = Callback()
+        self.irc.addCallback(c)
+        try:
+            m4 = ircmsgs.IrcMsg(':host BATCH -name')
+            self.irc.feedMsg(m4)
+        finally:
+            self.irc.removeCallback(c.name())
+        self.assertEqual(
+            c.batch,
+            irclib.Batch('name', 'batchtype', (), [m1, m2, m3, m4], None),
+            repr(c.batch)
+        )
 
     def testTruncate(self):
         self.irc = irclib.Irc('test')

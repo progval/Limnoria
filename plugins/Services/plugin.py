@@ -558,6 +558,35 @@ class Services(callbacks.Plugin):
                       'I\'m able to ghost a nick.'))
     ghost = wrap(ghost, [('checkCapability', 'admin'), additional('nick')])
 
+    def nickserv(self, irc, msg, args, text):
+        """<text>
+
+        Sends the <text> to NickServ. For example, to register to NickServ
+        on Atheme, use: @nickserv REGISTER <password> <email-address>."""
+        nickserv = self.registryValue('NickServ', network=irc.network)
+        if nickserv:
+            irc.replySuccess()
+            irc.queueMsg(ircmsgs.privmsg(nickserv, text))
+        else:
+            irc.error(_('You must set supybot.plugins.Services.NickServ before '
+                      'I\'m able to message NickServ'))
+    nickserv = wrap(nickserv, ['owner', 'text'])
+
+    def chanserv(self, irc, msg, args, text):
+        """<text>
+
+        Sends the <text> to ChanServ. For example, to register a channel
+        on Atheme, use: @chanserv REGISTER <#channel>."""
+        chanserv = self.registryValue('ChanServ', network=irc.network)
+        if chanserv:
+            irc.replySuccess()
+            irc.queueMsg(ircmsgs.privmsg(chanserv, text))
+        else:
+            irc.error(_('You must set supybot.plugins.Services.ChanServ before '
+                      'I\'m able to message ChanServ'))
+    chanserv = wrap(chanserv, ['owner', 'text'])
+
+
     @internationalizeDocstring
     def password(self, irc, msg, args, nick, password):
         """<nick> [<password>]
@@ -606,9 +635,9 @@ class Services(callbacks.Plugin):
                 Raise=True
             )
 
-        if "draft/register" not in otherIrc.state.capabilities_ls:
+        if "draft/account-registration" not in otherIrc.state.capabilities_ls:
             irc.error(
-                _("This network does not support draft/register."),
+                _("This network does not support draft/account-registration."),
                 Raise=True
             )
 
@@ -636,7 +665,7 @@ class Services(callbacks.Plugin):
         # https://gist.github.com/edk0/bf3b50fc219fd1bed1aa15d98bfb6495
         self._checkCanRegister(irc, otherIrc)
 
-        cap_values = (otherIrc.state.capabilities_ls["draft/register"] or "").split(",")
+        cap_values = (otherIrc.state.capabilities_ls["draft/account-registration"] or "").split(",")
         if "email-required" in cap_values and email is None:
             irc.error(
                 _("This network requires an email address to register."),
@@ -648,7 +677,7 @@ class Services(callbacks.Plugin):
         otherIrc.queueMsg(ircmsgs.IrcMsg(
             server_tags={"label": label},
             command="REGISTER",
-            args=[email or "*", password],
+            args=["*", email or "*", password],
         ))
     register = wrap(register, ["owner", "private", "networkIrc", "something", optional("email")])
 

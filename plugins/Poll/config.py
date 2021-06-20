@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2003-2005, Daniel DiPaolo
+# Copyright (c) 2021, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,39 +25,48 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+
 ###
 
-from supybot.commands import *
-import supybot.plugins as plugins
-import supybot.ircutils as ircutils
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
-_ = PluginInternationalization('Dunno')
+from supybot import conf, registry
 
-class Dunno(plugins.ChannelIdDatabasePlugin):
-    """This plugin was written initially to work with MoobotFactoids, the two
-    of them to provide a similar-to-moobot-and-blootbot interface for factoids.
-    Basically, it replaces the standard 'Error: <x> is not a valid command.'
-    messages with messages kept in a database, able to give more personable
-    responses.
+try:
+    from supybot.i18n import PluginInternationalization
 
-    ``$command`` in the message will be replaced by the command's name."""
-
-    callAfter = ['MoobotFactoids', 'Factoids', 'Infobot']
-    def invalidCommand(self, irc, msg, tokens):
-        if msg.channel:
-            dunno = self.db.random(msg.channel)
-            if dunno is not None:
-                dunno = dunno.text
-                prefixNick = self.registryValue('prefixNick',
-                                                msg.channel, irc.network)
-                env = {'command': tokens[0]}
-                self.log.info('Issuing "dunno" answer, %s is not a command.',
-                        tokens[0])
-                dunno = ircutils.standardSubstitute(irc, msg, dunno, env=env)
-                irc.reply(dunno, prefixNick=prefixNick)
-Dunno = internationalizeDocstring(Dunno)
-
-Class = Dunno
+    _ = PluginInternationalization("Poll")
+except:
+    # Placeholder that allows to run the plugin on a bot
+    # without the i18n module
+    _ = lambda x: x
 
 
-# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
+def configure(advanced):
+    # This will be called by supybot to configure this module.  advanced is
+    # a bool that specifies whether the user identified themself as an advanced
+    # user or not.  You should effect your configuration by manipulating the
+    # registry as appropriate.
+    from supybot.questions import expect, anything, something, yn
+
+    conf.registerPlugin("Poll", True)
+
+
+Poll = conf.registerPlugin("Poll")
+# This is where your configuration variables (if any) should go.  For example:
+# conf.registerGlobalValue(Poll, 'someConfigVariableName',
+#     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
+
+conf.registerChannelValue(
+    Poll,
+    "requireManageCapability",
+    registry.String(
+        "channel,op; channel,halfop",
+        _(
+            """Determines the capabilities required (if any) to open and
+            close polls.
+            Use 'channel,capab' for channel-level capabilities.
+            Note that absence of an explicit anticapability means user has
+            capability.
+            """
+        ),
+    ),
+)

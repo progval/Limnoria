@@ -240,6 +240,8 @@ class SupyHTTPServerCallback(log.Firewalled):
 
     fullpath = False
     name = "Unnamed plugin"
+    public = True
+    """Whether the callback should be listed in the root index."""
     defaultResponse = _("""
     This is a default response of the Supybot HTTP server. If you see this
     message, it probably means you are developing a plugin, and you have
@@ -307,7 +309,10 @@ class SupyIndex(SupyHTTPServerCallback):
     name = "index"
     defaultResponse = _("Request not handled.")
     def doGetOrHead(self, handler, path, write_content):
-        plugins = [x for x in handler.server.callbacks.items()]
+        plugins = [
+            (name, cb)
+            for (name, cb) in handler.server.callbacks.items()
+            if cb.public]
         if plugins == []:
             plugins = _('No plugins available.')
         else:
@@ -384,6 +389,7 @@ class SupyWellKnown(SupyHTTPServerCallback):
     """Serves /.well-known/ resources."""
     name = 'well-known'
     defaultResponse = _('Request not handled')
+    public = False
 
     def doGetOrHead(self, handler, path, write_content):
         for callback in handler.server.callbacks.values():

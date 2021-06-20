@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2003-2005, Daniel DiPaolo
+# Copyright (c) 2021, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,39 +25,48 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+
 ###
 
-from supybot.commands import *
-import supybot.plugins as plugins
-import supybot.ircutils as ircutils
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
-_ = PluginInternationalization('Dunno')
+"""
+Poll: Provides a simple way to vote on answers to a question
+"""
 
-class Dunno(plugins.ChannelIdDatabasePlugin):
-    """This plugin was written initially to work with MoobotFactoids, the two
-    of them to provide a similar-to-moobot-and-blootbot interface for factoids.
-    Basically, it replaces the standard 'Error: <x> is not a valid command.'
-    messages with messages kept in a database, able to give more personable
-    responses.
+import sys
+import supybot
+from supybot import world
 
-    ``$command`` in the message will be replaced by the command's name."""
+# Use this for the version of this plugin.
+__version__ = ""
 
-    callAfter = ['MoobotFactoids', 'Factoids', 'Infobot']
-    def invalidCommand(self, irc, msg, tokens):
-        if msg.channel:
-            dunno = self.db.random(msg.channel)
-            if dunno is not None:
-                dunno = dunno.text
-                prefixNick = self.registryValue('prefixNick',
-                                                msg.channel, irc.network)
-                env = {'command': tokens[0]}
-                self.log.info('Issuing "dunno" answer, %s is not a command.',
-                        tokens[0])
-                dunno = ircutils.standardSubstitute(irc, msg, dunno, env=env)
-                irc.reply(dunno, prefixNick=prefixNick)
-Dunno = internationalizeDocstring(Dunno)
+# XXX Replace this with an appropriate author or supybot.Author instance.
+__author__ = supybot.authors.unknown
 
-Class = Dunno
+# This is a dictionary mapping supybot.Author instances to lists of
+# contributions.
+__contributors__ = {}
+
+# This is a url where the most recent plugin package can be downloaded.
+__url__ = ""
+
+from . import config
+from . import plugin
+
+if sys.version_info >= (3, 4):
+    from importlib import reload
+else:
+    from imp import reload
+# In case we're being reloaded.
+reload(config)
+reload(plugin)
+# Add more reloads here if you add third-party modules and want them to be
+# reloaded when this plugin is reloaded.  Don't forget to import them as well!
+
+if world.testing:
+    from . import test
+
+Class = plugin.Class
+configure = config.configure
 
 
-# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:

@@ -113,8 +113,11 @@ class ServersMixin(object):
             network.expireStsPolicy(server.hostname)
             return server
 
-        log.info('Using STS policy: changing port from %s to %s.',
-            server.port, policy['port'])
+        if server.port == policy['port']:
+            log.info('Using STS policy, port %s', server.port)
+        else:
+            log.info('Using STS policy: changing port from %s to %s.',
+                server.port, policy['port'])
 
         # Change the port, and force TLS verification, as required by the STS
         # specification.

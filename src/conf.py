@@ -339,10 +339,19 @@ class SpaceSeparatedSetOfChannels(registry.SpaceSeparatedListOf):
                 channels.append(channel)
             msg = ircmsgs.joins(channels_with_key + channels, keys)
             if len(str(msg)) > 512:
+                # Use previous short enough join message
                 msgs.append(old)
+                # Reset and construct a new join message using the current
+                # channel.
                 keys = []
                 channels_with_key = []
                 channels = []
+                if key:
+                    keys.append(key)
+                    channels_with_key.append(channel)
+                else:
+                    channels.append(channel)
+                msg = ircmsgs.joins(channels_with_key + channels, keys)
             old = msg
         if msg:
             msgs.append(msg)

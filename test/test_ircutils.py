@@ -58,6 +58,47 @@ class FunctionsTestCase(SupyTestCase):
             'abr-ubr1.sbo-abr.ma.cable.rcn.com'
         self.assertTrue(ircutils.hostmaskPatternEqual(s, s))
 
+    def testHostmaskSet(self):
+        hs = ircutils.HostmaskSet()
+        self.assertEqual(hs.match("nick!user@host"), None)
+        hs.add("*!user@host")
+        hs.add("*!user@host2")
+        self.assertEqual(hs.match("nick!user@host"), "*!user@host")
+        self.assertEqual(hs.match("nick!user@host2"), "*!user@host2")
+        self.assertCountEqual(list(hs), ["*!user@host", "*!user@host2"])
+        hs.remove("*!user@host2")
+        self.assertEqual(hs.match("nick!user@host"), "*!user@host")
+        self.assertEqual(hs.match("nick!user@host2"), None)
+
+        hs = ircutils.HostmaskSet(["*!user@host"])
+        self.assertEqual(hs.match("nick!user@host"), "*!user@host")
+
+    def testExpiringHostmaskDict(self):
+        hs = ircutils.ExpiringHostmaskDict()
+        self.assertEqual(hs.match("nick!user@host"), None)
+        time1 = time.time() + 15
+        time2 = time.time() + 10
+        hs["*!user@host"] = time1
+        hs["*!user@host2"] = time2
+        self.assertEqual(hs.match("nick!user@host"), "*!user@host")
+        self.assertEqual(hs.match("nick!user@host2"), "*!user@host2")
+        self.assertCountEqual(list(hs.items()),
+            [("*!user@host", time1), ("*!user@host2", time2)])
+        del hs["*!user@host2"]
+        self.assertEqual(hs.match("nick!user@host"), "*!user@host")
+        self.assertEqual(hs.match("nick!user@host2"), None)
+        timeFastForward(10)
+        self.assertEqual(hs.match("nick!user@host"), "*!user@host")
+        timeFastForward(10)
+        self.assertEqual(hs.match("nick!user@host"), None)
+
+        hs = ircutils.ExpiringHostmaskDict([("*!user@host", time.time() + 10)])
+        self.assertEqual(hs.match("nick!user@host"), "*!user@host")
+        self.assertEqual(hs.match("nick!user@host2"), None)
+        timeFastForward(11)
+        self.assertEqual(hs.match("nick!user@host"), None)
+        self.assertEqual(hs.match("nick!user@host2"), None)
+
     def testIsUserHostmask(self):
         self.assertTrue(ircutils.isUserHostmask(self.hostmask))
         self.assertTrue(ircutils.isUserHostmask('a!b@c'))

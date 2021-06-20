@@ -40,6 +40,7 @@ import socket
 import threading
 import feedparser
 
+import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
@@ -344,6 +345,7 @@ class RSS(callbacks.Plugin):
     ###############
     # Feed fetching
 
+    @log.firewall
     def update_feed(self, feed):
         handlers = []
         if utils.web.proxy():
@@ -546,8 +548,8 @@ class RSS(callbacks.Plugin):
             only necessary if the message isn't sent in the channel itself.
             """
             announce = conf.supybot.plugins.RSS.announce
-            channel_feeds = announce.getSpecific(channel=channel) \
-                | announce.getSpecific(channel=channel, network=irc.network)
+            channel_feeds = announce.getSpecific(channel=channel)() \
+                | announce.getSpecific(channel=channel, network=irc.network)()
             feeds = format('%L', set(channel_feeds)) # set() to deduplicate
             irc.reply(feeds or _('I am currently not announcing any feeds.'))
         list = wrap(list, ['channel',])
