@@ -445,7 +445,7 @@ class Value(Group):
             # The complicated case. We want a net+chan specific value,
             # which may come in three different ways:
             #
-            # 1. it was set explicitely net+chan
+            # 1. it was set explicitly net+chan
             # 2. it's inherited from a net specific value (which may itself be
             #    inherited from the base value)
             # 3. it's inherited from the chan specific value (which is not a
@@ -453,7 +453,7 @@ class Value(Group):
             #    load configuration from old bots).
             #
             # The choice between 2 and 3 is done by checking which of the
-            # net-specific and chan-specific values was set explicitely by
+            # net-specific and chan-specific values was set explicitly by
             # a user/admin. In case both were, the net-specific value is used
             # (there is no particular reason for this, I just think it makes
             # more sense).

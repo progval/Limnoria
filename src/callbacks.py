@@ -724,7 +724,7 @@ class ReplyIrcProxy(RichReplyMethods):
     def _replyOverhead(self, target, targetNick, prefixNick):
         """Returns the number of bytes added to a PRIVMSG payload, either by
         Limnoria itself or by the server.
-        Ignores tag bytes, as they are accounted for separatly."""
+        Ignores tag bytes, as they are accounted for separately."""
         overhead = (
             len(':')
             + len(self.irc.prefix.encode())
@@ -1139,7 +1139,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         # evaluated our own list of arguments.
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
-        # Now, the way we call a command is we iterate over the loaded pluings,
+        # Now, the way we call a command is we iterate over the loaded plugins,
         # asking each one if the list of args we have interests it.  The
         # way we do that is by calling getCommand on the plugin.
         # The plugin will return a list of args which it considers to be
