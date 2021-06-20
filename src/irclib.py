@@ -708,8 +708,11 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         self.channels = channels
         self.nicksToHostmasks = nicksToHostmasks
 
-        # Batches should always finish and be way shorter than 3600s, but
-        # let's just make sure to avoid leaking memory.
+        # Batches usually finish and are way shorter than 3600s, but
+        # we need to:
+        # * keep them in case the connection breaks (and reset() can't
+        #   clear the list itself)
+        # * make sure to avoid leaking memory in general
         self.batches = ExpiringDict(timeout=3600)
 
     def reset(self):
@@ -721,11 +724,23 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         self.channels.clear()
         self.supported.clear()
         self.nicksToHostmasks.clear()
-        self.batches.clear()
         self.capabilities_req = set()
         self.capabilities_ack = set()
         self.capabilities_nak = set()
         self.capabilities_ls = {}
+
+        # Don't clear batches right now. reset() is called on ERROR messages,
+        # which may be part of a BATCH so we need to remember that batch.
+        # At worst, the batch will expire in the near future, as self.batches
+        # is an instance of ExpiringDict.
+        # If we did clear the batch, then this would happen:
+        # 1. IrcState.addMsg() would crash on the ERROR, because its batch
+        #    server-tag references an unknown batch, so it would not set the
+        #    'batch' supybot-tag
+        # 2. Irc.doBatch would crash on the closing BATCH, for the same reason
+        # 3. Owner.doBatch would crash because it expects the batch
+        #    supybot-tag to be set, but it wasn't because of 1
+        #self.batches.clear()
 
     def __reduce__(self):
         return (self.__class__, (self.history, self.supported,
