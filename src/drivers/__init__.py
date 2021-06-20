@@ -61,7 +61,7 @@ class IrcDriver(object):
         raise NotImplementedError
 
     def die(self):
-        # The end of any overrided die method should be
+        # The end of any overridden die method should be
         # "super(Class, self).die()", in order to make
         # sure this (and anything else later added) is done.
         remove(self.name())

@@ -1145,7 +1145,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         # evaluated our own list of arguments.
         assert not self.finalEvaled, 'finalEval called twice.'
         self.finalEvaled = True
-        # Now, the way we call a command is we iterate over the loaded pluings,
+        # Now, the way we call a command is we iterate over the loaded plugins,
         # asking each one if the list of args we have interests it.  The
         # way we do that is by calling getCommand on the plugin.
         # The plugin will return a list of args which it considers to be
