@@ -25,7 +25,7 @@ Creates a poll that can be voted on in this way::
 And results::
 
     <admin> @poll results
-    <bot> 2 votes for No, 1 vote for Yes, and 0 votes for Maybe",
+    <bot> 2 votes for No, 1 vote for Yes, and 0 votes for Maybe
 
 Longer answers are possible, and voters only need to use the first
 word of each answer to vote. For example, this creates a poll that
