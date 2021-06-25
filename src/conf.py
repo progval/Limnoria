@@ -563,7 +563,7 @@ registerChannelValue(supybot.reply.error, 'withNotice',
     messages to users via NOTICE instead of PRIVMSG.  You might want to do this
     so users can ignore NOTICEs from the bot and not have to see error
     messages; or you might want to use it in combination with
-    supybot.reply.errorInPrivate so private errors don't open a query window
+    supybot.reply.error.inPrivate so private errors don't open a query window
     in most IRC clients.""")))
 registerChannelValue(supybot.reply.error, 'noCapability',
     registry.Boolean(False, _("""Determines whether the bot will *not* provide
