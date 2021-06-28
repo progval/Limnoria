@@ -85,6 +85,11 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.assertResponse(' ', '$1')
         self.assertNotError('messageparser remove "this( .+)? a(.*)"')
 
+    def testSyntaxError(self):
+        self.assertNotError(r'messageparser add "test" "echo foo \" bar"')
+        self.feedMsg('test')
+        self.assertResponse(' ', 'Error: No closing quotation')
+
     def testShow(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertRegexp('messageparser show "nostuff"', 'there is no such regexp trigger')
