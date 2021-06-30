@@ -146,6 +146,9 @@ class User(callbacks.Plugin):
             user.setPassword(password)
         if addHostmask:
             user.addHostmask(msg.prefix)
+            account = msg.server_tags.get('account')
+            if account:
+                user.addNick(irc.network, account)
         ircdb.users.setUser(user)
         irc.replySuccess()
     register = wrap(register, ['private', 'something', 'something'])
