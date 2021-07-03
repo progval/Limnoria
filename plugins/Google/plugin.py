@@ -126,7 +126,7 @@ class Google(callbacks.PluginRegexp):
                 'plugin for your searches, like '
                 '<https://github.com/Hoaas/Supybot-plugins/tree/master/DuckDuckGo>, '
                 '<https://github.com/joulez/GoogleCSE>, or '
-                '<https://github.com/GLolol/SupyPlugins/tree/master/DDG>.')
+                '<https://github.com/jlu5/SupyPlugins/tree/master/DDG>.')
         ref = self.registryValue('referer')
         if not ref:
             ref = 'http://%s/%s' % (dynamic.irc.server,

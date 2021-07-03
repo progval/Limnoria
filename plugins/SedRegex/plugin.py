@@ -69,9 +69,9 @@ class SedRegex(callbacks.PluginRegexp):
 
     ::
 
-       20:24 <~GL> helli world
-       20:24 <~GL> s/i/o/
-       20:24 <@Lily> GL meant to say: hello world
+       20:24 <jlu5> helli world
+       20:24 <jlu5> s/i/o/
+       20:24 <Limnoria> jlu5 meant to say: hello world
 
     You can also do ``othernick: s/text/replacement/`` to only replace
     messages from a certain user. Supybot ignores are respected by the plugin,
