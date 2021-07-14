@@ -118,11 +118,18 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(ircutils.splitHostmask('foo!bar@baz'),
             ('foo', 'bar', 'baz'))
 
-        # Extravagant cases that never happen on real networks:
+        # This ones are technically allowed by RFC1459, but never happens in
+        # practice:
+        self.assertEqual(ircutils.splitHostmask('foo!bar!qux@quux'),
+            ('foo', 'bar!qux', 'quux'))
+        self.assertEqual(ircutils.splitHostmask('foo!bar@baz@quux'),
+            ('foo', 'bar@baz', 'quux'))
+        self.assertEqual(ircutils.splitHostmask('foo!bar@baz!qux@quux'),
+            ('foo', 'bar@baz!qux', 'quux'))
+
+        # And this one in garbage, let's just make sure we don't crash:
         self.assertEqual(ircutils.splitHostmask('foo!bar@baz!qux'),
             ('foo', 'bar', 'baz!qux'))
-        self.assertEqual(ircutils.splitHostmask('foo!bar@baz!qux@quux'),
-            ('foo', 'bar', 'baz!qux@quux'))
 
     def testIsChannel(self):
         self.assertTrue(ircutils.isChannel('#'))

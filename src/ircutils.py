@@ -64,7 +64,7 @@ def warning(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""
     print('###', s % args)
 
-userHostmaskRe = re.compile(r'^(?P<nick>\S+?)!(?P<user>\S+?)@(?P<host>\S+)$')
+userHostmaskRe = re.compile(r'^(?P<nick>\S+?)!(?P<user>\S+)@(?P<host>\S+?)$')
 def isUserHostmask(s):
     """Returns whether or not the string s is a valid User hostmask."""
     return userHostmaskRe.match(s) is not None
