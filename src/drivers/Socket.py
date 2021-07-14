@@ -114,6 +114,13 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             except:
                 pass
             self.connected = False
+            if self.irc is None:
+                # This driver is dead already, but we're still running because
+                # of select() running in an other driver's thread that started
+                # before this one died and stil holding a reference to this
+                # instance.
+                # Just return, and we should never be called again.
+                return
             self.scheduleReconnect()
         else:
             log.debug('Got EAGAIN, current count: %s.', self.eagains)
@@ -208,6 +215,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
 
                 msg = drivers.parseMsg(line)
                 if msg is not None and self.irc is not None:
+                    # self.irc may be None if this driver is already dead,
+                    # see comment in _handleSocketError
                     self.irc.feedMsg(msg)
         except socket.timeout:
             pass
