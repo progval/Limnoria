@@ -60,7 +60,11 @@ def debug(s, *args):
     """Prints a debug string.  Most likely replaced by our logging debug."""
     print('***', s % args)
 
-userHostmaskRe = re.compile(r'^\S+!\S+@\S+$')
+def warning(s, *args):
+    """Prints a debug string.  Most likely replaced by our logging debug."""
+    print('###', s % args)
+
+userHostmaskRe = re.compile(r'^(?P<nick>\S+?)!(?P<user>\S+?)@(?P<host>\S+)$')
 def isUserHostmask(s):
     """Returns whether or not the string s is a valid User hostmask."""
     return userHostmaskRe.match(s) is not None
@@ -91,9 +95,17 @@ def hostFromHostmask(hostmask):
 def splitHostmask(hostmask):
     """hostmask => (nick, user, host)
     Returns the nick, user, host of a user hostmask."""
-    assert isUserHostmask(hostmask)
-    nick, rest = hostmask.rsplit('!', 1)
-    user, host = rest.rsplit('@', 1)
+    m = userHostmaskRe.match(hostmask)
+    assert m is not None, hostmask
+    nick = m.group("nick")
+    user = m.group("user")
+    host = m.group("host")
+    if set("!@") & set(nick+user+host):
+        # There should never be either of these characters in the part.
+        # As far as I know it never happens in practice aside from networks
+        # broken by design.
+        warning("Invalid hostmask format: %s", hostmask)
+        # TODO: error if strictRfc is True
     return (minisix.intern(nick), minisix.intern(user), minisix.intern(host))
 
 def joinHostmask(nick, ident, host):

@@ -113,6 +113,17 @@ class FunctionsTestCase(SupyTestCase):
         self.assertFalse(ircutils.isUserHostmask('@'))
         self.assertFalse(ircutils.isUserHostmask('!bar@baz'))
 
+    def testSplitHostmask(self):
+        # This is the only valid case:
+        self.assertEqual(ircutils.splitHostmask('foo!bar@baz'),
+            ('foo', 'bar', 'baz'))
+
+        # Extravagant cases that never happen on real networks:
+        self.assertEqual(ircutils.splitHostmask('foo!bar@baz!qux'),
+            ('foo', 'bar', 'baz!qux'))
+        self.assertEqual(ircutils.splitHostmask('foo!bar@baz!qux@quux'),
+            ('foo', 'bar', 'baz!qux@quux'))
+
     def testIsChannel(self):
         self.assertTrue(ircutils.isChannel('#'))
         self.assertTrue(ircutils.isChannel('&'))

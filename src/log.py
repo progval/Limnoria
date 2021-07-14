@@ -329,6 +329,7 @@ atexit.register(logging.shutdown)
 
 # ircutils will work without this, but it's useful.
 ircutils.debug = debug
+ircutils.warning = warning
 
 def getPluginLogger(name):
     if not conf.supybot.log.plugins.individualLogfiles():
