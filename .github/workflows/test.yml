@@ -1,0 +1,62 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      matrix:
+        python-version: ["3.5", "3.6", "3.7", "3.8", "3.9", "3.10.0-beta.4", "pypy-3.6", "pypy-3.7"]
+        with-opt-deps: [false, true]
+        runs-on: [ubuntu-latest]
+        exclude:
+          # Some of the dependencies don't work on old Python versions
+          - python-version: "3.4"
+            with-opt-deps: true
+          - python-version: "3.5"
+            with-opt-deps: true
+          - python-version: "3.6"
+            with-opt-deps: true
+          - python-version: "pypy-3.6"
+            with-opt-deps: true
+        include:
+          - python-version: "3.4"
+            with-opt-deps: false
+            runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade pip
+        run: |
+          python3 -m pip install --upgrade pip
+
+      - name: Install optional dependencies
+        if: ${{ matrix.with-opt-deps }}
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+
+      - name: Install
+        run: |
+          python3 setup.py install
+
+      - name: Test with unittest
+        run: |
+          supybot-test test -v --plugins-dir=./plugins/ --no-network
+
+      - name: Test with irctest
+        if: "${{ matrix.with-opt-deps && matrix.python-version != 'pypy-3.7' }}"
+        run: |
+          git clone https://github.com/ProgVal/irctest.git
+          cd irctest
+          pip3 install -r requirements.txt
+          make limnoria
