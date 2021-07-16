@@ -978,7 +978,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
             item_prefix = item[0:-len(stripped_item)]
             if ircutils.isUserHostmask(stripped_item):
                 nick = ircutils.nickFromHostmask(stripped_item)
-                self.nicksToHostmasks[nick] = nick
+                self.nicksToHostmasks[nick] = stripped_item
                 name = item_prefix + nick
             else:
                 name = item

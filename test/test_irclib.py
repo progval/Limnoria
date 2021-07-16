@@ -548,9 +548,9 @@ class IrcStateTestCase(SupyTestCase):
         chan_st = st.channels['#chan']
         self.assertEqual(chan_st.users, ircutils.IrcSet(['nick1', 'nick2', 'nick3']))
         self.assertEqual(chan_st.ops, ircutils.IrcSet(['nick2', 'nick3']))
-        self.assertEqual(st.nicksToHostmasks['nick1'], 'nick1')
-        self.assertEqual(st.nicksToHostmasks['nick2'], 'nick2')
-        self.assertEqual(st.nicksToHostmasks['nick3'], 'nick3')
+        self.assertEqual(st.nicksToHostmasks['nick1'], 'nick1!u1@h1')
+        self.assertEqual(st.nicksToHostmasks['nick2'], 'nick2!u2@h2')
+        self.assertEqual(st.nicksToHostmasks['nick3'], 'nick3!u3@h3')
 
         # Prefixed with chars not in ISUPPORT PREFIX
         st = irclib.IrcState()
@@ -560,9 +560,9 @@ class IrcStateTestCase(SupyTestCase):
         chan_st = st.channels['#chan']
         self.assertEqual(chan_st.users, ircutils.IrcSet(['nick1', 'nick2', '~@nick3']))
         self.assertEqual(chan_st.ops, ircutils.IrcSet(['nick2']))
-        self.assertEqual(st.nicksToHostmasks['nick1'], 'nick1')
-        self.assertEqual(st.nicksToHostmasks['nick2'], 'nick2')
-        self.assertEqual(st.nicksToHostmasks['~@nick3'], '~@nick3')
+        self.assertEqual(st.nicksToHostmasks['nick1'], 'nick1!u1@h1')
+        self.assertEqual(st.nicksToHostmasks['nick2'], 'nick2!u2@h2')
+        self.assertEqual(st.nicksToHostmasks['~@nick3'], '~@nick3!u3@h3')
 
 
 class IrcCapsTestCase(SupyTestCase, CapNegMixin):
