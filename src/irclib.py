@@ -971,7 +971,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         if prefix is None:
             prefix_chars = '@%+&~!'  # see the comments in addUser
         else:
-            prefix_chars = prefix.split(')', 1)[-1]
+            prefix_chars = ''.join(prefix.values())
 
         for item in items.split():
             stripped_item = item.lstrip(prefix_chars)

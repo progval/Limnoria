@@ -554,7 +554,8 @@ class IrcStateTestCase(SupyTestCase):
 
         # Prefixed with chars not in ISUPPORT PREFIX
         st = irclib.IrcState()
-        st.supported['PREFIX'] = '(ov)@+'
+        st.addMsg(self.irc, ircmsgs.IrcMsg(command='005',
+            args=('*', 'PREFIX=(ov)@+', 'are supported')))
         st.addMsg(self.irc, ircmsgs.IrcMsg(command='353',
             args=('*', '=', '#chan', 'nick1!u1@h1 @nick2!u2@h2 ~@nick3!u3@h3')))
         chan_st = st.channels['#chan']
