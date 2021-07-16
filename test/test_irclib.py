@@ -529,6 +529,41 @@ class IrcStateTestCase(SupyTestCase):
         st = irclib.IrcState()
         self.assert_(st.addMsg(self.irc, ircmsgs.IrcMsg('MODE foo +i')) or 1)
 
+    def testNamreply(self):
+        """RPL_NAMREPLY / reply to NAMES"""
+
+        # Just nicks (à la RFC 1459 + some common prefix chars)
+        st = irclib.IrcState()
+        st.addMsg(self.irc, ircmsgs.IrcMsg(command='353',
+            args=('*', '=', '#chan', 'nick1 @nick2 ~@nick3')))
+        chan_st = st.channels['#chan']
+        self.assertEqual(chan_st.users, ircutils.IrcSet(['nick1', 'nick2', 'nick3']))
+        self.assertEqual(chan_st.ops, ircutils.IrcSet(['nick2', 'nick3']))
+        self.assertEqual(st.nicksToHostmasks, ircutils.IrcDict({}))
+
+        # with userhost-in-names
+        st = irclib.IrcState()
+        st.addMsg(self.irc, ircmsgs.IrcMsg(command='353',
+            args=('*', '=', '#chan', 'nick1!u1@h1 @nick2!u2@h2 ~@nick3!u3@h3')))
+        chan_st = st.channels['#chan']
+        self.assertEqual(chan_st.users, ircutils.IrcSet(['nick1', 'nick2', 'nick3']))
+        self.assertEqual(chan_st.ops, ircutils.IrcSet(['nick2', 'nick3']))
+        self.assertEqual(st.nicksToHostmasks['nick1'], 'nick1')
+        self.assertEqual(st.nicksToHostmasks['nick2'], 'nick2')
+        self.assertEqual(st.nicksToHostmasks['nick3'], 'nick3')
+
+        # Prefixed with chars not in ISUPPORT PREFIX
+        st = irclib.IrcState()
+        st.supported['PREFIX'] = '(ov)@+'
+        st.addMsg(self.irc, ircmsgs.IrcMsg(command='353',
+            args=('*', '=', '#chan', 'nick1!u1@h1 @nick2!u2@h2 ~@nick3!u3@h3')))
+        chan_st = st.channels['#chan']
+        self.assertEqual(chan_st.users, ircutils.IrcSet(['nick1', 'nick2', '~@nick3']))
+        self.assertEqual(chan_st.ops, ircutils.IrcSet(['nick2']))
+        self.assertEqual(st.nicksToHostmasks['nick1'], 'nick1')
+        self.assertEqual(st.nicksToHostmasks['nick2'], 'nick2')
+        self.assertEqual(st.nicksToHostmasks['~@nick3'], '~@nick3')
+
 
 class IrcCapsTestCase(SupyTestCase, CapNegMixin):
     def testReqLineLength(self):

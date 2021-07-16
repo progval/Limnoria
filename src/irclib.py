@@ -389,15 +389,15 @@ class ChannelState(utils.python.Object):
         """Returns whether the given nick is an halfop, or an op."""
         return nick in self.halfops or nick in self.ops
 
-    def addUser(self, user):
+    def addUser(self, user, prefix_chars='@%+&~!'):
         "Adds a given user to the ChannelState.  Power prefixes are handled."
-        nick = user.lstrip('@%+&~!')
+        nick = user.lstrip(prefix_chars)
         if not nick:
             return
         # & is used to denote protected users in UnrealIRCd
         # ~ is used to denote channel owner in UnrealIRCd
         # ! is used to denote protected users in UltimateIRCd
-        while user and user[0] in '@%+&~!':
+        while user and user[0] in prefix_chars:
             (marker, user) = (user[0], user[1:])
             assert user, 'Looks like my caller is passing chars, not nicks.'
             if marker in '@&~!':
@@ -963,13 +963,27 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         if channel not in self.channels:
             self.channels[channel] = ChannelState()
         c = self.channels[channel]
+
+        # Set of prefixes servers may append before a NAMES reply when
+        # the user is op/halfop/voice/...
+        # https://datatracker.ietf.org/doc/html/draft-hardy-irc-isupport-00#section-4.15
+        prefix = self.supported.get('PREFIX')
+        if prefix is None:
+            prefix_chars = '@%+&~!'  # see the comments in addUser
+        else:
+            prefix_chars = prefix.split(')', 1)[-1]
+
         for item in items.split():
-            if ircutils.isUserHostmask(item):
-                name = ircutils.nickFromHostmask(item)
-                self.nicksToHostmasks[name] = name
+            stripped_item = item.lstrip(prefix_chars)
+            item_prefix = item[0:-len(stripped_item)]
+            if ircutils.isUserHostmask(stripped_item):
+                nick = ircutils.nickFromHostmask(stripped_item)
+                self.nicksToHostmasks[nick] = nick
+                name = item_prefix + nick
             else:
                 name = item
-            c.addUser(name)
+            c.addUser(name, prefix_chars=prefix_chars)
+
         if type == '@':
             c.modes['s'] = None
 
