@@ -943,8 +943,12 @@ for (k, v) in list(mircColors.items()):
         mircColors[sv] = sv
         mircColors[sv.zfill(2)] = sv
 
-def standardSubstitute(irc, msg, text, env=None):
-    """Do the standard set of substitutions on text, and return it"""
+
+def standardSubstitutionVariables(irc, msg, env=None):
+    """Returns the dict-like object used to make standard substitutions
+    on text sent to IRC. Usually you'll want to use
+    :py:func:`standardSubstitute` instead, which runs the actual substitution
+    itself."""
     def randInt():
         return str(random.randint(-1000, 1000))
     def randDate():
@@ -1012,10 +1016,16 @@ def standardSubstitute(irc, msg, text, env=None):
 
     if env is not None:
         vars.update(env)
+
+    return vars
+
+
+def standardSubstitute(irc, msg, text, env=None):
+    """Do the standard set of substitutions on text, and return it"""
+    vars = standardSubstitutionVariables(irc, msg, env)
     t = string.Template(text)
     t.idpattern = '[a-zA-Z][a-zA-Z0-9]*'
     return t.safe_substitute(vars)
-
 
 
 AUTHENTICATE_CHUNK_SIZE = 400
