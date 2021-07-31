@@ -430,8 +430,9 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
         The public key must be registered with NickServ for SASL
         ECDSA-NIST256P-CHALLENGE to work.""") % name, private=False))
     registerGlobalValue(sasl, 'mechanisms', SpaceSeparatedListOfSaslMechanisms(
-        ['ecdsa-nist256p-challenge', 'external', 'plain'], _("""Determines
-        what SASL mechanisms will be tried and in which order.""")))
+        ['scram-sha-256', 'external', 'ecdsa-nist256p-challenge', 'plain'],
+        _("""Determines what SASL mechanisms will be tried and in which order.
+        """)))
     registerGlobalValue(sasl, 'required', registry.Boolean(False,
         _("""Determines whether the bot will abort the connection if the
         none of the enabled SASL mechanism succeeded.""")))
