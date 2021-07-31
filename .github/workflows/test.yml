@@ -59,4 +59,4 @@ jobs:
           git clone https://github.com/ProgVal/irctest.git
           cd irctest
           pip3 install -r requirements.txt
-          make limnoria
+          make limnoria PYTEST_ARGS=-vs
