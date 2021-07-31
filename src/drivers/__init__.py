@@ -162,7 +162,7 @@ def run():
     loop.set_exception_handler(_loop_exception_handler)
     driver_names = []
     futures = []
-    coroutines = []  # Used to cleanup on shutdown to avoid warnings
+
     for (name, driver) in _drivers.items():
         if name not in _deadDrivers:
             try:
@@ -172,23 +172,22 @@ def run():
                 log.exception('Exception in drivers.run for driver %s:', name)
                 continue
             driver_names.append(name)
-            coroutines.append(coroutine)
             futures.append(future)
 
-    gather_task = asyncio.gather(*futures, return_exceptions=True, loop=loop)
-    timeout_gather_task = asyncio.wait_for(
-        gather_task,
-        timeout=conf.supybot.drivers.poll())
-    coroutines.append(timeout_gather_task)
+    async def run_drivers():
+
+        await asyncio.wait_for(
+            asyncio.gather(*futures, return_exceptions=True),
+            timeout=conf.supybot.drivers.poll())
+    task = asyncio.ensure_future(run_drivers(), loop=loop)
+
     try:
-        loop.run_until_complete(timeout_gather_task)
+        loop.run_until_complete(task)
     except KeyboardInterrupt:
-        # Cleanup all the objects so they don't throw warnings.
-        gather_task.cancel()
-        for future in futures:
-            future.cancel()
-        for coroutine in coroutines:
-            coroutine.close()
+        # Finish running what we already had going, then stop.
+        # This avoids annoying warnings like this:
+        #  RuntimeWarning: coroutine 'SocketDriver._read' was never awaited
+        loop.run_until_complete(task)
         raise
     except asyncio.TimeoutError:
         pass
