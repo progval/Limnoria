@@ -386,7 +386,7 @@ class RSS(callbacks.Plugin):
     def update_feeds(self):
         announced_feeds = {}
         for irc in world.ircs:
-            for channel in irc.state.channels:
+            for channel in list(irc.state.channels):
                 channel_feed_names = self.registryValue(
                     'announce', channel, irc.network)
                 for name in channel_feed_names:
@@ -421,7 +421,7 @@ class RSS(callbacks.Plugin):
         order = self.registryValue('sortFeedItems')
         new_entries = sort_feed_items(new_entries, 'newestFirst')
         for irc in world.ircs:
-            for channel in irc.state.channels:
+            for channel in list(irc.state.channels):
                 # Old bots have it set in plugins.RSS.announce.#channel,
                 # new bots set it in plugins.RSS.announce.:network.#channel,
                 # so we want to read from both.
@@ -623,7 +623,7 @@ class RSS(callbacks.Plugin):
 
             channels = []
             for ircnet in world.ircs:
-                for channel in ircnet.state.channels:
+                for channel in list(ircnet.state.channels):
                     if feed in plugin.registryValue('announce', channel, ircnet.network):
                         channels.append(ircnet.network + channel)
 
