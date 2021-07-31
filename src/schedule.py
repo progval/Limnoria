@@ -137,7 +137,7 @@ class Schedule(drivers.IrcDriver):
 
     removePeriodicEvent = removeEvent
 
-    def run(self):
+    async def run(self):
         if len(drivers._drivers) == 1 and not world.testing:
             log.error('Schedule is the only remaining driver, '
                       'why do we continue to live?')

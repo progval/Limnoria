@@ -35,6 +35,7 @@ Contains various drivers (network, file, and otherwise) for using IRC objects.
 
 import time
 import socket
+import asyncio
 from collections import namedtuple
 
 from .. import conf, ircdb, ircmsgs, ircutils, log as supylog, utils
@@ -146,15 +147,59 @@ def remove(name):
     """Removes the driver with the given name from the loop."""
     _deadDrivers.add(name)
 
+
+def _loop_exception_handler(loop, context):
+    if 'Task was destroyed but it is pending' in context['message']:
+        # This happens when cancelling tasks because of KeyboardInterrupt.
+        # There is really nothing we can do about this, so it's
+        # pointless to log it.
+        return
+    log.error('Exception in drivers loop: %s', context['message'])
+
 def run():
     """Runs the whole driver loop."""
+    loop = asyncio.new_event_loop()
+    loop.set_exception_handler(_loop_exception_handler)
+    driver_names = []
+    futures = []
+    coroutines = []  # Used to cleanup on shutdown to avoid warnings
     for (name, driver) in _drivers.items():
+        if name not in _deadDrivers:
+            try:
+                coroutine = driver.run()
+                future = asyncio.ensure_future(coroutine, loop=loop)
+            except Exception:
+                log.exception('Exception in drivers.run for driver %s:', name)
+                continue
+            driver_names.append(name)
+            coroutines.append(coroutine)
+            futures.append(future)
+
+    gather_task = asyncio.gather(*futures, return_exceptions=True, loop=loop)
+    timeout_gather_task = asyncio.wait_for(
+        gather_task,
+        timeout=conf.supybot.drivers.poll())
+    coroutines.append(timeout_gather_task)
+    try:
+        loop.run_until_complete(timeout_gather_task)
+    except KeyboardInterrupt:
+        # Cleanup all the objects so they don't throw warnings.
+        gather_task.cancel()
+        for future in futures:
+            future.cancel()
+        for coroutine in coroutines:
+            coroutine.close()
+        raise
+    except asyncio.TimeoutError:
+        pass
+
+    for (name, future) in zip(driver_names, futures):
         try:
-            if name not in _deadDrivers:
-                driver.run()
+            future.result()  # Raises an exception if driver.run() did.
         except:
-            log.exception('Uncaught exception in in drivers.run:')
+            log.exception('Uncaught exception in drivers.run:')
             _deadDrivers.add(name)
+
     for name in _deadDrivers:
         try:
             driver = _drivers[name]

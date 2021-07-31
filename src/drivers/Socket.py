@@ -39,9 +39,10 @@ import os
 import sys
 import time
 import errno
-import threading
 import select
 import socket
+import asyncio
+import threading
 
 import ipaddress
 
@@ -58,9 +59,8 @@ except:
     class SSLError(Exception):
         pass
 
+
 class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
-    _instances = []
-    _selecting = threading.Lock()
     def __init__(self, irc):
         assert irc is not None
         self.irc = irc
@@ -108,26 +108,19 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         # hasn't finished yet.  We'll keep track of how many we get.
         if e is None or e.args[0] != 11 or self.eagains > 120:
             drivers.log.disconnect(self.currentServer, e)
-            if self in self._instances:
-                self._instances.remove(self)
             try:
                 self.conn.close()
             except:
                 pass
             self.connected = False
             if self.irc is None:
-                # This driver is dead already, but we're still running because
-                # of select() running in an other driver's thread that started
-                # before this one died and stil holding a reference to this
-                # instance.
-                # Just return, and we should never be called again.
                 return
             self.scheduleReconnect()
         else:
             log.debug('Got EAGAIN, current count: %s.', self.eagains)
             self.eagains += 1
 
-    def _sendIfMsgs(self):
+    async def _sendIfMsgs(self):
         if not self.connected:
             return
         if not self.zombie:
@@ -137,71 +130,34 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             del msgs[-1]
             self.outbuffer += ''.join(map(str, msgs))
         if self.outbuffer:
+            loop = asyncio.get_event_loop()
             try:
-                if minisix.PY2:
-                    sent = self.conn.send(self.outbuffer)
-                else:
-                    sent = self.conn.send(self.outbuffer.encode())
-                self.outbuffer = self.outbuffer[sent:]
+                await loop.sock_sendall(self.conn, self.outbuffer.encode())
+                self.outbuffer = ''
                 self.eagains = 0
             except socket.error as e:
                 self._handleSocketError(e)
         if self.zombie and not self.outbuffer:
             self._reallyDie()
 
-    @classmethod
-    def _select(cls):
-        timeout = conf.supybot.drivers.poll()
-        try:
-            if not cls._selecting.acquire(blocking=False):
-                # there's already a thread running this code, abort.
-                return
-            for inst in cls._instances:
-                # Do not use a list comprehension here, we have to edit the list
-                # and not to reassign it.
-                if not inst.connected or \
-                        (minisix.PY3 and inst.conn._closed) or \
-                        (minisix.PY2 and
-                            inst.conn._sock.__class__ is socket._closedsocket):
-                    cls._instances.remove(inst)
-                elif inst.conn.fileno() == -1:
-                    inst.reconnect()
-            if not cls._instances:
-                return
-            rlist, wlist, xlist = select.select([x.conn for x in cls._instances],
-                    [], [], timeout)
-            for instance in cls._instances:
-                if instance.conn in rlist:
-                    instance._read()
-        except select.error as e:
-            if e.args[0] != errno.EINTR:
-                # 'Interrupted system call'
-                raise
-        finally:
-            cls._selecting.release()
-        for instance in cls._instances:
-            if instance.irc and not instance.irc.zombie:
-                instance._sendIfMsgs()
-
-
-    def run(self):
+    async def run(self):
         now = time.time()
         if self.nextReconnectTime is not None and now > self.nextReconnectTime:
             self.reconnect()
         elif self.writeCheckTime is not None and now > self.writeCheckTime:
             self._checkAndWriteOrReconnect()
         if not self.connected:
-            # We sleep here because otherwise, if we're the only driver, we'll
-            # spin at 100% CPU while we're disconnected.
-            time.sleep(conf.supybot.drivers.poll())
             return
-        self._sendIfMsgs()
-        self._select()
+        await asyncio.gather(
+            self._sendIfMsgs(),
+            self._read(),
+        )
 
-    def _read(self):
+    async def _read(self):
         """Called by _select() when we can read data."""
+        loop = asyncio.get_event_loop()
         try:
-            new_data = self.conn.recv(1024)
+            new_data = await loop.sock_recv(self.conn, 1024)
             if not new_data:
                 # Socket was closed
                 self._handleSocketError(None)
@@ -241,7 +197,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self._handleSocketError(e)
             return
         if self.irc and not self.irc.zombie:
-            self._sendIfMsgs()
+            await self._sendIfMsgs()
 
     def connect(self, **kwargs):
         self.reconnect(reset=False, **kwargs)
@@ -252,8 +208,6 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         if self.connected:
             self.onDisconnect()
             drivers.log.reconnect(self.irc.network)
-            if self in self._instances:
-                self._instances.remove(self)
             try:
                 self.conn.shutdown(socket.SHUT_RDWR)
             except: # "Transport endpoint not connected"
@@ -314,12 +268,10 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             return
         # We allow more time for the connect here, since it might take longer.
         # At least 10 seconds.
-        self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
         try:
             # Connect before SSL, otherwise SSL is disabled if we use SOCKS.
             # See http://stackoverflow.com/q/16136916/539465
-            self.conn.connect(
-                (address, self.currentServer.port))
+            self.conn.connect((address, self.currentServer.port))
             if network_config.ssl() or \
                     self.currentServer.force_tls_verification:
                 self.starttls()
@@ -343,8 +295,6 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                         '<http://docs.limnoria.net/en/latest/use/faq.html#how-to-make-a-connection-secure>')
                         % self.irc.network)
 
-            conf.supybot.drivers.poll.addCallback(self.setTimeout)
-            self.setTimeout()
             self.connected = True
             self.resetDelay()
         except socket.error as e:
@@ -361,13 +311,6 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 drivers.log.connectError(self.currentServer, e)
                 self.scheduleReconnect()
             return
-        self._instances.append(self)
-
-    def setTimeout(self):
-        try:
-            self.conn.settimeout(conf.supybot.drivers.poll())
-        except Exception:
-            drivers.log.exception('Could not set socket timeout:')
 
     def _checkAndWriteOrReconnect(self):
         self.writeCheckTime = None
@@ -393,9 +336,6 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.nextReconnectTime = when
 
     def die(self):
-        if self in self._instances:
-            self._instances.remove(self)
-        conf.supybot.drivers.poll.removeCallback(self.setTimeout)
         self.zombie = True
         if self.nextReconnectTime is not None:
             self.nextReconnectTime = None

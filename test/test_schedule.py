@@ -31,6 +31,7 @@
 from supybot.test import *
 
 import time
+import asyncio
 
 import supybot.schedule as schedule
 
@@ -42,6 +43,11 @@ import supybot.schedule as schedule
 class FakeSchedule(schedule.Schedule):
     def name(self):
         return 'FakeSchedule'
+
+
+def run(sched):
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(sched.run())
 
 class TestSchedule(SupyTestCase):
     def testSchedule(self):
@@ -55,14 +61,14 @@ class TestSchedule(SupyTestCase):
         sched.addEvent(add10, time.time() + 3)
         sched.addEvent(add1, time.time() + 1)
         timeFastForward(1.2)
-        sched.run()
+        run(sched)
         self.assertEqual(i[0], 1)
         timeFastForward(1.9)
-        sched.run()
+        run(sched)
         self.assertEqual(i[0], 11)
 
         sched.addEvent(add10, time.time() + 3, 'test')
-        sched.run()
+        run(sched)
         self.assertEqual(i[0], 11)
         sched.removeEvent('test')
         self.assertEqual(i[0], 11)
@@ -77,10 +83,10 @@ class TestSchedule(SupyTestCase):
         n = sched.addEvent(inc, time.time() + 1)
         sched.rescheduleEvent(n, time.time() + 3)
         timeFastForward(1.2)
-        sched.run()
+        run(sched)
         self.assertEqual(i[0], 0)
         timeFastForward(2)
-        sched.run()
+        run(sched)
         self.assertEqual(i[0], 1)
 
     def testPeriodic(self):
@@ -90,20 +96,20 @@ class TestSchedule(SupyTestCase):
             i[0] += 1
         n = sched.addPeriodicEvent(inc, 1, name='test_periodic')
         timeFastForward(0.6)
-        sched.run() # 0.6
+        run(sched) # 0.6
         self.assertEqual(i[0], 1)
         timeFastForward(0.6)
-        sched.run() # 1.2
+        run(sched) # 1.2
         self.assertEqual(i[0], 2)
         timeFastForward(0.6)
-        sched.run() # 1.8
+        run(sched) # 1.8
         self.assertEqual(i[0], 2)
         timeFastForward(0.6)
-        sched.run() # 2.4
+        run(sched) # 2.4
         self.assertEqual(i[0], 3)
         sched.removePeriodicEvent(n)
         timeFastForward(1)
-        sched.run() # 3.4
+        run(sched) # 3.4
         self.assertEqual(i[0], 3)
 
     def testCountedPeriodic(self):
@@ -113,19 +119,19 @@ class TestSchedule(SupyTestCase):
             i[0] += 1
         n = sched.addPeriodicEvent(inc, 1, name='test_periodic', count=3)
         timeFastForward(0.6)
-        sched.run() # 0.6
+        run(sched) # 0.6
         self.assertEqual(i[0], 1)
         timeFastForward(0.6)
-        sched.run() # 1.2
+        run(sched) # 1.2
         self.assertEqual(i[0], 2)
         timeFastForward(0.6)
-        sched.run() # 1.8
+        run(sched) # 1.8
         self.assertEqual(i[0], 2)
         timeFastForward(0.6)
-        sched.run() # 2.4
+        run(sched) # 2.4
         self.assertEqual(i[0], 3)
         timeFastForward(1)
-        sched.run() # 3.4
+        run(sched) # 3.4
         self.assertEqual(i[0], 3)
 
 
