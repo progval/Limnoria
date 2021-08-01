@@ -2,6 +2,7 @@
 
 ###
 # Copyright (c) 2004, Stéphan Kochen
+# Copyright (c) 2021, The Limnoria Contributors
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without

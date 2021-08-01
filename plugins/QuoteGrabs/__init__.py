@@ -1,5 +1,6 @@
 ###
 # Copyright (c) 2004, Daniel DiPaolo
+# Copyright (c) 2010-2021, The Limnoria Contributors
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without

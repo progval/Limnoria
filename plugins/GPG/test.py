@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2015, Valentin Lorentz
+# Copyright (c) 2015-2021, The Limnoria Contributors
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without

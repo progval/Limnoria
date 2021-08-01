@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2005, Daniel DiPaolo
 # Copyright (c) 2014, James McCoy
-# Copyright (c) 2021, Valentin Lorentz
+# Copyright (c) 2010-2021, The Limnoria Contributors
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without

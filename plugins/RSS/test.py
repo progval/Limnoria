@@ -1,6 +1,7 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
 # Copyright (c) 2009, James McCoy
+# Copyright (c) 2010-2021, The Limnoria Contributors
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
