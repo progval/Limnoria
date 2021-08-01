@@ -153,18 +153,18 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
         fd = urlopen(request, timeout=timeout)
         return fd
     except socket.timeout as e:
-        raise Error(TIMED_OUT)
+        raise Error(TIMED_OUT) from e
     except sockerrors as e:
-        raise Error(strError(e))
+        raise Error(strError(e)) from e
     except InvalidURL as e:
-        raise Error('Invalid URL: %s' % e)
+        raise Error('Invalid URL: %s' % e) from e
     except HTTPError as e:
-        raise Error(strError(e))
+        raise Error(strError(e)) from e
     except URLError as e:
-        raise Error(strError(e.reason))
+        raise Error(strError(e.reason)) from e
     # Raised when urllib doesn't recognize the url type
     except ValueError as e:
-        raise Error(strError(e))
+        raise Error(strError(e)) from e
 
 def getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None):
     """getUrlTargetAndContent(url, size=None, headers=None, data=None, timeout=None)
