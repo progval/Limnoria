@@ -8,3 +8,4 @@ sqlalchemy
 PySocks
 mock
 cryptography
+pyxmpp2-scram
