@@ -287,7 +287,9 @@ class RSS(callbacks.Plugin):
 
     def register_feed(self, name, url, initial,
             plugin_is_loading, announced=None):
-        self.feed_names[name] = url
+        if name != url:
+            # If name == url, then it's an anonymous feed
+            self.feed_names[name] = url
         self.feeds[url] = Feed(name, url, initial,
                 plugin_is_loading, announced)
 

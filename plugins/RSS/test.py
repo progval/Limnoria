@@ -111,6 +111,7 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotError('rss announce remove http://xkcd.com/rss.xml')
             self.assertNotError('rss remove xkcd')
         self.assertEqual(self.irc.getCallback('RSS').feed_names, {})
+        self.assertTrue(self.irc.getCallback('RSS').get_feed('http://xkcd.com/rss.xml'))
 
     @mock_urllib
     def testInitialAnnounceNewest(self, mock):
