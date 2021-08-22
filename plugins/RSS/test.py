@@ -103,9 +103,14 @@ class RSSTestCase(ChannelPluginTestCase):
 
     @mock_urllib
     def testRemoveAliasedFeed(self, mock):
-        mock._data = xkcd_new
+        mock._data = xkcd_old
         try:
             self.assertNotError('rss announce add http://xkcd.com/rss.xml')
+
+            # Clear the queue or it's going to mess up the finally block
+            self.assertRegexp(' ', 'Snake Facts')
+            self.assertNoResponse(' ')
+
             self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
         finally:
             self.assertNotError('rss announce remove http://xkcd.com/rss.xml')
