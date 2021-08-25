@@ -680,6 +680,12 @@ def getUrl(irc, msg, args, state):
     else:
         state.errorInvalid(_('url'), args[0])
 
+def getIri(irc, msg, args, state):
+    if utils.web.urlRe.match(args[0]):
+        state.args.append(args.pop(0))
+    else:
+        state.errorInvalid(_('IRI'), args[0])
+
 def getEmail(irc, msg, args, state):
     if utils.net.emailRe.match(args[0]):
         state.args.append(args.pop(0))
@@ -692,6 +698,14 @@ def getHttpUrl(irc, msg, args, state):
         state.args.append(args.pop(0))
     elif utils.web.httpUrlRe.match('http://' + args[0]):
         _checkUrl('http://' + args[0])
+        state.args.append('http://' + args.pop(0))
+    else:
+        state.errorInvalid(_('http url'), args[0])
+
+def getHttpIri(irc, msg, args, state):
+    if utils.web.httpUrlRe.match(args[0]):
+        state.args.append(args.pop(0))
+    elif utils.web.httpUrlRe.match('http://' + args[0]):
         state.args.append('http://' + args.pop(0))
     else:
         state.errorInvalid(_('http url'), args[0])
@@ -795,6 +809,7 @@ wrappers = ircutils.IrcDict({
     'haveVoice+': getHaveVoicePlus,
     'hostmask': getHostmask,
     'httpUrl': getHttpUrl,
+    'httpIri': getHttpIri,
     'id': getId,
     'inChannel': inChannel,
     'index': getIndex,
@@ -828,6 +843,7 @@ wrappers = ircutils.IrcDict({
     'text': getText,
     'to': getTo,
     'url': getUrl,
+    'iri': getIri,
     'user': getUser,
     'validChannel': validChannel,
     'voice': getVoice,
