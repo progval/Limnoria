@@ -80,7 +80,7 @@ def _addressed(irc, msg, prefixChars=None, nicks=None,
                 payload = payload[len(prefixString):].lstrip()
         return payload
 
-    assert msg.command in ('PRIVMSG', 'TAGMSG')
+    assert msg.command in ('PRIVMSG', 'TAGMSG'), msg.command
     target = msg.channel or msg.args[0]
     if not payload:
         payload = msg.args[1]
