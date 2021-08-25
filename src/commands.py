@@ -667,15 +667,15 @@ def getGlob(irc, msg, args, state):
         glob = '*%s*' % glob
     state.args.append(glob)
 
-def _checkUrl(url):
+def _checkUrl(state, url):
     try:
-        args[0].encode('ascii')
+        url.encode('ascii')
     except UnicodeEncodeError:
-        state.errorInvalid(_('url'), args[0])
+        state.errorInvalid(_('url'), url)
 
 def getUrl(irc, msg, args, state):
     if utils.web.urlRe.match(args[0]):
-        _checkUrl(args[0])
+        _checkUrl(state, args[0])
         state.args.append(args.pop(0))
     else:
         state.errorInvalid(_('url'), args[0])
@@ -694,10 +694,10 @@ def getEmail(irc, msg, args, state):
 
 def getHttpUrl(irc, msg, args, state):
     if utils.web.httpUrlRe.match(args[0]):
-        _checkUrl(args[0])
+        _checkUrl(state, args[0])
         state.args.append(args.pop(0))
     elif utils.web.httpUrlRe.match('http://' + args[0]):
-        _checkUrl('http://' + args[0])
+        _checkUrl(state, 'http://' + args[0])
         state.args.append('http://' + args.pop(0))
     else:
         state.errorInvalid(_('http url'), args[0])

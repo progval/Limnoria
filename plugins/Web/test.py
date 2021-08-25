@@ -179,6 +179,8 @@ class WebTestCase(ChannelPluginTestCase):
     def testFetchIri(self):
         self.assertRegexp('fetch http://café.example.org/',
             'Error: .*is not a valid')
+        self.assertRegexp('fetch http://example.org/café',
+            'Error: .*is not a valid')
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
