@@ -176,5 +176,9 @@ class WebTestCase(ChannelPluginTestCase):
         finally:
             conf.supybot.plugins.Web.nonSnarfingRegexp.set('')
 
+    def testFetchIri(self):
+        self.assertRegexp('fetch http://café.example.org/',
+            'Error: .*is not a valid')
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
