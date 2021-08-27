@@ -212,7 +212,13 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             lines = self.inbuffer.split(b'\n')
             self.inbuffer = lines.pop()
             for line in lines:
-                line = decode_raw_line(line)
+                if self.irc is not None \
+                        and 'UTF8ONLY' in self.irc.state.supported:
+                    # No need for the fancy charset-guessing used in
+                    # decode_raw_line.
+                    line = line.decode('utf8')
+                else:
+                    line = decode_raw_line(line)
 
                 msg = drivers.parseMsg(line)
                 if msg is not None and self.irc is not None:
