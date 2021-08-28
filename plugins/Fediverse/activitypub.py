@@ -173,7 +173,7 @@ def has_webfinger_support(hostname):
 
 def webfinger(hostname, uri):
     template = _get_webfinger_url(hostname)
-    assert template
+    assert template, "missing webfinger url template for %s" % hostname
 
     with convert_exceptions(ActorNotFound):
         content = web.getUrlContent(
@@ -280,7 +280,7 @@ def get_actor(localuser, hostname):
 def get_resource_from_url(url):
     content = signed_request(url, headers={"Accept": ACTIVITY_MIMETYPE})
 
-    assert content is not None
+    assert content is not None, "Content from %s is None" % url
 
     with convert_exceptions(ActivityPubProtocolError, "Invalid JSON: ", True):
         return json.loads(content.decode())
