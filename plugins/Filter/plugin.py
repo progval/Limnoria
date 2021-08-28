@@ -84,7 +84,7 @@ class Filter(callbacks.Plugin):
                        'scramble', 'morse', 'reverse', 'colorize', 'squish',
                        'supa1337', 'stripcolor', 'aol', 'rainbow', 'spellit',
                        'hebrew', 'undup', 'uwu', 'gnu', 'shrink', 'uniud', 'capwords',
-                       'caps', 'vowelrot']
+                       'caps', 'vowelrot', 'stripformatting']
     @internationalizeDocstring
     def outfilter(self, irc, msg, args, channel, command):
         """[<channel>] [<command>]
@@ -420,6 +420,13 @@ class Filter(callbacks.Plugin):
             L = [c.encode('utf-8') for c in L]
         irc.reply(''.join(L) + '\x03')
     rainbow = wrap(rainbow, ['text'])
+
+    @wrap(['text'])
+    def stripformatting(self, irc, msg, args, text):
+        """<text>
+
+        Strips bold, underline, and colors from <text>."""
+        irc.reply(ircutils.stripFormatting(text))
 
     @internationalizeDocstring
     def stripcolor(self, irc, msg, args, text):

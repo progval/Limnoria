@@ -79,11 +79,6 @@ repr <text>
 reverse <text>
   Returns <text> in reverse-video.
 
-.. _command-format-stripformatting:
-
-stripformatting <text>
-  Strips bold, underline, and colors from <text>.
-
 .. _command-format-title:
 
 title <text>

@@ -126,6 +126,11 @@ squish <text>
 stripcolor <text>
   Returns <text> stripped of all color codes.
 
+.. _command-filter-stripformatting:
+
+stripformatting <text>
+  Strips bold, underline, and colors from <text>.
+
 .. _command-filter-supa1337:
 
 supa1337 <text>
