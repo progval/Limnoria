@@ -1992,8 +1992,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             self.endCapabilityNegociation(msg)
 
     def do904(self, msg):
-        log.warning('%s: SASL authentication failed (mechanism: %s)',
-                self.network, self.sasl_current_mechanism)
+        log.warning('%s: SASL authentication failed (mechanism: %s): %s',
+                self.network, self.sasl_current_mechanism, msg.args[-1])
         self.tryNextSaslMechanism(msg)
 
     def do905(self, msg):
