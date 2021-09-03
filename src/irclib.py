@@ -2050,7 +2050,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             or (self.driver.ssl and self.driver.anyCertValidationEnabled())
 
         parsed_policy = ircutils.parseStsPolicy(
-            log, policy, parseDuration=secure_connection)
+            log, policy, secure_connection=secure_connection)
         if parsed_policy is None:
             # There was an error (and it was logged). Ignore it and proceed
             # with the connection.
@@ -2065,9 +2065,14 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             # For future-proofing (because we don't want to write an invalid
             # value), we write the raw policy received from the server instead
             # of the parsed one.
-            log.debug('Storing STS policy: %s', policy)
+            log.debug('Storing STS policy for %s (TLS port %s): %s',
+                self.driver.currentServer.hostname,
+                self.driver.currentServer.port,
+                policy)
             ircdb.networks.getNetwork(self.network).addStsPolicy(
-                self.driver.currentServer.hostname, policy)
+                self.driver.currentServer.hostname,
+                self.driver.currentServer.port,
+                policy)
         else:
             hostname = self.driver.currentServer.hostname
             attempt = self.driver.currentServer.attempt

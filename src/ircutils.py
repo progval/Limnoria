@@ -1073,11 +1073,15 @@ def parseCapabilityKeyValue(s):
     return d
 
 
-def parseStsPolicy(logger, policy, parseDuration):
+def parseStsPolicy(logger, policy, secure_connection):
     parsed_policy = parseCapabilityKeyValue(policy)
 
     for key in ('port', 'duration'):
-        if key == 'duration' and not parseDuration:
+        if key == 'duration' and not secure_connection:
+            if key in parsed_policy:
+                del parsed_policy[key]
+            continue
+        elif key == 'port' and secure_connection:
             if key in parsed_policy:
                 del parsed_policy[key]
             continue

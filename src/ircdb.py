@@ -509,9 +509,10 @@ class IrcNetwork(object):
             (self.__class__.__name__, self.stsPolicies,
              self.lastDisconnectTimes)
 
-    def addStsPolicy(self, server, stsPolicy):
-        assert isinstance(stsPolicy, str)
-        self.stsPolicies[server] = stsPolicy
+    def addStsPolicy(self, server, port, stsPolicy):
+        assert isinstance(port, int), repr(port)
+        assert isinstance(stsPolicy, str), repr(stsPolicy)
+        self.stsPolicies[server] = (port, stsPolicy)
 
     def expireStsPolicy(self, server):
         if server in self.stsPolicies:
@@ -526,8 +527,10 @@ class IrcNetwork(object):
             fd.write(s)
             fd.write(os.linesep)
 
-        for (server, stsPolicy) in sorted(self.stsPolicies.items()):
-            write('stsPolicy %s %s' % (server, stsPolicy))
+        for (server, (port, stsPolicy)) in sorted(self.stsPolicies.items()):
+            assert isinstance(port, int), repr(port)
+            assert isinstance(stsPolicy, str), repr(stsPolicy)
+            write('stsPolicy %s %s %s' % (server, port, stsPolicy))
 
         for (server, disconnectTime) in \
                 sorted(self.lastDisconnectTimes.items()):
@@ -667,8 +670,12 @@ class IrcNetworkCreator(Creator):
         IrcNetworkCreator.name = rest
 
     def stspolicy(self, rest, lineno):
-        (server, stsPolicy) = rest.split()
-        self.net.addStsPolicy(server, stsPolicy)
+        L = rest.split()
+        if len(L) == 2:
+            # Old policy missing a port. Discard it
+            return
+        (server, policyPort, stsPolicy) = L
+        self.net.addStsPolicy(server, int(policyPort), stsPolicy)
 
     def lastdisconnecttime(self, rest, lineno):
         (server, when) = rest.split()

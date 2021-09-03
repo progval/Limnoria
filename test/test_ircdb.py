@@ -358,11 +358,11 @@ class IrcNetworkTestCase(IrcdbTestCase):
 
     def testStsPolicy(self):
         n = ircdb.IrcNetwork()
-        n.addStsPolicy('foo', 'bar')
-        n.addStsPolicy('baz', 'qux')
+        n.addStsPolicy('foo', 123, 'bar')
+        n.addStsPolicy('baz', 456, 'qux')
         self.assertEqual(n.stsPolicies, {
-            'foo': 'bar',
-            'baz': 'qux',
+            'foo': (123, 'bar'),
+            'baz': (456, 'qux'),
         })
 
     def testAddDisconnection(self):
@@ -374,8 +374,8 @@ class IrcNetworkTestCase(IrcdbTestCase):
 
     def testPreserve(self):
         n = ircdb.IrcNetwork()
-        n.addStsPolicy('foo', 'sts1')
-        n.addStsPolicy('bar', 'sts2')
+        n.addStsPolicy('foo', 123, 'sts1')
+        n.addStsPolicy('bar', 456,'sts2')
         n.addDisconnection('foo')
         n.addDisconnection('baz')
         disconnect_time_foo = n.lastDisconnectTimes['foo']
@@ -384,8 +384,8 @@ class IrcNetworkTestCase(IrcdbTestCase):
         n.preserve(fd, indent='    ')
         fd.seek(0)
         self.assertCountEqual(fd.read().split('\n'), [
-            '    stsPolicy foo sts1',
-            '    stsPolicy bar sts2',
+            '    stsPolicy foo 123 sts1',
+            '    stsPolicy bar 456 sts2',
             '    lastDisconnectTime foo %d' % disconnect_time_foo,
             '    lastDisconnectTime baz %d' % disconnect_time_baz,
             '',
@@ -467,8 +467,8 @@ class NetworksDictionaryTestCase(IrcdbTestCase):
 
     def testPreserveOne(self):
         n = ircdb.IrcNetwork()
-        n.addStsPolicy('foo', 'sts1')
-        n.addStsPolicy('bar', 'sts2')
+        n.addStsPolicy('foo', 123, 'sts1')
+        n.addStsPolicy('bar', 456, 'sts2')
         n.addDisconnection('foo')
         n.addDisconnection('baz')
         disconnect_time_foo = n.lastDisconnectTimes['foo']
@@ -486,8 +486,8 @@ class NetworksDictionaryTestCase(IrcdbTestCase):
         lines = fd.getvalue().split('\n')
         self.assertEqual(lines.pop(0), 'network foonet')
         self.assertCountEqual(lines, [
-            '  stsPolicy foo sts1',
-            '  stsPolicy bar sts2',
+            '  stsPolicy foo 123 sts1',
+            '  stsPolicy bar 456 sts2',
             '  lastDisconnectTime foo %d' % disconnect_time_foo,
             '  lastDisconnectTime baz %d' % disconnect_time_baz,
             '',
@@ -496,15 +496,15 @@ class NetworksDictionaryTestCase(IrcdbTestCase):
 
     def testPreserveThree(self):
         n = ircdb.IrcNetwork()
-        n.addStsPolicy('foo', 'sts1')
+        n.addStsPolicy('foo', 123, 'sts1')
         self.networks.setNetwork('foonet', n)
 
         n = ircdb.IrcNetwork()
-        n.addStsPolicy('bar', 'sts2')
+        n.addStsPolicy('bar', 456, 'sts2')
         self.networks.setNetwork('barnet', n)
 
         n = ircdb.IrcNetwork()
-        n.addStsPolicy('baz', 'sts3')
+        n.addStsPolicy('baz', 789, 'sts3')
         self.networks.setNetwork('baznet', n)
 
         fd = io.StringIO()
@@ -518,13 +518,13 @@ class NetworksDictionaryTestCase(IrcdbTestCase):
         fd.seek(0)
         self.assertEqual(fd.getvalue(),
             'network barnet\n'
-            '  stsPolicy bar sts2\n'
+            '  stsPolicy bar 456 sts2\n'
             '\n'
             'network baznet\n'
-            '  stsPolicy baz sts3\n'
+            '  stsPolicy baz 789 sts3\n'
             '\n'
             'network foonet\n'
-            '  stsPolicy foo sts1\n'
+            '  stsPolicy foo 123 sts1\n'
             '\n'
         )
 

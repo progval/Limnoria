@@ -39,7 +39,7 @@ class DriversTestCase(SupyTestCase):
     def testValidStsPolicy(self):
         irc = irclib.Irc('test')
         net = ircdb.networks.getNetwork('test')
-        net.addStsPolicy('example.com', 'duration=10,port=6697')
+        net.addStsPolicy('example.com', 6697, 'duration=10,port=12345')
         net.addDisconnection('example.com')
 
         with conf.supybot.networks.test.servers.context(
@@ -64,7 +64,7 @@ class DriversTestCase(SupyTestCase):
     def testExpiredStsPolicy(self):
         irc = irclib.Irc('test')
         net = ircdb.networks.getNetwork('test')
-        net.addStsPolicy('example.com', 'duration=10,port=6697')
+        net.addStsPolicy('example.com', 6697, 'duration=10')
         net.addDisconnection('example.com')
 
         timeFastForward(16)
@@ -81,7 +81,7 @@ class DriversTestCase(SupyTestCase):
     def testRescheduledStsPolicy(self):
         irc = irclib.Irc('test')
         net = ircdb.networks.getNetwork('test')
-        net.addStsPolicy('example.com', 'duration=10,port=6697')
+        net.addStsPolicy('example.com', 6697, 'duration=10')
         net.addDisconnection('example.com')
 
         with conf.supybot.networks.test.servers.context(

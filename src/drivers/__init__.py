@@ -97,7 +97,8 @@ class ServersMixin(object):
 
     def _applyStsPolicy(self, server):
         network = ircdb.networks.getNetwork(self.networkName)
-        policy = network.stsPolicies.get(server.hostname)
+        (policy_port, policy) = network.stsPolicies.get(
+            server.hostname, (None, None))
         lastDisconnect = network.lastDisconnectTimes.get(server.hostname)
 
         if policy is None or lastDisconnect is None:
@@ -107,22 +108,22 @@ class ServersMixin(object):
 
         # The policy was stored, which means it was received on a secure
         # connection.
-        policy = ircutils.parseStsPolicy(log, policy, parseDuration=True)
+        policy = ircutils.parseStsPolicy(log, policy, secure_connection=True)
 
         if lastDisconnect + policy['duration'] < time.time():
             log.info('STS policy expired, removing.')
             network.expireStsPolicy(server.hostname)
             return server
 
-        if server.port == policy['port']:
+        if server.port == policy_port:
             log.info('Using STS policy, port %s', server.port)
         else:
             log.info('Using STS policy: changing port from %s to %s.',
-                server.port, policy['port'])
+                server.port, policy_port)
 
         # Change the port, and force TLS verification, as required by the STS
         # specification.
-        return Server(server.hostname, policy['port'], server.attempt,
+        return Server(server.hostname, policy_port, server.attempt,
                       force_tls_verification=True)
 
     def die(self):
