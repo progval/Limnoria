@@ -216,7 +216,11 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                         and 'UTF8ONLY' in self.irc.state.supported:
                     # No need for the fancy charset-guessing used in
                     # decode_raw_line.
-                    line = line.decode('utf8')
+                    try:
+                        line = line.decode('utf8')
+                    except UnicodeError:
+                        drivers.log.exception('Could not decode line %r', line)
+                        continue
                 else:
                     line = decode_raw_line(line)
 
