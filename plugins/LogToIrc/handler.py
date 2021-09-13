@@ -79,13 +79,16 @@ class IrcHandler(logging.Handler):
                 if level > record.levelno:
                     msgOk = False
 
-                if target in irc.state.channels:
-                    channel = irc.state.channels[target]
-                    modes = config.channelModesRequired.getSpecific(
-                        network=network)()
-                    for modeChar in modes:
-                        if modeChar not in channel.modes:
-                            msgOk = False
+                if irc.isChannel(target):
+                    if target in irc.state.channels:
+                        channel = irc.state.channels[target]
+                        modes = config.channelModesRequired.getSpecific(
+                            network=network)()
+                        for modeChar in modes:
+                            if modeChar not in channel.modes:
+                                msgOk = False
+                    else:
+                        msgOk = False
                 else:
                     capability = config.userCapabilityRequired.getSpecific()
                     if capability:
