@@ -73,6 +73,12 @@ class IrcHandler(logging.Handler):
                 if networks and irc.network not in networks:
                     continue
                 msgOk = True
+
+                level = config.level.getSpecific(
+                    network=network, channel=target)()
+                if level > record.levelno:
+                    msgOk = False
+
                 if target in irc.state.channels:
                     channel = irc.state.channels[target]
                     modes = config.channelModesRequired.getSpecific(

@@ -51,7 +51,9 @@ __contributors__ = {}
 
 from . import config
 from . import plugin
+from . import handler
 from importlib import reload
+importlib.reload(handler) # In case we're being reloaded.
 importlib.reload(plugin) # In case we're being reloaded.
 
 if world.testing:
