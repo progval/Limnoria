@@ -425,7 +425,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
                 if not ircdb.checkCapability(msg.prefix, 'trusted'):
                     # Limited --regexp to trusted users, because specially
                     # crafted regexps can freeze the bot. See
-                    # https://github.com/ProgVal/Limnoria/issues/855 for details
+                    # https://github.com/progval/Limnoria/issues/855 for details
                     irc.errorNoCapability('trusted')
 
                 predicates.append(lambda r: regexp_wrapper(r.text, reobj=arg,

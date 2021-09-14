@@ -61,19 +61,19 @@ class PluginDownloaderTestCase(PluginTestCase):
         assert os.path.isfile(pluginsPath + '/%s/config.py' % name)
 
     def testRepolist(self):
-        self.assertRegexp('repolist', '(.*, )?ProgVal(, .*)?')
+        self.assertRegexp('repolist', '(.*, )?progval(, .*)?')
         self.assertRegexp('repolist', '(.*, )?quantumlemur(, .*)?')
-        self.assertRegexp('repolist ProgVal', '(.*, )?AttackProtector(, .*)?')
+        self.assertRegexp('repolist progval', '(.*, )?AttackProtector(, .*)?')
 
-    def testInstallProgVal(self):
-        self.assertError('plugindownloader install ProgVal Darcs')
-        self.assertNotError('plugindownloader install ProgVal AttackProtector')
-        self.assertError('plugindownloader install ProgVal Darcs')
+    def testInstallprogval(self):
+        self.assertError('plugindownloader install progval Darcs')
+        self.assertNotError('plugindownloader install progval AttackProtector')
+        self.assertError('plugindownloader install progval Darcs')
         self._testPluginInstalled('AttackProtector')
 
     def testShellForbidden(self):
         with conf.supybot.commands.allowShell.context(False):
-            self.assertRegexp('plugindownloader install ProgVal Darcs',
+            self.assertRegexp('plugindownloader install progval Darcs',
                     'Error:.*not available.*supybot.commands.allowShell')
 
     def testInstallQuantumlemur(self):
@@ -104,7 +104,7 @@ class PluginDownloaderTestCase(PluginTestCase):
         self._testPluginInstalled('DuckDuckGo')
 
     def testInfo(self):
-        self.assertResponse('plugindownloader info ProgVal Twitter',
+        self.assertResponse('plugindownloader info progval Twitter',
                 'Advanced Twitter plugin for Supybot, with capabilities '
                 'handling, and per-channel user account.')
 

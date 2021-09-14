@@ -197,7 +197,7 @@ class RSS(callbacks.Plugin):
     ^^^^^^^^^^^
 
     1. Add a feed using
-       ``@rss add limnoria https://github.com/ProgVal/Limnoria/tags.atom``.
+       ``@rss add limnoria https://github.com/progval/Limnoria/tags.atom``.
 
        * This is RSS feed of Limnoria's stable releases.
        * You can now check the latest news from the feed with ``@limnoria``.

@@ -604,7 +604,7 @@ class Owner(callbacks.Plugin):
         old_callback = irc.getCallback(name)
         if old_callback:
             # Normalize the plugin case to prevent duplicate registration
-            # entries, https://github.com/ProgVal/Limnoria/issues/1295
+            # entries, https://github.com/progval/Limnoria/issues/1295
             name = old_callback.name()
             conf.registerPlugin(name, False)
             callbacks = irc.removeCallback(name)

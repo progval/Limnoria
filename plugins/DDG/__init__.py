@@ -48,7 +48,7 @@ __maintainer__ = supybot.authors.limnoria_core
 __contributors__ = {}
 
 # This is a url where the most recent plugin package can be downloaded.
-__url__ = 'https://github.com/ProgVal/Limnoria/tree/testing/plugins/DDG'
+__url__ = 'https://github.com/progval/Limnoria/tree/testing/plugins/DDG'
 
 from . import config
 from . import plugin

@@ -991,10 +991,10 @@ msgstr ""
 msgid ""
 "This may be a bug.  If you think it is,\n"
 "    please file a bug report at\n"
-"    <https://github.com/ProgVal/Limnoria/issues>."
+"    <https://github.com/progval/Limnoria/issues>."
 msgstr ""
 "Tämä voi olla bugi. Mikäli uskotaan niin, raportoidaan bugi osoitteessa\n"
-" <https://github.com/ProgVal/Limnoria/issues>. Bugiraportit kirjoitetaan "
+" <https://github.com/progval/Limnoria/issues>. Bugiraportit kirjoitetaan "
 "englanniksi."
 
 #: src/conf.py:619

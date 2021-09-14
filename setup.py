@@ -163,7 +163,7 @@ setup(
     provides=['supybot'],
     version=version,
     author='Valentin Lorentz',
-    url='https://github.com/ProgVal/Limnoria',
+    url='https://github.com/progval/Limnoria',
     author_email='progval+limnoria@progval.net',
     download_url='https://pypi.python.org/pypi/limnoria',
     description='A modified version of Supybot (an IRC bot and framework)',

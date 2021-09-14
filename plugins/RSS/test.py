@@ -263,7 +263,7 @@ class RSSTestCase(ChannelPluginTestCase):
 
     @mock_urllib
     def testReloadNoDelay(self, mock):
-        # https://github.com/ProgVal/Limnoria/issues/922
+        # https://github.com/progval/Limnoria/issues/922
         mock._data = xkcd_old
         timeFastForward(1.1)
         try:

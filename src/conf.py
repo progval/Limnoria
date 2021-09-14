@@ -738,7 +738,7 @@ registerChannelValue(supybot.replies, 'requiresPrivacy',
 registerChannelValue(supybot.replies, 'possibleBug',
     registry.NormalizedString(_("""This may be a bug.  If you think it is,
     please file a bug report at
-    <https://github.com/ProgVal/Limnoria/issues>."""),
+    <https://github.com/progval/Limnoria/issues>."""),
     _("""Determines what message the bot sends when it thinks you've
     encountered a bug that the developers don't know about.""")))
 

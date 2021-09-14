@@ -46,7 +46,7 @@ __contributors__ = {supybot.authors.jlu:
                    }
 __maintainer__ = supybot.authors.limnoria_core
 
-__url__ = 'https://github.com/ProgVal/Limnoria/tree/master/plugins/SedRegex'
+__url__ = 'https://github.com/progval/Limnoria/tree/master/plugins/SedRegex'
 
 from . import config
 from . import plugin

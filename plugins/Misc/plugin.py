@@ -339,7 +339,7 @@ class Misc(callbacks.Plugin):
         Returns the version of the current bot.
         """
         try:
-            newestUrl = 'https://api.github.com/repos/ProgVal/Limnoria/' + \
+            newestUrl = 'https://api.github.com/repos/progval/Limnoria/' + \
                     'commits/%s'
             versions = {}
             for branch in ('master', 'testing'):
@@ -370,7 +370,7 @@ class Misc(callbacks.Plugin):
 
         Returns a URL saying where to get Limnoria.
         """
-        irc.reply(_('My source is at https://github.com/ProgVal/Limnoria'))
+        irc.reply(_('My source is at https://github.com/progval/Limnoria'))
     source = wrap(source)
 
     @internationalizeDocstring

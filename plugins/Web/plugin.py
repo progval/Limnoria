@@ -180,7 +180,7 @@ class Web(callbacks.PluginRegexp):
             parser.feed(text)
         except UnicodeDecodeError:
             # Workaround for Python 2
-            # https://github.com/ProgVal/Limnoria/issues/1359
+            # https://github.com/progval/Limnoria/issues/1359
             parser = Title()
             parser.feed(text.encode('utf8'))
         parser.close()

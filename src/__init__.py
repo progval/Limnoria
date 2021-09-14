@@ -78,7 +78,7 @@ class authors(object): # This is basically a bag.
     bear = Author('Mike Taylor', 'bear', 'bear@code-bear.com')
     grantbow = Author('Grant Bowman', 'Grantbow', 'grantbow@grantbow.com')
     stepnem = Author('Štěpán Němec', 'stepnem', 'stepnem@gmail.com')
-    progval = Author('Valentin Lorentz', 'ProgVal', 'progval@gmail.com')
+    progval = Author('Valentin Lorentz', 'progval', 'progval@gmail.com')
     jlu = Author('James Lu', email='james@overdrivenetworks.com')
     unknown = Author('Unknown author', email='unknown@email.invalid')
 

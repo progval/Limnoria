@@ -742,10 +742,10 @@ msgstr ""
 msgid ""
 "This may be a bug.  If you think it is,\n"
 "    please file a bug report at\n"
-"    <https://github.com/ProgVal/Limnoria/issues>."
+"    <https://github.com/progval/Limnoria/issues>."
 msgstr ""
 "Questo sembra essere un bug. Se pensi lo sia, invia una segnalazione all'indirizzo\n"
-"    <https://github.com/ProgVal/Limnoria/issues>."
+"    <https://github.com/progval/Limnoria/issues>."
 
 #: src/conf.py:566
 msgid ""
