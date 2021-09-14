@@ -36,7 +36,7 @@ class MiscTestCase(SupyTestCase):
     def testAuthorExpand(self):
         # The standard 3 pair: name, nick, email
         self.assertEqual(str(supybot.authors.progval),
-                         'Valentin Lorentz (ProgVal) <progval@gmail.com>')
+                         'Valentin Lorentz (progval) <progval@gmail.com>')
         # All 3 provided, but name == nick
         self.assertEqual(str(supybot.Author('foobar', 'foobar', 'foobar@example.net')),
                          'foobar <foobar@example.net>')
@@ -57,7 +57,7 @@ class MiscTestCase(SupyTestCase):
 
     def testAuthorExpandShort(self):
         self.assertEqual(supybot.authors.progval.format(short=True),
-                         'Valentin Lorentz (ProgVal)')
+                         'Valentin Lorentz (progval)')
         self.assertEqual(supybot.authors.jlu.format(short=True),
                          'James Lu')
 
