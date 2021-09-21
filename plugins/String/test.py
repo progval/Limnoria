@@ -79,7 +79,7 @@ class StringTestCase(PluginTestCase):
     plugins = ('String', 'Format', 'Status')
 
     config = {
-        'plugins.String.re.timeout': '2'  # flaky on busy CIs otherwise
+        'plugins.String.re.timeout': 2.  # flaky on busy CIs otherwise
     }
 
     def testLen(self):
