@@ -77,6 +77,11 @@ def group(seq, groupSize, noneFill=True):
 
 class StringTestCase(PluginTestCase):
     plugins = ('String', 'Format', 'Status')
+
+    config = {
+        'plugins.String.re.timeout': '2'  # flaky on busy CIs otherwise
+    }
+
     def testLen(self):
         self.assertResponse('len foo', '3')
         self.assertHelp('len')
