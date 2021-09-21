@@ -950,8 +950,12 @@ class Channel(callbacks.Plugin):
         if frm is not None:
             s += format(_(' (from %s)'), frm)
         for nick in irc.state.channels[channel].users:
-            if ircdb.checkCapability(msg.prefix, capability):
-                irc.reply(s, to=nick, private=True)
+            prefix = irc.state.nicksToHostmasks.get(nick)
+            if not prefix:
+                continue
+            if not ircdb.checkCapability(prefix, capability):
+                continue
+            irc.reply(s, to=nick, private=True)
         irc.replySuccess()
 
     @internationalizeDocstring
