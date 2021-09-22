@@ -2138,7 +2138,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             # sets are unordered, and their "order" is nondeterministic.
             # This is needed for the tests.
             if new_caps:
-                self._requestCaps(new_caps)
+                self.requestCapabilities(new_caps)
             else:
                 self.endCapabilityNegociation(msg)
         else:
@@ -2180,9 +2180,16 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 self.REQUEST_CAPABILITIES -
                 self.state.capabilities_ack)
         if common_supported_unrequested_capabilities:
-            self._requestCaps(common_supported_unrequested_capabilities)
+            self.requestCapabilities(common_supported_unrequested_capabilities)
 
-    def _requestCaps(self, caps):
+    def requestCapabilities(self, caps):
+        """Takes an iterable of IRCv3 capabilities, and requests them to the
+        server using CAP REQ.
+
+        This is mostly just used during connection registration or when the
+        server sends CAP NEW; but plugins may use it as well to request custom
+        capabilities. They should make sure these capabilities cannot
+        negatively impact other plugins, though."""
         caps = list(sorted(caps))
         cap_lines = []
         if 'echo-message' in caps \
