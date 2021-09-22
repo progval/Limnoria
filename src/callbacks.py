@@ -80,6 +80,8 @@ def _addressed(irc, msg, prefixChars=None, nicks=None,
                 payload = payload[len(prefixString):].lstrip()
         return payload
 
+    if msg.command == 'NOTICE':
+        return ''
     assert msg.command in ('PRIVMSG', 'TAGMSG'), msg.command
     target = msg.channel or msg.args[0]
     if not payload:
