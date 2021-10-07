@@ -226,6 +226,20 @@ class ChannelLogger(callbacks.Plugin):
             if irc.isChannel(channel):
                 self.doLog(irc, channel, '-%s- %s\n', msg.nick, text)
 
+    def doAway(self, irc, msg):
+        # https://ircv3.net/specs/extensions/away-notify
+        if msg.args:
+            away_message = msg.args[-1]
+            for channel in msg.tagged('channels'):
+                if self.registryValue('showAway', channel, irc.network):
+                    self.doLog(irc, channel,
+                           '*** %s is now away: %s\n', msg.nick, away_message)
+        else:
+            for channel in msg.tagged('channels'):
+                if self.registryValue('showAway', channel, irc.network):
+                    self.doLog(irc, channel,
+                           '*** %s is back\n', msg.nick)
+
     def doNick(self, irc, msg):
         oldNick = msg.nick
         newNick = msg.args[0]

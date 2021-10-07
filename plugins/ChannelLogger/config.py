@@ -50,7 +50,11 @@ conf.registerGlobalValue(ChannelLogger, 'flushImmediately',
     flushed anytime they're written to, rather than being buffered by the
     operating system.""")))
 conf.registerChannelValue(ChannelLogger, 'showJoinParts',
-    registry.Boolean(True, _("""Determines wether joins and parts are logged""")))
+    registry.Boolean(True, _("""Determines whether joins and parts are logged""")))
+conf.registerChannelValue(ChannelLogger, 'showAway',
+    registry.Boolean(True, _("""Determines whether users going away and coming
+    back should be logged. This is only supported on networks implementing the
+    'away-notify' IRCv3 capability.""")))
 conf.registerChannelValue(ChannelLogger, 'stripFormatting',
     registry.Boolean(True, _("""Determines whether formatting characters (such
     as bolding, color, etc.) are removed when writing the logs to disk.""")))

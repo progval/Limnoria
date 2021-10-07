@@ -180,5 +180,91 @@ class ChannelLoggerTestCase(ChannelPluginTestCase):
             timestamp_re + '-foo- test message\n'
         )
 
+    @patch_open
+    def testLogJoinQuit(self, mock_open):
+        log_file = io.StringIO()
+        mock_open.return_value = log_file
+
+        self.irc.feedMsg(
+            ircmsgs.join('#foo', prefix='foo!bar@baz')
+        )
+
+        self.irc.feedMsg(
+            ircmsgs.quit('bye', prefix='foo!bar@baz')
+        )
+
+        self.assertRegex(
+            log_file.getvalue(),
+            timestamp_re + r'\*\*\* foo <foo!bar@baz> has joined #foo\n' +
+            timestamp_re + r'\*\*\* foo <foo!bar@baz> has quit IRC \(bye\)\n'
+        )
+
+    @patch_open
+    def testNoLogJoinQuit(self, mock_open):
+        log_file = io.StringIO()
+        mock_open.return_value = log_file
+
+        with conf.supybot.plugins.ChannelLogger.showJoinParts.context(False):
+            self.irc.feedMsg(
+                ircmsgs.join('#foo', prefix='foo!bar@baz')
+            )
+            self.irc.feedMsg(
+                ircmsgs.quit('bye', prefix='foo!bar@baz')
+            )
+
+        self.assertRegex(
+            log_file.getvalue(),
+            '^$'
+        )
+
+    @patch_open
+    def testLogAway(self, mock_open):
+        log_file = io.StringIO()
+        mock_open.return_value = log_file
+
+        self.irc.feedMsg(
+            ircmsgs.join('#foo', prefix='foo!bar@baz')
+        )
+
+        self.irc.feedMsg(
+            ircmsgs.IrcMsg(command='AWAY', args=('be right back',),
+            prefix='foo!bar@baz')
+        )
+
+        self.irc.feedMsg(
+            ircmsgs.IrcMsg(command='AWAY', args=(), prefix='foo!bar@baz')
+        )
+
+        self.assertRegex(
+            log_file.getvalue(),
+            timestamp_re + r'\*\*\* foo <foo!bar@baz> has joined #foo\n' +
+            timestamp_re + r'\*\*\* foo is now away: be right back\n' +
+            timestamp_re + r'\*\*\* foo is back\n'
+        )
+
+    @patch_open
+    def testNoLogAway(self, mock_open):
+        log_file = io.StringIO()
+        mock_open.return_value = log_file
+
+        self.irc.feedMsg(
+            ircmsgs.join('#foo', prefix='foo!bar@baz')
+        )
+
+        with conf.supybot.plugins.ChannelLogger.showAway.context(False):
+            self.irc.feedMsg(
+                ircmsgs.IrcMsg(command='AWAY', args=('be right back',),
+                prefix='foo!bar@baz')
+            )
+
+            self.irc.feedMsg(
+                ircmsgs.IrcMsg(command='AWAY', args=(), prefix='foo!bar@baz')
+            )
+
+        self.assertRegex(
+            log_file.getvalue(),
+            timestamp_re + r'\*\*\* foo <foo!bar@baz> has joined #foo\n$'
+        )
+
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
