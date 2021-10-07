@@ -90,7 +90,7 @@ def sandbox(f):
                 f,
                 *args,
                 timeout=10,
-                heap_size=200 * 1024 * 1024,
+                heap_size=300 * 1024 * 1024,
                 pn="Fediverse",
                 cn=f.__name__,
                 **kwargs
