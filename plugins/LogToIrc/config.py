@@ -62,7 +62,7 @@ conf.registerChannelValue(conf.supybot.plugins.LogToIrc, 'level',
     values.  DEBUG is disabled due to the large quantity of output."""),
     opSettable=False)
 conf.registerNetworkValue(conf.supybot.plugins.LogToIrc, 'targets',
-    Targets([], """Determines which channels/nicks the bot should
+    Targets([], """Space-separated list of channels/nicks the bot should
     log to.  If no channels/nicks are set, this plugin will effectively be
     turned off."""))
 conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'networks',
