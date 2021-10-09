@@ -66,7 +66,7 @@ supybot.plugins.LogToIrc.public
 supybot.plugins.LogToIrc.targets
   This config variable defaults to " ", is network-specific, and is  not channel-specific.
 
-  Determines which channels/nicks the bot should log to. If no channels/nicks are set, this plugin will effectively be turned off.
+  Space-separated list of channels/nicks the bot should log to. If no channels/nicks are set, this plugin will effectively be turned off.
 
 .. _conf-supybot.plugins.LogToIrc.userCapabilityRequired:
 
