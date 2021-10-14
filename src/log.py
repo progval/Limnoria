@@ -127,20 +127,14 @@ class StdoutStreamHandler(logging.StreamHandler):
 
 class BetterFileHandler(logging.FileHandler):
     def emit(self, record):
-        msg = self.format(record)
         try:
-            self.stream.write(msg)
-        except (UnicodeError, TypeError):
             try:
-                self.stream.write(msg.encode("utf8"))
+                super().emit(record)
             except (UnicodeError, TypeError):
-                try:
-                    self.stream.write(msg.encode("utf8").decode('ascii', 'replace'))
-                except (UnicodeError, TypeError):
-                    self.stream.write(repr(msg))
-        self.stream.write(os.linesep)
-        try:
-            self.flush()
+                msg = self.format(record)
+                self.stream.write(repr(msg))
+                self.stream.write(os.linesep)
+                self.flush()
         except OSError as e:
             if e.args[0] == 28:
                 print('No space left on device, cannot flush log.')
