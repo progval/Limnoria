@@ -538,7 +538,7 @@ def main():
         while True:
             channels_input = something('What channels?', default=defaultChannels)
             channels = []
-            error = False
+            error_ = False
             for channel in channels_input.split():
                 L = channel.split(',')
                 if len(L) == 0:
@@ -552,9 +552,9 @@ def main():
                     network.channels.key.get(channel).setValue(key)
                 else:
                     output("""Too many commas in %s.""" % channel)
-                    error = True
+                    error_ = True
                     break
-            if error:
+            if error_:
                 break
             try:
                 network.channels.set(' '.join(channels))
