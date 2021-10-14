@@ -34,6 +34,7 @@ import time
 import types
 import atexit
 import logging
+import logging.handlers
 import operator
 import textwrap
 import traceback
@@ -125,12 +126,14 @@ class StdoutStreamHandler(logging.StreamHandler):
             logging._releaseLock()
 
 
-class BetterFileHandler(logging.FileHandler):
+class BetterFileHandler(logging.handlers.WatchedFileHandler):
     def emit(self, record):
         try:
             try:
                 super().emit(record)
             except (UnicodeError, TypeError):
+                # the above line took care of calling reopenIfNeeded(), even
+                # if it raised one of these exceptions.
                 msg = self.format(record)
                 self.stream.write(repr(msg))
                 self.stream.write(os.linesep)
