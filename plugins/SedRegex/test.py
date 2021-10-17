@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2017-2020, James Lu <james@overdrivenetworks.com>
-# Copyright (c) 2020-2021, The Limnoria Contributors
+# Copyright (c) 2020-2021, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without

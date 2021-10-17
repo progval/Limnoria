@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2013-2021, The Limnoria Contributors
+# Copyright (c) 2013-2021, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without

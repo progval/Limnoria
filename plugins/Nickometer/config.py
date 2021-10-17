@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2004, William Robinson.
 # Derived from work (c) 1998, Adam Spiers <adam.spiers@new.ox.ac.uk>
-# Copyright (c) 2010-2021, The Limnoria Contributors
+# Copyright (c) 2010-2021, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
