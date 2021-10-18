@@ -66,7 +66,7 @@ conf.registerNetworkValue(conf.supybot.plugins.LogToIrc, 'targets',
     log to.  If no channels/nicks are set, this plugin will effectively be
     turned off."""))
 conf.registerNetworkValue(conf.supybot.plugins.LogToIrc, 'mores',
-    registry.Integer(0, """If the target channel exists on the network,
+    registry.NonNegativeInteger(0, """If the target channel exists on the network,
     this shall prevent message cut-off, the 0 indicates no cut-offs 
     """))
 conf.registerGlobalValue(conf.supybot.plugins.LogToIrc, 'networks',

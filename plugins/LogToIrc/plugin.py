@@ -34,7 +34,6 @@
 Allows for sending the bot's logging output to channels or users.
 """
 
-from supybot.irclib import IrcMsgQueue
 from src.ircmsgs import IrcMsg
 import supybot.plugins as plugins
 
