@@ -234,6 +234,7 @@ if __name__ == '__main__':
     print('Testing began at %s (pid %s)' % (time.ctime(), os.getpid()))
     if options.clean:
         shutil.rmtree(conf.supybot.directories.log())
+        log._mkDirs()
         shutil.rmtree(conf.supybot.directories.conf())
         shutil.rmtree(conf.supybot.directories.data())
     result = runner.run(suite)

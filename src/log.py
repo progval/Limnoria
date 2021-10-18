@@ -176,14 +176,18 @@ class ColorizedFormatter(Formatter):
         else:
             return Formatter.format(self, record, *args, **kwargs)
 
-_logDir = conf.supybot.directories.log()
-if not os.path.exists(_logDir):
-    os.mkdir(_logDir, 0o755)
+def _mkDirs():
+    global _logDir, pluginLogDir
+    _logDir = conf.supybot.directories.log()
+    if not os.path.exists(_logDir):
+        os.mkdir(_logDir, 0o755)
 
-pluginLogDir = os.path.join(_logDir, 'plugins')
+    pluginLogDir = os.path.join(_logDir, 'plugins')
 
-if not os.path.exists(pluginLogDir):
-    os.mkdir(pluginLogDir, 0o755)
+    if not os.path.exists(pluginLogDir):
+        os.mkdir(pluginLogDir, 0o755)
+
+_mkDirs()
 
 try:
     messagesLogFilename = os.path.join(_logDir, 'messages.log')
