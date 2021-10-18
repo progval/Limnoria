@@ -34,6 +34,8 @@
 Allows for sending the bot's logging output to channels or users.
 """
 
+from supybot.irclib import IrcMsgQueue
+from src.ircmsgs import IrcMsg
 import supybot.plugins as plugins
 
 import logging
@@ -63,10 +65,21 @@ class LogToIrc(callbacks.Privmsg):
 
     def do376(self, irc, msg):
         targets = self.registryValue('targets')
+        mores = self.registryValue('mores')
         for target in targets:
             if irc.isChannel(target):
                 networkGroup = conf.supybot.networks.get(irc.network)
-                irc.queueMsg(networkGroup.channels.join(target))
+                msgs = IrcMsg(networkGroup.channels.join(target))
+                if mores == 0:
+                    for m in msgs:
+                        irc.queueMsg(m)
+                elif mores > 0:
+                    for i, m in msgs:
+                        irc.queueMsg(m)
+                        i = i + 1
+                        if i == mores:
+                            return
+
     do377 = do422 = do376
 
 
