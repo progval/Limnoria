@@ -37,6 +37,7 @@ import logging
 
 import supybot.log as log
 import supybot.conf as conf
+import supybot.ircdb as ircdb
 import supybot.utils as utils
 import supybot.world as world
 import supybot.ircmsgs as ircmsgs
