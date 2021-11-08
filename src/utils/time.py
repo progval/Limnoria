@@ -53,6 +53,14 @@ class UnknownTimeZone(TimezoneException):
     pass
 
 def iana_timezone(name):
+    """Returns a :class:datetime.tzinfo object, given an IANA timezone name,
+    eg. ``"Europe/Paris"``.
+
+    This uses :class:``zoneinfo.ZoneInfo`` if available,
+    :func:``pytz.timezone`` otherwise.
+
+    May raise instances of :exc:`TimezoneException`.
+    """
     if not _IANA_TZ_RE.match(name):
         raise UnknownTimeZone(name)
 
