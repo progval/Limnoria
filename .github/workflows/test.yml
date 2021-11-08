@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     strategy:
       matrix:
-        python-version: ["3.5", "3.6", "3.7", "3.8", "3.9", "3.10.0-beta.4", "pypy-3.6", "pypy-3.7"]
+        python-version: ["3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11.0-alpha.2", "pypy-3.6", "pypy-3.7"]
         with-opt-deps: [false, true]
         runs-on: [ubuntu-latest]
         exclude:
