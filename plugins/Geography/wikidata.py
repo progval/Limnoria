@@ -90,7 +90,7 @@ SELECT ?item ?itemLabel ?rank ?endtime ?appliestopart ?utcoffset ?tzid (MIN(?are
     ?utcoffset_statement ps:P2907 ?utcoffset.
 
     FILTER NOT EXISTS {                  
-      ?utcoffset_statement wdt:P1264 ?utcoffset_validinperiod.
+      ?utcoffset_statement pq:P1264 ?utcoffset_validinperiod.
     }
   }
 
