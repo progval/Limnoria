@@ -118,7 +118,7 @@ def strError(e):
 
 # Used to build defaultHeaders
 baseDefaultHeaders = {
-    'User-agent': 'Mozilla/5.0 (compatible; utils.web python module)'
+    'User-agent': 'Mozilla/5.0 (compatible; utils.web Limnoria module)'
     }
 
 # overridable by other modules/plugins.
