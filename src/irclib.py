@@ -2020,7 +2020,6 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
     def do908(self, msg):
         log.info('%s: Supported SASL mechanisms: %s',
                  self.network, msg.args[1])
-        self.filterSaslMechanisms(set(msg.args[1].split(',')))
 
     def doCapAck(self, msg):
         if len(msg.args) != 3:
