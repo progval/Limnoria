@@ -71,7 +71,7 @@ class AdminTestCase(PluginTestCase):
         ircdb.users.setUser(u)
         self.assertNotError('capability add foo bar')
         self.assertError('addcapability foo baz')
-        self.assert_('bar' in u.capabilities)
+        self.assertIn('bar', u.capabilities)
         ircdb.users.delUser(u.id)
 
     def testCapabilityRemove(self):
@@ -80,10 +80,10 @@ class AdminTestCase(PluginTestCase):
         u.name = 'foo'
         ircdb.users.setUser(u)
         self.assertNotError('capability add foo bar')
-        self.assert_('bar' in u.capabilities)
+        self.assertIn('bar', u.capabilities)
         self.assertError('removecapability foo bar')
         self.assertNotError('capability remove foo bar')
-        self.assert_(not 'bar' in u.capabilities)
+        self.assertNotIn('bar', u.capabilities)
         ircdb.users.delUser(u.id)
 
     def testJoin(self):

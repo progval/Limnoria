@@ -528,7 +528,7 @@ class IrcStateTestCase(SupyTestCase):
 
     def testDoModeOnlyChannels(self):
         st = irclib.IrcState()
-        self.assert_(st.addMsg(self.irc, ircmsgs.IrcMsg('MODE foo +i')) or 1)
+        self.assertTrue(st.addMsg(self.irc, ircmsgs.IrcMsg('MODE foo +i')) or 1)
 
     def testNamreply(self):
         """RPL_NAMREPLY / reply to NAMES"""
@@ -740,14 +740,14 @@ class StsTestCase(SupyTestCase):
         self.irc = irclib.Irc('test')
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'CAP', 'Expected CAP, got %r.' % m)
-        self.failUnless(m.args == ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
+        self.assertEqual(m.command, 'CAP', 'Expected CAP, got %r.' % m)
+        self.assertEqual(m.args, ('LS', '302'), 'Expected CAP LS 302, got %r.' % m)
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'NICK', 'Expected NICK, got %r.' % m)
+        self.assertEqual(m.command, 'NICK', 'Expected NICK, got %r.' % m)
 
         m = self.irc.takeMsg()
-        self.failUnless(m.command == 'USER', 'Expected USER, got %r.' % m)
+        self.assertEqual(m.command, 'USER', 'Expected USER, got %r.' % m)
 
         self.irc.driver = unittest.mock.Mock()
 
