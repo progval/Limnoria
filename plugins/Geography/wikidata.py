@@ -40,20 +40,21 @@ SPARQL_URL = "https://query.wikidata.org/sparql"
 TIMEZONE_QUERY = string.Template("""
 SELECT ?item ?itemLabel ?rank ?endtime ?appliestopart ?utcoffset ?tzid (MIN(?area) AS ?min_area) WHERE {
 
-  # find all entities that the subject is part of, recursively
+  # find all ?item entities that the subject is part of, recursively;
   wd:$subject (wdt:P131*) ?item.
 
   # Get all timezones (returns a superset of "?item wdt:P421 ?timezone", as it does not filter on rank)
   ?item p:P421 ?statement.
   ?statement ps:P421 ?timezone.
 
+  # TODO: order the final result based on the rank?
   ?statement wikibase:rank ?rank.
 
   # fetch the end of validity of the given statement (TODO: check it)
   OPTIONAL { ?statement pq:P582 ?endtime. }
 
-  # filter out statements that applies only to a part of ?item...
   {
+    # filter out statements that apply only to a part of ?item...
     FILTER NOT EXISTS {
       ?statement pq:P518 ?appliestopart.
     }
@@ -72,12 +73,8 @@ SELECT ?item ?itemLabel ?rank ?endtime ?appliestopart ?utcoffset ?tzid (MIN(?are
   # store the identifier of the object the statement applies to
   BIND(IF(BOUND(?appliestopart),?appliestopart,?item) AS ?statementsubject).
 
-  #OPTIONAL { ?statementsubject wdt:P1082 ?population. }
+  # Get the area, will be used to order by specificity
   OPTIONAL { ?statementsubject wdt:P2046 ?area. }
-
-  # ?timezone wdt:P31 ?timezonetype.
-  # ?timezone wdt:P31 wd:Q17272692. # only keep IANA timezones
-  # ?timezone wdt:P31 wd:Q17272482. # only keep UTC offsets
 
   {
     # Get either an IANA timezone ID...
@@ -85,10 +82,11 @@ SELECT ?item ?itemLabel ?rank ?endtime ?appliestopart ?utcoffset ?tzid (MIN(?are
   }
   UNION
   {
-    # ... or an absolute UTC offset that is not subject to DST
+    # ... or an absolute UTC offset
     ?timezone p:P2907 ?utcoffset_statement.
     ?utcoffset_statement ps:P2907 ?utcoffset.
 
+    # unless it is only valid in certain periods of the year (DST vs normal time)
     FILTER NOT EXISTS {                  
       ?utcoffset_statement pq:P1264 ?utcoffset_validinperiod.
     }
