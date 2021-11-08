@@ -110,7 +110,12 @@ LIMIT 1
 def _query_sparql(query):
     params = {"format": "json", "query": query}
     url = SPARQL_URL + "?" + urllib.parse.urlencode(params)
-    content = utils.web.getUrlContent(url)
+
+    # Comply with https://meta.wikimedia.org/wiki/User-Agent_policy
+    headers = utils.web.defaultHeaders.copy()
+    headers["User-agent"] += " https://github.com/progval/Limnoria/ - Geography plugin"
+
+    content = utils.web.getUrlContent(url, headers=headers)
     return json.loads(content)
 
 def timezone_from_qid(location_qid):
