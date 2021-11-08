@@ -1,7 +1,5 @@
 ###
-# Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2008, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2021, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,42 +25,49 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-###
-
-from . import minisix
 
 ###
-# csv.{join,split} -- useful functions that should exist.
-###
-import csv
-def join(L):
-    fd = minisix.io.StringIO()
-    writer = csv.writer(fd)
-    writer.writerow(L)
-    return fd.getvalue().rstrip('\r\n')
 
-def split(s):
-    fd = minisix.io.StringIO(s)
-    reader = csv.reader(fd)
-    return next(reader)
-csv.join = join
-csv.split = split
+import re
+import sys
 
-builtins = (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)
+if sys.version_info >= (3, 9):
+    import zoneinfo
+else:
+    zoneinfo = None
 
-# We use this often enough that we're going to stick it in builtins.
-def force(x):
-    if callable(x):
-        return x()
+try:
+    import pytz
+except ImportError:
+    pytz = None
+
+_IANA_TZ_RE = re.compile("([\w_-]+/)+[\w_-]+")
+
+class TimezoneException(Exception):
+    pass
+
+class MissingTimezoneLibrary(TimezoneException):
+    pass
+
+class UnknownTimeZone(TimezoneException):
+    pass
+
+def iana_timezone(name):
+    if not _IANA_TZ_RE.match(name):
+        raise UnknownTimeZone(name)
+
+    if zoneinfo:
+        try:
+            return zoneinfo.ZoneInfo(name)
+        except zoneinfo.ZoneInfoNotFoundError as e:
+            raise UnknownTimeZone(e.args[0]) from None
+    elif pytz:
+        try:
+            timezone = pytz.timezone(name)
+        except pytz.UnknownTimeZoneError as e:
+            raise UnknownTimeZone(e.args[0]) from None
     else:
-        return x
-builtins['force'] = force
-
-internationalization = builtins.get('supybotInternationalization', None)
-
-# These imports need to happen below the block above, so things get put into
-# __builtins__ appropriately.
-from .gen import *
-from . import crypt, error, file, iter, net, python, seq, str, time, transaction, web
-
-# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
+        raise MissingTimezoneLibrary(
+            "Could not find a timezone library. "
+            "Update Python to version 3.9 or newer, or install pytz."
+        )

@@ -28,14 +28,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import sys
 from supybot.test import *
 
-try:
-    import pytz
-except ImportError:
-    has_pytz = False
+if sys.version_info >= (3, 9):
+    has_tz_lib = True
 else:
-    has_pytz = True
+    try:
+        import pytz
+    except ImportError:
+        has_tz_lib = False
+    else:
+        has_tz_lib = True
 
 try:
     import dateutil
@@ -88,9 +92,10 @@ class TimeTestCase(PluginTestCase):
         self.assertNotError('ctime')
         self.assertNotError('time %Y')
 
-    @skipIf(not has_pytz, 'pytz is missing')
+    @skipIf(not has_tz_lib, 'python version is older than 3.9 and pytz is missing')
     def testTztime(self):
         self.assertNotError('tztime Europe/Paris')
+        self.assertNotError('tztime America/Indiana/Knox')
         self.assertError('tztime Europe/Gniarf')
 
     @skipIf(not has_dateutil, 'python-dateutil is missing')

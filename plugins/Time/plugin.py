@@ -71,11 +71,6 @@ try:
 except ImportError:
     tzlocal = None
 
-try:
-    import pytz
-except ImportError:
-    pytz = None
-
 class Time(callbacks.Plugin):
     """This plugin allows you to use different time-related functions."""
     @internationalizeDocstring
@@ -200,19 +195,22 @@ class Time(callbacks.Plugin):
 
     @internationalizeDocstring
     def tztime(self, irc, msg, args, timezone):
-        """<region>/<city>
+        """<region>/<city> (or <region>/<state>/<city>)
 
         Takes a city and its region, and returns its local time. This
         command uses the IANA Time Zone Database."""
-        if pytz is None:
-            irc.error(_('Python-tz is required by the command, but is not '
-                        'installed on this computer.'), Raise=True)
         try:
-            timezone = pytz.timezone(timezone)
-        except pytz.UnknownTimeZoneError:
-            irc.error(_('Unknown timezone'), Raise=True)
-        format = self.registryValue("format", msg.channel, irc.network)
-        irc.reply(datetime.now(timezone).strftime(format))
+            timezone = utils.time.iana_timezone(timezone)
+        except utils.time.UnknownTimeZone:
+            irc.error(_('Unknown timezone'))
+        except utils.time.MissingTimezoneLibrary:
+            irc.error(_('Python-tz is required by the command, but is not '
+                        'installed on this computer.'))
+        except utils.time.UnknownTimeZone as e:
+            irc.error(e.args[0])
+        else:
+            format = self.registryValue("format", msg.channel, irc.network)
+            irc.reply(datetime.now(timezone).strftime(format))
     tztime = wrap(tztime, ['text'])
 
     def ddate(self, irc, msg, args, year=None, month=None, day=None):

@@ -1,6 +1,6 @@
 setuptools
 chardet
-pytz
+pytz;python_version<'3.9'
 python-dateutil
 python-gnupg
 feedparser
