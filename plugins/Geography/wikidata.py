@@ -35,6 +35,8 @@ import urllib.parse
 
 import supybot.utils as utils
 
+from .common import headers
+
 SPARQL_URL = "https://query.wikidata.org/sparql"
 
 TIMEZONE_QUERY = string.Template(
@@ -121,11 +123,7 @@ def _query_sparql(query):
     params = {"format": "json", "query": query}
     url = SPARQL_URL + "?" + urllib.parse.urlencode(params)
 
-    # Comply with https://meta.wikimedia.org/wiki/User-Agent_policy
-    headers = utils.web.defaultHeaders.copy()
-    headers["User-agent"] += " https://github.com/progval/Limnoria/ - Geography plugin"
-
-    content = utils.web.getUrlContent(url, headers=headers)
+    content = utils.web.getUrlContent(url, headers=headers())
     return json.loads(content)
 
 

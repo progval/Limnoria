@@ -35,6 +35,8 @@ from supybot.test import *
 from supybot import utils
 
 from . import wikidata
+from . import nominatim
+
 
 class GeographyTestCase(PluginTestCase):
     plugins = ("Geography",)
@@ -101,6 +103,15 @@ class GeographyWikidataTestCase(SupyTestCase):
             ),
             datetime.timezone(datetime.timedelta(hours=4)),
         )
+
+
+class GeographyNominatimTestCase(SupyTestCase):
+    @skipIf(not network, "Network test")
+    def testSearch(self):
+        self.assertIn(450381, nominatim.search_osmids("Metz"))
+
+        results = nominatim.search_osmids("Metz, France")
+        self.assertEqual(results[0], 450381, results)
 
 
 
