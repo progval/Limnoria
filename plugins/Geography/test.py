@@ -29,7 +29,19 @@
 ###
 
 import datetime
+import contextlib
 from unittest import skipIf
+from unittest.mock import patch
+
+try:
+    import pytz
+except ImportError:
+    pytz = None
+
+try:
+    import zoneinfo
+except ImportError:
+    zoneinfo = None
 
 from supybot.test import *
 from supybot import utils
@@ -40,6 +52,43 @@ from . import nominatim
 
 class GeographyTestCase(PluginTestCase):
     plugins = ("Geography",)
+
+    @skipIf(not pytz, "pytz is not available")
+    @patch.object(nominatim, "search_osmids", return_value=[42])
+    @patch.object(wikidata, "uri_from_osmid", return_value="foo")
+    def testTimezonePytz(self, _, __):
+        tz = pytz.timezone("Europe/Paris")
+
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertResponse("timezone Foo Bar", "Europe/Paris")
+
+    @skipIf(not zoneinfo, "Python is older than 3.9")
+    @patch.object(nominatim, "search_osmids", return_value=[42])
+    @patch.object(wikidata, "uri_from_osmid", return_value="foo")
+    def testTimezoneZoneinfo(self, _, __):
+        tz = zoneinfo.ZoneInfo("Europe/Paris")
+
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertResponse("timezone Foo Bar", "Europe/Paris")
+
+    @skipIf(not zoneinfo, "Python is older than 3.9")
+    @patch.object(nominatim, "search_osmids", return_value=[42])
+    @patch.object(wikidata, "uri_from_osmid", return_value="foo")
+    def testTimezoneAbsolute(self, _, __):
+        tz = datetime.timezone(datetime.timedelta(hours=4))
+
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertResponse("timezone Foo Bar", "UTC+04:00")
+
+        tz = datetime.timezone(datetime.timedelta(hours=4, minutes=30))
+
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertResponse("timezone Foo Bar", "UTC+04:30")
+
+    @skipIf(not network, "Network test")
+    def testTimezoneIntegration(self):
+        self.assertResponse("timezone Metz, France", "Europe/Paris")
+        self.assertResponse("timezone Saint-Denis, La Réunion", "UTC+04:00")
 
 
 class GeographyWikidataTestCase(SupyTestCase):
@@ -56,7 +105,7 @@ class GeographyWikidataTestCase(SupyTestCase):
 
     @skipIf(not network, "Network test")
     def testDirect(self):
-        """The queried object directly has a timezone property"""
+        # The queried object directly has a timezone property
         self.assertEqual(
             # New York
             wikidata.timezone_from_uri("http://www.wikidata.org/entity/Q1384"),
@@ -65,8 +114,8 @@ class GeographyWikidataTestCase(SupyTestCase):
 
     @skipIf(not network, "Network test")
     def testParent(self):
-        """The queried object does not have a TZ property
-        but it is part of an object that does"""
+        # The queried object does not have a TZ property but it is part
+        # of an object that does
         self.assertEqual(
             # Metz, France
             wikidata.timezone_from_uri(
@@ -77,8 +126,8 @@ class GeographyWikidataTestCase(SupyTestCase):
 
     @skipIf(not network, "Network test")
     def testParentAndIgnoreSelf(self):
-        """The queried object has a TZ property, but it's useless to us;
-        however it is part of an object that has a useful one."""
+        # The queried object has a TZ property, but it's useless to us;
+        # however it is part of an object that has a useful one."""
         self.assertEqual(
             # New York City, NY
             wikidata.timezone_from_uri("http://www.wikidata.org/entity/Q60"),
@@ -87,11 +136,12 @@ class GeographyWikidataTestCase(SupyTestCase):
 
     @skipIf(not network, "Network test")
     def testParentQualifiedIgnorePreferred(self):
-        """The queried object does not have a TZ property,
-        and is part of an object that does.
-        However, this parent's 'preferred' timezone is not the
-        right one, so we must make sure to select the right one
-        based on P518 ('applies to part')."""
+        # The queried object does not have a TZ property,
+        # and is part of an object that does.
+        # However, this parent's 'preferred' timezone is not the
+        # right one, so we must make sure to select the right one
+        # based on P518 ('applies to part').
+
         # La Réunion is a French region, but in UTC+4.
         # France has a bunch of timezone statements, and 'Europe/Paris'
         # is marked as Preferred because it is the time of metropolitan
@@ -112,6 +162,9 @@ class GeographyNominatimTestCase(SupyTestCase):
 
         results = nominatim.search_osmids("Metz, France")
         self.assertEqual(results[0], 450381, results)
+
+        results = nominatim.search_osmids("Saint-Denis, La Réunion")
+        self.assertEqual(results[0], 192468, results)
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
