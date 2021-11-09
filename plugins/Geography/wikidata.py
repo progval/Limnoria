@@ -42,7 +42,7 @@ TIMEZONE_QUERY = string.Template(
 SELECT ?item ?itemLabel ?rank ?endtime ?appliestopart ?utcoffset ?tzid (MIN(?area) AS ?min_area) WHERE {
 
   # find all ?item entities that the subject is part of, recursively;
-  wd:$subject (wdt:P131*) ?item.
+  <$subject> (wdt:P131*) ?item.
 
   # Get all timezones (returns a superset of "?item wdt:P421 ?timezone", as it does not filter on rank)
   ?item p:P421 ?statement.
@@ -63,7 +63,7 @@ SELECT ?item ?itemLabel ?rank ?endtime ?appliestopart ?utcoffset ?tzid (MIN(?are
   UNION {
     # ... unless it applies to a part that contains what we are interested in
     ?statement pq:P518 ?appliestopart.
-    wd:$subject (wdt:P131*) ?appliestopart.
+    <$subject> (wdt:P131*) ?appliestopart.
   }
 
   # Filter out values only valid in certain periods of the year (DST vs normal time)
@@ -104,7 +104,18 @@ GROUP BY ?item ?itemLabel ?rank ?endtime ?appliestopart ?utcoffset ?tzid
 ORDER BY ?min_area DESC(?tzid)
 
 LIMIT 1
-""")
+"""
+)
+
+OSMID_QUERY = string.Template(
+    """
+SELECT ?item WHERE {
+  ?item wdt:P402 "$osmid".
+}
+LIMIT 1
+"""
+)
+
 
 def _query_sparql(query):
     params = {"format": "json", "query": query}
@@ -117,10 +128,11 @@ def _query_sparql(query):
     content = utils.web.getUrlContent(url, headers=headers)
     return json.loads(content)
 
-def timezone_from_qid(location_qid):
+
+def timezone_from_uri(location_uri):
     """Returns a :class:datetime.tzinfo object, given a Wikidata Q-ID.
     eg. ``"Q60"`` for New York City."""
-    data = _query_sparql(TIMEZONE_QUERY.substitute(subject=location_qid))
+    data = _query_sparql(TIMEZONE_QUERY.substitute(subject=location_uri))
     results = data["results"]["bindings"]
     for result in results:
         if "tzid" in result:
@@ -129,3 +141,13 @@ def timezone_from_qid(location_qid):
             assert "utcoffset" in result
             utc_offset = float(result["utcoffset"]["value"])
             return datetime.timezone(datetime.timedelta(hours=utc_offset))
+
+    return None
+
+
+def uri_from_osmid(location_osmid):
+    """Returns the wikidata Q-id from an OpenStreetMap ID."""
+    data = _query_sparql(OSMID_QUERY.substitute(osmid=location_osmid))
+    results = data["results"]["bindings"]
+    for result in results:
+        return result["item"]["value"]

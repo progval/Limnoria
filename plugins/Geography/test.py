@@ -42,30 +42,46 @@ class GeographyTestCase(PluginTestCase):
 
 class GeographyWikidataTestCase(SupyTestCase):
     @skipIf(not network, "Network test")
+    def testOsmidToTimezone(self):
+        self.assertEqual(
+            wikidata.uri_from_osmid(450381),
+            "http://www.wikidata.org/entity/Q22690",
+        )
+        self.assertEqual(
+            wikidata.uri_from_osmid(192468),
+            "http://www.wikidata.org/entity/Q47045",
+        )
+
+    @skipIf(not network, "Network test")
     def testDirect(self):
         """The queried object directly has a timezone property"""
         self.assertEqual(
-            wikidata.timezone_from_qid("Q1384"), # New York
-            utils.time.iana_timezone("America/New_York")
-        ) 
+            # New York
+            wikidata.timezone_from_uri("http://www.wikidata.org/entity/Q1384"),
+            utils.time.iana_timezone("America/New_York"),
+        )
 
     @skipIf(not network, "Network test")
     def testParent(self):
         """The queried object does not have a TZ property
         but it is part of an object that does"""
         self.assertEqual(
-            wikidata.timezone_from_qid("Q22690"), # Metz, France
-            utils.time.iana_timezone("Europe/Paris")
-        ) 
+            # Metz, France
+            wikidata.timezone_from_uri(
+                "http://www.wikidata.org/entity/Q22690"
+            ),
+            utils.time.iana_timezone("Europe/Paris"),
+        )
 
     @skipIf(not network, "Network test")
     def testParentAndIgnoreSelf(self):
         """The queried object has a TZ property, but it's useless to us;
         however it is part of an object that has a useful one."""
         self.assertEqual(
-            wikidata.timezone_from_qid("Q60"), # New York City, NY
-            utils.time.iana_timezone("America/New_York")
-        ) 
+            # New York City, NY
+            wikidata.timezone_from_uri("http://www.wikidata.org/entity/Q60"),
+            utils.time.iana_timezone("America/New_York"),
+        )
 
     @skipIf(not network, "Network test")
     def testParentQualifiedIgnorePreferred(self):
@@ -79,8 +95,13 @@ class GeographyWikidataTestCase(SupyTestCase):
         # is marked as Preferred because it is the time of metropolitan
         # France. However, it is not valid for La Réunion.
         self.assertEqual(
-            wikidata.timezone_from_qid("Q17070"), # La Réunion
-            datetime.timezone(datetime.timedelta(hours=4))
-        ) 
+            # La Réunion
+            wikidata.timezone_from_uri(
+                "http://www.wikidata.org/entity/Q17070"
+            ),
+            datetime.timezone(datetime.timedelta(hours=4)),
+        )
+
+
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
