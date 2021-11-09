@@ -31,8 +31,6 @@
 
 import json
 import time
-import string
-import datetime
 import threading
 import urllib.parse
 
@@ -77,4 +75,4 @@ def search_osmids(query):
     on the query format"""
     data = _query_nominatim("/search", {"format": "json", "q": query})
 
-    return [item["osm_id"] for item in data]
+    return [item["osm_id"] for item in data if item.get("osm_id")]

@@ -114,5 +114,4 @@ class GeographyNominatimTestCase(SupyTestCase):
         self.assertEqual(results[0], 450381, results)
 
 
-
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
