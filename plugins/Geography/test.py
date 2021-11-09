@@ -29,6 +29,7 @@
 ###
 
 import datetime
+import functools
 import contextlib
 from unittest import skipIf
 from unittest.mock import patch
@@ -50,31 +51,38 @@ from . import wikidata
 from . import nominatim
 
 
-class GeographyTestCase(PluginTestCase):
+def mock(f):
+    @functools.wraps(f)
+    def newf(self):
+        with patch.object(wikidata, "uri_from_osmid", return_value="foo"):
+            with patch.object(nominatim, "search_osmids", return_value=[42]):
+                f(self)
+
+    return newf
+
+
+class GeographyTimezoneTestCase(PluginTestCase):
     plugins = ("Geography",)
 
     @skipIf(not pytz, "pytz is not available")
-    @patch.object(nominatim, "search_osmids", return_value=[42])
-    @patch.object(wikidata, "uri_from_osmid", return_value="foo")
-    def testTimezonePytz(self, _, __):
+    @mock
+    def testTimezonePytz(self):
         tz = pytz.timezone("Europe/Paris")
 
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
             self.assertResponse("timezone Foo Bar", "Europe/Paris")
 
     @skipIf(not zoneinfo, "Python is older than 3.9")
-    @patch.object(nominatim, "search_osmids", return_value=[42])
-    @patch.object(wikidata, "uri_from_osmid", return_value="foo")
-    def testTimezoneZoneinfo(self, _, __):
+    @mock
+    def testTimezoneZoneinfo(self):
         tz = zoneinfo.ZoneInfo("Europe/Paris")
 
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
             self.assertResponse("timezone Foo Bar", "Europe/Paris")
 
     @skipIf(not zoneinfo, "Python is older than 3.9")
-    @patch.object(nominatim, "search_osmids", return_value=[42])
-    @patch.object(wikidata, "uri_from_osmid", return_value="foo")
-    def testTimezoneAbsolute(self, _, __):
+    @mock
+    def testTimezoneAbsolute(self):
         tz = datetime.timezone(datetime.timedelta(hours=4))
 
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
@@ -89,6 +97,44 @@ class GeographyTestCase(PluginTestCase):
     def testTimezoneIntegration(self):
         self.assertResponse("timezone Metz, France", "Europe/Paris")
         self.assertResponse("timezone Saint-Denis, La Réunion", "UTC+04:00")
+
+
+class GeographyLocaltimeTestCase(PluginTestCase):
+    plugins = ("Geography",)
+
+    @skipIf(not pytz, "pytz is not available")
+    @mock
+    def testLocaltimePytz(self):
+        tz = pytz.timezone("Europe/Paris")
+
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertRegexp("localtime Foo Bar", r".*\+0[12]00$")
+
+    @skipIf(not zoneinfo, "Python is older than 3.9")
+    @mock
+    def testLocaltimeZoneinfo(self):
+        tz = zoneinfo.ZoneInfo("Europe/Paris")
+
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertRegexp("localtime Foo Bar", r".*\+0[12]00$")
+
+    @skipIf(not zoneinfo, "Python is older than 3.9")
+    @mock
+    def testLocaltimeAbsolute(self):
+        tz = datetime.timezone(datetime.timedelta(hours=4))
+
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertRegexp("localtime Foo Bar", r".*\+0400$")
+
+        tz = datetime.timezone(datetime.timedelta(hours=4, minutes=30))
+
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertRegexp("localtime Foo Bar", r".*\+0430$")
+
+    @skipIf(not network, "Network test")
+    def testLocaltimeIntegration(self):
+        self.assertRegexp("localtime Metz, France", r".*\+0[12]00$")
+        self.assertRegexp("localtime Saint-Denis, La Réunion", r".*\+0400$")
 
 
 class GeographyWikidataTestCase(SupyTestCase):
