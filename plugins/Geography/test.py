@@ -37,7 +37,7 @@ from supybot import utils
 from . import wikidata
 
 class GeographyTestCase(PluginTestCase):
-    plugins = ('Geography',)
+    plugins = ("Geography",)
 
 
 class GeographyWikidataTestCase(SupyTestCase):

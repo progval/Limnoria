@@ -37,7 +37,8 @@ import supybot.utils as utils
 
 SPARQL_URL = "https://query.wikidata.org/sparql"
 
-TIMEZONE_QUERY = string.Template("""
+TIMEZONE_QUERY = string.Template(
+    """
 SELECT ?item ?itemLabel ?rank ?endtime ?appliestopart ?utcoffset ?tzid (MIN(?area) AS ?min_area) WHERE {
 
   # find all ?item entities that the subject is part of, recursively;

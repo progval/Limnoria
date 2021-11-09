@@ -32,11 +32,12 @@ from supybot import utils, plugins, ircutils, callbacks
 from supybot.commands import *
 from supybot.i18n import PluginInternationalization
 
-_ = PluginInternationalization('Geography')
+_ = PluginInternationalization("Geography")
 
 
 class Geography(callbacks.Plugin):
     """Provides geography facts, such as timezones."""
+
     threaded = True
 
 

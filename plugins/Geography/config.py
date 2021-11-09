@@ -30,7 +30,8 @@
 
 from supybot import conf, registry
 from supybot.i18n import PluginInternationalization
-_ = PluginInternationalization('Geography')
+
+_ = PluginInternationalization("Geography")
 
 
 def configure(advanced):
@@ -39,10 +40,11 @@ def configure(advanced):
     # user or not.  You should effect your configuration by manipulating the
     # registry as appropriate.
     from supybot.questions import expect, anything, something, yn
-    conf.registerPlugin('Geography', True)
+
+    conf.registerPlugin("Geography", True)
 
 
-Geography = conf.registerPlugin('Geography')
+Geography = conf.registerPlugin("Geography")
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(Geography, 'someConfigVariableName',
 #     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
