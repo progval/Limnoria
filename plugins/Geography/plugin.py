@@ -90,6 +90,9 @@ class Geography(callbacks.Plugin):
             # Get the timezone object (and handle various errors)
             timezone = timezone_from_uri(irc, uri)
 
+            if timezone is None:
+                continue
+
             # Get the local time
             now = datetime.datetime.now(tz=timezone)
 
@@ -101,6 +104,10 @@ class Geography(callbacks.Plugin):
             irc.reply(now.strftime(format_))
 
             return
+
+        irc.error(
+            _("Could not find the timezone of this location."), Raise=True
+        )
 
     @wrap(["text"])
     def timezone(self, irc, msg, args, query):
@@ -122,6 +129,9 @@ class Geography(callbacks.Plugin):
 
             # Get the timezone object (and handle various errors)
             timezone = timezone_from_uri(irc, uri)
+
+            if timezone is None:
+                continue
 
             # Extract a human-friendly name, depending on the type of
             # the timezone object:
