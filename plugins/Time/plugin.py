@@ -204,9 +204,11 @@ class Time(callbacks.Plugin):
         except utils.time.UnknownTimeZone:
             irc.error(_('Unknown timezone'))
         except utils.time.MissingTimezoneLibrary:
-            irc.error(_('Python-tz is required by the command, but is not '
-                        'installed on this computer.'))
-        except utils.time.UnknownTimeZone as e:
+            irc.error(_(
+                'Timezone-related commands are not available. '
+                'Your administrator need to either upgrade Python to '
+                'version 3.9 or greater, or install pytz.'))
+        except utils.time.TimezoneException as e:
             irc.error(e.args[0])
         else:
             format = self.registryValue("format", msg.channel, irc.network)
