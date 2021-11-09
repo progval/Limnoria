@@ -133,14 +133,17 @@ class Poll_(callbacks.Plugin):
 
         answers = [(answer.split()[0], answer) for answer in answers]
 
-        answer_id_counts = collections.Counter(id_ for (id_, _) in answers).items()
+        answer_id_counts = collections.Counter(
+            id_ for (id_, _) in answers
+        ).items()
         duplicate_answer_ids = [
             answer_id for (answer_id, count) in answer_id_counts if count > 1
         ]
         if duplicate_answer_ids:
             irc.error(
                 format(
-                    _("Duplicate answer identifier(s): %L"), duplicate_answer_ids
+                    _("Duplicate answer identifier(s): %L"),
+                    duplicate_answer_ids,
                 ),
                 Raise=True,
             )
