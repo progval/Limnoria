@@ -180,6 +180,12 @@ class GeographyWikidataTestCase(SupyTestCase):
             utils.time.iana_timezone("America/New_York"),
         )
 
+        self.assertEqual(
+            # Paris, France
+            wikidata.timezone_from_uri("http://www.wikidata.org/entity/Q90"),
+            utils.time.iana_timezone("Europe/Paris"),
+        )
+
     @skipIf(not network, "Network test")
     def testParentQualifiedIgnorePreferred(self):
         # The queried object does not have a TZ property,

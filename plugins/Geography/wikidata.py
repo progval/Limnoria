@@ -79,6 +79,9 @@ SELECT ?item ?itemLabel ?rank ?endtime ?appliestopart ?utcoffset ?tzid (MIN(?are
   # Get the area, will be used to order by specificity
   OPTIONAL { ?statementsubject wdt:P2046 ?area. }
 
+  # Require that ?timezone be an instance of...
+  ?timezone (wdt:P31/wdt:P279*) <$tztype>.
+
   {
     # Get either an IANA timezone ID...
     ?timezone wdt:P6687 ?tzid.
@@ -130,15 +133,19 @@ def _query_sparql(query):
 def timezone_from_uri(location_uri):
     """Returns a :class:datetime.tzinfo object, given a Wikidata Q-ID.
     eg. ``"Q60"`` for New York City."""
-    data = _query_sparql(TIMEZONE_QUERY.substitute(subject=location_uri))
-    results = data["results"]["bindings"]
-    for result in results:
-        if "tzid" in result:
-            return utils.time.iana_timezone(result["tzid"]["value"])
-        else:
-            assert "utcoffset" in result
-            utc_offset = float(result["utcoffset"]["value"])
-            return datetime.timezone(datetime.timedelta(hours=utc_offset))
+    for tztype in [
+        "http://www.wikidata.org/entity/Q17272692", # IANA timezones first
+        "http://www.wikidata.org/entity/Q12143", # any timezone as a fallback
+    ]:
+        data = _query_sparql(TIMEZONE_QUERY.substitute(subject=location_uri, tztype=tztype))
+        results = data["results"]["bindings"]
+        for result in results:
+            if "tzid" in result:
+                return utils.time.iana_timezone(result["tzid"]["value"])
+            else:
+                assert "utcoffset" in result
+                utc_offset = float(result["utcoffset"]["value"])
+                return datetime.timezone(datetime.timedelta(hours=utc_offset))
 
     return None
 
