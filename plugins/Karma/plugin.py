@@ -315,7 +315,10 @@ class Karma(callbacks.Plugin):
                self.registryValue('allowUnaddressedKarma',
                                   msg.channel, irc.network):
                 irc = callbacks.SimpleProxy(irc, msg)
-                thing = msg.args[1].rstrip()
+                inc = self.registryValue('incrementChars', msg.channel, irc.network)
+                dec = self.registryValue('decrementChars', msg.channel, irc.network)
+                if msg.args[1].endswith(inc) or msg.args[1].endswith(dec):
+                    thing = msg.args[1].rstrip(":, ")
                 self._doKarma(irc, msg, msg.channel, thing)
 
     @internationalizeDocstring
