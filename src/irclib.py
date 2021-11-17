@@ -1759,7 +1759,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
     To check if a capability was negotiated, use `irc.state.capabilities_ack`.
     """
 
-    REQUEST_EXPERIMENTAL_CAPABILITIES = set(['draft/multiline'])
+    REQUEST_EXPERIMENTAL_CAPABILITIES = set(['draft/account-registration',
+        'draft/multiline'])
     """Like REQUEST_CAPABILITIES, but these capabilities are only requested
     if supybot.protocols.irc.experimentalExtensions is enabled."""
 
