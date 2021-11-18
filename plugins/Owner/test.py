@@ -186,6 +186,28 @@ class CommandsTestCase(PluginTestCase):
             command='BATCH',
             args=('-123',)))
 
+    def testIgnoreChathistory(self):
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            command='BATCH',
+            args=('+123', 'chathistory', self.irc.nick)))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'batch': '123'},
+            prefix=self.prefix,
+            command='PRIVMSG',
+            args=(self.irc.nick, 'echo foo')))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            command='BATCH',
+            args=('-123',)))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            prefix=self.prefix,
+            command='PRIVMSG',
+            args=(self.irc.nick, 'echo bar')))
+
+        self.assertResponse('', 'bar')
+
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

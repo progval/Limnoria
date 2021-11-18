@@ -297,11 +297,20 @@ class Owner(callbacks.Plugin):
         self._doPrivmsgs(irc, synthetic_msg)
 
     def doPrivmsg(self, irc, msg):
-        if conf.supybot.protocols.irc.experimentalExtensions():
-            if 'batch' in msg.server_tags \
-                    and any(batch.type =='draft/multiline'
-                            for batch in irc.state.getParentBatches(msg)):
-                # We will handle the message in doBatch when the entire batch ends.
+        if 'batch' in msg.server_tags:
+            parent_batches = irc.state.getParentBatches(msg)
+            parent_batch_types = [batch.type for batch in parent_batches]
+            if 'draft/multiline' in parent_batch_types \
+                    and conf.supybot.protocols.irc.experimentalExtensions():
+                # We will handle the message in doBatch when the entire
+                # batch ends.
+                return
+            if 'chathistory' in parent_batch_types:
+                # Either sent automatically by the server upon join,
+                # or triggered by a plugin (why?!)
+                # Either way, replying to commands from the history would
+                # look weird, because it may have been sent a while ago,
+                # and we may have already answered to it.
                 return
 
         self._doPrivmsgs(irc, msg)
