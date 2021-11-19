@@ -22,14 +22,6 @@ It is the successor of
 since 2010 and provides many new features, but keeps full compatibility
 with existing configurations and plugins.
 
-# Build status
-
-Master branch: [![Build Status (master branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=master)](https://travis-ci.org/ProgVal/Limnoria)
-
-Testing branch: [![Build Status (testing branch)](https://travis-ci.org/ProgVal/Limnoria.png?branch=testing)](https://travis-ci.org/ProgVal/Limnoria)
-
-Limnoria supports CPython 3.4 to 3.10, and Pypy 3.
-
 # Support
 
 ## Documentation
