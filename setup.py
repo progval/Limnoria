@@ -84,7 +84,12 @@ try:
             time.strptime(time.asctime(time.gmtime(date)))[:3])
 except:
     if os.path.isfile(VERSION_FILE):
-        from src.version import version
+        sys.path.insert(0, '') # Missing when installing from an sdist created
+                               # by recent setuptools versions?!
+        try:
+            from src.version import version
+        finally:
+            sys.path.pop(0)
     else:
         version = 'installed on ' + time.strftime("%Y-%m-%dT%H-%M-%S", time.gmtime())
 try:
