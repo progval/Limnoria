@@ -183,7 +183,9 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                         self._updateRank(irc.network, channel, regexp)
                         for (i, j) in enumerate(match.groups()):
                             if match.group(i+1) is not None:
-                                thisaction = re.sub(r'\$' + str(i+1), match.group(i+1), thisaction)
+                                # Need a lambda to prevent re.sub from
+                                # interpreting backslashes in the replacement
+                                thisaction = re.sub(r'\$' + str(i+1), lambda _: match.group(i+1), thisaction)
                         actions.append(thisaction)
                         if max_triggers != 0 and max_triggers == len(actions):
                             break

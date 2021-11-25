@@ -91,6 +91,13 @@ class MessageParserTestCase(ChannelPluginTestCase):
         self.feedMsg('test')
         self.assertResponse(' ', 'Error: No closing quotation')
 
+    def testMatchedBackslashes(self):
+        # Makes sure backslashes in matched arguments are not interpreted
+        # (re.sub interprets them in the repl argument for some reason...)
+        self.assertNotError(r'messageparser add test(.*)test "echo $1"')
+        self.feedMsg(r'testhello\xhellotest')
+        self.assertResponse(' ', r'hello\xhello')
+
     def testShow(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
         self.assertRegexp('messageparser show "nostuff"', 'there is no such regexp trigger')
