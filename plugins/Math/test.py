@@ -166,6 +166,7 @@ class MathTestCase(PluginTestCase):
         self.assertResponse('convert 1 m to cm', '100')
         self.assertResponse('convert m to cm', '100')
         self.assertResponse('convert 3 metres to km', '0.003')
+        self.assertResponse('convert 1 cm to km', '1e-05')
         self.assertResponse('convert 32 F to C', '0')
         self.assertResponse('convert 32 C to F', '89.6')
         self.assertResponse('convert [calc 2*pi] rad to degree', '360')

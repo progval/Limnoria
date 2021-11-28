@@ -246,7 +246,7 @@ class Math(callbacks.Plugin):
             newNum = convertcore.convert(number, unit1, unit2)
             if isinstance(newNum, float):
                 zeros = 0
-                for char in str(newNum).split('.')[1]:
+                for char in "{:f}".format(newNum).split('.')[1]:
                     if char != '0':
                         break
                     zeros += 1
