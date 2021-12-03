@@ -660,7 +660,11 @@ class String(Value):
         return any([x not in self._printable for x in s]) and s.strip() != s
 
     def __str__(self):
-        s = Value.__call__(self)  # Don't call self(), it might be overridden
+        # Don't call self(), it might be overridden; and this can cause various
+        # problem (eg. registry.Json.__call__ returns non-strings,
+        # conf.Directory.__call__ has filesystem side-effects that we shouldn't
+        # trigger here, etc.)
+        s = Value.__call__(self)
         if self._needsQuoting(s):
             s = repr(s)
         return s
