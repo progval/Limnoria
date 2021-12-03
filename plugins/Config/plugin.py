@@ -504,7 +504,7 @@ class Config(callbacks.Plugin):
             # reset group.#channel
             changroup = group.get(channel)
             checkCanSetValue(irc, msg, changroup)
-            changroup._setValue(group(), inherited=True)
+            changroup._setValue(group.value, inherited=True)
 
             irc.replySuccess()
         channel = wrap(channel, [
@@ -523,7 +523,7 @@ class Config(callbacks.Plugin):
             # reset group.#channel
             changroup = group.get(':' + network.network)
             checkCanSetValue(irc, msg, changroup)
-            changroup._setValue(group(), inherited=True)
+            changroup._setValue(group.value, inherited=True)
 
             irc.replySuccess()
         network = wrap(network, ['networkIrc', 'settableConfigVar'])
