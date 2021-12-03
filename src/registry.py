@@ -660,7 +660,7 @@ class String(Value):
         return any([x not in self._printable for x in s]) and s.strip() != s
 
     def __str__(self):
-        s = self()
+        s = Value.__call__(self)  # Don't call self(), it might be overridden
         if self._needsQuoting(s):
             s = repr(s)
         return s
