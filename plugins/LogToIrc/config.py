@@ -43,7 +43,7 @@ class IrcLogLevel(log.ValidLogLevel):
     minimumLevel = logging.INFO
     def setValue(self, v):
         log.ValidLogLevel.setValue(self, v)
-        _ircHandler.setLevel(self.value)
+        _ircHandler.setLevel(self())
 
 class ValidChannelOrNick(registry.String):
     """Value must be a valid channel or a valid nick."""

@@ -85,7 +85,7 @@ class String256(registry.String):
         return s * (1024//len(s))
 
     def __str__(self):
-        return self.value
+        return self()
 
 conf.registerGlobalValue(BadWords, 'nastyChars',
     String256('!@#&', _("""Determines what characters will replace bad words; a

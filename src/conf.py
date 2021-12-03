@@ -791,7 +791,7 @@ class ValidQuotes(registry.Value):
         super(ValidQuotes, self).setValue(v)
 
     def __str__(self):
-        return str(self.value)
+        return str(self())
 
 registerChannelValue(supybot.commands, 'quotes',
     ValidQuotes('"', _("""Determines what characters are valid for quoting
@@ -1030,7 +1030,7 @@ class Databases(registry.SpaceSeparatedListOfStrings):
         return v
 
     def serialize(self):
-        return ' '.join(self.value)
+        return ' '.join(self())
 
 registerGlobalValue(supybot, 'databases',
     Databases([], _("""Determines what databases are available for use. If this
@@ -1466,7 +1466,7 @@ class SocketTimeout(registry.PositiveInteger):
         if v < supybot.drivers.poll() or v < 1:
             self.error()
         registry.PositiveInteger.setValue(self, v)
-        socket.setdefaulttimeout(self.value)
+        socket.setdefaulttimeout(self())
 
 registerGlobalValue(supybot, 'defaultSocketTimeout',
     SocketTimeout(10, _("""Determines what the default timeout for socket

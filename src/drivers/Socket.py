@@ -77,12 +77,12 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.writeCheckTime = None
         self.nextReconnectTime = None
         self.resetDelay()
-        if self.networkGroup.get('ssl').value and 'ssl' not in globals():
+        if self.networkGroup.get('ssl')() and 'ssl' not in globals():
             drivers.log.error('The Socket driver can not connect to SSL '
                               'servers for your Python version.')
             self.ssl = False
         else:
-            self.ssl = self.networkGroup.get('ssl').value
+            self.ssl = self.networkGroup.get('ssl')()
             self.connect()
 
     def getDelay(self):

@@ -50,6 +50,7 @@ class Smileys(registry.Value):
         self.setValue(L)
 
     def setValue(self, v):
+        self._lastModified = registry.monotonic_time()
         self.s = ' '.join(v)
         self.value = re.compile('|'.join(map(re.escape, v)))
 

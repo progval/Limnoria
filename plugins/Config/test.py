@@ -107,6 +107,24 @@ class ConfigTestCase(ChannelPluginTestCase):
             r'supybot.reply.whenAddressedBy.strings.#test and '
             r'supybot.reply.whenAddressedBy.strings.\:test.#test')
 
+    def testReload(self):
+        old_password = 'pjfoizjoifjfoii_old'
+        new_password = 'pjfoizjoifjfoii_new'
+        with conf.supybot.networks.test.password.context(old_password):
+            self.assertResponse('config conf.supybot.networks.test.password',
+                                old_password)
+            filename = conf.supybot.directories.conf.dirize('Config_testReload.conf')
+            registry.close(conf.supybot, filename)
+
+            content = open(filename).read()
+            assert old_password in content
+            open(filename, 'wt').write(content.replace(old_password,
+                                                       new_password))
+
+            registry.open_registry(filename)
+            self.assertResponse('config conf.supybot.networks.test.password',
+                                new_password)
+
     def testDefault(self):
         self.assertNotError('config default '
                             'supybot.replies.genericNoCapability')

@@ -519,7 +519,7 @@ class Value(Group):
         context."""
         class Context:
             def __enter__(self2):
-                self2._old_value = self.value
+                self2._old_value = self()
                 self.setValue(value)
             def __exit__(self2, exc_type, exc_value, traceback):
                 self.setValue(self2._old_value)
@@ -559,7 +559,7 @@ class Boolean(Value):
             v = utils.str.toBool(s)
         except ValueError:
             if s.strip().lower() == 'toggle':
-                v = not self.value
+                v = not self()
             else:
                 self.error(s)
         self.setValue(v)
@@ -660,7 +660,7 @@ class String(Value):
         return any([x not in self._printable for x in s]) and s.strip() != s
 
     def __str__(self):
-        s = self.value
+        s = self()
         if self._needsQuoting(s):
             s = repr(s)
         return s
@@ -798,16 +798,18 @@ class Regexp(Value):
         super().setValue(v)
 
     def __call__(self):
-        if self.value is None:
+        value = super().__call__()
+        if value is None:
             return None
         else:
-            return self.value[1]
+            return value[1]
 
     def __str__(self):
-        if self.value is None:
+        value = super().__call__()
+        if value is None:
             return ''
         else:
-            return self.value[0]
+            return value[0]
 
 class SeparatedListOf(Value):
     __slots__ = ()

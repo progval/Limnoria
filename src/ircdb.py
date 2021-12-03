@@ -1325,11 +1325,11 @@ class DefaultCapabilities(SpaceSeparatedListOfCapabilities):
     # it's still an improvement, raising the bar for potential crackers.
     def setValue(self, v, allowDefaultOwner=conf.allowDefaultOwner):
         registry.SpaceSeparatedListOfStrings.setValue(self, v)
-        if '-owner' not in self.value and not allowDefaultOwner:
+        if '-owner' not in self() and not allowDefaultOwner:
             print('*** You must run supybot with the --allow-default-owner')
             print('*** option in order to allow a default capability of owner.')
             print('*** Don\'t do that, it\'s dumb.')
-            self.value.add('-owner')
+            self().add('-owner')
 
 conf.registerGlobalValue(conf.supybot, 'capabilities',
     DefaultCapabilities([
