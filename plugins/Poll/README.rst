@@ -80,7 +80,7 @@ Configuration
 
 
 supybot.plugins.Poll.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -88,7 +88,7 @@ supybot.plugins.Poll.public
 
 
 supybot.plugins.Poll.requireManageCapability
-  This config variable defaults to "channel,op; channel,halfop", is network-specific, and is  channel-specific.
+  This config variable defaults to "channel,op; channel,halfop", is network-specific, and is channel-specific.
 
   Determines the capabilities required (if any) to open and close polls. Use 'channel,capab' for channel-level capabilities. Note that absence of an explicit anticapability means user has capability.
 

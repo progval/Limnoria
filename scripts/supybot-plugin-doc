@@ -246,7 +246,7 @@ class PluginDoc(object):
                     cv = '' if v._channelValue else ' not'
                     nv = '' if v._networkValue else ' not'
                     kind = (
-                        'is%s network-specific, and is %s channel-specific.'
+                        'is%s network-specific, and is%s channel-specific.'
                         % (nv, cv)
                     )
             else:

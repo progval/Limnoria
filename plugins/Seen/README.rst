@@ -55,7 +55,7 @@ Configuration
 
 
 supybot.plugins.Seen.minimumNonWildcard
-  This config variable defaults to "2", is network-specific, and is  channel-specific.
+  This config variable defaults to "2", is network-specific, and is channel-specific.
 
   The minimum non-wildcard characters required to perform a 'seen' request. Of course, it only applies if there is a wildcard in the request.
 
@@ -63,7 +63,7 @@ supybot.plugins.Seen.minimumNonWildcard
 
 
 supybot.plugins.Seen.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -71,7 +71,7 @@ supybot.plugins.Seen.public
 
 
 supybot.plugins.Seen.showLastMessage
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether the last message will be displayed with @seen. Useful for keeping messages from a channel private.
 

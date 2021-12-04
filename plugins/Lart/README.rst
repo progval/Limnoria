@@ -70,7 +70,7 @@ Configuration
 
 
 supybot.plugins.Lart.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -78,7 +78,7 @@ supybot.plugins.Lart.public
 
 
 supybot.plugins.Lart.showIds
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Determines whether the bot will show the ids of a lart when the lart is given.
 

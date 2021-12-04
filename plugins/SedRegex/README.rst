@@ -47,7 +47,7 @@ Configuration
 
 
 supybot.plugins.SedRegex.boldReplacementText
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Should the replacement text be bolded?
 
@@ -55,7 +55,7 @@ supybot.plugins.SedRegex.boldReplacementText
 
 
 supybot.plugins.SedRegex.displayErrors
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Should errors be displayed?
 
@@ -63,7 +63,7 @@ supybot.plugins.SedRegex.displayErrors
 
 
 supybot.plugins.SedRegex.enable
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Should Perl/sed-style regex replacing work in this channel?
 
@@ -71,7 +71,7 @@ supybot.plugins.SedRegex.enable
 
 
 supybot.plugins.SedRegex.ignoreRegex
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Should Perl/sed regex replacing ignore messages which look like valid regex?
 
@@ -79,7 +79,7 @@ supybot.plugins.SedRegex.ignoreRegex
 
 
 supybot.plugins.SedRegex.processTimeout
-  This config variable defaults to "0.5", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "0.5", is not network-specific, and is not channel-specific.
 
   Sets the timeout when processing a single regexp. The default should be adequate unless you have a busy or low-powered system that cannot process regexps quickly enough. However, you will not want to set this value too high as that would make your bot vulnerable to ReDoS attacks.
 
@@ -87,7 +87,7 @@ supybot.plugins.SedRegex.processTimeout
 
 
 supybot.plugins.SedRegex.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 

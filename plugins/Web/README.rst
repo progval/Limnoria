@@ -67,7 +67,7 @@ Configuration
 
 
 supybot.plugins.Web.checkIgnored
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether the title snarfer checks if the author of a message is ignored.
 
@@ -81,7 +81,7 @@ supybot.plugins.Web.fetch
 
 
   supybot.plugins.Web.fetch.maximum
-    This config variable defaults to "0", is not network-specific, and is  not channel-specific.
+    This config variable defaults to "0", is not network-specific, and is not channel-specific.
 
     Determines the maximum number of bytes the bot will download via the 'fetch' command in this plugin.
 
@@ -89,7 +89,7 @@ supybot.plugins.Web.fetch
 
 
   supybot.plugins.Web.fetch.timeout
-    This config variable defaults to "5", is not network-specific, and is  not channel-specific.
+    This config variable defaults to "5", is not network-specific, and is not channel-specific.
 
     Determines the maximum number of seconds the bot will wait for the site to respond, when using the 'fetch' command in this plugin. If 0, will use socket.defaulttimeout
 
@@ -97,7 +97,7 @@ supybot.plugins.Web.fetch
 
 
 supybot.plugins.Web.nonSnarfingRegexp
-  This config variable defaults to "", is network-specific, and is  channel-specific.
+  This config variable defaults to "", is network-specific, and is channel-specific.
 
   Determines what URLs matching the given regexp will not be snarfed. Give the empty string if you have no URLs that you'd like to exclude from being snarfed.
 
@@ -105,7 +105,7 @@ supybot.plugins.Web.nonSnarfingRegexp
 
 
 supybot.plugins.Web.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -113,7 +113,7 @@ supybot.plugins.Web.public
 
 
 supybot.plugins.Web.snarfMultipleUrls
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Determines whether the title snarfer will query all URLs in a message, or only the first one.
 
@@ -121,7 +121,7 @@ supybot.plugins.Web.snarfMultipleUrls
 
 
 supybot.plugins.Web.snarferPrefix
-  This config variable defaults to "Title:", is network-specific, and is  channel-specific.
+  This config variable defaults to "Title:", is network-specific, and is channel-specific.
 
   Determines the string used at before a web page's title.
 
@@ -129,7 +129,7 @@ supybot.plugins.Web.snarferPrefix
 
 
 supybot.plugins.Web.snarferReportIOExceptions
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Determines whether the bot will notfiy the user about network exceptions like hostnotfound, timeout ....
 
@@ -137,7 +137,7 @@ supybot.plugins.Web.snarferReportIOExceptions
 
 
 supybot.plugins.Web.snarferShowDomain
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether domain names should be displayed by the title snarfer.
 
@@ -145,7 +145,7 @@ supybot.plugins.Web.snarferShowDomain
 
 
 supybot.plugins.Web.snarferShowTargetDomain
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Determines whether the domain name displayed by the snarfer will be the original one (posted on IRC) or the target one (got after following redirects, if any).
 
@@ -153,7 +153,7 @@ supybot.plugins.Web.snarferShowTargetDomain
 
 
 supybot.plugins.Web.timeout
-  This config variable defaults to "5", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "5", is not network-specific, and is not channel-specific.
 
   Determines the maximum number of seconds the bot will wait for the site to respond, when using a command in this plugin other than 'fetch'. If 0, will use socket.defaulttimeout
 
@@ -161,7 +161,7 @@ supybot.plugins.Web.timeout
 
 
 supybot.plugins.Web.titleSnarfer
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Determines whether the bot will output the HTML title of URLs it sees in the channel.
 
@@ -169,7 +169,7 @@ supybot.plugins.Web.titleSnarfer
 
 
 supybot.plugins.Web.urlWhitelist
-  This config variable defaults to " ", is not network-specific, and is  not channel-specific.
+  This config variable defaults to " ", is not network-specific, and is not channel-specific.
 
   If set, bot will only fetch data from urls in the whitelist, i.e. starting with http://domain/optionalpath/. This will apply to all commands that retrieve data from user-supplied URLs, including fetch, headers, title, doctype.
 

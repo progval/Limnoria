@@ -45,7 +45,7 @@ Configuration
 
 
 supybot.plugins.ChannelStats.frowns
-  This config variable defaults to ":| :-/ :-\\ :\\ :/ :( :-( :'(", is network-specific, and is  channel-specific.
+  This config variable defaults to ":| :-/ :-\\ :\\ :/ :( :-( :'(", is network-specific, and is channel-specific.
 
   Determines what words (i.e., pieces of text with no spaces in them) are considered 'frowns' for the purposes of stats-keeping.
 
@@ -53,7 +53,7 @@ supybot.plugins.ChannelStats.frowns
 
 
 supybot.plugins.ChannelStats.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -61,7 +61,7 @@ supybot.plugins.ChannelStats.public
 
 
 supybot.plugins.ChannelStats.selfStats
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether the bot will keep channel statistics on itself, possibly skewing the channel stats (especially in cases where the bot is relaying between channels on a network).
 
@@ -69,7 +69,7 @@ supybot.plugins.ChannelStats.selfStats
 
 
 supybot.plugins.ChannelStats.smileys
-  This config variable defaults to ":) ;) ;] :-) :-D :D :P :p (= =)", is network-specific, and is  channel-specific.
+  This config variable defaults to ":) ;) ;] :-) :-D :D :P :p (= =)", is network-specific, and is channel-specific.
 
   Determines what words (i.e., pieces of text with no spaces in them) are considered 'smileys' for the purposes of stats-keeping.
 

@@ -95,7 +95,7 @@ Configuration
 
 
 supybot.plugins.Services.ChanServ
-  This config variable defaults to "ChanServ", is network-specific, and is  not channel-specific.
+  This config variable defaults to "ChanServ", is network-specific, and is not channel-specific.
 
   Determines what nick the 'ChanServ' service has.
 
@@ -103,7 +103,7 @@ supybot.plugins.Services.ChanServ
 
 
   supybot.plugins.Services.ChanServ.halfop
-    This config variable defaults to "False", is network-specific, and is  channel-specific.
+    This config variable defaults to "False", is network-specific, and is channel-specific.
 
     Determines whether the bot will request to get half-opped by the ChanServ when it joins the channel.
 
@@ -111,7 +111,7 @@ supybot.plugins.Services.ChanServ
 
 
   supybot.plugins.Services.ChanServ.op
-    This config variable defaults to "False", is network-specific, and is  channel-specific.
+    This config variable defaults to "False", is network-specific, and is channel-specific.
 
     Determines whether the bot will request to get opped by the ChanServ when it joins the channel.
 
@@ -119,7 +119,7 @@ supybot.plugins.Services.ChanServ
 
 
   supybot.plugins.Services.ChanServ.password
-    This config variable defaults to "", is network-specific, and is  channel-specific.
+    This config variable defaults to "", is network-specific, and is channel-specific.
 
     Determines what password the bot will use with ChanServ.
 
@@ -127,7 +127,7 @@ supybot.plugins.Services.ChanServ
 
 
   supybot.plugins.Services.ChanServ.voice
-    This config variable defaults to "False", is network-specific, and is  channel-specific.
+    This config variable defaults to "False", is network-specific, and is channel-specific.
 
     Determines whether the bot will request to get voiced by the ChanServ when it joins the channel.
 
@@ -135,7 +135,7 @@ supybot.plugins.Services.ChanServ
 
 
 supybot.plugins.Services.NickServ
-  This config variable defaults to "NickServ", is network-specific, and is  not channel-specific.
+  This config variable defaults to "NickServ", is network-specific, and is not channel-specific.
 
   Determines what nick the 'NickServ' service has.
 
@@ -149,7 +149,7 @@ supybot.plugins.Services.NickServ
 
 
 supybot.plugins.Services.disabledNetworks
-  This config variable defaults to "QuakeNet", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "QuakeNet", is not network-specific, and is not channel-specific.
 
   Determines what networks this plugin will be disabled on.
 
@@ -157,7 +157,7 @@ supybot.plugins.Services.disabledNetworks
 
 
 supybot.plugins.Services.ghostDelay
-  This config variable defaults to "60", is network-specific, and is  not channel-specific.
+  This config variable defaults to "60", is network-specific, and is not channel-specific.
 
   Determines how many seconds the bot will wait between successive GHOST attempts. Set this to 0 to disable GHOST.
 
@@ -165,7 +165,7 @@ supybot.plugins.Services.ghostDelay
 
 
 supybot.plugins.Services.nicks
-  This config variable defaults to " ", is network-specific, and is  not channel-specific.
+  This config variable defaults to " ", is network-specific, and is not channel-specific.
 
   Determines what nicks the bot will use with services.
 
@@ -173,7 +173,7 @@ supybot.plugins.Services.nicks
 
 
 supybot.plugins.Services.noJoinsUntilIdentified
-  This config variable defaults to "False", is network-specific, and is  not channel-specific.
+  This config variable defaults to "False", is network-specific, and is not channel-specific.
 
   Determines whether the bot will not join any channels until it is identified. This may be useful, for instances, if you have a vhost that isn't set until you're identified, or if you're joining +r channels that won't allow you to join unless you identify.
 
@@ -181,7 +181,7 @@ supybot.plugins.Services.noJoinsUntilIdentified
 
 
 supybot.plugins.Services.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 

@@ -65,7 +65,7 @@ Configuration
 
 
 supybot.plugins.Karma.allowSelfRating
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Determines whether users can adjust the karma of their nick.
 
@@ -73,7 +73,7 @@ supybot.plugins.Karma.allowSelfRating
 
 
 supybot.plugins.Karma.allowUnaddressedKarma
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether the bot will increase/decrease karma without being addressed.
 
@@ -81,7 +81,7 @@ supybot.plugins.Karma.allowUnaddressedKarma
 
 
 supybot.plugins.Karma.decrementChars
-  This config variable defaults to "--", is network-specific, and is  channel-specific.
+  This config variable defaults to "--", is network-specific, and is channel-specific.
 
   A space separated list of characters to decrease karma.
 
@@ -89,7 +89,7 @@ supybot.plugins.Karma.decrementChars
 
 
 supybot.plugins.Karma.incrementChars
-  This config variable defaults to "++", is network-specific, and is  channel-specific.
+  This config variable defaults to "++", is network-specific, and is channel-specific.
 
   A space separated list of characters to increase karma.
 
@@ -97,7 +97,7 @@ supybot.plugins.Karma.incrementChars
 
 
 supybot.plugins.Karma.mostDisplay
-  This config variable defaults to "25", is network-specific, and is  channel-specific.
+  This config variable defaults to "25", is network-specific, and is channel-specific.
 
   Determines how many karma things are shown when the most command is called.
 
@@ -105,7 +105,7 @@ supybot.plugins.Karma.mostDisplay
 
 
 supybot.plugins.Karma.onlyNicks
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Determines whether the bot will only increase/decrease karma for nicks in the current channel.
 
@@ -113,7 +113,7 @@ supybot.plugins.Karma.onlyNicks
 
 
 supybot.plugins.Karma.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -121,7 +121,7 @@ supybot.plugins.Karma.public
 
 
 supybot.plugins.Karma.rankingDisplay
-  This config variable defaults to "3", is network-specific, and is  channel-specific.
+  This config variable defaults to "3", is network-specific, and is channel-specific.
 
   Determines how many highest/lowest karma things are shown when karma is called with no arguments.
 
@@ -129,7 +129,7 @@ supybot.plugins.Karma.rankingDisplay
 
 
 supybot.plugins.Karma.response
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Determines whether the bot will reply with a success message when something's karma is increased or decreased.
 
@@ -137,7 +137,7 @@ supybot.plugins.Karma.response
 
 
 supybot.plugins.Karma.simpleOutput
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Determines whether the bot will output shorter versions of the karma output when requesting a single thing's karma.
 

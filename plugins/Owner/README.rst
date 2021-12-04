@@ -109,7 +109,7 @@ Configuration
 
 
 supybot.plugins.Owner.announceFormat
-  This config variable defaults to "Announcement from my owner ($owner): $text", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "Announcement from my owner ($owner): $text", is not network-specific, and is not channel-specific.
 
   Determines the format of messages sent by the 'announce' command. $owner may be used for the username of the owner calling this command, and $text for the announcement being made.
 
@@ -117,7 +117,7 @@ supybot.plugins.Owner.announceFormat
 
 
 supybot.plugins.Owner.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -125,7 +125,7 @@ supybot.plugins.Owner.public
 
 
 supybot.plugins.Owner.quitMsg
-  This config variable defaults to "Limnoria $version", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "Limnoria $version", is not network-specific, and is not channel-specific.
 
   Determines what quit message will be used by default. If the quit command is called without a quit message, this will be used. If this value is empty, the nick of the person giving the quit command will be used. The standard substitutions ($version, $nick, etc.) are all handled appropriately.
 

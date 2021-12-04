@@ -25,7 +25,7 @@ Configuration
 
 
 supybot.plugins.NickCapture.ison
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether the bot will check occasionally if its preferred nick is in use via the ISON command.
 
@@ -33,7 +33,7 @@ supybot.plugins.NickCapture.ison
 
 
   supybot.plugins.NickCapture.ison.period
-    This config variable defaults to "600", is not network-specific, and is  not channel-specific.
+    This config variable defaults to "600", is not network-specific, and is not channel-specific.
 
     Determines how often (in seconds) the bot will check whether its nick ISON.
 
@@ -41,7 +41,7 @@ supybot.plugins.NickCapture.ison
 
 
 supybot.plugins.NickCapture.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 

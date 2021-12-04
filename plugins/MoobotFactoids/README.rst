@@ -91,7 +91,7 @@ Configuration
 
 
 supybot.plugins.MoobotFactoids.mostCount
-  This config variable defaults to "10", is network-specific, and is  channel-specific.
+  This config variable defaults to "10", is network-specific, and is channel-specific.
 
   Determines how many items are shown when the 'most' command is called.
 
@@ -99,7 +99,7 @@ supybot.plugins.MoobotFactoids.mostCount
 
 
 supybot.plugins.MoobotFactoids.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -107,7 +107,7 @@ supybot.plugins.MoobotFactoids.public
 
 
 supybot.plugins.MoobotFactoids.showFactoidIfOnlyOneMatch
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether or not the factoid value will be shown when a listkeys search returns only one factoid key.
 

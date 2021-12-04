@@ -71,7 +71,7 @@ Configuration
 
 
 supybot.plugins.Praise.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -79,7 +79,7 @@ supybot.plugins.Praise.public
 
 
 supybot.plugins.Praise.showIds
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Determines whether the bot will show the ids of a praise when the praise is given.
 

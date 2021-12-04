@@ -64,7 +64,7 @@ supybot.plugins.GPG.auth
 
 
     supybot.plugins.GPG.auth.sign.TokenTimeout
-      This config variable defaults to "600", is not network-specific, and is  not channel-specific.
+      This config variable defaults to "600", is not network-specific, and is not channel-specific.
 
       Determines the lifetime of a GPG signature authentication token (in seconds).
 
@@ -72,7 +72,7 @@ supybot.plugins.GPG.auth
 
 
     supybot.plugins.GPG.auth.sign.enable
-      This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+      This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
       Determines whether or not users are allowed to use GPG signing for authentication.
 
@@ -80,7 +80,7 @@ supybot.plugins.GPG.auth
 
 
 supybot.plugins.GPG.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 

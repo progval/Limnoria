@@ -133,7 +133,7 @@ Configuration
 
 
 supybot.plugins.Aka.maximumWordsInName
-  This config variable defaults to "5", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "5", is not network-specific, and is not channel-specific.
 
   The maximum number of words allowed in a command name. Setting this to an high value may slow down your bot on long commands.
 
@@ -141,7 +141,7 @@ supybot.plugins.Aka.maximumWordsInName
 
 
 supybot.plugins.Aka.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -155,7 +155,7 @@ supybot.plugins.Aka.web
 
 
   supybot.plugins.Aka.web.enable
-    This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+    This config variable defaults to "False", is not network-specific, and is not channel-specific.
 
     Determines whether the Akas will be browsable through the HTTP server.
 

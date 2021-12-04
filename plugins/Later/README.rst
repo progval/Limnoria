@@ -81,7 +81,7 @@ supybot.plugins.Later.format
 
 
   supybot.plugins.Later.format.senderHostname
-    This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+    This config variable defaults to "False", is not network-specific, and is not channel-specific.
 
     Determines whether senders' hostname will be shown in messages (instead of just the nick).
 
@@ -89,7 +89,7 @@ supybot.plugins.Later.format
 
 
 supybot.plugins.Later.maximum
-  This config variable defaults to "0", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "0", is not network-specific, and is not channel-specific.
 
   Determines the maximum number of messages to be queued for a user. If this value is 0, there is no maximum.
 
@@ -97,7 +97,7 @@ supybot.plugins.Later.maximum
 
 
 supybot.plugins.Later.messageExpiry
-  This config variable defaults to "30", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "30", is not network-specific, and is not channel-specific.
 
   Determines the maximum number of days that a message will remain queued for a user. After this time elapses, the message will be deleted. If this value is 0, there is no maximum.
 
@@ -105,7 +105,7 @@ supybot.plugins.Later.messageExpiry
 
 
 supybot.plugins.Later.private
-  This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "False", is not network-specific, and is not channel-specific.
 
   Determines whether users will be notified in the first place in which they're seen, or in private.
 
@@ -113,7 +113,7 @@ supybot.plugins.Later.private
 
 
 supybot.plugins.Later.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -121,7 +121,7 @@ supybot.plugins.Later.public
 
 
 supybot.plugins.Later.tellOnJoin
-  This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "False", is not network-specific, and is not channel-specific.
 
   Determines whether users will be notified upon joining any channel the bot is in, or only upon sending a message.
 

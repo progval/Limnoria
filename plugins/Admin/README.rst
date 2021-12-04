@@ -80,7 +80,7 @@ Configuration
 
 
 supybot.plugins.Admin.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 

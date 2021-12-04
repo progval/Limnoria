@@ -40,7 +40,7 @@ Configuration
 
 
 supybot.plugins.URL.nonSnarfingRegexp
-  This config variable defaults to "", is network-specific, and is  channel-specific.
+  This config variable defaults to "", is network-specific, and is channel-specific.
 
   Determines what URLs are not to be snarfed and stored in the database for the channel; URLs matching the given regexp will not be snarfed. Give the empty string if you have no URLs that you'd like to exclude from being snarfed.
 
@@ -48,7 +48,7 @@ supybot.plugins.URL.nonSnarfingRegexp
 
 
 supybot.plugins.URL.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 

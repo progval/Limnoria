@@ -37,7 +37,7 @@ Configuration
 
 
 supybot.plugins.Ctcp.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -45,7 +45,7 @@ supybot.plugins.Ctcp.public
 
 
 supybot.plugins.Ctcp.userinfo
-  This config variable defaults to "", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "", is not network-specific, and is not channel-specific.
 
   Determines what will be sent when a USERINFO query is received.
 
@@ -53,7 +53,7 @@ supybot.plugins.Ctcp.userinfo
 
 
 supybot.plugins.Ctcp.versionWait
-  This config variable defaults to "10", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "10", is not network-specific, and is not channel-specific.
 
   Determines how many seconds the bot will wait after getting a version command (not a CTCP VERSION, but an actual call of the command in this plugin named "version") before replying with the results it has collected.
 

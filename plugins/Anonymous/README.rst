@@ -80,7 +80,7 @@ Configuration
 
 
 supybot.plugins.Anonymous.allowPrivateTarget
-  This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "False", is not network-specific, and is not channel-specific.
 
   Determines whether the bot will allow the "tell" command to be used. If true, the bot will allow the "tell" command to send private messages to other users.
 
@@ -88,7 +88,7 @@ supybot.plugins.Anonymous.allowPrivateTarget
 
 
 supybot.plugins.Anonymous.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -96,7 +96,7 @@ supybot.plugins.Anonymous.public
 
 
 supybot.plugins.Anonymous.requireCapability
-  This config variable defaults to "", is network-specific, and is  channel-specific.
+  This config variable defaults to "", is network-specific, and is channel-specific.
 
   Determines what capability (if any) the bot should require people trying to use this plugin to have.
 
@@ -104,7 +104,7 @@ supybot.plugins.Anonymous.requireCapability
 
 
 supybot.plugins.Anonymous.requirePresenceInChannel
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether the bot should require people trying to use this plugin to be in the channel they wish to anonymously send to.
 
@@ -112,7 +112,7 @@ supybot.plugins.Anonymous.requirePresenceInChannel
 
 
 supybot.plugins.Anonymous.requireRegistration
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether the bot should require people trying to use this plugin to be registered.
 

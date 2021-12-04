@@ -83,7 +83,7 @@ Configuration
 
 
 supybot.plugins.Factoids.format
-  This config variable defaults to "$value", is network-specific, and is  channel-specific.
+  This config variable defaults to "$value", is network-specific, and is channel-specific.
 
   Determines the format of the response given when a factoid's value is requested. All the standard substitutes apply, in addition to "$key" for the factoid's key and "$value" for the factoid's value.
 
@@ -91,7 +91,7 @@ supybot.plugins.Factoids.format
 
 
 supybot.plugins.Factoids.keepRankInfo
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether we keep updating the usage count for each factoid, for popularity ranking.
 
@@ -99,7 +99,7 @@ supybot.plugins.Factoids.keepRankInfo
 
 
 supybot.plugins.Factoids.learnSeparator
-  This config variable defaults to "is", is network-specific, and is  channel-specific.
+  This config variable defaults to "is", is network-specific, and is channel-specific.
 
   Determines what separator must be used in the learn command. Defaults to 'is' -- learn <key> is <value>. Users might want to change this to something else, so it's configurable.
 
@@ -107,7 +107,7 @@ supybot.plugins.Factoids.learnSeparator
 
 
 supybot.plugins.Factoids.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -115,7 +115,7 @@ supybot.plugins.Factoids.public
 
 
 supybot.plugins.Factoids.rankListLength
-  This config variable defaults to "20", is network-specific, and is  channel-specific.
+  This config variable defaults to "20", is network-specific, and is channel-specific.
 
   Determines the number of factoid keys returned by the factrank command.
 
@@ -123,7 +123,7 @@ supybot.plugins.Factoids.rankListLength
 
 
 supybot.plugins.Factoids.replyApproximateSearchKeys
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   If you try to look up a nonexistent factoid, this setting make the bot try to find some possible matching keys through several approximate matching algorithms and return a list of matching keys, before giving up.
 
@@ -131,7 +131,7 @@ supybot.plugins.Factoids.replyApproximateSearchKeys
 
 
 supybot.plugins.Factoids.replyWhenInvalidCommand
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether the bot will reply to invalid commands by searching for a factoid; basically making the whatis unnecessary when you want all factoids for a given key.
 
@@ -139,7 +139,7 @@ supybot.plugins.Factoids.replyWhenInvalidCommand
 
 
 supybot.plugins.Factoids.requireVoice
-  This config variable defaults to "False", is network-specific, and is  channel-specific.
+  This config variable defaults to "False", is network-specific, and is channel-specific.
 
   Only allows a user with voice or above on a channel to use the 'learn' and 'forget' commands.
 
@@ -147,7 +147,7 @@ supybot.plugins.Factoids.requireVoice
 
 
 supybot.plugins.Factoids.showFactoidIfOnlyOneMatch
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether the bot will reply with the single matching factoid if only one factoid matches when using the search command.
 
@@ -161,7 +161,7 @@ supybot.plugins.Factoids.web
 
 
   supybot.plugins.Factoids.web.channel
-    This config variable defaults to "False", is network-specific, and is  channel-specific.
+    This config variable defaults to "False", is network-specific, and is channel-specific.
 
     Determines whether factoids can be displayed via the web server.
 
@@ -169,7 +169,7 @@ supybot.plugins.Factoids.web
 
 
   supybot.plugins.Factoids.web.enable
-    This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+    This config variable defaults to "False", is not network-specific, and is not channel-specific.
 
     Determines whether the Factoids plugins will be browsable on the HTTP server.
 

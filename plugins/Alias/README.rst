@@ -85,7 +85,7 @@ supybot.plugins.Alias.escapedaliases
 
 
 supybot.plugins.Alias.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -93,7 +93,7 @@ supybot.plugins.Alias.public
 
 
 supybot.plugins.Alias.validName
-  This config variable defaults to "^[^\\x00-\\x20]+$", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "^[^\\x00-\\x20]+$", is not network-specific, and is not channel-specific.
 
   Regex which alias names must match in order to be valid
 

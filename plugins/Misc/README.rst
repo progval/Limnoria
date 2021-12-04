@@ -88,7 +88,7 @@ Configuration
 
 
 supybot.plugins.Misc.customHelpString
-  This config variable defaults to "", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "", is not network-specific, and is not channel-specific.
 
   Sets a custom help string, displayed when the 'help' command is called without arguments.
 
@@ -108,7 +108,7 @@ supybot.plugins.Misc.last
 
 
     supybot.plugins.Misc.last.nested.includeNick
-      This config variable defaults to "False", is network-specific, and is  channel-specific.
+      This config variable defaults to "False", is network-specific, and is channel-specific.
 
       Determines whether or not the nick will be included in the output of last when it is part of a nested command
 
@@ -116,7 +116,7 @@ supybot.plugins.Misc.last
 
 
     supybot.plugins.Misc.last.nested.includeTimestamp
-      This config variable defaults to "False", is network-specific, and is  channel-specific.
+      This config variable defaults to "False", is network-specific, and is channel-specific.
 
       Determines whether or not the timestamp will be included in the output of last when it is part of a nested command
 
@@ -124,7 +124,7 @@ supybot.plugins.Misc.last
 
 
 supybot.plugins.Misc.listPrivatePlugins
-  This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "False", is not network-specific, and is not channel-specific.
 
   Determines whether the bot will list private plugins with the list command if given the --private switch. If this is disabled, non-owner users should be unable to see what private plugins are loaded.
 
@@ -132,7 +132,7 @@ supybot.plugins.Misc.listPrivatePlugins
 
 
 supybot.plugins.Misc.listUnloadedPlugins
-  This config variable defaults to "False", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "False", is not network-specific, and is not channel-specific.
 
   Determines whether the bot will list unloaded plugins with the list command if given the --unloaded switch. If this is disabled, non-owner users should be unable to see what unloaded plugins are available.
 
@@ -140,7 +140,7 @@ supybot.plugins.Misc.listUnloadedPlugins
 
 
 supybot.plugins.Misc.mores
-  This config variable defaults to "1", is network-specific, and is  channel-specific.
+  This config variable defaults to "1", is network-specific, and is channel-specific.
 
   Determines how many messages the bot will issue when using the 'more' command.
 
@@ -148,7 +148,7 @@ supybot.plugins.Misc.mores
 
 
 supybot.plugins.Misc.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -156,7 +156,7 @@ supybot.plugins.Misc.public
 
 
 supybot.plugins.Misc.timestampFormat
-  This config variable defaults to "[%H:%M:%S]", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "[%H:%M:%S]", is not network-specific, and is not channel-specific.
 
   Determines the format string for timestamps in the Misc.last command. Refer to the Python documentation for the time module to see what formats are accepted. If you set this variable to the empty string, the timestamp will not be shown.
 

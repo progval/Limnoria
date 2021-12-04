@@ -183,7 +183,7 @@ Configuration
 
 
 supybot.plugins.Filter.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -197,7 +197,7 @@ supybot.plugins.Filter.shrink
 
 
   supybot.plugins.Filter.shrink.minimum
-    This config variable defaults to "4", is network-specific, and is  channel-specific.
+    This config variable defaults to "4", is network-specific, and is channel-specific.
 
     Determines the minimum number of a letters in a word before it will be shrunken by the shrink command/filter.
 
@@ -211,7 +211,7 @@ supybot.plugins.Filter.spellit
 
 
   supybot.plugins.Filter.spellit.replaceLetters
-    This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+    This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
     Determines whether or not to replace letters in the output of spellit.
 
@@ -219,7 +219,7 @@ supybot.plugins.Filter.spellit
 
 
   supybot.plugins.Filter.spellit.replaceNumbers
-    This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+    This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
     Determines whether or not to replace numbers in the output of spellit.
 
@@ -227,7 +227,7 @@ supybot.plugins.Filter.spellit
 
 
   supybot.plugins.Filter.spellit.replacePunctuation
-    This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+    This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
     Determines whether or not to replace punctuation in the output of spellit.
 

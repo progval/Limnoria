@@ -66,7 +66,7 @@ Configuration
 
 
 supybot.plugins.Dunno.prefixNick
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether the bot will prefix the nick of the user giving an invalid command to the "dunno" response.
 
@@ -74,7 +74,7 @@ supybot.plugins.Dunno.prefixNick
 
 
 supybot.plugins.Dunno.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 

@@ -54,7 +54,7 @@ Configuration
 
 
 supybot.plugins.Herald.default
-  This config variable defaults to "", is network-specific, and is  channel-specific.
+  This config variable defaults to "", is network-specific, and is channel-specific.
 
   Sets the default herald to use. If a user has a personal herald specified, that will be used instead. If set to the empty string, the default herald will be disabled.
 
@@ -62,7 +62,7 @@ supybot.plugins.Herald.default
 
 
   supybot.plugins.Herald.default.notice
-    This config variable defaults to "True", is network-specific, and is  channel-specific.
+    This config variable defaults to "True", is network-specific, and is channel-specific.
 
     Determines whether the default herald will be sent as a NOTICE instead of a PRIVMSG.
 
@@ -70,7 +70,7 @@ supybot.plugins.Herald.default
 
 
   supybot.plugins.Herald.default.public
-    This config variable defaults to "False", is network-specific, and is  channel-specific.
+    This config variable defaults to "False", is network-specific, and is channel-specific.
 
     Determines whether the default herald will be sent publicly.
 
@@ -78,7 +78,7 @@ supybot.plugins.Herald.default
 
 
 supybot.plugins.Herald.heralding
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether messages will be sent to the channel when a recognized user joins; basically enables or disables the plugin.
 
@@ -86,7 +86,7 @@ supybot.plugins.Herald.heralding
 
 
 supybot.plugins.Herald.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -94,7 +94,7 @@ supybot.plugins.Herald.public
 
 
 supybot.plugins.Herald.requireCapability
-  This config variable defaults to "", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "", is not network-specific, and is not channel-specific.
 
   Determines what capability (if any) is required to add/change/remove the herald of another user.
 
@@ -102,7 +102,7 @@ supybot.plugins.Herald.requireCapability
 
 
 supybot.plugins.Herald.throttle
-  This config variable defaults to "600", is network-specific, and is  channel-specific.
+  This config variable defaults to "600", is network-specific, and is channel-specific.
 
   Determines the minimum number of seconds between heralds.
 
@@ -110,7 +110,7 @@ supybot.plugins.Herald.throttle
 
 
   supybot.plugins.Herald.throttle.afterPart
-    This config variable defaults to "0", is network-specific, and is  channel-specific.
+    This config variable defaults to "0", is network-specific, and is channel-specific.
 
     Determines the minimum number of seconds after parting that the bot will not herald the person when they rejoin.
 
@@ -118,7 +118,7 @@ supybot.plugins.Herald.throttle
 
 
   supybot.plugins.Herald.throttle.afterSplit
-    This config variable defaults to "60", is network-specific, and is  channel-specific.
+    This config variable defaults to "60", is network-specific, and is channel-specific.
 
     Determines the minimum number of seconds after a netsplit that the bot will not herald the users that split.
 

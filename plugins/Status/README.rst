@@ -85,7 +85,7 @@ supybot.plugins.Status.cpu
 
 
   supybot.plugins.Status.cpu.children
-    This config variable defaults to "True", is network-specific, and is  channel-specific.
+    This config variable defaults to "True", is network-specific, and is channel-specific.
 
     Determines whether the cpu command will list the time taken by children as well as the bot's process.
 
@@ -93,7 +93,7 @@ supybot.plugins.Status.cpu
 
 
   supybot.plugins.Status.cpu.memory
-    This config variable defaults to "True", is network-specific, and is  channel-specific.
+    This config variable defaults to "True", is network-specific, and is channel-specific.
 
     Determines whether the cpu command will report the amount of memory being used by the bot.
 
@@ -101,7 +101,7 @@ supybot.plugins.Status.cpu
 
 
   supybot.plugins.Status.cpu.threads
-    This config variable defaults to "False", is network-specific, and is  channel-specific.
+    This config variable defaults to "False", is network-specific, and is channel-specific.
 
     Determines whether the cpu command will provide the number of threads spawned and active.
 
@@ -109,7 +109,7 @@ supybot.plugins.Status.cpu
 
 
 supybot.plugins.Status.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 

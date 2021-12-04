@@ -53,7 +53,7 @@ Configuration
 
 
 supybot.plugins.Dict.default
-  This config variable defaults to "*", is network-specific, and is  channel-specific.
+  This config variable defaults to "*", is network-specific, and is channel-specific.
 
   Determines the default dictionary the bot will ask for definitions in. If this value is '*' (without the quotes) the bot will use all dictionaries to define words.
 
@@ -61,7 +61,7 @@ supybot.plugins.Dict.default
 
 
 supybot.plugins.Dict.public
-  This config variable defaults to "True", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "True", is not network-specific, and is not channel-specific.
 
   Determines whether this plugin is publicly visible.
 
@@ -69,7 +69,7 @@ supybot.plugins.Dict.public
 
 
 supybot.plugins.Dict.server
-  This config variable defaults to "dict.org", is not network-specific, and is  not channel-specific.
+  This config variable defaults to "dict.org", is not network-specific, and is not channel-specific.
 
   Determines what server the bot will retrieve definitions from.
 
@@ -77,7 +77,7 @@ supybot.plugins.Dict.server
 
 
 supybot.plugins.Dict.showDictName
-  This config variable defaults to "True", is network-specific, and is  channel-specific.
+  This config variable defaults to "True", is network-specific, and is channel-specific.
 
   Determines whether the bot will show which dictionaries responded to a query, if the selected dictionary is '*'.
 
