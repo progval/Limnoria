@@ -5,11 +5,13 @@ Documentation for the Owner plugin for Supybot
 
 Purpose
 -------
+
 Provides commands useful to the owner of the bot; the commands here require
 their caller to have the 'owner' capability.  This plugin is loaded by default.
 
 Usage
 -----
+
 Owner-only commands for core Supybot. This is a core Supybot module
 that should not be removed!
 
@@ -17,6 +19,7 @@ that should not be removed!
 
 Commands
 --------
+
 .. _command-owner-announce:
 
 announce <text>

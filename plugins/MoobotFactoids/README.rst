@@ -5,12 +5,14 @@ Documentation for the MoobotFactoids plugin for Supybot
 
 Purpose
 -------
+
 Moobot factoid compatibility module.  Moobot's factoids were originally
 designed to emulate Blootbot's factoids, so in either case, you should find
 this plugin comfortable.
 
 Usage
 -----
+
 An alternative to the Factoids plugin, this plugin keeps factoids in
 your bot.
 
@@ -29,6 +31,7 @@ If you want the bot to use /mes with Factoids, that is possible too.
 
 Commands
 --------
+
 .. _command-moobotfactoids-factinfo:
 
 factinfo [<channel>] <factoid key>

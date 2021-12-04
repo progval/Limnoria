@@ -5,10 +5,12 @@ Documentation for the Misc plugin for Supybot
 
 Purpose
 -------
+
 Miscellaneous commands.
 
 Usage
 -----
+
 Miscellaneous commands to access Supybot core. This is a core
 Supybot plugin that should not be removed!
 
@@ -16,6 +18,7 @@ Supybot plugin that should not be removed!
 
 Commands
 --------
+
 .. _command-misc-apropos:
 
 apropos <string>

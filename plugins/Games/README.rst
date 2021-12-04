@@ -5,12 +5,14 @@ Documentation for the Games plugin for Supybot
 
 Purpose
 -------
+
 This plugin provides some fun games like (Russian) roulette, 8ball, monologue
 which tells you how many lines you have spoken without anyone interrupting
 you, coin and dice.
 
 Usage
 -----
+
 This plugin provides some small games like (Russian) roulette,
 eightball, monologue, coin and dice.
 
@@ -18,6 +20,7 @@ eightball, monologue, coin and dice.
 
 Commands
 --------
+
 .. _command-games-coin:
 
 coin takes no arguments

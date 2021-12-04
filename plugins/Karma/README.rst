@@ -5,10 +5,12 @@ Documentation for the Karma plugin for Supybot
 
 Purpose
 -------
+
 Plugin for keeping track of Karma for users and things in a channel.
 
 Usage
 -----
+
 Provides a simple tracker for setting Karma (thing++, thing--).
 If ``config plugins.karma.allowUnaddressedKarma`` is set to ``True``
 (default since 2014.05.07), saying `boats++` will give 1 karma
@@ -28,6 +30,7 @@ you must address the bot with nick or prefix to add or subtract karma.
 
 Commands
 --------
+
 .. _command-karma-clear:
 
 clear [<channel>] [<name>]

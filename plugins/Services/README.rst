@@ -5,11 +5,13 @@ Documentation for the Services plugin for Supybot
 
 Purpose
 -------
+
 Services: Handles management of nicks with NickServ, and ops with ChanServ;
 to (re)gain access to its own nick and channels.
 
 Usage
 -----
+
 This plugin handles dealing with Services on networks that provide them.
 Basically, you should use the "password" command to tell the bot a nick to
 identify with and what password to use to identify with that nick.  You can
@@ -23,6 +25,7 @@ necessary if the bot is properly configured.
 
 Commands
 --------
+
 .. _command-services-chanserv:
 
 chanserv <text>

@@ -5,6 +5,7 @@ Documentation for the RSS plugin for Supybot
 
 Purpose
 -------
+
 Provides basic functionality for handling RSS/RDF feeds, and allows announcing
 them periodically to channels.
 In order to use this plugin you must have the following modules
@@ -13,6 +14,7 @@ installed:
 
 Usage
 -----
+
 This plugin is useful both for announcing updates to RSS feeds in a
 channel, and for retrieving the headlines of RSS feeds via command.  Use
 the "add" command to add feeds to this plugin, and use the "announce"
@@ -22,7 +24,7 @@ Basic usage
 ^^^^^^^^^^^
 
 1. Add a feed using
-   ``@rss add limnoria https://github.com/ProgVal/Limnoria/tags.atom``.
+   ``@rss add limnoria https://github.com/progval/Limnoria/tags.atom``.
 
    * This is RSS feed of Limnoria's stable releases.
    * You can now check the latest news from the feed with ``@limnoria``.
@@ -54,6 +56,7 @@ and understand what it says and then you can do
 
 Commands
 --------
+
 .. _command-rss-add:
 
 add <name> <url>

@@ -5,12 +5,14 @@ Documentation for the AutoMode plugin for Supybot
 
 Purpose
 -------
+
 Automatically ops, voices, or halfops, or bans people when they join a channel,
 according to their capabilities.  If you want your bot automatically op users
 when they join your channel, this is the plugin to load.
 
 Usage
 -----
+
 This plugin, when configured, allows the bot to automatically set modes
 on users when they join.
 

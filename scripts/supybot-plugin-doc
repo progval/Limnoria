@@ -113,6 +113,7 @@ class PluginDoc(object):
         self.lines.append('')
         self.appendLine('Purpose')
         self.appendLine('-------')
+        self.lines.append('')
         pdoc = getattr(self.mod, '__doc__',
                        'My author didn\'t give me a purpose.')
         self.appendLine(pdoc)
@@ -121,6 +122,7 @@ class PluginDoc(object):
         if cdoc is not None:
             self.appendLine('Usage')
             self.appendLine('-----')
+            self.lines.append('')
             # We add spaces at the beginning in case the docstring does not
             # start with a newline (the default, unfortunately)
             self.appendLine(textwrap.dedent(" "* 1000 + cdoc).lstrip())
@@ -130,6 +132,7 @@ class PluginDoc(object):
             self.lines.append('.. _commands-%s:\n' % self.name)
             self.appendLine('Commands')
             self.appendLine('--------')
+            self.lines.append('')
             for command in commands:
                 log.debug('command: %s', command)
                 self.lines.append('.. _command-%s-%s:\n' %

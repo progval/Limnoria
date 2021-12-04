@@ -5,10 +5,12 @@ Documentation for the Relay plugin for Supybot
 
 Purpose
 -------
+
 Handles relaying between networks.
 
 Usage
 -----
+
 This plugin allows you to setup a relay between networks.
 
 Note that you must tell the bot to join the channel you wish to relay on
@@ -24,6 +26,7 @@ https://limnoria.net/plugins.xhtml#messaging
 
 Commands
 --------
+
 .. _command-relay-join:
 
 join [<channel>]

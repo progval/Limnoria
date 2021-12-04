@@ -5,11 +5,13 @@ Documentation for the Protector plugin for Supybot
 
 Purpose
 -------
+
 Defends a channel against actions by people who don't have the proper
 capabilities, even if they have +o or +h.
 
 Usage
 -----
+
 Prevents users from doing things they are not supposed to do on a channel,
 even if they have +o or +h.
 

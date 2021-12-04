@@ -5,16 +5,19 @@ Documentation for the Unix plugin for Supybot
 
 Purpose
 -------
+
 Provides commands available only on Unix.
 
 Usage
 -----
+
 Provides Utilities for Unix-like systems.
 
 .. _commands-Unix:
 
 Commands
 --------
+
 .. _command-unix-call:
 
 call <command to call with any arguments>

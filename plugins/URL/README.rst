@@ -5,12 +5,14 @@ Documentation for the URL plugin for Supybot
 
 Purpose
 -------
+
 Keeps track of URLs posted to a channel, along with relevant context.  Allows
 searching for URLs and returning random URLs.  Also provides statistics on the
 URLs in the database.
 
 Usage
 -----
+
 This plugin records how many URLs have been mentioned in
 a channel and what the last URL was.
 
@@ -18,6 +20,7 @@ a channel and what the last URL was.
 
 Commands
 --------
+
 .. _command-url-last:
 
 last [<channel>] [--{from,with,without,near,proto} <value>] [--nolimit]

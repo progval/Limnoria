@@ -5,10 +5,12 @@ Documentation for the Topic plugin for Supybot
 
 Purpose
 -------
+
 Provides commands for manipulating channel topics.
 
 Usage
 -----
+
 This plugin allows you to use many topic-related functions,
 such as Add, Undo, and Remove.
 
@@ -16,6 +18,7 @@ such as Add, Undo, and Remove.
 
 Commands
 --------
+
 .. _command-topic-add:
 
 add [<channel>] <topic>

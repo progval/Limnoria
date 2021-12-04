@@ -5,16 +5,19 @@ Documentation for the Quote plugin for Supybot
 
 Purpose
 -------
+
 Maintains a Quotes database for each channel.
 
 Usage
 -----
+
 This plugin allows you to add quotes to the database for a channel.
 
 .. _commands-Quote:
 
 Commands
 --------
+
 .. _command-quote-add:
 
 add [<channel>] <text>

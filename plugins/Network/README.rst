@@ -5,12 +5,14 @@ Documentation for the Network plugin for Supybot
 
 Purpose
 -------
+
 Includes commands for connecting, disconnecting, and reconnecting to multiple
 networks, as well as several other utility functions related to IRC networks
 like showing the latency.
 
 Usage
 -----
+
 Provides network-related commands, such as connecting to multiple networks
 and checking latency to the server.
 
@@ -18,6 +20,7 @@ and checking latency to the server.
 
 Commands
 --------
+
 .. _command-network-capabilities:
 
 capabilities [<network>]

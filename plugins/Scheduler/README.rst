@@ -5,6 +5,7 @@ Documentation for the Scheduler plugin for Supybot
 
 Purpose
 -------
+
 Gives the user the ability to schedule commands to run at a particular time,
 or repeatedly run at a particular interval. For example,
 ``scheduler add [time seconds 30m] "utilities echo [status cpu]"``
@@ -12,12 +13,14 @@ will schedule the command `cpu` to be sent to the channel in 30 minutes.
 
 Usage
 -----
+
 This plugin allows you to schedule commands to execute at a later time.
 
 .. _commands-Scheduler:
 
 Commands
 --------
+
 .. _command-scheduler-add:
 
 add <seconds> <command>

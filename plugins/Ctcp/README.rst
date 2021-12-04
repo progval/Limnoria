@@ -5,11 +5,13 @@ Documentation for the Ctcp plugin for Supybot
 
 Purpose
 -------
+
 Handles standard CTCP responses to PING, TIME, SOURCE, VERSION, USERINFO,
 and FINGER.
 
 Usage
 -----
+
 Provides replies to common CTCPs (version, time, etc.), and a command
 to fetch version responses from channels.
 
@@ -20,6 +22,7 @@ mode +C or similar which prevents CTCP requests to channel.
 
 Commands
 --------
+
 .. _command-ctcp-version:
 
 version [<channel>] [--nicks]

@@ -5,12 +5,14 @@ Documentation for the Success plugin for Supybot
 
 Purpose
 -------
+
 The Success plugin spices up success replies by allowing custom messages
 instead of the default 'The operation succeeded.' message;
 like Dunno does for "no such command" replies.
 
 Usage
 -----
+
 This plugin was written initially to work with MoobotFactoids, the two
 of them to provide a similar-to-moobot-and-blootbot interface for factoids.
 Basically, it replaces the standard 'The operation succeeded.' messages
@@ -21,6 +23,7 @@ responses.
 
 Commands
 --------
+
 .. _command-success-add:
 
 add [<channel>] <text>

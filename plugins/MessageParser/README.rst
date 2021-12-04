@@ -5,6 +5,7 @@ Documentation for the MessageParser plugin for Supybot
 
 Purpose
 -------
+
 The MessageParser plugin allows you to set custom regexp triggers,
 which will trigger the bot to respond if they match anywhere in the message.
 This is useful for those cases when you want a bot response even when the bot
@@ -15,6 +16,7 @@ https://sourceforge.net/p/gribble/wiki/MessageParser_Plugin/
 
 Usage
 -----
+
 This plugin can set regexp triggers to activate the bot.
 Use 'add' command to add regexp trigger, 'remove' to remove.
 
@@ -22,6 +24,7 @@ Use 'add' command to add regexp trigger, 'remove' to remove.
 
 Commands
 --------
+
 .. _command-messageparser-add:
 
 add [<channel>|global] <regexp> <action>

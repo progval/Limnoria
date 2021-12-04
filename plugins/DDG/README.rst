@@ -5,10 +5,12 @@ Documentation for the DDG plugin for Supybot
 
 Purpose
 -------
+
 Searches for results on DuckDuckGo's web search.
 
 Usage
 -----
+
 Searches for results on DuckDuckGo.
 
 Example::
@@ -20,6 +22,7 @@ Example::
 
 Commands
 --------
+
 .. _command-ddg-search:
 
 search <text>

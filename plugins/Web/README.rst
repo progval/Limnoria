@@ -5,16 +5,19 @@ Documentation for the Web plugin for Supybot
 
 Purpose
 -------
+
 This plugin allows you to view website information, like the title of a page. Also provides a Snarfer for URLs.
 
 Usage
 -----
+
 Add the help for 'help Web' here.
 
 .. _commands-Web:
 
 Commands
 --------
+
 .. _command-web-doctype:
 
 doctype <url>

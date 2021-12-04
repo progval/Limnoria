@@ -5,6 +5,7 @@ Documentation for the BadWords plugin for Supybot
 
 Purpose
 -------
+
 Filters bad words on outgoing messages from the bot, so the bot can't be made
 to say bad words.
 As an additional capability, it can (optionally) kick users who
@@ -12,6 +13,7 @@ use such words from channels that have that capability enabled.
 
 Usage
 -----
+
 Maintains a list of words that the bot is not allowed to say.
 Can also be used to kick people that say these words, if the bot
 has op.
@@ -20,6 +22,7 @@ has op.
 
 Commands
 --------
+
 .. _command-badwords-add:
 
 add <word> [<word> ...]

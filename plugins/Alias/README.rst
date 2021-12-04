@@ -5,11 +5,13 @@ Documentation for the Alias plugin for Supybot
 
 Purpose
 -------
+
 Allows aliases for other commands. NOTE THAT IT'S RECOMMENDED TO USE Aka
 PLUGIN INSTEAD!
 
 Usage
 -----
+
 This plugin allows users to define aliases to commands and combinations
 of commands (via nesting).
 This plugin is only kept for backward compatibility, you should use the
@@ -36,6 +38,7 @@ reply with the same information, the result of those commands.
 
 Commands
 --------
+
 .. _command-alias-add:
 
 add <name> <command>

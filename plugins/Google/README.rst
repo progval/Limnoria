@@ -5,10 +5,12 @@ Documentation for the Google plugin for Supybot
 
 Purpose
 -------
+
 Accesses Google for various things.
 
 Usage
 -----
+
 This is a simple plugin to provide access to the Google services we
 all know and love from our favorite IRC bot.
 
@@ -40,6 +42,7 @@ Check: `Supported language codes`_
 
 Commands
 --------
+
 .. _command-google-cache:
 
 cache <url>

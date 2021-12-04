@@ -5,12 +5,14 @@ Documentation for the Limiter plugin for Supybot
 
 Purpose
 -------
+
 This plugin sets channel limits (MODE +l) based on
 ``plugins.Limiter.MaximumExcess`` plus the current number of users
 in the channel. This is useful to prevent flood attacks.
 
 Usage
 -----
+
 In order to use this plugin, its config values need to be properly
 setup.  supybot.plugins.Limiter.enable needs to be set to True and
 supybot.plugins.Limiter.{maximumExcess,minimumExcess} should be set to

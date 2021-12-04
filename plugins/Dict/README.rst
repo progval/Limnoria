@@ -5,6 +5,7 @@ Documentation for the Dict plugin for Supybot
 
 Purpose
 -------
+
 Commands that use the dictd protocol to define words.
 
 In order to use this plugin you must have the following modules
@@ -14,6 +15,7 @@ installed:
 
 Usage
 -----
+
 This plugin provides a function to look up words from different
 dictionaries.
 
@@ -21,6 +23,7 @@ dictionaries.
 
 Commands
 --------
+
 .. _command-dict-dict:
 
 dict [<dictionary>] <word>

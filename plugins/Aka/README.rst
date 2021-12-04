@@ -5,12 +5,14 @@ Documentation for the Aka plugin for Supybot
 
 Purpose
 -------
+
 This plugin allows the user to create various aliases (known as "Akas", since
 Alias is the name of another plugin Aka is based on) to other commands or
 combinations of other commands (via nested commands).
 
 Usage
 -----
+
 This plugin allows users to define aliases to commands and combinations
 of commands (via nesting).
 
@@ -76,6 +78,7 @@ reply with the same information, the result of those commands.
 
 Commands
 --------
+
 .. _command-aka-add:
 
 add [--channel <#channel>] <name> <command>

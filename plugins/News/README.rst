@@ -5,18 +5,21 @@ Documentation for the News plugin for Supybot
 
 Purpose
 -------
+
 A module to allow each channel to have "news".  News items may have expiration
 dates.
 It was partially inspired by the news system used on #debian's bot.
 
 Usage
 -----
+
 This plugin provides a means of maintaining News for a channel.
 
 .. _commands-News:
 
 Commands
 --------
+
 .. _command-news-add:
 
 add [<channel>] <expires> <subject>: <text>

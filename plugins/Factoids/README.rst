@@ -5,17 +5,20 @@ Documentation for the Factoids plugin for Supybot
 
 Purpose
 -------
+
 Handles 'factoids,' little tidbits of information held in a database and
 available on demand via several commands.
 
 Usage
 -----
+
 Provides the ability to show Factoids.
 
 .. _commands-Factoids:
 
 Commands
 --------
+
 .. _command-factoids-alias:
 
 alias [<channel>] <oldkey> <newkey> [<number>]

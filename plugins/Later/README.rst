@@ -5,12 +5,14 @@ Documentation for the Later plugin for Supybot
 
 Purpose
 -------
+
 Informal notes, mostly for compatibility with other bots.  Based entirely on
 nicks, it's an easy way to tell users who refuse to register notes when they
 arrive later.
 
 Usage
 -----
+
 Used to do things later; currently, it only allows the sending of
 nick-based notes.  Do note (haha!) that these notes are *not* private
 and don't even pretend to be; if you want such features, consider using the
@@ -43,6 +45,7 @@ and the owner.
 
 Commands
 --------
+
 .. _command-later-notes:
 
 notes [<nick>]

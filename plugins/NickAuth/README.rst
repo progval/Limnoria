@@ -5,10 +5,12 @@ Documentation for the NickAuth plugin for Supybot
 
 Purpose
 -------
+
 Support authentication based on nicks and network services.
 
 Usage
 -----
+
 This plugin allows users to use their network services account to
 authenticate to the bot.
 
@@ -20,6 +22,7 @@ identify to the bot.
 
 Commands
 --------
+
 .. _command-nickauth-auth:
 
 auth takes no argument

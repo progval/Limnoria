@@ -5,10 +5,12 @@ Documentation for the Fediverse plugin for Supybot
 
 Purpose
 -------
+
 Fetches information from ActivityPub servers.
 
 Usage
 -----
+
 Fetches information from ActivityPub servers.
 
 Enabling Secure Fetch
@@ -37,6 +39,7 @@ a title like "Supybot web server index").
 
 Commands
 --------
+
 .. _command-fediverse-featured:
 
 featured <@user@instance>

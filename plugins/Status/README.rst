@@ -5,11 +5,13 @@ Documentation for the Status plugin for Supybot
 
 Purpose
 -------
+
 A simple module to handle various informational commands querying the bot's
 current status and statistics, like its uptime.
 
 Usage
 -----
+
 This plugin allows you to view different bot statistics, for example,
 uptime.
 
@@ -17,6 +19,7 @@ uptime.
 
 Commands
 --------
+
 .. _command-status-cmd:
 
 cmd takes no arguments

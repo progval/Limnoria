@@ -5,10 +5,12 @@ Documentation for the SedRegex plugin for Supybot
 
 Purpose
 -------
+
 History replacer using sed-style expressions.
 
 Usage
 -----
+
 Enable SedRegex on the desired channels:
 ``config channel #yourchannel plugins.sedregex.enable True``
 After enabling SedRegex, typing a regex in the form

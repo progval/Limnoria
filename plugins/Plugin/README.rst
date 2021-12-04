@@ -5,11 +5,13 @@ Documentation for the Plugin plugin for Supybot
 
 Purpose
 -------
+
 This plugin handles various plugin-related things, such as getting help for
 a plugin or retrieving author info.
 
 Usage
 -----
+
 This plugin exists to help users manage their plugins.  Use 'plugin
 list' to list the loaded plugins; use 'plugin help' to get the description
 of a plugin; use the 'plugin' command itself to determine what plugin a
@@ -19,6 +21,7 @@ command exists in.
 
 Commands
 --------
+
 .. _command-plugin-author:
 
 author <plugin>

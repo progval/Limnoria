@@ -5,16 +5,19 @@ Documentation for the Hashes plugin for Supybot
 
 Purpose
 -------
+
 Provides various hash- and encryption-related commands.
 
 Usage
 -----
+
 Provides hash or encryption related commands
 
 .. _commands-Hashes:
 
 Commands
 --------
+
 .. _command-hashes-algorithms:
 
 algorithms <takes no arguments>

@@ -5,11 +5,13 @@ Documentation for the Todo plugin for Supybot
 
 Purpose
 -------
+
 The Todo plugin allows registered users to keep their own personal list of
 tasks to do, with an optional priority for each.
 
 Usage
 -----
+
 This plugin allows you to create your own personal to-do list on
 the bot.
 
@@ -17,6 +19,7 @@ the bot.
 
 Commands
 --------
+
 .. _command-todo-add:
 
 add [--priority=<num>] <text>

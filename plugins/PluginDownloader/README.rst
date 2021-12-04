@@ -5,11 +5,13 @@ Documentation for the PluginDownloader plugin for Supybot
 
 Purpose
 -------
+
 This plugin allows you to quickly download and install a plugin from other 
 repositories.
 
 Usage
 -----
+
 This plugin allows you to install unofficial plugins from
 multiple repositories easily. Use the "repolist" command to see list of
 available repositories and "repolist <repository>" to list plugins,
@@ -37,14 +39,14 @@ Examples
     < Mikaela> @load PluginDownloader
     < Limnoria> Ok.
     < Mikaela> @plugindownloader repolist
-    < Limnoria> Antibody, jlu5, Hoaas, Iota, ProgVal, SpiderDave, boombot, code4lib, code4lib-edsu, code4lib-snapshot, doorbot, frumious, jonimoose, mailed-notifier, mtughan-weather, nanotube-bitcoin, nyuszika7h, nyuszika7h-old, pingdom, quantumlemur, resistivecorpse, scrum, skgsergio, stepnem
-    < Mikaela> @plugindownloader repolist ProgVal
+    < Limnoria> Antibody, jlu5, Hoaas, Iota, progval, SpiderDave, boombot, code4lib, code4lib-edsu, code4lib-snapshot, doorbot, frumious, jonimoose, mailed-notifier, mtughan-weather, nanotube-bitcoin, nyuszika7h, nyuszika7h-old, pingdom, quantumlemur, resistivecorpse, scrum, skgsergio, stepnem
+    < Mikaela> @plugindownloader repolist progval
     < Limnoria> AttackProtector, AutoTrans, Biography, Brainfuck, ChannelStatus, Cleverbot, Coffee, Coinpan, Debian, ERepublik, Eureka, Fortune, GUI, GitHub, Glob2Chan, GoodFrench, I18nPlaceholder, IMDb, IgnoreNonVoice, Iwant, Kickme, LimnoriaChan, LinkRelay, ListEmpty, Listener, Markovgen, MegaHAL, MilleBornes, NoLatin1, NoisyKarma, OEIS, PPP, PingTime, Pinglist, RateLimit, Rbls, Redmine, Scheme, Seeks, (1 more message)
     < Mikaela> more
     < Limnoria> SilencePlugin, StdoutCapture, Sudo, SupyML, SupySandbox, TWSS, Trigger, Trivia, Twitter, TwitterStream, Untiny, Variables, WebDoc, WebLogs, WebStats, Website, WikiTrans, Wikipedia, WunderWeather
-    < Mikaela> @plugindownloader info ProgVal Wikipedia
+    < Mikaela> @plugindownloader info progval Wikipedia
     < Limnoria> Grabs data from Wikipedia.
-    < Mikaela> @plugindownloader install ProgVal Wikipedia
+    < Mikaela> @plugindownloader install progval Wikipedia
     < Limnoria> Ok.
     < Mikaela> @load Wikipedia
     < Limnoria> Ok.
@@ -53,6 +55,7 @@ Examples
 
 Commands
 --------
+
 .. _command-plugindownloader-info:
 
 info <repository> <plugin>

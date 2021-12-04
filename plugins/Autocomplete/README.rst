@@ -5,6 +5,7 @@ Documentation for the Autocomplete plugin for Supybot
 
 Purpose
 -------
+
 Autocomplete: Provides command autocompletion for IRC clients that support it.
 
 This plugin implements an early draft of the IRCv3 autocompletion client tags.
@@ -17,6 +18,7 @@ If you are interested in this feature, please contribute to
 
 Usage
 -----
+
 Provides command completion for IRC clients that support it.
 
 .. _conf-Autocomplete:

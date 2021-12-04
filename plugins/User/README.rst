@@ -5,10 +5,12 @@ Documentation for the User plugin for Supybot
 
 Purpose
 -------
+
 Provides commands useful to users in general. This plugin is loaded by default.
 
 Usage
 -----
+
 Provides commands for dealing with users, such as registration and
 authentication to the bot. This is a core Supybot plugin that should
 not be removed!
@@ -17,6 +19,7 @@ not be removed!
 
 Commands
 --------
+
 .. _command-user-capabilities:
 
 capabilities [<name>]

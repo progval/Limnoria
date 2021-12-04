@@ -5,6 +5,7 @@ Documentation for the QuoteGrabs plugin for Supybot
 
 Purpose
 -------
+
 Quotegrabs are like IRC sound bites.  When someone says something funny,
 incriminating, stupid, outrageous, ... anything that might be worth
 remembering, you can grab that quote for that person.  With this plugin, you
@@ -13,6 +14,7 @@ as see who "grabbed" the quote in the first place.
 
 Usage
 -----
+
 Stores and displays quotes from channels. Quotes are stored randomly
 and/or on user request.
 
@@ -20,6 +22,7 @@ and/or on user request.
 
 Commands
 --------
+
 .. _command-quotegrabs-get:
 
 get [<channel>] <id>

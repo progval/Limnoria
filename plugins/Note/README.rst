@@ -5,17 +5,20 @@ Documentation for the Note plugin for Supybot
 
 Purpose
 -------
+
 A complete messaging system that allows users to leave 'notes' for other
 users that can be retrieved later.
 
 Usage
 -----
+
 Allows you to send notes to other users.
 
 .. _commands-Note:
 
 Commands
 --------
+
 .. _command-note-list:
 
 list [--{old,sent}] [--{from,to} <user>]

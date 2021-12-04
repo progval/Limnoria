@@ -5,11 +5,13 @@ Documentation for the Herald plugin for Supybot
 
 Purpose
 -------
+
 Greets users who join the channel with a recognized hostmask with a nice
 little greeting.
 
 Usage
 -----
+
 This plugin allows you to set welcome messages (heralds) to people who
 are recognized by the bot when they join a channel.
 
@@ -17,6 +19,7 @@ are recognized by the bot when they join a channel.
 
 Commands
 --------
+
 .. _command-herald-add:
 
 add [<channel>] <user|nick> <msg>

@@ -5,11 +5,13 @@ Documentation for the Lart plugin for Supybot
 
 Purpose
 -------
+
 This plugin keeps a database of larts (Luser Attitude Readjustment Tool),
 and larts with it.
 
 Usage
 -----
+
 Provides an implementation of the Luser Attitude Readjustment Tool
 for users.
 
@@ -23,6 +25,7 @@ Example:
 
 Commands
 --------
+
 .. _command-lart-add:
 
 add [<channel>] <text>

@@ -5,10 +5,12 @@ Documentation for the Anonymous plugin for Supybot
 
 Purpose
 -------
+
 Allows folks to talk through the bot anonymously.
 
 Usage
 -----
+
 This plugin allows users to act through the bot anonymously.  The 'do'
 command has the bot perform an anonymous action in a given channel, and
 the 'say' command allows other people to speak through the bot.  Since
@@ -48,6 +50,7 @@ This
 
 Commands
 --------
+
 .. _command-anonymous-do:
 
 do <channel> <action>

@@ -5,10 +5,12 @@ Documentation for the Praise plugin for Supybot
 
 Purpose
 -------
+
 Hand out praise to IRC denizens with this plugin.
 
 Usage
 -----
+
 Praise is a plugin for ... well, praising things.  Feel free to add
 your own flavor to it by customizing what praises it gives.  Use "praise
 add <text>" to add new ones, making sure to include "$who" in <text> where
@@ -24,6 +26,7 @@ Example:
 
 Commands
 --------
+
 .. _command-praise-add:
 
 add [<channel>] <text>

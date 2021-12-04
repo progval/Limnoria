@@ -5,11 +5,13 @@ Documentation for the Math plugin for Supybot
 
 Purpose
 -------
+
 This plugin provides a calculator, converter, a list of units
 and other useful math functions.
 
 Usage
 -----
+
 Provides commands to work with math, such as a calculator and
 a unit converter.
 
@@ -17,6 +19,7 @@ a unit converter.
 
 Commands
 --------
+
 .. _command-math-base:
 
 base <fromBase> [<toBase>] <number>

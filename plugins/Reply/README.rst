@@ -5,11 +5,13 @@ Documentation for the Reply plugin for Supybot
 
 Purpose
 -------
+
 This plugin contains various commands which elicit certain types of responses
 from the bot.
 
 Usage
 -----
+
 This plugin contains a few commands that construct various types of
 replies.  Some bot owners would be wise to not load this plugin because it
 can be easily abused.
@@ -18,6 +20,7 @@ can be easily abused.
 
 Commands
 --------
+
 .. _command-reply-action:
 
 action <text>

@@ -5,10 +5,12 @@ Documentation for the ChannelLogger plugin for Supybot
 
 Purpose
 -------
+
 Logs each channel to its own individual logfile.
 
 Usage
 -----
+
 This plugin allows the bot to log channel conversations to disk.
 
 .. _conf-ChannelLogger:
@@ -112,13 +114,21 @@ supybot.plugins.ChannelLogger.rotateLogs
 
   Determines whether the bot will automatically rotate the logs for this channel. The bot will rotate logs when the timestamp for the log changes. The timestamp is set according to the 'filenameTimestamp' configuration variable.
 
+.. _conf-supybot.plugins.ChannelLogger.showAway:
+
+
+supybot.plugins.ChannelLogger.showAway
+  This config variable defaults to "True", is network-specific, and is  channel-specific.
+
+  Determines whether users going away and coming back should be logged. This is only supported on networks implementing the 'away-notify' IRCv3 capability.
+
 .. _conf-supybot.plugins.ChannelLogger.showJoinParts:
 
 
 supybot.plugins.ChannelLogger.showJoinParts
   This config variable defaults to "True", is network-specific, and is  channel-specific.
 
-  Determines wether joins and parts are logged
+  Determines whether joins and parts are logged
 
 .. _conf-supybot.plugins.ChannelLogger.stripFormatting:
 

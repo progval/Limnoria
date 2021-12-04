@@ -5,6 +5,7 @@ Documentation for the Dunno plugin for Supybot
 
 Purpose
 -------
+
 The Dunno module is used to spice up the reply when given an invalid command
 with random 'I dunno'-like responses.  If you want something spicier than
 '<x> is not a valid command'-like responses, use this plugin.
@@ -12,6 +13,7 @@ Like Success does for the  'The operation succeeded.' reply.
 
 Usage
 -----
+
 This plugin was written initially to work with MoobotFactoids, the two
 of them to provide a similar-to-moobot-and-blootbot interface for factoids.
 Basically, it replaces the standard 'Error: <x> is not a valid command.'
@@ -24,6 +26,7 @@ responses.
 
 Commands
 --------
+
 .. _command-dunno-add:
 
 add [<channel>] <text>

@@ -5,16 +5,19 @@ Documentation for the Utilities plugin for Supybot
 
 Purpose
 -------
+
 Various utility commands, mostly useful for manipulating nested commands.
 
 Usage
 -----
+
 Provides useful commands for bot scripting / command nesting.
 
 .. _commands-Utilities:
 
 Commands
 --------
+
 .. _command-utilities-apply:
 
 apply <command> <text>

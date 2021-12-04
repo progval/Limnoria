@@ -5,16 +5,19 @@ Documentation for the Time plugin for Supybot
 
 Purpose
 -------
+
 A plugin for time-related functions.
 
 Usage
 -----
+
 This plugin allows you to use different time-related functions.
 
 .. _commands-Time:
 
 Commands
 --------
+
 .. _command-time-at:
 
 at [<time string>]
@@ -47,7 +50,7 @@ time [<channel>] [<format>] [<seconds since epoch>]
 
 .. _command-time-tztime:
 
-tztime <region>/<city>
+tztime <region>/<city> (or <region>/<state>/<city>
   Takes a city and its region, and returns its local time. This command uses the IANA Time Zone Database.
 
 .. _command-time-until:

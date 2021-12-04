@@ -5,16 +5,19 @@ Documentation for the GPG plugin for Supybot
 
 Purpose
 -------
+
 GPG: Provides authentication based on GPG keys.
 
 Usage
 -----
+
 Provides authentication based on GPG keys.
 
 .. _commands-GPG:
 
 Commands
 --------
+
 .. _command-gpg-key.add:
 
 key add <key id> <key server>

@@ -5,10 +5,12 @@ Documentation for the Config plugin for Supybot
 
 Purpose
 -------
+
 Handles configuration of the bot while it is running.
 
 Usage
 -----
+
 Provides access to the Supybot configuration. This is
 a core Supybot plugin that should not be removed!
 
@@ -16,6 +18,7 @@ a core Supybot plugin that should not be removed!
 
 Commands
 --------
+
 .. _command-config-channel:
 
 channel [<network>] [<channel>] <name> [<value>]

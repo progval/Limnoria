@@ -5,10 +5,12 @@ Documentation for the Poll plugin for Supybot
 
 Purpose
 -------
+
 Poll: Provides a simple way to vote on answers to a question
 
 Usage
 -----
+
 Provides a simple way to vote on answers to a question
 
 For example, this creates a poll::
@@ -48,6 +50,7 @@ make it easier::
 
 Commands
 --------
+
 .. _command-poll-add:
 
 add [<channel>] <question> <answer1> [<answer2> [<answer3> [...]]]

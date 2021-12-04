@@ -5,6 +5,7 @@ Documentation for the Conditional plugin for Supybot
 
 Purpose
 -------
+
 Contains numerous conditional commands (such as 'if', 'and', and 'or'),
 which can be used on their own or with another plugin.
 Also provides logic operators for writing conditions.
@@ -13,6 +14,7 @@ Useful for bot scripting / nested commands.
 
 Usage
 -----
+
 This plugin provides logic operators and other commands that
 enable you to run commands only if a condition is true. Useful for nested
 commands and scripting.
@@ -21,6 +23,7 @@ commands and scripting.
 
 Commands
 --------
+
 .. _command-conditional-cand:
 
 cand <cond1> [<cond2> ... <condN>]

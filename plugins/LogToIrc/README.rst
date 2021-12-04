@@ -5,6 +5,7 @@ Documentation for the LogToIrc plugin for Supybot
 
 Purpose
 -------
+
 Allows for sending the bot's logging output to channels or users.
 
 .. _conf-LogToIrc:

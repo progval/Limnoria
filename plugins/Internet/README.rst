@@ -5,11 +5,13 @@ Documentation for the Internet plugin for Supybot
 
 Purpose
 -------
+
 This plugin provides commands to transform domains into IP addresses and IP addresses to domains.
 It can also search WHOIS information and return hexips.
 
 Usage
 -----
+
 Provides commands to query DNS, search WHOIS databases,
 and convert IPs to hex.
 
@@ -17,6 +19,7 @@ and convert IPs to hex.
 
 Commands
 --------
+
 .. _command-internet-dns:
 
 dns <host|ip>

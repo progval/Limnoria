@@ -5,11 +5,13 @@ Documentation for the Channel plugin for Supybot
 
 Purpose
 -------
+
 Basic channel management commands.  Many of these commands require their caller
 to have the #channel,op capability.  This plugin is loaded by default.
 
 Usage
 -----
+
 This plugin provides various commands for channel management, such
 as setting modes and channel-wide bans/ignores/capabilities. This is
 a core Supybot plugin that should not be removed!
@@ -18,6 +20,7 @@ a core Supybot plugin that should not be removed!
 
 Commands
 --------
+
 .. _command-channel-alert:
 
 alert [<channel>] <text>

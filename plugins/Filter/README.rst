@@ -5,6 +5,7 @@ Documentation for the Filter plugin for Supybot
 
 Purpose
 -------
+
 Provides numerous filters, and a command (outfilter) to set them as filters on
 the output of the bot.
 For instance, you could make everything the bot says be
@@ -16,6 +17,7 @@ commands.
 
 Usage
 -----
+
 This plugin offers several commands which transform text in some way.
 It also provides the capability of using such commands to 'filter' the
 output of the bot -- for instance, you could make everything the bot says
@@ -26,6 +28,7 @@ Not very useful, but definitely quite fun :)
 
 Commands
 --------
+
 .. _command-filter-aol:
 
 aol <text>

@@ -5,16 +5,19 @@ Documentation for the String plugin for Supybot
 
 Purpose
 -------
+
 Provides various commands to manipulate characters and strings.
 
 Usage
 -----
+
 Provides useful commands for manipulating characters and strings.
 
 .. _commands-String:
 
 Commands
 --------
+
 .. _command-string-chr:
 
 chr <number>

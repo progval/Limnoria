@@ -5,12 +5,14 @@ Documentation for the Debug plugin for Supybot
 
 Purpose
 -------
+
 This is for developers debugging their plugins; it provides an eval command
 as well as some other useful commands.
 It should not be loaded with a default installation.
 
 Usage
 -----
+
 This plugin provides debugging abilities for Supybot. It
 should not be loaded with a default installation.
 
@@ -18,6 +20,7 @@ should not be loaded with a default installation.
 
 Commands
 --------
+
 .. _command-debug-channeldb:
 
 channeldb [<channel>]

@@ -5,10 +5,12 @@ Documentation for the ShrinkUrl plugin for Supybot
 
 Purpose
 -------
+
 Shrinks URLs using various URL shortening services, like tinyurl.
 
 Usage
 -----
+
 This plugin features commands to shorten URLs through different services,
 like tinyurl.
 
@@ -16,6 +18,7 @@ like tinyurl.
 
 Commands
 --------
+
 .. _command-shrinkurl-tiny:
 
 tiny <url>

@@ -5,11 +5,13 @@ Documentation for the NickCapture plugin for Supybot
 
 Purpose
 -------
+
 This module attempts to capture the bot's nick, watching for an opportunity to
 switch to that nick.
 
 Usage
 -----
+
 This plugin constantly tries to take whatever nick is configured as
 supybot.nick.  Just make sure that's set appropriately, and thus plugin
 will do the rest.

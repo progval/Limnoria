@@ -5,11 +5,13 @@ Documentation for the Admin plugin for Supybot
 
 Purpose
 -------
+
 These are commands useful for administrating the bot; they all require their
 caller to have the 'admin' capability.  This plugin is loaded by default.
 
 Usage
 -----
+
 This plugin provides access to administrative commands, such as
 adding capabilities, managing ignore lists, and joining channels.
 This is a core Supybot plugin that should not be removed!
@@ -18,6 +20,7 @@ This is a core Supybot plugin that should not be removed!
 
 Commands
 --------
+
 .. _command-admin-acmd:
 
 acmd <command> [<arg> ...]

@@ -5,12 +5,14 @@ Documentation for the ChannelStats plugin for Supybot
 
 Purpose
 -------
+
 Silently listens to every message received on a channel and keeps statistics
 concerning joins, parts, and various other commands in addition to tracking
 statistics about smileys, actions, characters, and words.
 
 Usage
 -----
+
 This plugin keeps stats of the channel and returns them with
 the command 'channelstats'.
 
@@ -18,6 +20,7 @@ the command 'channelstats'.
 
 Commands
 --------
+
 .. _command-channelstats-channelstats:
 
 channelstats [<channel>]

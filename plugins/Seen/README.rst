@@ -5,12 +5,14 @@ Documentation for the Seen plugin for Supybot
 
 Purpose
 -------
+
 Keeps track of the last time a user was seen on a channel
 and what they last said.
 It also allows you to see what you missed since you parted the channel.
 
 Usage
 -----
+
 This plugin allows you to see when and what someone last said and
 what you missed since you left a channel.
 
@@ -18,6 +20,7 @@ what you missed since you left a channel.
 
 Commands
 --------
+
 .. _command-seen-any:
 
 any [<channel>] [--user <name>] [<nick>]
