@@ -96,6 +96,7 @@ class TimeTestCase(PluginTestCase):
     def testTztime(self):
         self.assertNotError('tztime Europe/Paris')
         self.assertNotError('tztime America/Indiana/Knox')
+        self.assertNotError('tztime UTC')
         self.assertError('tztime Europe/Gniarf')
 
     @skipIf(not has_dateutil, 'python-dateutil is missing')

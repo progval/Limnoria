@@ -41,7 +41,7 @@ try:
 except ImportError:
     pytz = None
 
-_IANA_TZ_RE = re.compile("([\w_-]+/)+[\w_-]+")
+_IANA_TZ_RE = re.compile("([\w_-]+/)*[\w_-]+")
 
 class TimezoneException(Exception):
     pass
