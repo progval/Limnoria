@@ -486,6 +486,26 @@ def main():
         except registry.InvalidRegistryValue:
             output("""That's not a valid nick.  Go ahead and pick another.""")
 
+    # conf.supybot.networks.<network>.sasl.{username,password}
+    output("""Most networks allow you to create an account, using services
+    typically known as NickServ. If you already have one, you can configure
+    the bot to use that account by proving your username and password
+    (also known as "SASL plain").
+    It is usually not a requirement.""")
+    if yn('Do you want your bot to use a network account?', default=False):
+        while True:
+            username = something('What account name should the bot use?')
+            password = getpass('What is the password of that account?')
+            if not username:
+                if yn('Missing username. Do you want to try again?'):
+                    continue
+            if not password:
+                if yn('Missing password. Do you want to try again?'):
+                    continue
+            network.sasl.username.set(password)
+            network.sasl.password.set(password)
+            break
+
     # conf.supybot.user
     if advanced:
         output("""If you've ever done a /whois on a person, you know that IRC
