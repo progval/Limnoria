@@ -172,7 +172,10 @@ setup(
     url='https://github.com/progval/Limnoria',
     author_email='progval+limnoria@progval.net',
     download_url='https://pypi.python.org/pypi/limnoria',
-    description='A modified version of Supybot (an IRC bot and framework)',
+    description=(
+        'A multipurpose Python IRC bot, designed for flexibility and '
+        'robustness , while being easy to install, set up, and maintain.'
+    )
     platforms=['linux', 'linux2', 'win32', 'cygwin', 'darwin'],
     long_description=normalizeWhitespace("""A robust, full-featured Python IRC
     bot with a clean and flexible plugin API.  Equipped with a complete ACL
