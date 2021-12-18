@@ -175,7 +175,7 @@ setup(
     description=(
         'A multipurpose Python IRC bot, designed for flexibility and '
         'robustness , while being easy to install, set up, and maintain.'
-    )
+    ),
     platforms=['linux', 'linux2', 'win32', 'cygwin', 'darwin'],
     long_description=normalizeWhitespace("""A robust, full-featured Python IRC
     bot with a clean and flexible plugin API.  Equipped with a complete ACL
