@@ -466,9 +466,9 @@ class ExpiringDict(collections.abc.MutableMapping):
     For guaranteed expiry, use TimeoutDict.
 
     Currently, this is implemented by internally alternating two "generation"
-    dicts, which are dropped after a certain time."""
+    dicts, which are dropped after a certain time.
+    """
     __slots__ = ('_lock', 'old_gen', 'new_gen', 'timeout', '_last_switch')
-    __synchronized__ = ('_expire_generations',)
 
     def __init__(self, timeout, items=None):
         self._lock = threading.Lock()
@@ -488,7 +488,7 @@ class ExpiringDict(collections.abc.MutableMapping):
             # Check the new_gen first, as it contains the most recent
             # insertion.
             # We must also check them in this order to be thread-safe when
-            # _expire_generations() runs.
+            # _expireGenerations() runs.
             return self.new_gen[key]
         except KeyError:
             try:
@@ -498,7 +498,7 @@ class ExpiringDict(collections.abc.MutableMapping):
 
     def __contains__(self, key):
         # the two clauses must be in this order to be thread-safe when
-        # _expire_generations() runs.
+        # _expireGenerations() runs.
         return key in self.new_gen or key in self.old_gen
 
     def __setitem__(self, key, value):
@@ -545,7 +545,6 @@ class TimeoutDict: # Don't inherit from MutableMapping: not thread-safe
     guaranteed timeout.
     """
     __slots__ = ('_lock', 'd', 'timeout')
-    __synchronized__ = ('_expire_generations',)
 
     def __init__(self, timeout, items=None):
         expiry = time.time() + timeout
