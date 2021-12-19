@@ -186,10 +186,10 @@ class Config(callbacks.Plugin):
 
         Returns the configuration variables available under the given
         configuration <group>.  If a variable has values under it, it is
-        preceded by an '@' sign.  If a variable is a 'ChannelValue', that is,
+        preceded by an '@' sign.  If a variable is channel-specific, that is,
         it can be separately configured for each channel using the 'channel'
         command in this plugin, it is preceded by an '#' sign.
-        And if a variable is a 'NetworkValue', it is preceded by a ':' sign.
+        And if a variable is a network-specific, it is preceded by a ':' sign.
         """
         L = self._list(irc, group)
         if L:
