@@ -124,10 +124,7 @@ class Google(callbacks.PluginRegexp):
         self.log.warning('The Google plugin search is deprecated since '
                 'Google closed their public API and will be removed in a '
                 'future release. Please consider switching to an other '
-                'plugin for your searches, like '
-                '<https://github.com/Hoaas/Supybot-plugins/tree/master/DuckDuckGo>, '
-                '<https://github.com/joulez/GoogleCSE>, or '
-                '<https://github.com/jlu5/SupyPlugins/tree/master/DDG>.')
+                'plugin for your searches, like DDG (built-in)')
         ref = self.registryValue('referer')
         if not ref:
             ref = 'http://%s/%s' % (dynamic.irc.server,
