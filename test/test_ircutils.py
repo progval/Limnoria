@@ -231,10 +231,7 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(ircutils.stripFormatting(s), '[09:21')
 
     def testWrap(self):
-        if sys.version_info[0] < 3:
-            pred = len
-        else:
-            pred = lambda s:len(s.encode())
+        pred = lambda s:len(s.encode())
 
         s = ('foo bar baz qux ' * 100)[0:-1]
 
@@ -246,13 +243,7 @@ class FunctionsTestCase(SupyTestCase):
         self.assertTrue(max(map(pred, r)) <= 100)
         self.assertEqual(''.join(r), s)
 
-        if sys.version_info[0] < 3:
-            uchr = unichr
-            u = lambda s: s.decode('utf8')
-        else:
-            uchr = chr
-            u = lambda x: x
-        s = (u('').join([uchr(0x1f527), uchr(0x1f527), uchr(0x1f527), u(' ')]) * 100)\
+        s = (''.join([chr(0x1f527), chr(0x1f527), chr(0x1f527), ' ']) * 100)\
                 [0:-1]
 
         r = ircutils.wrap(s, 20)
@@ -283,7 +274,7 @@ class FunctionsTestCase(SupyTestCase):
         self.assertTrue(max(map(pred, r)) <= 100)
         self.assertEqual(''.join(r), s)
 
-        s = uchr(233)*500
+        s = chr(233)*500
         r = ircutils.wrap(s, 500)
         self.assertTrue(max(map(pred, r)) <= 500)
         r = ircutils.wrap(s, 139)

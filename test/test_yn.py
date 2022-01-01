@@ -33,11 +33,6 @@ import unittest
 from supybot import questions
 from supybot.test import SupyTestCase
 
-if sys.version_info >= (2, 7, 0):
-    skipif = unittest.skipIf
-else:
-    skipif = lambda x, y: lambda z:None
-
 try:
     from unittest import mock  # Python 3.3+
 except ImportError:
@@ -53,7 +48,7 @@ except ImportError:
 # better solution is usage of '==' operator ;)
 _yes_answer = ''.join(['', 'y'])
 
-@skipif(mock is None, 'python-mock is not installed.')
+@unittest.skipIf(mock is None, 'python-mock is not installed.')
 class TestYn(SupyTestCase):
     def test_default_yes_selected(self):
         questions.expect = mock.Mock(return_value=_yes_answer)

@@ -72,29 +72,6 @@ class SupyProcess(multiprocessing.Process):
         super(SupyProcess, self).__init__(*args, **kwargs)
         log.debug('Spawning process %q.', self.name)
 
-if sys.version_info[0:3] == (3, 3, 1) and hasattr(select, 'poll'):
-    # http://bugs.python.org/issue17707
-    import multiprocessing.connection
-    def _poll(fds, timeout):
-        if timeout is not None:
-            timeout = int(timeout * 1000)  # timeout is in milliseconds
-        fd_map = {}
-        pollster = select.poll()
-        for fd in fds:
-            pollster.register(fd, select.POLLIN)
-            if hasattr(fd, 'fileno'):
-                fd_map[fd.fileno()] = fd
-            else:
-                fd_map[fd] = fd
-        ls = []
-        for fd, event in pollster.poll(timeout):
-            if event & select.POLLNVAL:
-                raise ValueError('invalid file descriptor %i' % fd)
-            ls.append(fd_map[fd])
-        return ls
-    multiprocessing.connection._poll = _poll
-
-
 commandsProcessed = 0
 
 ircs = [] # A list of all the IRCs.

@@ -42,9 +42,6 @@ def error(s):
         sys.stderr.write(os.linesep)
     sys.exit(-1)
 
-if sys.version_info < (3, 4, 0):
-    error('This program requires Python 3.4 or later.')
-
 import supybot
 
 import re

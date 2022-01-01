@@ -30,13 +30,8 @@
 ###
 
 import sys
+from unittest import skip
 
-if sys.version_info >= (2, 7, 0):
-    from unittest import skip
-else:
-    # Workaround
-    def skip(string):
-        return lambda x:None
 from supybot.test import *
 
 import supybot.conf as conf

@@ -325,10 +325,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                 self.starttls()
 
             # Suppress this warning for loopback IPs.
-            if sys.version_info[0] < 3:
-                # Backported Python 2 ipaddress demands unicode instead of str
-                address = address.decode('utf-8')
-            elif (not network_config.requireStarttls()) and \
+            if (not network_config.requireStarttls()) and \
                     (not network_config.ssl()) and \
                     (not self.currentServer.force_tls_verification):
 

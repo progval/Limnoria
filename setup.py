@@ -77,8 +77,7 @@ try:
         proc = subprocess.Popen('git show HEAD --format=%ct', shell=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         date = proc.stdout.readline()
-        if sys.version_info[0] >= 3:
-            date = date.decode()
+        date = date.decode()
         date = int(date.strip())
     version = ".".join(str(i).zfill(2) for i in
             time.strptime(time.asctime(time.gmtime(date)))[:3])

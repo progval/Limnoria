@@ -39,9 +39,6 @@ import supybot.utils as utils
 from supybot.utils.structures import *
 import supybot.utils.minisix as minisix
 
-if sys.version_info[0] >= 0:
-    xrange = range
-
 class UtilsTest(SupyTestCase):
     def testReversed(self):
         L = list(range(10))
@@ -54,7 +51,7 @@ class UtilsTest(SupyTestCase):
 
 class SeqTest(SupyTestCase):
     def testRenumerate(self):
-        for i in xrange(5):
+        for i in range(5):
             L = list(enumerate(range(i)))
             LL = list(utils.seq.renumerate(range(i)))
             self.assertEqual(L, LL[::-1])
@@ -423,7 +420,7 @@ class IterTest(SupyTestCase):
         L = [1, 2]
         seenList = set()
         seenIterable = set()
-        for n in xrange(300):
+        for n in range(300):
             # 2**266 > 10**80, the number of atoms in the known universe.
             # (ignoring dark matter, but that likely doesn't exist in atoms
             #  anyway, so it shouldn't have a significant impact on that #)
@@ -748,13 +745,13 @@ class QueueTest(SupyTestCase):
         q = queue()
         n = 10
         self.assertRaises(IndexError, q.__getitem__, 0)
-        for i in xrange(n):
+        for i in range(n):
             q.enqueue(i)
-        for i in xrange(n):
+        for i in range(n):
             self.assertEqual(q[i], i)
-        for i in xrange(n, 0, -1):
+        for i in range(n, 0, -1):
             self.assertEqual(q[-i], n-i)
-        for i in xrange(len(q)):
+        for i in range(len(q)):
             self.assertEqual(list(q), list(q[:i]) + list(q[i:]))
         self.assertRaises(IndexError, q.__getitem__, -(n+1))
         self.assertRaises(IndexError, q.__getitem__, n)
@@ -763,7 +760,7 @@ class QueueTest(SupyTestCase):
     def testSetitem(self):
         q1 = queue()
         self.assertRaises(IndexError, q1.__setitem__, 0, 0)
-        for i in xrange(10):
+        for i in range(10):
             q1.enqueue(i)
         q2 = eval(repr(q1))
         for (i, elt) in enumerate(q2):
@@ -913,13 +910,13 @@ class SmallQueueTest(SupyTestCase):
         q = queue()
         n = 10
         self.assertRaises(IndexError, q.__getitem__, 0)
-        for i in xrange(n):
+        for i in range(n):
             q.enqueue(i)
-        for i in xrange(n):
+        for i in range(n):
             self.assertEqual(q[i], i)
-        for i in xrange(n, 0, -1):
+        for i in range(n, 0, -1):
             self.assertEqual(q[-i], n-i)
-        for i in xrange(len(q)):
+        for i in range(len(q)):
             self.assertEqual(list(q), list(q[:i]) + list(q[i:]))
         self.assertRaises(IndexError, q.__getitem__, -(n+1))
         self.assertRaises(IndexError, q.__getitem__, n)
@@ -928,7 +925,7 @@ class SmallQueueTest(SupyTestCase):
     def testSetitem(self):
         q1 = queue()
         self.assertRaises(IndexError, q1.__setitem__, 0, 0)
-        for i in xrange(10):
+        for i in range(10):
             q1.enqueue(i)
         q2 = eval(repr(q1))
         for (i, elt) in enumerate(q2):
@@ -1161,7 +1158,7 @@ class TestCacheDict(SupyTestCase):
     def testMaxNeverExceeded(self):
         max = 10
         d = CacheDict(10)
-        for i in xrange(max**2):
+        for i in range(max**2):
             d[i] = i
             self.assertTrue(len(d) <= max)
             self.assertTrue(i in d)

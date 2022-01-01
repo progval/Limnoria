@@ -310,10 +310,7 @@ def splitBytes(word, size):
     # I'm going to hell for this function
     for i in range(4): # a character takes at most 4 bytes in UTF-8
         try:
-            if sys.version_info[0] >= 3:
-                word[size-i:].decode()
-            else:
-                word[size-i:].encode('utf8')
+            word[size-i:].decode()
         except UnicodeDecodeError:
             continue
         else:

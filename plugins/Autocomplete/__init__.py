@@ -60,10 +60,7 @@ __url__ = ""
 from . import config
 from . import plugin
 
-if sys.version_info >= (3, 4):
-    from importlib import reload
-else:
-    from imp import reload
+from importlib import reload
 # In case we're being reloaded.
 reload(config)
 reload(plugin)

@@ -223,12 +223,8 @@ if __name__ == '__main__':
 
     suite = unittest.TestSuite(test.suites)
     if options.fail_fast:
-        if sys.version_info < (2, 7, 0):
-            print('--fail-fast is not supported on Python 2.6.')
-            sys.exit(1)
-        else:
-            runner = unittest.TextTestRunner(verbosity=2,
-                    failfast=True)
+        runner = unittest.TextTestRunner(verbosity=2,
+                failfast=True)
     else:
         runner = unittest.TextTestRunner(verbosity=2)
     print('Testing began at %s (pid %s)' % (time.ctime(), os.getpid()))

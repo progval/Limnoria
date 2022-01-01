@@ -48,11 +48,6 @@ try:
 except ImportError:
     _ = lambda x: x
 
-if sys.version_info[0] < 3:
-    raise ImportError('This plugin requires Python 3. For a legacy version of this plugin that still '
-                      'supports Python 2, consult the python2-legacy branch at '
-                      'https://github.com/jlu5/SupyPlugins/tree/python2-legacy')
-
 from .constants import SED_REGEX, TAG_SEEN, TAG_IS_REGEX
 
 # Replace newlines and friends with things like literal "\n" (backslash and "n")

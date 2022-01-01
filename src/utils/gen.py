@@ -194,8 +194,7 @@ def safeEval(s, namespace=None):
                 return True
             else:
                 return False
-        elif sys.version_info[0:2] >= (3, 4) and \
-                node.__class__ is ast.NameConstant:
+        elif node.__class__ is ast.NameConstant:
             return True
         elif sys.version_info[0:2] >= (3, 8) and \
                 node.__class__ is ast.Constant:
