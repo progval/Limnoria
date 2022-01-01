@@ -106,20 +106,10 @@ if version:
     fd.write('    pass\n')
     fd.close()
 
-if sys.version_info < (3, 4, 0):
+if sys.version_info < (3, 6, 0):
     sys.stderr.write("Limnoria requires Python 3.6 or newer.")
     sys.stderr.write(os.linesep)
     sys.exit(-1)
-
-if sys.version_info < (3, 6, 0) \
-        and os.environ.get('LIMNORIA_WARN_OLD_PYTHON') != '0':
-    sys.stderr.write('====================================================\n')
-    sys.stderr.write('Limnoria support for Python versions older than 3.6\n')
-    sys.stderr.write('is deprecated and may be removed in the near future.\n')
-    sys.stderr.write('You should upgrade ASAP.\n')
-    sys.stderr.write('Install will continue in 60s.\n')
-    sys.stderr.write('====================================================\n')
-    time.sleep(60)
 
 plugins = [s for s in os.listdir('plugins') if
            os.path.exists(os.path.join('plugins', s, 'plugin.py'))]
