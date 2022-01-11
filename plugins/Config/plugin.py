@@ -499,7 +499,7 @@ class Config(callbacks.Plugin):
                 netgroup = group.get(':' + network.network)
                 changroup = netgroup.get(channel)
                 checkCanSetValue(irc, msg, changroup)
-                changroup._setValue(netgroup(), inherited=True)
+                changroup._setValue(netgroup.value, inherited=True)
 
             # reset group.#channel
             changroup = group.get(channel)
