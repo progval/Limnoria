@@ -381,13 +381,21 @@ class Value(Group):
         e.value = self
         raise e
 
-    def getSpecific(self, network=None, channel=None, check=True):
+    def getSpecific(self, network=None, channel=None, check=True,
+                    fallback_to_channel=True):
         """Gets the network-specific and/or channel-specific value of this
         Value.
-        If `check=True` (the default), this will raise an error if `network`
-        (resp. `channel`) is provided but this Value is not network-specific
-        (resp. channel-specific). If `check=False`, then `network` and/or
-        `channel` may be silently ignored.
+        If ``check=True`` (the default), this will raise an error if ``network``
+        (resp. ``channel``) is provided but this Value is not network-specific
+        (resp. channel-specific). If ``check=False``, then ``network`` and/or
+        ``channel`` may be silently ignored.
+
+        If ``fallback_to_channel=True`` (the default) and the network-specific
+        + channel-specific value is not set, but the channel-specific value is
+        set, it will return the latter.
+        This is useful to upgrade from existing bot configuration, that did not
+        support network-specific values; but it may be undesirable when setting
+        new values.
         """
         if network and not self._networkValue:
             if check:
@@ -452,6 +460,7 @@ class Value(Group):
             # 3. it's inherited from the chan specific value (which is not a
             #    actually a parent in the registry tree, but we need this to
             #    load configuration from old bots).
+            # 4. it was never set at all
             #
             # The choice between 2 and 3 is done by checking which of the
             # net-specific and chan-specific values was set explicitly by
@@ -464,9 +473,12 @@ class Value(Group):
             if network_value._wasSet or network_channel_value._wasSet:
                 # cases 1 and 2
                 return network_channel_value
-            else:
+            elif channel_value._wasSet and fallback_to_channel:
                 # case 3
                 return channel_value
+            else:
+                # case 4
+                return network_channel_value
         elif network:
             return self.get(':' + network)
         elif channel:

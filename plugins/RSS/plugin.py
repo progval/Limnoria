@@ -575,7 +575,8 @@ class RSS(callbacks.Plugin):
             S = announce.getSpecific(channel=channel, network=irc.network)()
             for name in feeds:
                 S.add(name)
-            announce.getSpecific(channel=channel, network=irc.network).setValue(S)
+            announce.getSpecific(channel=channel, network=irc.network,
+                                 fallback_to_channel=False).setValue(S)
             irc.replySuccess()
             for name in feeds:
                 feed = plugin.get_feed(name)
@@ -606,7 +607,7 @@ class RSS(callbacks.Plugin):
 
             remove_from_var(announce.get(channel))
             remove_from_var(announce.getSpecific(
-                channel=channel, network=irc.network))
+                channel=channel, network=irc.network, fallback_to_channel=False))
 
             irc.replySuccess()
         remove = wrap(remove, [('checkChannelCapability', 'op'),
