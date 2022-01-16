@@ -5,4 +5,4 @@ build-backend = "setuptools.build_meta"
 [tool.black]
 line-length = 79
 
-include = 'plugins/(Autocomplete|Fediverse|Poll)/.*\.pyi?$'
+include = 'plugins/(Autocomplete|Fediverse|Geography|Poll)/.*\.pyi?$'
