@@ -70,7 +70,9 @@ class GeographyTimezoneTestCase(PluginTestCase):
         tz = pytz.timezone("Europe/Paris")
 
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
-            self.assertResponse("timezone Foo Bar", "Europe/Paris")
+            self.assertRegexp(
+                "timezone Foo Bar", r"Europe/Paris \(currently UTC\+[12]\)"
+            )
 
     @skipIf(not zoneinfo, "Python is older than 3.9")
     @mock
@@ -78,7 +80,9 @@ class GeographyTimezoneTestCase(PluginTestCase):
         tz = zoneinfo.ZoneInfo("Europe/Paris")
 
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
-            self.assertResponse("timezone Foo Bar", "Europe/Paris")
+            self.assertRegexp(
+                "timezone Foo Bar", r"Europe/Paris \(currently UTC\+[12]\)"
+            )
 
     @skipIf(not zoneinfo, "Python is older than 3.9")
     @mock
@@ -95,7 +99,9 @@ class GeographyTimezoneTestCase(PluginTestCase):
 
     @skipIf(not network, "Network test")
     def testTimezoneIntegration(self):
-        self.assertResponse("timezone Metz, France", "Europe/Paris")
+        self.assertRegexp(
+            "timezone Metz, France", r"Europe/Paris \(currently UTC\+[12]\)"
+        )
         self.assertResponse("timezone Saint-Denis, La Réunion", "UTC+04:00")
 
 
@@ -173,7 +179,7 @@ class GeographyWikidataTestCase(SupyTestCase):
     @skipIf(not network, "Network test")
     def testParentAndIgnoreSelf(self):
         # The queried object has a TZ property, but it's useless to us;
-        # however it is part of an object that has a useful one."""
+        # however it is part of an object that has a useful one.
         self.assertEqual(
             # New York City, NY
             wikidata.timezone_from_uri("http://www.wikidata.org/entity/Q60"),

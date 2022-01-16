@@ -29,6 +29,7 @@
 ###
 
 import datetime
+import re
 
 from supybot import conf, utils, plugins, ircutils, callbacks
 from supybot.commands import *
@@ -133,15 +134,22 @@ class Geography(callbacks.Plugin):
             if timezone is None:
                 continue
 
+            offset = str(datetime.datetime.now(tz=timezone).utcoffset())
+            if not offset.startswith("-"):
+                offset = "+" + offset
+
+            # hide seconds and minutes if they are zero
+            offset = re.sub("(:00)+$", "", offset)
+
             # Extract a human-friendly name, depending on the type of
             # the timezone object:
             if hasattr(timezone, "key"):
                 # instance of zoneinfo.ZoneInfo
-                irc.reply(timezone.key)
+                irc.reply(format("%s (currently UTC%s)", timezone.key, offset))
                 return
             elif hasattr(timezone, "zone"):
                 # instance of pytz.timezone
-                irc.reply(timezone.zone)
+                irc.reply(format("%s (currently UTC%s)", timezone.zone, offset))
                 return
             else:
                 # probably datetime.timezone built from a constant offset
