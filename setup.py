@@ -158,7 +158,7 @@ setup(
     provides=['supybot'],
     version=version,
     author='Valentin Lorentz',
-    url='https://github.com/progval/Limnoria',
+    url='https://limnoria.net/',
     author_email='progval+limnoria@progval.net',
     download_url='https://pypi.python.org/pypi/limnoria',
     description=(
