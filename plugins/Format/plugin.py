@@ -109,7 +109,7 @@ class Format(callbacks.Plugin):
         with <substring to replace it with> in <text>.
         """
         irc.reply(text.replace(bad, good))
-    replace = wrap(replace, ['something', 'something', 'text'])
+    replace = wrap(replace, ['anything', 'anything', 'text'])
 
     def upper(self, irc, msg, args, text):
         """<text>
