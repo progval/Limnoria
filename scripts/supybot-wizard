@@ -499,7 +499,7 @@ def main():
             if not password:
                 if yn('Missing password. Do you want to try again?'):
                     continue
-            network.sasl.username.set(password)
+            network.sasl.username.set(username)
             network.sasl.password.set(password)
             break
 
