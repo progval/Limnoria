@@ -9,3 +9,6 @@ for plugin_path in pathlib.Path("plugins/").iterdir():
     if plugin_name[0] == plugin_name[0].lower():
         continue
     subprocess.run(["pygettext3", "-D", "config.py", "plugin.py"], cwd=plugin_path)
+
+core_files = pathlib.Path("src/").glob("**/*.py")
+subprocess.run(["pygettext3", "-p", "locales/", *core_files])
