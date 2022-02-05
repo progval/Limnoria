@@ -187,6 +187,16 @@ configure = config.configure
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 '''.lstrip()
 
+setupTemplate = '''
+%s
+
+from supybot.setup import plugin_setup
+
+plugin_setup(
+    %r,
+)
+'''.lstrip()
+
 testTemplate = '''
 %s
 
@@ -289,6 +299,7 @@ def main():
     writeFile('config.py', configTemplate % (copyright, name, name, name, name,
                                              name))
     writeFile('__init__.py', __init__Template % (copyright, name, options.desc))
+    writeFile('setup.py', setupTemplate % (copyright, name))
     writeFile('test.py', testTemplate % (copyright, name, name))
     writeFile('README.md', readmeTemplate % (options.desc,))
 
