@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Unix plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 13:10+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: config.py:47
+#: config.py:48
 msgid ""
 "The \"progstats\" command can reveal potentially sensitive\n"
 "              information about your machine. Here's an example of its "
@@ -31,13 +31,17 @@ msgstr ""
 "\n"
 "              %s\n"
 
-#: config.py:51
+#: config.py:52
 msgid "Would you like to disable this command for non-owner users?"
 msgstr ""
 "Haluaisitko poistaa tämän komennon käytöstä muille käyttäjille, kuin "
 "omistajille?"
 
-#: config.py:59
+#: config.py:57
+msgid "Value must be a string not starting with a dash (-), not %r."
+msgstr ""
+
+#: config.py:74
 msgid ""
 "Determines\n"
 "    what command will be called for the fortune command."
@@ -45,7 +49,7 @@ msgstr ""
 "Määrittää minkä komennon 'fortune'\n"
 "    komento kutsuu."
 
-#: config.py:62
+#: config.py:77
 msgid ""
 "Determines whether only short fortunes will be\n"
 "    used if possible.  This sends the -s option to the fortune program."
@@ -53,7 +57,7 @@ msgstr ""
 "Määrittää käytetäänkö vain lyhyitä ennustuksia, jos se on mahdollista.\n"
 "    Tämä lähettää fortune ohjelmalle -s asetuksen."
 
-#: config.py:65
+#: config.py:80
 msgid ""
 "Determines whether fortune will give equal\n"
 "    weight to the different fortune databases.  If false, then larger\n"
@@ -67,7 +71,7 @@ msgstr ""
 "asetuksen\n"
 "    ennustus ohjelmalle."
 
-#: config.py:70
+#: config.py:85
 msgid ""
 "Determines whether fortune will retrieve\n"
 "    offensive fortunes along with the normal fortunes.  This sends the -a\n"
@@ -77,7 +81,7 @@ msgstr ""
 "    ennustusten lisäksi.  Tämä lähettää -a\n"
 "    asetuksen ennustus ohjelmalle."
 
-#: config.py:74
+#: config.py:89
 msgid ""
 "Determines what specific file\n"
 "    (if any) will be used with the fortune command; if none is given, the\n"
@@ -91,7 +95,7 @@ msgstr ""
 "ennustustiedoston täytyy olla\n"
 "    sijoitettuna muiden järjestelmän ennustustiedostojen kanssa."
 
-#: config.py:82
+#: config.py:97
 msgid ""
 "Determines\n"
 "    what command will be called for the spell command."
@@ -99,7 +103,7 @@ msgstr ""
 "Määrittää minkä komennon 'spell'\n"
 "    komento kutsuu."
 
-#: config.py:85
+#: config.py:100
 msgid ""
 "Determines what aspell dictionary will be used\n"
 "    for spell checking."
@@ -107,7 +111,7 @@ msgstr ""
 "Määrittää mitä aspell sanakirjaa käytetään\n"
 "    oikeinkirjoituksen tarkistukseen."
 
-#: config.py:90
+#: config.py:105
 msgid ""
 "Determines what\n"
 "    command will be called for the wtf command."
@@ -115,11 +119,16 @@ msgstr ""
 "Määrittää minkä komennon\n"
 "    'wtf' komento kutsuu."
 
-#: plugin.py:74
+#: plugin.py:57
+msgid ""
+"This command is not available, because supybot.commands.allowShell is False."
+msgstr ""
+
+#: plugin.py:82
 msgid "Provides Utilities for Unix-like systems."
 msgstr "Tarjoaa työkaluja Unixin kaltaisille järjestelmille."
 
-#: plugin.py:78
+#: plugin.py:86
 msgid ""
 "<error number or code>\n"
 "\n"
@@ -131,19 +140,19 @@ msgstr ""
 "        Palauttaa virhenumeron , tai virhekoodin virhenumeron.\n"
 "        "
 
-#: plugin.py:90
+#: plugin.py:98
 msgid "I can't find the errno number for that code."
 msgstr "En voi löytää virhenumeroa tuolle koodille."
 
-#: plugin.py:93
+#: plugin.py:101
 msgid "(unknown)"
 msgstr "(tuntematon)"
 
-#: plugin.py:94
+#: plugin.py:102
 msgid "%s (#%i): %s"
 msgstr "%s (#%i): %s"
 
-#: plugin.py:99
+#: plugin.py:107
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -156,7 +165,7 @@ msgstr ""
 "prosessista.\n"
 "        "
 
-#: plugin.py:107
+#: plugin.py:115
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -168,7 +177,7 @@ msgstr ""
 "        Palauttaa tämän Supybot prosessin nykyisen pidin.\n"
 "        "
 
-#: plugin.py:117
+#: plugin.py:125
 msgid ""
 "<password> [<salt>]\n"
 "\n"
@@ -189,7 +198,7 @@ msgstr ""
 "        normaalin DES pohjaisen kryptin.\n"
 "        "
 
-#: plugin.py:136
+#: plugin.py:144
 msgid ""
 "<word>\n"
 "\n"
@@ -208,7 +217,7 @@ msgstr ""
 "        <sanoja>.\n"
 "        "
 
-#: plugin.py:145
+#: plugin.py:153
 msgid ""
 "The spell checking command is not configured.  If one is installed, "
 "reconfigure supybot.plugins.Unix.spell.command appropriately."
@@ -216,35 +225,36 @@ msgstr ""
 "Oikeinkirjoituksen tarkistusohjelma ei ole säädetty.  Jos sellainen on "
 "asennttu, säädä supybot.plugins.Unix.spell.command sopivaksi."
 
-#: plugin.py:151
+#: plugin.py:159
 msgid "<word> must begin with an alphabet character."
 msgstr "<Sanan> täytyy alkaa aakkosellisella merkillä."
 
-#: plugin.py:173
+#: plugin.py:181
 msgid "No results found."
 msgstr "Tuloksia ei löytynyt."
 
-#: plugin.py:184
+#: plugin.py:192
 msgid "%q may be spelled correctly."
 msgstr "%q saattaa olla kirjoitettu oikein."
 
-#: plugin.py:186
+#: plugin.py:194
 msgid "I could not find an alternate spelling for %q"
 msgstr "En löytänyt vaihtoehtoista kirjoitustapaa sanalle %q"
 
-#: plugin.py:190
+#: plugin.py:198
 msgid "Possible spellings for %q: %L."
 msgstr "Mahdolliset kirjoitustavat sanalle %q ovat: %L."
 
-#: plugin.py:193
+#: plugin.py:201
 msgid "Something unexpected was seen in the [ai]spell output."
 msgstr "Jotakin odottamatonta nähtiin [ai]spellin ulostulossa."
 
-#: plugin.py:199
+#: plugin.py:207
+#, fuzzy
 msgid ""
 "takes no arguments\n"
 "\n"
-"        Returns a fortune from the *nix fortune program.\n"
+"        Returns a fortune from the Unix fortune program.\n"
 "        "
 msgstr ""
 "ei ota parametrejä\n"
@@ -252,11 +262,11 @@ msgstr ""
 "        Palauttaa ennustuksen *nix ennustusohjelmalta.\n"
 "        "
 
-#: plugin.py:221
+#: plugin.py:230
 msgid "It seems the configured fortune command was not available."
 msgstr "Näyttää siltä, että määritetty ennustusohjelma ei ollut saatavilla."
 
-#: plugin.py:234
+#: plugin.py:243
 msgid ""
 "The fortune command is not configured. If fortune is installed on this "
 "system, reconfigure the supybot.plugins.Unix.fortune.command configuration "
@@ -266,12 +276,13 @@ msgstr ""
 "järjestelmään, määritä uudelleen asetusarvo supybot.plugins.Unix.fortune."
 "command oikein."
 
-#: plugin.py:241
+#: plugin.py:250
+#, fuzzy
 msgid ""
 "[is] <something>\n"
 "\n"
-"        Returns wtf <something> is.  'wtf' is a *nix command that first\n"
-"        appeared in NetBSD 1.5.  In most *nices, it's available in some "
+"        Returns wtf <something> is.  'wtf' is a Unix command that first\n"
+"        appeared in NetBSD 1.5.  In most Unices, it's available in some "
 "sort\n"
 "        of 'bsdgames' package.\n"
 "        "
@@ -285,11 +296,11 @@ msgstr ""
 "        'bsdgames' paketissa.\n"
 "        "
 
-#: plugin.py:257
+#: plugin.py:266
 msgid "It seems the configured wtf command was not available."
 msgstr "Vaikuttaa siltä, ettei määritetty wtf komento ollut saatavilla."
 
-#: plugin.py:266
+#: plugin.py:275
 msgid ""
 "The wtf command is not configured.  If it is installed on this system, "
 "reconfigure the supybot.plugins.Unix.wtf.command configuration variable "
@@ -298,7 +309,7 @@ msgstr ""
 "Wtf komento ei ole määritetty.  Jos se on asennettu tähän järjestelmään, "
 "määritä supybot.plugins.Unix.wtf.command asetusarvo oikein."
 
-#: plugin.py:332
+#: plugin.py:346
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -309,7 +320,7 @@ msgstr ""
 "        Palauttaa järjestelmän, jolla botti on ylläoloajan.\n"
 "        "
 
-#: plugin.py:361
+#: plugin.py:375
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -322,7 +333,7 @@ msgstr ""
 "on.\n"
 "        "
 
-#: plugin.py:390
+#: plugin.py:404
 msgid ""
 "<command to call with any arguments>\n"
 "        Calls any command available on the system, and returns its output.\n"
@@ -344,7 +355,7 @@ msgstr ""
 "laittaa koneesi polvilleen. \n"
 "        "
 
-#: plugin.py:420
+#: plugin.py:435
 msgid ""
 "<command to call with any arguments>\n"
 "        Calls any command available on the system using the shell\n"

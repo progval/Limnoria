@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-08-10 02:13+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: config.py:47
+#: config.py:48
 msgid ""
 "Determines whether the bot will check\n"
 "    occasionally if its preferred nick is in use via the ISON command."
@@ -18,15 +18,14 @@ msgstr ""
 "Determina se di tanto in tanto il bot controllerà tramite\n"
 "    il comando ISON se il suo nick sia in uso."
 
-#: config.py:50
+#: config.py:51
 msgid ""
 "Determines how often (in seconds) the bot\n"
 "    will check whether its nick ISON."
 msgstr ""
 "Determina quanto spesso (in secondi) il bot controllerà il suo nick con ISON."
 
-#: plugin.py:40
-#, docstring
+#: plugin.py:41
 msgid ""
 "This plugin constantly tries to take whatever nick is configured as\n"
 "    supybot.nick.  Just make sure that's set appropriately, and thus plugin\n"
@@ -36,8 +35,14 @@ msgstr ""
 "    come supybot.nick. Assicurati che questa sia configurata correttamente\n"
 "    e il plugin farà il resto."
 
-#: plugin.py:89
-#, docstring
+#: plugin.py:106
 msgid "This is returned by the ISON command."
 msgstr "Questo è restituito dal comando ISON."
 
+#: plugin.py:113
+msgid "This is sent by the MONITOR when a nick goes offline."
+msgstr ""
+
+#: plugin.py:123
+msgid "Nick/channel is temporarily unavailable"
+msgstr ""

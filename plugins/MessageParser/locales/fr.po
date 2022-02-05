@@ -1,19 +1,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-01-21 16:39+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
-"Language: fr_FR\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: ASCII\n"
 "X-Generator: Poedit 1.5.4\n"
-"Language: fr\n"
 
-#: config.py:57
+#: config.py:58
 msgid ""
 "Determines whether the\n"
 "    message parser is enabled.  If enabled, will trigger on regexps\n"
@@ -23,13 +22,13 @@ msgstr ""
 "expressions régulières qui sont dans la base de données d'expressions "
 "régulières."
 
-#: config.py:61
+#: config.py:62
 msgid ""
 "Determines whether the message parser\n"
 "    is enabled for NOTICE messages too."
 msgstr "Détermine si le parseur de messages est aussi activé pour les NOTICEs."
 
-#: config.py:64
+#: config.py:65
 msgid ""
 "Determines whether we keep updating the usage\n"
 "    count for each regexp, for popularity ranking."
@@ -37,7 +36,7 @@ msgstr ""
 "Détermine si on met à jour le compteur d'utilisation de chaque expression "
 "régulière, pour un classement de popularité"
 
-#: config.py:67
+#: config.py:68
 msgid ""
 "Determines the number of regexps returned\n"
 "    by the triggerrank command."
@@ -45,7 +44,7 @@ msgstr ""
 "Détermine le nombre d'expressions régulières retournées par la commande "
 "triggerrank"
 
-#: config.py:70
+#: config.py:71
 msgid ""
 "Determines the capability required (if any) to\n"
 "    vacuum the database."
@@ -53,7 +52,7 @@ msgstr ""
 "Détermine la capacité requise (s'il y en a une) pour faire un vacuum de la "
 "base de données."
 
-#: config.py:73
+#: config.py:74
 msgid ""
 "Determines the\n"
 "    capabilities required (if any) to manage the regexp database,\n"
@@ -68,7 +67,7 @@ msgstr ""
 "par canal. Notez que l'absence de toute anti-capacité explicite signifit que "
 "l'utilisateur peut le faire."
 
-#: config.py:80
+#: config.py:81
 msgid ""
 "Determines the separator used between regexps when\n"
 "    shown by the list command."
@@ -76,13 +75,13 @@ msgstr ""
 "Détermine le séparateur utilisé entre les expressions régulières affichées "
 "par la commande list."
 
-#: config.py:83
+#: config.py:84
 msgid ""
 "Determines the maximum number of triggers in\n"
 "    one message. Set this to 0 to allow an infinite number of triggers."
 msgstr "."
 
-#: plugin.py:72
+#: plugin.py:75
 msgid ""
 "This plugin can set regexp triggers to activate the bot.\n"
 "    Use 'add' command to add regexp trigger, 'remove' to remove."
@@ -90,25 +89,25 @@ msgstr ""
 "Ce plugin peut définir les triggers pour activer le bot. Utilisez la "
 "commande 'add' pour ajouter un trigger et 'remove' pour en retirer un."
 
-#: plugin.py:80
+#: plugin.py:83
 msgid "Create the database and connect to it."
 msgstr "."
 
-#: plugin.py:103
+#: plugin.py:108
 msgid "Use this to get a database for a specific channel."
 msgstr "."
 
-#: plugin.py:127
+#: plugin.py:132
 msgid "Run a command from message, as if command was sent over IRC."
 msgstr "."
 
-#: plugin.py:135
+#: plugin.py:146
 msgid ""
 "Check if the user has any of the required capabilities to manage\n"
 "        the regexp database."
 msgstr "."
 
-#: plugin.py:195
+#: plugin.py:209
 msgid ""
 "[<channel>|global] <regexp> <action>\n"
 "\n"
@@ -125,15 +124,15 @@ msgstr ""
 "régulière>.<canal> n'est nécessaire que si le message n'est pas envoyé sur "
 "le canal lui-même."
 
-#: plugin.py:217
+#: plugin.py:231
 msgid "Invalid python regexp: %s"
 msgstr "Expression régulière Python invalide : %s"
 
-#: plugin.py:229
+#: plugin.py:243
 msgid "That trigger is locked."
 msgstr "Ce trigger est bloqué."
 
-#: plugin.py:235
+#: plugin.py:249
 msgid ""
 "[<channel>|global] [--id] <regexp>]\n"
 "\n"
@@ -149,15 +148,15 @@ msgstr ""
 "des déclencheurs. Si l'option --id est spécifiée, l'id de l'<expression "
 "régulière> sera récupéré, et non le contenu."
 
-#: plugin.py:257 plugin.py:287 plugin.py:310 plugin.py:338 plugin.py:368
+#: plugin.py:271 plugin.py:301 plugin.py:324 plugin.py:352 plugin.py:382
 msgid "There is no such regexp trigger."
 msgstr "Cette expression régulière n'existe pas."
 
-#: plugin.py:261
+#: plugin.py:275
 msgid "This regexp trigger is locked."
 msgstr "Cette expression régulière est verrouillée"
 
-#: plugin.py:273
+#: plugin.py:287
 msgid ""
 "[<channel>|global] <regexp>\n"
 "\n"
@@ -173,7 +172,7 @@ msgstr ""
 "supprimer ou la modifier. <canal> n'est nécessaire que si le message n'est "
 "pas envoyé sur le canal lui-même."
 
-#: plugin.py:296
+#: plugin.py:310
 msgid ""
 "[<channel>|global] <regexp>\n"
 "\n"
@@ -189,7 +188,7 @@ msgstr ""
 "la supprimer ou la modifier. <canal> n'est nécessaire que si le message "
 "n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:319
+#: plugin.py:333
 msgid ""
 "[<channel>|global] [--id] <regexp>\n"
 "\n"
@@ -206,7 +205,7 @@ msgstr ""
 "déclencheurs. Si l'option --id est spécifiée, l'id de l'<expression "
 "régulière> sera récupéré, et non le contenu."
 
-#: plugin.py:348
+#: plugin.py:362
 msgid ""
 "[<channel>|global] [--id] <regexp>\n"
 "\n"
@@ -223,7 +222,7 @@ msgstr ""
 "données des déclencheurs. Si l'option --id est spécifiée, l'id de "
 "l'<expression régulière> sera récupéré, et non le contenu."
 
-#: plugin.py:371
+#: plugin.py:385
 msgid ""
 "The regexp id is %d, regexp is \"%s\", and action is \"%s\". It was added by "
 "user %s on %s, has been triggered %d times, and is %s."
@@ -232,15 +231,15 @@ msgstr ""
 "l'action est \"%s\". Elle a été ajoutée par l'utilisateur %s le %s, et a été "
 "utilisée %d fois, et est %s"
 
-#: plugin.py:380
+#: plugin.py:394
 msgid "locked"
 msgstr "verouillée"
 
-#: plugin.py:380
+#: plugin.py:394
 msgid "not locked"
 msgstr "non verrouillée"
 
-#: plugin.py:387
+#: plugin.py:401
 msgid ""
 "[<channel>|global]\n"
 "\n"
@@ -255,11 +254,11 @@ msgstr ""
 "Liste les expressions régulières présentes dans la base de données. <canal> "
 "n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:400 plugin.py:426
+#: plugin.py:414 plugin.py:440
 msgid "There are no regexp triggers in the database."
 msgstr "Il n'y a pas d'expression régulière dans ma base de données."
 
-#: plugin.py:410
+#: plugin.py:424
 msgid ""
 "[<channel>|global]\n"
 "\n"
@@ -276,7 +275,7 @@ msgstr ""
 "plugins.MessageParser.rankListLength. <canal> n'est nécessaire que si le "
 "message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:434
+#: plugin.py:448
 msgid ""
 "[<channel>|global]\n"
 "\n"

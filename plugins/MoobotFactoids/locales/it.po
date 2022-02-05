@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-07-17 16:39+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,135 +10,159 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
-#: config.py:46
+#: config.py:47
 msgid ""
 "Determines whether\n"
-"    or not the factoid value will be shown when a listkeys search returns only\n"
+"    or not the factoid value will be shown when a listkeys search returns "
+"only\n"
 "    one factoid key."
 msgstr ""
-"Determina se il valore del factoid verrà mostrato o meno quando una ricerca restituisce una sola chiave."
+"Determina se il valore del factoid verrà mostrato o meno quando una ricerca "
+"restituisce una sola chiave."
 
-#: config.py:50
+#: config.py:51
 msgid ""
 "Determines how many items are shown\n"
 "    when the 'most' command is called."
 msgstr "Determina quanti elementi mostrare con il comando \"most\"."
 
-#: plugin.py:289
-#, docstring
+#: plugin.py:288
 msgid ""
-"Add the help for \"help MoobotFactoids\" here (assuming you don't implement a MoobotFactoids\n"
-"    command).  This should describe *how* to use this plugin."
+"\n"
+"    An alternative to the Factoids plugin, this plugin keeps factoids in\n"
+"    your bot.\n"
+"\n"
+"    To add factoid say\n"
+"    ``@something is something`` And when you call ``@something`` the bot "
+"says\n"
+"    ``something is something``.\n"
+"\n"
+"    If you want factoid to be in different format say (for example):\n"
+"    ``@Hi is <reply> Hello`` And when you call ``@hi`` the bot says ``Hello."
+"``\n"
+"\n"
+"    If you want the bot to use /mes with Factoids, that is possible too.\n"
+"    ``@test is <action> tests.`` and everytime when someone calls for\n"
+"    ``test`` the bot answers ``* bot tests.``\n"
+"    "
 msgstr ""
 
-#: plugin.py:346
+#: plugin.py:358
 msgid "%s is %s"
 msgstr "%s è %s"
 
-#: plugin.py:365
+#: plugin.py:377
 msgid "Factoid %q is locked."
 msgstr "Il factoid %q è bloccato."
 
-#: plugin.py:372
+#: plugin.py:384
 msgid "Factoid %q not found."
 msgstr "Factoid %q non trovato."
 
-#: plugin.py:382
+#: plugin.py:394
 msgid "Missing an 'is' or '_is_'."
 msgstr "Manca un 'is' o un '_is_'."
 
-#: plugin.py:398
+#: plugin.py:410
 msgid "Factoid %q already exists."
 msgstr "Il factoid %q esiste già."
 
-#: plugin.py:432
+#: plugin.py:444
 msgid "%s, or %s"
 msgstr "%s, o %s"
 
-#: plugin.py:453
-#, docstring
+#: plugin.py:465
 msgid ""
 "[<channel>] <factoid key>\n"
 "\n"
-"        Returns the literal factoid for the given factoid key.  No parsing of\n"
-"        the factoid value is done as it is with normal retrieval.  <channel>\n"
+"        Returns the literal factoid for the given factoid key.  No parsing "
+"of\n"
+"        the factoid value is done as it is with normal retrieval.  "
+"<channel>\n"
 "        is only necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canale>] <chiave>\n"
 "\n"
-"        Restituisce l'esatto factoid per la chiave specificata; non viene effettuata nessuna analisi del\n"
-"        suo valore. <canale> è necessario solo se se il messaggio non viene inviato nel canale stesso.\n"
+"        Restituisce l'esatto factoid per la chiave specificata; non viene "
+"effettuata nessuna analisi del\n"
+"        suo valore. <canale> è necessario solo se se il messaggio non viene "
+"inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:466
-#, docstring
+#: plugin.py:478
 msgid ""
 "[<channel>] <factoid key>\n"
 "\n"
 "        Returns the various bits of info on the factoid for the given key.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canale>] <chiave>\n"
 "\n"
-"        Riporta varie informazioni sul factoid per la chiave specificata. <canale>\n"
-"        è necessario solo se se il messaggio non viene inviato nel canale stesso.\n"
+"        Riporta varie informazioni sul factoid per la chiave specificata. "
+"<canale>\n"
+"        è necessario solo se se il messaggio non viene inviato nel canale "
+"stesso.\n"
 "        "
 
-#: plugin.py:477 plugin.py:517
+#: plugin.py:489 plugin.py:529
 msgid "No such factoid: %q"
 msgstr "Nessun factoid: %q"
 
-#: plugin.py:486
+#: plugin.py:498
 msgid "Created by %s on %s."
 msgstr "Creato da %s il %s."
 
-#: plugin.py:492
+#: plugin.py:504
 msgid " Last modified by %s on %s."
 msgstr " Ultima modifica da %s il %s."
 
-#: plugin.py:500
+#: plugin.py:512
 msgid " Last requested by %s on %s, requested %n."
 msgstr " Ultima richiesta da %s il %s, richiesto %n."
 
-#: plugin.py:507
+#: plugin.py:519
 msgid " Locked by %s on %s."
 msgstr " Bloccato da %s il %s."
 
-#: plugin.py:522
+#: plugin.py:534
 msgid "Factoid %q is already locked."
 msgstr "Il factoid %q è già bloccato."
 
-#: plugin.py:525
+#: plugin.py:537
 msgid "Factoid %q is not locked."
 msgstr "Il factoid %q non è bloccato."
 
-#: plugin.py:535
-msgid "Cannot %s someone else's factoid unless you are an admin."
-msgstr "Impossibile %s il factoid di qualcun altro a meno che non sei un amministratore."
-
 #: plugin.py:547
-#, docstring
+msgid "Cannot %s someone else's factoid unless you are an admin."
+msgstr ""
+"Impossibile %s il factoid di qualcun altro a meno che non sei un "
+"amministratore."
+
+#: plugin.py:559
 msgid ""
 "[<channel>] <factoid key>\n"
 "\n"
-"        Locks the factoid with the given factoid key.  Requires that the user\n"
-"        be registered and have created the factoid originally.  <channel> is\n"
+"        Locks the factoid with the given factoid key.  Requires that the "
+"user\n"
+"        be registered and have created the factoid originally.  <channel> "
+"is\n"
 "        only necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canale>] <chiave>\n"
 "\n"
-"        Blocca il factoid con la chiave specificata. Necessita che l'utente sia\n"
-"        registrato e abbia creato il factoid. <canale> è necessario solo se se il\n"
+"        Blocca il factoid con la chiave specificata. Necessita che l'utente "
+"sia\n"
+"        registrato e abbia creato il factoid. <canale> è necessario solo se "
+"se il\n"
 "        messaggio non viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:558
-#, docstring
+#: plugin.py:570
 msgid ""
 "[<channel>] <factoid key>\n"
 "\n"
@@ -149,180 +173,202 @@ msgid ""
 msgstr ""
 "[<canale>] <chiave>\n"
 "\n"
-"        Sblocca il factoid con la chiave specificata. Necessita che l'utente sia\n"
-"        registrato e abbia bloccato il factoid. <canale> è necessario solo se se\n"
+"        Sblocca il factoid con la chiave specificata. Necessita che l'utente "
+"sia\n"
+"        registrato e abbia bloccato il factoid. <canale> è necessario solo "
+"se se\n"
 "        il messaggio non viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:569
-#, docstring
+#: plugin.py:581
 msgid ""
 "[<channel>] {popular|authored|recent}\n"
 "\n"
-"        Lists the most {popular|authored|recent} factoids.  \"popular\" lists the\n"
-"        most frequently requested factoids.  \"authored\" lists the author with\n"
-"        the most factoids.  \"recent\" lists the most recently created factoids.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        Lists the most {popular|authored|recent} factoids.  \"popular\" "
+"lists the\n"
+"        most frequently requested factoids.  \"authored\" lists the author "
+"with\n"
+"        the most factoids.  \"recent\" lists the most recently created "
+"factoids.\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canale>] {popular|authored|recent}\n"
 "\n"
-"        Elenca i factoid secondo un certo criterio. \"popular\" corrisponde ai più richiesti;\n"
-"        \"authored\" mostra l'autore che ha creato più factoid; \"recent\" elenca quelli creati\n"
-"        più di recente. <canale> è necessario solo se se il messaggio non viene inviato nel canale stesso.\n"
+"        Elenca i factoid secondo un certo criterio. \"popular\" corrisponde "
+"ai più richiesti;\n"
+"        \"authored\" mostra l'autore che ha creato più factoid; \"recent\" "
+"elenca quelli creati\n"
+"        più di recente. <canale> è necessario solo se se il messaggio non "
+"viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:591
+#: plugin.py:603
 msgid "author"
 msgstr "autore"
 
-#: plugin.py:593
+#: plugin.py:605
 msgid "authors"
 msgstr "autori"
 
-#: plugin.py:594
+#: plugin.py:606
 msgid "Most prolific %s: %L"
 msgstr "%s più prolifico: %L"
 
-#: plugin.py:596 plugin.py:608
+#: plugin.py:608 plugin.py:620
 msgid "There are no factoids in my database."
 msgstr "Non ci sono factoid nel mio database."
 
-#: plugin.py:603
+#: plugin.py:615
 msgid "latest factoid"
 msgstr "ultimo factoid"
 
-#: plugin.py:605
+#: plugin.py:617
 msgid "latest factoids"
 msgstr "ultimi factoid"
 
-#: plugin.py:606
-msgid "%s: %L"
+#: plugin.py:618
+#, fuzzy
+msgid "%i %s: %L"
 msgstr "%s: %L"
 
-#: plugin.py:615
+#: plugin.py:627
 msgid "requested factoid"
 msgstr "factoid più richiesto"
 
-#: plugin.py:617
+#: plugin.py:629
 msgid "requested factoids"
 msgstr "factoid più richiesti"
 
-#: plugin.py:618
-msgid "Top %s: %L"
+#: plugin.py:630
+#, fuzzy
+msgid "Top %i %s: %L"
 msgstr "%s: %L"
 
-#: plugin.py:620
+#: plugin.py:632
 msgid "No factoids have been requested from my database."
 msgstr "Non è stato richiesto alcun factoid dal mio database."
 
-#: plugin.py:624
-#, docstring
+#: plugin.py:636
 msgid ""
 "[<channel>] <author name>\n"
 "\n"
-"        Lists the keys of the factoids with the given author.  Note that if an\n"
-"        author has an integer name, you'll have to use that author's id to use\n"
+"        Lists the keys of the factoids with the given author.  Note that if "
+"an\n"
+"        author has an integer name, you'll have to use that author's id to "
+"use\n"
 "        this function (so don't use integer usernames!).  <channel> is only\n"
 "        necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canale>] <autore>\n"
 "\n"
-"        Elenca le chiavi dell'autore specificato. Se un autore ha un nome intero, per\n"
-"        usare questa funzione sarà necessario utilizzare il suo ID (per cui non usare nomi\n"
-"        interi!). <canale> è necessario solo se se il messaggio non viene inviato nel canale stesso.\n"
+"        Elenca le chiavi dell'autore specificato. Se un autore ha un nome "
+"intero, per\n"
+"        usare questa funzione sarà necessario utilizzare il suo ID (per cui "
+"non usare nomi\n"
+"        interi!). <canale> è necessario solo se se il messaggio non viene "
+"inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:637
+#: plugin.py:649
 msgid "No factoids by %q found."
 msgstr "Nessun factoid di %q trovato."
 
-#: plugin.py:640
+#: plugin.py:652
 msgid "Author search for %q (%i found): %L"
 msgstr "Ricerca di autori per %q (trovati %i): %L"
 
-#: plugin.py:647
-#, docstring
+#: plugin.py:659
 msgid ""
 "[<channel>] <text>\n"
 "\n"
-"        Lists the keys of the factoids whose key contains the provided text.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        Lists the keys of the factoids whose key contains the provided "
+"text.\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canale>] <testo>\n"
 "\n"
-"        Elenca le chiavi dei factoid le quali contengono il testo specificato.\n"
-"        <canale> è necessario solo se se il messaggio non viene inviato nel canale stesso.\n"
+"        Elenca le chiavi dei factoid le quali contengono il testo "
+"specificato.\n"
+"        <canale> è necessario solo se se il messaggio non viene inviato nel "
+"canale stesso.\n"
 "        "
 
-#: plugin.py:655
+#: plugin.py:667
 msgid "No keys matching %q found."
 msgstr "Nessun factoid corrispondente a %q trovato."
 
-#: plugin.py:662
+#: plugin.py:675
 msgid "Key search for %q (%i found): %L"
 msgstr "Ricerca di chiavi per %q (trovate %i): %L"
 
-#: plugin.py:669
-#, docstring
+#: plugin.py:682
 msgid ""
 "[<channel>] <text>\n"
 "\n"
-"        Lists the keys of the factoids whose value contains the provided text.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        Lists the keys of the factoids whose value contains the provided "
+"text.\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canale>] <testo>\n"
 "\n"
-"        Elenca le chiavi dei factoid le quali contengono il testo specificato.\n"
-"        <canale> è necessario solo se se il messaggio non viene inviato nel canale stesso.\n"
+"        Elenca le chiavi dei factoid le quali contengono il testo "
+"specificato.\n"
+"        <canale> è necessario solo se se il messaggio non viene inviato nel "
+"canale stesso.\n"
 "        "
 
-#: plugin.py:677
+#: plugin.py:690
 msgid "No values matching %q found."
 msgstr "Nessun valore corrispondente a %q trovato."
 
-#: plugin.py:680
+#: plugin.py:693
 msgid "Value search for %q (%i found): %L"
 msgstr "Ricerca di valori per %q (trovati %i): %L"
 
-#: plugin.py:687
-#, docstring
+#: plugin.py:700
 msgid ""
 "[<channel>] <factoid key>\n"
 "\n"
-"        Deletes the factoid with the given key.  <channel> is only necessary\n"
+"        Deletes the factoid with the given key.  <channel> is only "
+"necessary\n"
 "        if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canale>] <chiave>\n"
 "\n"
-"        Cancella il factoid con la chiave specificata. <canale> è necessario\n"
+"        Cancella il factoid con la chiave specificata. <canale> è "
+"necessario\n"
 "        solo se se il messaggio non viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:700
-#, docstring
+#: plugin.py:713
 msgid ""
 "[<channel>]\n"
 "\n"
 "        Displays a random factoid (along with its key) from the database.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canale>]\n"
 "\n"
-"        Mostra un factoid casuale (con la sua chiave) dal database. <canale> è\n"
-"        necessario solo se se il messaggio non viene inviato nel canale stesso.\n"
+"        Mostra un factoid casuale (con la sua chiave) dal database. <canale> "
+"è\n"
+"        necessario solo se se il messaggio non viene inviato nel canale "
+"stesso.\n"
 "        "
 
-#: plugin.py:708
+#: plugin.py:721
 msgid "No factoids in the database."
 msgstr "Nessun factoid nel database."
-

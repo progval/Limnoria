@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
-"POT-Creation-Date: 2011-08-10 11:28+CEST\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-11-02 00:00+0100\n"
 "Last-Translator: Florian Besser <fbesser@gmail.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
@@ -13,92 +13,119 @@ msgstr ""
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Determines the maximum number of\n"
-"    messages to be queued for a user.  If this value is 0, there is no maximum.\n"
+"    messages to be queued for a user.  If this value is 0, there is no "
+"maximum.\n"
 "    "
-msgstr "Legt die maximalanzahl von Nachrichten fest die in einer Warteschlange abgelegt werden. Falls dieser Wert 0 ist, gibt es keine begrenzung."
+msgstr ""
+"Legt die maximalanzahl von Nachrichten fest die in einer Warteschlange "
+"abgelegt werden. Falls dieser Wert 0 ist, gibt es keine begrenzung."
 
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether users will be notified in\n"
 "    the first place in which they're seen, or in private."
-msgstr "Legt fest ob der Benutzer dort benachrichtig wird wo er zuerst gesehen wird, oder privat."
+msgstr ""
+"Legt fest ob der Benutzer dort benachrichtig wird wo er zuerst gesehen wird, "
+"oder privat."
 
-#: config.py:52
+#: config.py:53
 msgid ""
 "Determines whether users will be notified upon\n"
 "    joining any channel the bot is in, or only upon sending a message."
-msgstr "Legt fest ob ein Benutzer benachrichtig werden soll sobald er einen Kanal des Bots betritt, oder nach dem senden einer Nachricht."
+msgstr ""
+"Legt fest ob ein Benutzer benachrichtig werden soll sobald er einen Kanal "
+"des Bots betritt, oder nach dem senden einer Nachricht."
 
-#: config.py:55
+#: config.py:56
 msgid ""
 "Determines the maximum number of\n"
-"    days that a message will remain queued for a user. After this time elapses,\n"
+"    days that a message will remain queued for a user. After this time "
+"elapses,\n"
 "    the message will be deleted. If this value is 0, there is no maximum."
-msgstr "Legt die maximal Anzahl an Tagen fest, die eine Nachricht in der Warteschlange bleibt. Nach dieser Zeit wird die Nachricht gelöscht. Falls dieser Wert 0 ist gibt es keine Begrenzung."
+msgstr ""
+"Legt die maximal Anzahl an Tagen fest, die eine Nachricht in der "
+"Warteschlange bleibt. Nach dieser Zeit wird die Nachricht gelöscht. Falls "
+"dieser Wert 0 ist gibt es keine Begrenzung."
 
-#: plugin.py:46
+#: config.py:62
 msgid ""
-"Used to do things later; currently, it only allows the sending of\n"
+"Determines whether senders' hostname will be\n"
+"    shown in messages (instead of just the nick)."
+msgstr ""
+
+#: plugin.py:51
+msgid ""
+"\n"
+"    Used to do things later; currently, it only allows the sending of\n"
 "    nick-based notes.  Do note (haha!) that these notes are *not* private\n"
-"    and don't even pretend to be; if you want such features, consider using the\n"
-"    Note plugin."
-msgstr "Wird benutzt um Sachen später zu machen, momentan kann man nur Notizen an andere Nutzer senden. Beachte, dass diese Notizen *nicht* privat sind und auch nicht sein wollen; falls du soetwas sucht, überlege das Note Plugin zu benutzen."
+"    and don't even pretend to be; if you want such features, consider using "
+"the\n"
+"    Note plugin.\n"
+"\n"
+"    Use the ``later tell`` command to leave a message to a user.\n"
+"    If you sent the message by accident or want to cancel it,\n"
+"    you can use the `later undo` command to remove the latest later,\n"
+"    which you have sent.\n"
+"\n"
+"    You can also see the people who have notes waiting for them by using\n"
+"    the `later notes` command. If you specify a nickname in ``later notes``\n"
+"    command, you will see the notes, which are waiting for the nickname.\n"
+"\n"
+"    Privacy\n"
+"    -------\n"
+"\n"
+"    As you probably noticed from above, this plugin isn't private.\n"
+"    Everyone can see notes sent by anyone and the laters are sent on "
+"channel\n"
+"    by default and as the \"plugin help later\" says::\n"
+"\n"
+"        Used to do things later; currently, it only allows the sending of "
+"nick-based notes. Do note (haha!) that these notes are *not* private and "
+"don't even pretend to be; if you want such features, consider using the Note "
+"plugin.\n"
+"\n"
+"    The Note plugin identifies people by username instead of nickname\n"
+"    and allows only users to send notes.\n"
+"    The only people who are able to read notes are the sender, receiver,\n"
+"    and the owner.\n"
+"\n"
+"    "
+msgstr ""
 
-#: plugin.py:84
-msgid "%s ago"
-msgstr "vor %s"
-
-#: plugin.py:86
+#: plugin.py:117
 msgid "just now"
 msgstr "jetzt"
 
-#: plugin.py:106
+#: plugin.py:164
+#, fuzzy
 msgid ""
-"Validate nick according to the IRC RFC 2812 spec.\n"
+"<nick1[,nick2[,...]]> <text>\n"
 "\n"
-"        Reference: http://tools.ietf.org/rfcmarkup?doc=2812#section-2.3.1\n"
-"\n"
-"        Some irc clients' tab-completion feature appends 'address' characters\n"
-"        to nick, such as ':' or ','. We try correcting for that by trimming\n"
-"        a char off the end.\n"
-"\n"
-"        If nick incorrigibly invalid, return False, otherwise,\n"
-"        return (possibly trimmed) nick.\n"
-"        "
-msgstr ""
-"Validiert den Nick nach der IRC RFC 2812 spec.\n"
-"\n"
-"Referenz: http://tools.ietf.org/rfcmarkup?doc=2812#section-2.3.1\n"
-"\n"
-"Manche Klienten fügen bei der Tabvervollständigung 'addressierungs' Zeichen hinzu, sowie ':' oder','. Wir probieren das zu korregieren indem wir das letzte Zeichen abschneiden.\n"
-"\n"
-"Falls der Nick nicht korrigiert werden kann, wird False zurückgegeben, andererseits der (möglicherweise gekürzte) Nick."
-
-#: plugin.py:151
-msgid ""
-"<nick> <text>\n"
-"\n"
-"        Tells <nick> <text> the next time <nick> is in seen.  <nick> can\n"
+"        Tells each <nickX> <text> the next time <nickX> is seen.  <nickX> "
+"can\n"
 "        contain wildcard characters, and the first matching nick will be\n"
 "        given the note.\n"
 "        "
 msgstr ""
 "<Nick> <Text>\n"
 "\n"
-"Sagt <Nick> <Text>, sobald <Nick> das nächste Mal gesehen wird. <Nick> kann Platzhalter enthalten, und der erste Nick der darauf passt wird die Notiz bekommen."
+"Sagt <Nick> <Text>, sobald <Nick> das nächste Mal gesehen wird. <Nick> kann "
+"Platzhalter enthalten, und der erste Nick der darauf passt wird die Notiz "
+"bekommen."
 
-#: plugin.py:159
+#: plugin.py:174
 msgid "I can't send notes to myself."
 msgstr "Ich kann keine Notizen an mich selbst senden."
 
-#: plugin.py:169
-msgid "That person's message queue is already full."
+#: plugin.py:185
+#, fuzzy
+msgid "These recipients' message queue are already full: %L"
 msgstr "Die Warteschlange dieser person ist bereits voll."
 
-#: plugin.py:174
+#: plugin.py:193
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -108,21 +135,23 @@ msgid ""
 msgstr ""
 "[<Nick>]\n"
 "\n"
-"Falls <Nick> angegeben wird, wird mit den Notizen geantwortet die auf <Nick> waren, andernfalls wird mit den Nicks geanwortet die Notizen in der Warteschlange haben."
+"Falls <Nick> angegeben wird, wird mit den Notizen geantwortet die auf <Nick> "
+"waren, andernfalls wird mit den Nicks geanwortet die Notizen in der "
+"Warteschlange haben."
 
-#: plugin.py:185
+#: plugin.py:204
 msgid "I have no notes for that nick."
 msgstr "Ich habe keine Notizen für diesen Nick."
 
-#: plugin.py:190
+#: plugin.py:209
 msgid "I currently have notes waiting for %L."
 msgstr "Ich habe momentan keine Notizen in der Warteschlange für %L."
 
-#: plugin.py:193
+#: plugin.py:212
 msgid "I have no notes waiting to be delivered."
 msgstr "Ich habe keine Notizen, die darauf warten zugestellt zu werden."
 
-#: plugin.py:198
+#: plugin.py:217
 msgid ""
 "<nick>\n"
 "\n"
@@ -133,11 +162,11 @@ msgstr ""
 "\n"
 "Entfernt die wartenden Notizen für <Nick>."
 
-#: plugin.py:207
+#: plugin.py:226
 msgid "There were no notes for %r"
 msgstr "Da waren keine Nachrichten für %r"
 
-#: plugin.py:212
+#: plugin.py:231
 msgid ""
 "<nick>\n"
 "\n"
@@ -148,15 +177,57 @@ msgstr ""
 "\n"
 "Entfern die letzte Notiz die du an <Nick> gesendet hast."
 
-#: plugin.py:217
+#: plugin.py:236
 msgid "There are no note waiting for %s."
 msgstr "Es gibt keine Notiz, die auf %s wartet."
 
-#: plugin.py:228
+#: plugin.py:247
 msgid "There are no note from you waiting for %s."
 msgstr "Es gibt keine Notiz von dir, die auf %s wartet."
 
-#: plugin.py:252
+#: plugin.py:275
 msgid "Sent %s: <%s> %s"
 msgstr "%s gesendet: <%s> %s"
 
+#~ msgid ""
+#~ "Used to do things later; currently, it only allows the sending of\n"
+#~ "    nick-based notes.  Do note (haha!) that these notes are *not* "
+#~ "private\n"
+#~ "    and don't even pretend to be; if you want such features, consider "
+#~ "using the\n"
+#~ "    Note plugin."
+#~ msgstr ""
+#~ "Wird benutzt um Sachen später zu machen, momentan kann man nur Notizen an "
+#~ "andere Nutzer senden. Beachte, dass diese Notizen *nicht* privat sind und "
+#~ "auch nicht sein wollen; falls du soetwas sucht, überlege das Note Plugin "
+#~ "zu benutzen."
+
+#~ msgid "%s ago"
+#~ msgstr "vor %s"
+
+#~ msgid ""
+#~ "Validate nick according to the IRC RFC 2812 spec.\n"
+#~ "\n"
+#~ "        Reference: http://tools.ietf.org/rfcmarkup?"
+#~ "doc=2812#section-2.3.1\n"
+#~ "\n"
+#~ "        Some irc clients' tab-completion feature appends 'address' "
+#~ "characters\n"
+#~ "        to nick, such as ':' or ','. We try correcting for that by "
+#~ "trimming\n"
+#~ "        a char off the end.\n"
+#~ "\n"
+#~ "        If nick incorrigibly invalid, return False, otherwise,\n"
+#~ "        return (possibly trimmed) nick.\n"
+#~ "        "
+#~ msgstr ""
+#~ "Validiert den Nick nach der IRC RFC 2812 spec.\n"
+#~ "\n"
+#~ "Referenz: http://tools.ietf.org/rfcmarkup?doc=2812#section-2.3.1\n"
+#~ "\n"
+#~ "Manche Klienten fügen bei der Tabvervollständigung 'addressierungs' "
+#~ "Zeichen hinzu, sowie ':' oder','. Wir probieren das zu korregieren indem "
+#~ "wir das letzte Zeichen abschneiden.\n"
+#~ "\n"
+#~ "Falls der Nick nicht korrigiert werden kann, wird False zurückgegeben, "
+#~ "andererseits der (möglicherweise gekürzte) Nick."

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: URL plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 14:41+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Determines what URLs are not to be snarfed and\n"
 "    stored in the database for the channel; URLs matching the given regexp "
@@ -33,7 +33,7 @@ msgstr ""
 "URL-osoitetta \n"
 "    jätetä kaappaamatta."
 
-#: plugin.py:65
+#: plugin.py:67
 msgid ""
 "This plugin records how many URLs have been mentioned in\n"
 "    a channel and what the last URL was."
@@ -41,7 +41,7 @@ msgstr ""
 "Tämä plugini tallentaa kuinka monta URL-osoitetta on mainittu kanavalla\n"
 " ja mikä viimeisin URL oli."
 
-#: plugin.py:91
+#: plugin.py:93
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -56,11 +56,11 @@ msgstr ""
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:98
+#: plugin.py:100
 msgid "I have %n in my database."
 msgstr "Minulla on %n tietokannassani."
 
-#: plugin.py:103
+#: plugin.py:105
 msgid ""
 "[<channel>] [--{from,with,without,near,proto} <value>] [--nolimit]\n"
 "\n"
@@ -93,6 +93,6 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:145
+#: plugin.py:147
 msgid "No URLs matched that criteria."
 msgstr "Yksikään URL-osoite ei täsmännyt noihin kriteereihin."

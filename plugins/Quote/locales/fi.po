@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Quote plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 13:07+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,11 +17,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: plugin.py:36
+#: plugin.py:37
 msgid "This plugin allows you to add quotes to the database for a channel."
 msgstr "Tämä plugin sallii lainausten lisäämisen kanavan tietokantaan."
 
-#: plugin.py:39
+#: plugin.py:40
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -37,6 +37,21 @@ msgstr ""
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:48
+#: plugin.py:49
 msgid "I have no quotes in my database for %s."
 msgstr "Minun tietokannassani ei ole lainauksia kanavalla %s."
+
+#: plugin.py:53
+#, fuzzy
+msgid ""
+"[<channel>] <id> <text>\n"
+"        Replace quote <id> with <text>. <channel> is only necessary if\n"
+"        the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<kanava>]\n"
+"\n"
+"        Palauttaa satunnaisen lainauksen <kanavalta>.  <Kanava> on vaadittu "
+"vain, jos\n"
+"        viestiä ei lähetetä kanavalla itsellään.\n"
+"        "

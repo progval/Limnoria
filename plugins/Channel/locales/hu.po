@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria Channel\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2012-04-27 14:49+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -15,47 +15,87 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
-#: config.py:48
+#: config.py:49
 msgid ""
 "Determines whether the bot will always try to\n"
 "    rejoin a channel whenever it's kicked from the channel."
-msgstr "Meghatározza, hogy a bot mindig megpróbáljon-e visszatérni egy csatornára, ha kirúgják onnan."
+msgstr ""
+"Meghatározza, hogy a bot mindig megpróbáljon-e visszatérni egy csatornára, "
+"ha kirúgják onnan."
 
-#: plugin.py:69
+#: config.py:52
+msgid ""
+"Determines whether the output of 'nicks' will\n"
+"    be sent in private. This prevents mass-highlights of a channel's users,\n"
+"    accidental or on purpose."
+msgstr ""
+
+#: config.py:56
+msgid ""
+"Determines how many seconds the bot will wait\n"
+"    before rejoining a channel if kicked and\n"
+"    supybot.plugins.Channel.alwaysRejoin is on."
+msgstr ""
+
+#: config.py:60
+msgid ""
+"Determines what part message should be\n"
+"        used by default. If the part command is called without a part "
+"message,\n"
+"        this will be used. If this value is empty, then no part message "
+"will\n"
+"        be used (they are optional in the IRC protocol). The standard\n"
+"        substitutions ($version, $nick, etc.) are all handled appropriately."
+msgstr ""
+
+#: plugin.py:48
+msgid ""
+"This plugin provides various commands for channel management, such\n"
+"    as setting modes and channel-wide bans/ignores/capabilities. This is\n"
+"    a core Supybot plugin that should not be removed!"
+msgstr ""
+
+#: plugin.py:94
 msgid ""
 "[<channel>] <mode> [<arg> ...]\n"
 "\n"
 "        Sets the mode in <channel> to <mode>, sending the arguments given.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<csatorna>] <mód> [<paraméter> ...]\n"
 "\n"
-"<csatorna> módját <mód>-ra állítja, elküldve a kapott paramétereket. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"<csatorna> módját <mód>-ra állítja, elküldve a kapott paramétereket. "
+"<csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:76
+#: plugin.py:101
 msgid "change the mode"
 msgstr "megváltoztatni a módot"
 
-#: plugin.py:80
+#: plugin.py:105
 msgid ""
 "[<channel>] [<limit>]\n"
 "\n"
-"        Sets the channel limit to <limit>.  If <limit> is 0, or isn't given,\n"
-"        removes the channel limit.  <channel> is only necessary if the message\n"
+"        Sets the channel limit to <limit>.  If <limit> is 0, or isn't "
+"given,\n"
+"        removes the channel limit.  <channel> is only necessary if the "
+"message\n"
 "        isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<csatorna>] [<korlát>]\n"
 "\n"
-"A csatorna korlátját <korlát>-ra állítja. Ha <korlát> 0 vagy nem meghatározott, eltávolítja a csatorna korlátját. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"A csatorna korlátját <korlát>-ra állítja. Ha <korlát> 0 vagy nem "
+"meghatározott, eltávolítja a csatorna korlátját. <csatorna> csak akkor "
+"szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:90
+#: plugin.py:115
 msgid "change the limit"
 msgstr "megváltoztatni a korlátot"
 
-#: plugin.py:95
+#: plugin.py:120
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -66,13 +106,15 @@ msgid ""
 msgstr ""
 "[<csatorna>]\n"
 "\n"
-"<csatorna>-t +m-re állítja, hogy csak operátorok és hanggal rendelkező felhasználók küldhessenek üzeneteket a csatornára. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"<csatorna>-t +m-re állítja, hogy csak operátorok és hanggal rendelkező "
+"felhasználók küldhessenek üzeneteket a csatornára. <csatorna> csak akkor "
+"szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:102
+#: plugin.py:127
 msgid "moderate the channel"
 msgstr "moderálni a csatornát"
 
-#: plugin.py:106
+#: plugin.py:131
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -83,244 +125,361 @@ msgid ""
 msgstr ""
 "[<csatorna>]\n"
 "\n"
-"<csatorna>-t -m-re állítja, hogy mindenki küldhessen üzeneteket a csatornára. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"<csatorna>-t -m-re állítja, hogy mindenki küldhessen üzeneteket a "
+"csatornára. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában "
+"van elküldve."
 
-#: plugin.py:114
+#: plugin.py:139
 msgid "unmoderate the channel"
 msgstr "kikapcsolni a moderálást a csatornán"
 
-#: plugin.py:118
+#: plugin.py:143
 msgid ""
 "[<channel>] [<key>]\n"
 "\n"
-"        Sets the keyword in <channel> to <key>.  If <key> is not given, removes\n"
-"        the keyword requirement to join <channel>.  <channel> is only necessary\n"
+"        Sets the keyword in <channel> to <key>.  If <key> is not given, "
+"removes\n"
+"        the keyword requirement to join <channel>.  <channel> is only "
+"necessary\n"
 "        if the message isn't sent in the channel itself.\n"
 "        "
-msgstr "[<csatorna>] [<kulcs>]<csatorna> kulcsát <kulcs>-ra állítja. Ha <kulcs> nem meghatározott, eltávolíta a kulcsot <csatorna>-ról. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+msgstr ""
+"[<csatorna>] [<kulcs>]<csatorna> kulcsát <kulcs>-ra állítja. Ha <kulcs> nem "
+"meghatározott, eltávolíta a kulcsot <csatorna>-ról. <csatorna> csak akkor "
+"szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:130
+#: plugin.py:155
 msgid "change the keyword"
 msgstr "megváltoztatni a kulcsot"
 
-#: plugin.py:135
+#: plugin.py:160
 msgid ""
 "[<channel>] [<nick> ...]\n"
 "\n"
-"        If you have the #channel,op capability, this will give all the <nick>s\n"
-"        you provide ops.  If you don't provide any <nick>s, this will op you.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        If you have the #channel,op capability, this will give all the "
+"<nick>s\n"
+"        you provide ops.  If you don't provide any <nick>s, this will op "
+"you.\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<csatorna>] [<név> ...]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez operátor státuszt ad minden <név>-nek, amit megadtál. Ha nem adsz meg <név>-et, ez neked ad operátor státuszt. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez operátor státuszt ad minden "
+"<név>-nek, amit megadtál. Ha nem adsz meg <név>-et, ez neked ad operátor "
+"státuszt. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában "
+"van elküldve."
 
-#: plugin.py:147
+#: plugin.py:172
 msgid "op someone"
 msgstr "operátor státuszt adni valakinek"
 
-#: plugin.py:151
+#: plugin.py:176
 msgid ""
 "[<channel>] [<nick> ...]\n"
 "\n"
 "        If you have the #channel,halfop capability, this will give all the\n"
-"        <nick>s you provide halfops.  If you don't provide any <nick>s, this\n"
-"        will give you halfops. <channel> is only necessary if the message isn't\n"
+"        <nick>s you provide halfops.  If you don't provide any <nick>s, "
+"this\n"
+"        will give you halfops. <channel> is only necessary if the message "
+"isn't\n"
 "        sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<csatorna>] [<név> ...]\n"
 "\n"
-"Ha rendelkezel a #csatorna,halfop képességgel, ez fél-operátor státuszt ad minden <név>-nek, amit megadtál. Ha nem adsz meg <név>-et, ez neked ad fél-operátor státuszt. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,halfop képességgel, ez fél-operátor státuszt ad "
+"minden <név>-nek, amit megadtál. Ha nem adsz meg <név>-et, ez neked ad fél-"
+"operátor státuszt. <csatorna> csak akkor szükséges, ha az üzenet nem a "
+"csatornában van elküldve."
 
-#: plugin.py:163
+#: plugin.py:188
 msgid "halfop someone"
 msgstr "fél-operátor státuszt adni valakinek"
 
-#: plugin.py:168
+#: plugin.py:209
 msgid ""
 "[<channel>] [<nick> ...]\n"
 "\n"
 "        If you have the #channel,voice capability, this will voice all the\n"
 "        <nick>s you provide.  If you don't provide any <nick>s, this will\n"
-"        voice you. <channel> is only necessary if the message isn't sent in the\n"
+"        voice you. <channel> is only necessary if the message isn't sent in "
+"the\n"
 "        channel itself.\n"
 "        "
 msgstr ""
 "[<csatorna>] [<név>]\n"
 "\n"
-"Ha rendelkezel a #csatorna,voice képességgel, ez hangot ad minden megadott <név>-nek. Ha nem adsz meg <név>-et, ez neked ad hangot. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,voice képességgel, ez hangot ad minden megadott "
+"<név>-nek. Ha nem adsz meg <név>-et, ez neked ad hangot. <csatorna> csak "
+"akkor szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:190
+#: plugin.py:217
 msgid "voice someone"
 msgstr "hangot adni valakinek"
 
-#: plugin.py:195
+#: plugin.py:222
 msgid ""
 "[<channel>] [<nick> ...]\n"
 "\n"
 "        If you have the #channel,op capability, this will remove operator\n"
-"        privileges from all the nicks given.  If no nicks are given, removes\n"
+"        privileges from all the nicks given.  If no nicks are given, "
+"removes\n"
 "        operator privileges from the person sending the message.\n"
 "        "
 msgstr ""
 "[<csatorna>] [<név> ...]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja az operátor státuszt minden megadott névről. Ha nincs név megadva, rólad távolítja el az operátor státuszt. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja az operátor "
+"státuszt minden megadott névről. Ha nincs név megadva, rólad távolítja el az "
+"operátor státuszt. <csatorna> csak akkor szükséges, ha az üzenet nem a "
+"csatornában van elküldve."
 
-#: plugin.py:202
-msgid "I cowardly refuse to deop myself.  If you really want me deopped, tell me to op you and then deop me yourself."
-msgstr "Gyáván megtagadom, hogy eltávolítsam magamról az operátor státuszt. Ha el akarod távolítani rólam az operátor státuszt, mondd, hogy adjak operátor státuszt neked, és távolítsd el rólam."
+#: plugin.py:229
+msgid ""
+"I cowardly refuse to deop myself.  If you really want me deopped, tell me to "
+"op you and then deop me yourself."
+msgstr ""
+"Gyáván megtagadom, hogy eltávolítsam magamról az operátor státuszt. Ha el "
+"akarod távolítani rólam az operátor státuszt, mondd, hogy adjak operátor "
+"státuszt neked, és távolítsd el rólam."
 
-#: plugin.py:210
+#: plugin.py:237
 msgid "deop someone"
 msgstr "eltávolítani az operátor státuszt valakiről"
 
-#: plugin.py:215
+#: plugin.py:242
 msgid ""
 "[<channel>] [<nick> ...]\n"
 "\n"
-"        If you have the #channel,op capability, this will remove half-operator\n"
-"        privileges from all the nicks given.  If no nicks are given, removes\n"
+"        If you have the #channel,op capability, this will remove half-"
+"operator\n"
+"        privileges from all the nicks given.  If no nicks are given, "
+"removes\n"
 "        half-operator privileges from the person sending the message.\n"
 "        "
 msgstr ""
 "[<csatorna>] [<név> ...]\n"
 "\n"
-"Ha rendelkezel a #csatorna,halfop képességgel, ez eltávolítja a fél-operátor státuszt minden <név>-ről, amit megadtál. Ha nincs név megadva, ez rólad távolítja el a fél-operátor státuszt. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,halfop képességgel, ez eltávolítja a fél-operátor "
+"státuszt minden <név>-ről, amit megadtál. Ha nincs név megadva, ez rólad "
+"távolítja el a fél-operátor státuszt. <csatorna> csak akkor szükséges, ha az "
+"üzenet nem a csatornában van elküldve."
 
-#: plugin.py:222
-msgid "I cowardly refuse to dehalfop myself.  If you really want me dehalfopped, tell me to op you and then dehalfop me yourself."
-msgstr "Gyáván megtagadom, hogy eltávolítsam magamról a fél-operátor státuszt. Ha el akarod távolítani rólam az operátor státuszt, mondd, hogy adjak operátor státuszt neked, és távolítsd el rólam a fél-operátor státuszt."
+#: plugin.py:249
+msgid ""
+"I cowardly refuse to dehalfop myself.  If you really want me dehalfopped, "
+"tell me to op you and then dehalfop me yourself."
+msgstr ""
+"Gyáván megtagadom, hogy eltávolítsam magamról a fél-operátor státuszt. Ha el "
+"akarod távolítani rólam az operátor státuszt, mondd, hogy adjak operátor "
+"státuszt neked, és távolítsd el rólam a fél-operátor státuszt."
 
-#: plugin.py:230
+#: plugin.py:257
 msgid "dehalfop someone"
 msgstr "eltávolítani a fél-operátor státuszt valakiről"
 
-#: plugin.py:235
+#: plugin.py:262
 msgid ""
 "[<channel>] [<nick> ...]\n"
 "\n"
-"        If you have the #channel,op capability, this will remove voice from all\n"
-"        the nicks given.  If no nicks are given, removes voice from the person\n"
+"        If you have the #channel,op capability, this will remove voice from "
+"all\n"
+"        the nicks given.  If no nicks are given, removes voice from the "
+"person\n"
 "        sending the message.\n"
 "        "
 msgstr ""
 "[<csatorna>] [<név> ...]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja a hangot minden <név>-ről, amit megadtál. Ha nincs név megadva, ez rólad távolítja el a hangot.. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja a hangot minden "
+"<név>-ről, amit megadtál. Ha nincs név megadva, ez rólad távolítja el a "
+"hangot.. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van "
+"elküldve."
 
-#: plugin.py:242
-msgid "I cowardly refuse to devoice myself.  If you really want me devoiced, tell me to op you and then devoice me yourself."
-msgstr "Gyáván megtagadom, hogy eltávolítsam magamról a hangot. Ha el akarod távolítani rólam a hangot, mondd, hogy adjak operátor státuszt neked, és távolítsd el rólam a hangot."
-
-#: plugin.py:255
+#: plugin.py:274
+#, fuzzy
 msgid ""
-"[<channel>]\n"
+"[<channel>] [<reason>]\n"
 "\n"
 "        If you have the #channel,op capability, this will cause the bot to\n"
-"        \"cycle\", or PART and then JOIN the channel. <channel> is only necessary\n"
-"        if the message isn't sent in the channel itself.\n"
+"        \"cycle\", or PART and then JOIN the channel. <channel> is only "
+"necessary\n"
+"        if the message isn't sent in the channel itself. If <reason> is not\n"
+"        specified, the default part message specified in\n"
+"        supybot.plugins.Channel.partMsg will be used. No part message will "
+"be\n"
+"        used if neither a cycle reason nor a default part message is given.\n"
 "        "
 msgstr ""
 "[<csatorna>]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ennek hatására a bot kilép majd visszalép a csaotnára. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ennek hatására a bot kilép majd "
+"visszalép a csaotnára. <csatorna> csak akkor szükséges, ha az üzenet nem a "
+"csatornában van elküldve."
 
-#: plugin.py:268
+#: plugin.py:292
 msgid ""
 "[<channel>] <nick>[, <nick>, ...] [<reason>]\n"
 "\n"
-"        Kicks <nick>(s) from <channel> for <reason>.  If <reason> isn't given,\n"
+"        Kicks <nick>(s) from <channel> for <reason>.  If <reason> isn't "
+"given,\n"
 "        uses the nick of the person making the command as the reason.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<csatorna>] <név>[, <név>, ...] [<ok>]\n"
-"Kirúgja <név>(ek)-et <csatorna>-ról <ok>-ért. Ha <ok> nincs megadva, a parancsot használó ember nevét használja okként. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Kirúgja <név>(ek)-et <csatorna>-ról <ok>-ért. Ha <ok> nincs megadva, a "
+"parancsot használó ember nevét használja okként. <csatorna> csak akkor "
+"szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:276
+#: plugin.py:300
 msgid "I cowardly refuse to kick myself."
 msgstr "Gváván megtagadom, hogy kirúgjam magam."
 
-#: plugin.py:281
-msgid "The reason you gave is longer than the allowed length for a KICK reason on this server."
-msgstr "A megadott ok hosszabb a KICK parancs megengedett hosszúságánál ezen a szerveren."
+#: plugin.py:305
+msgid ""
+"The reason you gave is longer than the allowed length for a KICK reason on "
+"this server."
+msgstr ""
+"A megadott ok hosszabb a KICK parancs megengedett hosszúságánál ezen a "
+"szerveren."
 
-#: plugin.py:286
+#: plugin.py:310
 msgid "kick someone"
 msgstr "kirúgni valakit"
 
-#: plugin.py:292
+#: plugin.py:316
 msgid ""
 "[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] [<reason>]\n"
 "\n"
-"        If you have the #channel,op capability, this will kickban <nick> for\n"
-"        as many seconds as you specify, or else (if you specify 0 seconds or\n"
-"        don't specify a number of seconds) it will ban the person indefinitely.\n"
+"        If you have the #channel,op capability, this will kickban <nick> "
+"for\n"
+"        as many seconds as you specify, or else (if you specify 0 seconds "
+"or\n"
+"        don't specify a number of seconds) it will ban the person "
+"indefinitely.\n"
 "        --exact bans only the exact hostmask; --nick bans just the nick;\n"
 "        --user bans just the user, and --host bans just the host.  You can\n"
-"        combine these options as you choose.  <reason> is a reason to give for\n"
+"        combine these options as you choose.  <reason> is a reason to give "
+"for\n"
 "        the kick.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<csatorna>] [--{exact,nick,user,host}] <név> [<másodpercek>] [<ok>]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez kirúgja és kitiltja <név>-et a megadott időre, vagy (ha 0 másodpercet adsz meg vagy nem adsz meg másodpercet) a végtelenségig tiltja a megadott embert. --exact csak a pontos hosztot tiltja ki; --nick csak a nevet tiltja ki; --user csak a felhasználót tiltja ki, és --host csak a hosztot tiltja ki. Kombinálhatod az opciókat ahogy szeretnéd. <ok> egy ok a kirúgáshoz."
+"Ha rendelkezel a #csatorna,op képességgel, ez kirúgja és kitiltja <név>-et a "
+"megadott időre, vagy (ha 0 másodpercet adsz meg vagy nem adsz meg "
+"másodpercet) a végtelenségig tiltja a megadott embert. --exact csak a pontos "
+"hosztot tiltja ki; --nick csak a nevet tiltja ki; --user csak a felhasználót "
+"tiltja ki, és --host csak a hosztot tiltja ki. Kombinálhatod az opciókat "
+"ahogy szeretnéd. <ok> egy ok a kirúgáshoz."
 
-#: plugin.py:311
-msgid "I cowardly refuse to kickban myself."
-msgstr "Gyáván megtagadom, hogy kirúgjam és kitiltsam magam."
-
-#: plugin.py:318
-msgid "I haven't seen %s."
-msgstr "Nem láttam %s-t."
-
-#: plugin.py:326
-msgid "I cowardly refuse to ban myself."
-msgstr "Gyáván megtagadom, hogy kitiltsam magam."
-
-#: plugin.py:353
-msgid "%s has %s too, you can't ban them."
-msgstr "%s-nek is van %s, nem tilthatod ki őt."
-
-#: plugin.py:365
+#: plugin.py:333
 msgid "kick or ban someone"
 msgstr "kirúgni vagy kitiltani valakit"
 
-#: plugin.py:372
+#: plugin.py:341
+#, fuzzy
 msgid ""
-"[<channel>] [<hostmask>]\n"
+"[<channel>] [--{exact,nick,user,host}] <nick> [<seconds>]\n"
+"\n"
+"        If you have the #channel,op capability, this will ban <nick> for\n"
+"        as many seconds as you specify, otherwise (if you specify 0 seconds "
+"or\n"
+"        don't specify a number of seconds) it will ban the person "
+"indefinitely.\n"
+"        --exact can be used to specify an exact hostmask. You can combine "
+"the\n"
+"        exact, nick, user, and host options as you choose. <channel> is "
+"only\n"
+"        necessary if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<csatorna>] [--{exact,nick,user,host}] <név> [<másodpercek>] [<ok>]\n"
+"\n"
+"Ha rendelkezel a #csatorna,op képességgel, ez kirúgja és kitiltja <név>-et a "
+"megadott időre, vagy (ha 0 másodpercet adsz meg vagy nem adsz meg "
+"másodpercet) a végtelenségig tiltja a megadott embert. --exact csak a pontos "
+"hosztot tiltja ki; --nick csak a nevet tiltja ki; --user csak a felhasználót "
+"tiltja ki, és --host csak a hosztot tiltja ki. Kombinálhatod az opciókat "
+"ahogy szeretnéd. <ok> egy ok a kirúgáshoz."
+
+#: plugin.py:355 plugin.py:581
+#, fuzzy
+msgid "ban someone"
+msgstr "eltávolítani a tiltást valakiről"
+
+#: plugin.py:375
+msgid "I haven't seen %s."
+msgstr "Nem láttam %s-t."
+
+#: plugin.py:385
+msgid "I cowardly refuse to kickban myself."
+msgstr "Gyáván megtagadom, hogy kirúgjam és kitiltsam magam."
+
+#: plugin.py:394
+msgid "I cowardly refuse to ban myself."
+msgstr "Gyáván megtagadom, hogy kitiltsam magam."
+
+#: plugin.py:422
+msgid "%s has %s too, you can't ban them."
+msgstr "%s-nek is van %s, nem tilthatod ki őt."
+
+#: plugin.py:433
+#, fuzzy
+msgid ""
+"[<channel>] [<hostmask|--all>]\n"
 "\n"
 "        Unbans <hostmask> on <channel>.  If <hostmask> is not given, unbans\n"
-"        any hostmask currently banned on <channel> that matches your current\n"
+"        any hostmask currently banned on <channel> that matches your "
+"current\n"
 "        hostmask.  Especially useful for unbanning yourself when you get\n"
-"        unexpectedly (or accidentally) banned from the channel.  <channel> is\n"
+"        unexpectedly (or accidentally) banned from the channel.  <channel> "
+"is\n"
 "        only necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<csatorna>] [<hoszt>]\n"
 "\n"
-"Eltávolítja a tiltást <hoszt>-ról <csatorna>-ban. Ha <hoszt> nincs megadva, az összes tiltást eltávolítja <csatorna>-ról, ami illeszkedik rád. Főleg akkor hasznos, hogy eltávolítsd a tiltást magadról, ha váratlanul (vagy véletlenül) ki lettél tiltva a csatornáról. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Eltávolítja a tiltást <hoszt>-ról <csatorna>-ban. Ha <hoszt> nincs megadva, "
+"az összes tiltást eltávolítja <csatorna>-ról, ami illeszkedik rád. Főleg "
+"akkor hasznos, hogy eltávolítsd a tiltást magadról, ha váratlanul (vagy "
+"véletlenül) ki lettél tiltva a csatornáról. <csatorna> csak akkor szükséges, "
+"ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:389
+#: plugin.py:453
 msgid "All bans on %s matching %s have been removed."
 msgstr "Minden tiltás %s-ban, ami illeszkedik %s-ra el lett távolítva."
 
-#: plugin.py:393
+#: plugin.py:457
 msgid "No bans matching %s were found on %s."
 msgstr "Nem található %s-ra illeszkedő tiltás %s-ban."
 
-#: plugin.py:396
+#: plugin.py:460
 msgid "unban someone"
 msgstr "eltávolítani a tiltást valakiről"
 
-#: plugin.py:401
+#: plugin.py:467
+msgid ""
+"[<channel>]\n"
+"\n"
+"        List all bans on the channel.\n"
+"        If <channel> is not given, it defaults to the current channel."
+msgstr ""
+
+#: plugin.py:471
+msgid "No bans."
+msgstr ""
+
+#: plugin.py:476
 msgid ""
 "[<channel>] <nick>\n"
 "\n"
@@ -331,49 +490,59 @@ msgid ""
 msgstr ""
 "[<csatorna> <név>\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, meghívja <név>-et <csatorna>-ra. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, meghívja <név>-et <csatorna>-ra. "
+"<csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:410
+#: plugin.py:485
 msgid "invite someone"
 msgstr "meghívni valakit"
 
-#: plugin.py:429
+#: plugin.py:504
 msgid "%s is already in %s."
 msgstr "%s már %s-ban van."
 
-#: plugin.py:436
+#: plugin.py:511
 msgid "There is no %s on this network."
 msgstr "Nincs %s ezen a hálózaton."
 
-#: plugin.py:448
+#: plugin.py:523
 msgid ""
 "[<channel>]\n"
 "\n"
-"            If you have the #channel,op capability, this will \"lobotomize\" the\n"
-"            bot, making it silent and unanswering to all requests made in the\n"
-"            channel. <channel> is only necessary if the message isn't sent in\n"
+"            If you have the #channel,op capability, this will \"lobotomize\" "
+"the\n"
+"            bot, making it silent and unanswering to all requests made in "
+"the\n"
+"            channel. <channel> is only necessary if the message isn't sent "
+"in\n"
 "            the channel itself.\n"
 "            "
 msgstr ""
 "[<csatorna>]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez \"némítja\" a botot, ezzel némáva teszi azt és nem fog válaszolni a csatornában végrehajtott kérésekre. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez \"némítja\" a botot, ezzel "
+"némáva teszi azt és nem fog válaszolni a csatornában végrehajtott kérésekre. "
+"<csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:463
+#: plugin.py:538
 msgid ""
 "[<channel>]\n"
 "\n"
-"            If you have the #channel,op capability, this will unlobotomize the\n"
+"            If you have the #channel,op capability, this will unlobotomize "
+"the\n"
 "            bot, making it respond to requests made in the channel again.\n"
-"            <channel> is only necessary if the message isn't sent in the channel\n"
+"            <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "            itself.\n"
 "            "
 msgstr ""
 "[<csatorna>\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez megszünteti a bot némítását, így az újra válaszol a csatornában vérgehajtott kérésekre. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez megszünteti a bot némítását, "
+"így az újra válaszol a csatornában vérgehajtott kérésekre. <csatorna> csak "
+"akkor szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:478
+#: plugin.py:553
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -384,83 +553,103 @@ msgstr ""
 "\n"
 "Kiírja a csatornákat, ahol a bot némítva van."
 
-#: plugin.py:493
+#: plugin.py:568
 msgid "I'm currently lobotomized in %L."
 msgstr "Jelenleg némítva vagyok %L-ban."
 
-#: plugin.py:496
+#: plugin.py:571
 msgid "I'm not currently lobotomized in any channels that you're in."
 msgstr "Jelenleg nem vagyok némítva egy csatornában sem, ahol vagy."
 
-#: plugin.py:503
+#: plugin.py:585
 msgid ""
 "[<channel>] <nick|hostmask> [<expires>]\n"
 "\n"
 "            If you have the #channel,op capability, this will effect a\n"
 "            persistent ban from interacting with the bot on the given\n"
-"            <hostmask> (or the current hostmask associated with <nick>).  Other\n"
+"            <hostmask> (or the current hostmask associated with <nick>).  "
+"Other\n"
 "            plugins may enforce this ban by actually banning users with\n"
 "            matching hostmasks when they join.  <expires> is an optional\n"
-"            argument specifying when (in \"seconds from now\") the ban should\n"
-"            expire; if none is given, the ban will never automatically expire.\n"
+"            argument specifying when (in \"seconds from now\") the ban "
+"should\n"
+"            expire; if none is given, the ban will never automatically "
+"expire.\n"
 "            <channel> is only necessary if the message isn't sent in the\n"
 "            channel itself.\n"
 "            "
 msgstr ""
 "[<csatorna>] <név|hoszt> [<lejár>]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez megtiltja <hoszt>-nak (vagy <nick> jelenlegi hosztjának), hogy a botot használja a csatornában. Más bővítmények kényszeríthetik a tiltást azzal, hogy kitiltják a felhasználókat, akikre illeszkedik a hoszt amikor belépnek. <lejár> egy nem kötelező paaméter, meghatározza, hogy mikor (hány \"másodperc múlva\") járjon le a tiltás; ha nincs megadva, a tiltás soha nem fog automatikusan lejárni. <csatorna> csak akkor szükséges, ha az üzenet nem a csaotnában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez megtiltja <hoszt>-nak (vagy "
+"<nick> jelenlegi hosztjának), hogy a botot használja a csatornában. Más "
+"bővítmények kényszeríthetik a tiltást azzal, hogy kitiltják a "
+"felhasználókat, akikre illeszkedik a hoszt amikor belépnek. <lejár> egy nem "
+"kötelező paaméter, meghatározza, hogy mikor (hány \"másodperc múlva\") "
+"járjon le a tiltás; ha nincs megadva, a tiltás soha nem fog automatikusan "
+"lejárni. <csatorna> csak akkor szükséges, ha az üzenet nem a csaotnában van "
+"elküldve."
 
-#: plugin.py:523
+#: plugin.py:605
 msgid ""
 "[<channel>] <hostmask>\n"
 "\n"
 "            If you have the #channel,op capability, this will remove the\n"
-"            persistent ban on <hostmask>.  <channel> is only necessary if the\n"
+"            persistent ban on <hostmask>.  <channel> is only necessary if "
+"the\n"
 "            message isn't sent in the channel itself.\n"
 "            "
 msgstr ""
 "[<csatorna>] <hoszt>\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja a tiltást <hoszt>-ról. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja a tiltást <hoszt>-"
+"ról. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van "
+"elküldve."
 
-#: plugin.py:535
+#: plugin.py:617
 msgid "There are no persistent bans for that hostmask."
 msgstr "Nincsenek tiltások erre a hosztra."
 
-#: plugin.py:540
+#: plugin.py:622
 #, fuzzy
 msgid ""
-"[<channel>]\n"
+"[<channel>] [<mask>]\n"
 "\n"
 "            If you have the #channel,op capability, this will show you the\n"
-"            current persistent bans on the <channel>.\n"
+"            current persistent bans on the <channel> that match the given\n"
+"            mask, if any (returns all of them otherwise).\n"
+"            Note that you can use * as a wildcard on masks and \\* to match\n"
+"            actual * in masks\n"
 "            "
 msgstr ""
-"[<csatorna>]\n"
+"[<csatorna>] <hoszt>\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez megmutatja neked a jelenlegi tiltásokat <csatorna>-n."
+"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja a tiltást <hoszt>-"
+"ról. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van "
+"elküldve."
 
-#: plugin.py:550
+#: plugin.py:640
 msgid "%q (expires %t)"
 msgstr "%q (lejár %t)"
 
-#: plugin.py:553
+#: plugin.py:643
 msgid "%q (never expires)"
 msgstr "%q (soha nem jár le)"
 
-#: plugin.py:557
+#: plugin.py:647
 msgid "There are no persistent bans on %s."
 msgstr "Nincsenek tiltások %s-on."
 
-#: plugin.py:564
+#: plugin.py:654
 msgid ""
 "[<channel>] <nick|hostmask> [<expires>]\n"
 "\n"
-"            If you have the #channel,op capability, this will set a persistent\n"
+"            If you have the #channel,op capability, this will set a "
+"persistent\n"
 "            ignore on <hostmask> or the hostmask currently\n"
 "            associated with <nick>. <expires> is an optional argument\n"
-"            specifying when (in \"seconds from now\") the ignore will expire; if\n"
+"            specifying when (in \"seconds from now\") the ignore will "
+"expire; if\n"
 "            it isn't given, the ignore will never automatically expire.\n"
 "            <channel> is only necessary if the message isn't sent in the\n"
 "            channel itself.\n"
@@ -468,43 +657,53 @@ msgid ""
 msgstr ""
 "[<csatorna>] <név|hoszt> [<lejár>]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez mellőzi <hoszt>-ot vagy <név> jelenlegi hosztját. <lejár> egy nem kötelező paraméter, meghatározza, hogy mikor (hány \"másodperc múlva\" járjon le a mellőzés; ha nincs megadva, a mellőzés soha nem fog automatikusan lejárni. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez mellőzi <hoszt>-ot vagy <név> "
+"jelenlegi hosztját. <lejár> egy nem kötelező paraméter, meghatározza, hogy "
+"mikor (hány \"másodperc múlva\" járjon le a mellőzés; ha nincs megadva, a "
+"mellőzés soha nem fog automatikusan lejárni. <csatorna> csak akkor "
+"szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:582
+#: plugin.py:672
+#, fuzzy
 msgid ""
-"[<channel>] <hostmask>\n"
+"[<channel>] <nick|hostmask>\n"
 "\n"
 "            If you have the #channel,op capability, this will remove the\n"
-"            persistent ignore on <hostmask> in the channel. <channel> is only\n"
+"            persistent ignore on <hostmask> in the channel. <channel> is "
+"only\n"
 "            necessary if the message isn't sent in the channel itself.\n"
 "            "
 msgstr ""
 "[<csatorna>] <hoszt>\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja a mellőzést <hoszt>-ról a csatornában. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja a mellőzést "
+"<hoszt>-ról a csatornában. <csatorna> csak akkor szükséges, ha az üzenet nem "
+"a csatornában van elküldve."
 
-#: plugin.py:594
+#: plugin.py:684
 msgid "There are no ignores for that hostmask."
 msgstr "Nincsenek mellőzések erre a hosztra."
 
-#: plugin.py:599
+#: plugin.py:689
 msgid ""
 "[<channel>]\n"
 "\n"
-"            Lists the hostmasks that the bot is ignoring on the given channel.\n"
+"            Lists the hostmasks that the bot is ignoring on the given "
+"channel.\n"
 "            <channel> is only necessary if the message isn't sent in the\n"
 "            channel itself.\n"
 "            "
 msgstr ""
 "[<csatorna>\n"
 "\n"
-"Kiírja a hosztokat, amelyeket a bot mellőz a megadott csatornában. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Kiírja a hosztokat, amelyeket a bot mellőz a megadott csatornában. "
+"<csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:608
+#: plugin.py:698
 msgid "I'm not currently ignoring any hostmasks in %q"
 msgstr "Nem mellőzők egy hosztot sem %q-ban."
 
-#: plugin.py:619
+#: plugin.py:709
 #, fuzzy
 msgid ""
 "[<channel>] <nick|username> <capability> [<capability> ...]\n"
@@ -517,76 +716,100 @@ msgid ""
 msgstr ""
 "[<csatorna>] <név|felhasználónév> <képesség> [<képesség> ...]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez <felhasználónév> felhasználónak (vagy <név> felhasználójának) a <képesség> képességet a csatornában. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez <felhasználónév> "
+"felhasználónak (vagy <név> felhasználójának) a <képesség> képességet a "
+"csatornában. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában "
+"van elküldve."
 
-#: plugin.py:635
+#: plugin.py:725
 msgid ""
 "[<channel>] <name|hostmask> <capability> [<capability> ...]\n"
 "\n"
 "            If you have the #channel,op capability, this will take from the\n"
-"            user currently identified as <name> (or the user to whom <hostmask>\n"
-"            maps) the capability <capability> in the channel. <channel> is only\n"
+"            user currently identified as <name> (or the user to whom "
+"<hostmask>\n"
+"            maps) the capability <capability> in the channel. <channel> is "
+"only\n"
 "            necessary if the message isn't sent in the channel itself.\n"
 "            "
 msgstr ""
 "[<csatorna>] <név|hoszt> <képesség> [<képesség> ...]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja a jelenleg <név>-ként bejelentkezett felhasználóról (vagy a felhasználóról, akire <hoszt> illeszkedik) a <képesség> képességet a csatornában. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja a jelenleg <név>-"
+"ként bejelentkezett felhasználóról (vagy a felhasználóról, akire <hoszt> "
+"illeszkedik) a <képesség> képességet a csatornában. <csatorna> csak akkor "
+"szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:654
+#: plugin.py:744
 msgid "That user didn't have the %L %s."
 msgstr "A felhasználónak nem volt a(z) %L %s."
 
-#: plugin.py:663
+#: plugin.py:753
 msgid ""
 "[<channel>] {True|False}\n"
 "\n"
-"            If you have the #channel,op capability, this will set the default\n"
-"            response to non-power-related (that is, not {op, halfop, voice})\n"
-"            capabilities to be the value you give. <channel> is only necessary\n"
+"            If you have the #channel,op capability, this will set the "
+"default\n"
+"            response to non-power-related (that is, not {op, halfop, "
+"voice})\n"
+"            capabilities to be the value you give. <channel> is only "
+"necessary\n"
 "            if the message isn't sent in the channel itself.\n"
 "            "
 msgstr ""
 "[<csatorna>] {True|False}\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez az alapértelmezett választ a nem erővel kapcsolatos (vagyis nem {op, halfop, voice}) képességeket a megadott értékre állítja. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez az alapértelmezett választ a "
+"nem erővel kapcsolatos (vagyis nem {op, halfop, voice}) képességeket a "
+"megadott értékre állítja. <csatorna> csak akkor szükséges, ha az üzenet nem "
+"a csatornában van elküldve."
 
-#: plugin.py:681
+#: plugin.py:771
 msgid ""
 "[<channel>] <capability> [<capability> ...]\n"
 "\n"
-"            If you have the #channel,op capability, this will add the channel\n"
-"            capability <capability> for all users in the channel. <channel> is\n"
+"            If you have the #channel,op capability, this will add the "
+"channel\n"
+"            capability <capability> for all users in the channel. <channel> "
+"is\n"
 "            only necessary if the message isn't sent in the channel itself.\n"
 "            "
 msgstr ""
 "[<csatorna>] <képesség> [<képesség> ...]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez hozzáadja <képesség>-et a csatorna képességeihez. <csatorna> csak akkor szükséges, ha az üzenet nem, a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez hozzáadja <képesség>-et a "
+"csatorna képességeihez. <csatorna> csak akkor szükséges, ha az üzenet nem, a "
+"csatornában van elküldve."
 
-#: plugin.py:696
+#: plugin.py:786
 msgid ""
 "[<channel>] <capability> [<capability> ...]\n"
 "\n"
-"            If you have the #channel,op capability, this will unset the channel\n"
-"            capability <capability> so each user's specific capability or the\n"
-"            channel default capability will take precedence. <channel> is only\n"
+"            If you have the #channel,op capability, this will unset the "
+"channel\n"
+"            capability <capability> so each user's specific capability or "
+"the\n"
+"            channel default capability will take precedence. <channel> is "
+"only\n"
 "            necessary if the message isn't sent in the channel itself.\n"
 "            "
 msgstr ""
 "[<csatorna>] <képesség> [<képesség> ...]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja a csatorna <képesség> képességét, így a felhasználók saját képességei vagy a csatorna alapértelmezett képességei lesznek előnyben. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez eltávolítja a csatorna "
+"<képesség> képességét, így a felhasználók saját képességei vagy a csatorna "
+"alapértelmezett képességei lesznek előnyben. <csatorna> csak akkor "
+"szükséges, ha az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:712
+#: plugin.py:802
 msgid "capability"
 msgstr "képesség"
 
-#: plugin.py:715
+#: plugin.py:805
 msgid "I do not know about the %L %s."
 msgstr "Nem tudok a %L %s-ról."
 
-#: plugin.py:722
+#: plugin.py:812
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -596,14 +819,17 @@ msgid ""
 msgstr ""
 "[<csatorna>]\n"
 "\n"
-"Kiírja <csatorna> képességeit. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Kiírja <csatorna> képességeit. <csatorna> csak akkor szükséges, ha az üzenet "
+"nem a csatornában van elküldve."
 
-#: plugin.py:734
+#: plugin.py:824
 msgid ""
 "[<channel>] [<plugin>] [<command>]\n"
 "\n"
-"        If you have the #channel,op capability, this will disable the <command>\n"
-"        in <channel>.  If <plugin> is provided, <command> will be disabled only\n"
+"        If you have the #channel,op capability, this will disable the "
+"<command>\n"
+"        in <channel>.  If <plugin> is provided, <command> will be disabled "
+"only\n"
 "        for that plugin.  If only <plugin> is provided, all commands in the\n"
 "        given plugin will be disabled.  <channel> is only necessary if the\n"
 "        message isn't sent in the channel itself.\n"
@@ -611,77 +837,132 @@ msgid ""
 msgstr ""
 "[<csatorna>] [<bővítmény>] [<parancs>\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez letiltja <parancs>-ot <csatorna>-ban. Ha <bővítmény> meg van adva, <parancs> csak a megadott bővítményben lesz letiltva. Ha csak <bővítmény> van megadva, minden parancs le lesz tiltva a megadott bővítményben. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,op képességgel, ez letiltja <parancs>-ot "
+"<csatorna>-ban. Ha <bővítmény> meg van adva, <parancs> csak a megadott "
+"bővítményben lesz letiltva. Ha csak <bővítmény> van megadva, minden parancs "
+"le lesz tiltva a megadott bővítményben. <csatorna> csak akkor szükséges, ha "
+"az üzenet nem a csatornában van elküldve."
 
-#: plugin.py:750
-#: plugin.py:789
+#: plugin.py:840 plugin.py:879
 msgid "The %s plugin does not have a command called %s."
 msgstr "A %s bővítménynek nincs %s nevű parancsa."
 
-#: plugin.py:757
-#: plugin.py:796
+#: plugin.py:847 plugin.py:886
 msgid "No plugin or command named %s could be found."
 msgstr "Nem található bővítmény vagy parancs %s néven."
 
-#: plugin.py:773
+#: plugin.py:863
 msgid ""
 "[<channel>] [<plugin>] [<command>]\n"
 "\n"
-"        If you have the #channel,op capability, this will enable the <command>\n"
+"        If you have the #channel,op capability, this will enable the "
+"<command>\n"
 "        in <channel> if it has been disabled.  If <plugin> is provided,\n"
-"        <command> will be enabled only for that plugin.  If only <plugin> is\n"
-"        provided, all commands in the given plugin will be enabled.  <channel>\n"
+"        <command> will be enabled only for that plugin.  If only <plugin> "
+"is\n"
+"        provided, all commands in the given plugin will be enabled.  "
+"<channel>\n"
 "        is only necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<csatorna>] [<bővítmény>] [<parancs>]\n"
 "\n"
-"Ha rendelkezel a #csatorna,op képességgel, ez engedélyezi <parancs>-ot <csatorna>-ban ha le lett tiltva. Ha <bővítmény> meg van adva, <parancs> csak a megadott bővítményben lesz engedélyezve."
+"Ha rendelkezel a #csatorna,op képességgel, ez engedélyezi <parancs>-ot "
+"<csatorna>-ban ha le lett tiltva. Ha <bővítmény> meg van adva, <parancs> "
+"csak a megadott bővítményben lesz engedélyezve."
 
-#: plugin.py:810
+#: plugin.py:900
 msgid "%s was not disabled."
 msgstr "%s nem volt letiltva."
 
-#: plugin.py:819
+#: plugin.py:909
 msgid ""
 "[<channel>] [--count]\n"
 "\n"
 "        Returns the nicks in <channel>.  <channel> is only necessary if the\n"
-"        message isn't sent in the channel itself. Returns only the number of\n"
+"        message isn't sent in the channel itself. Returns only the number "
+"of\n"
 "        nicks if --count option is provided.\n"
 "        "
 msgstr ""
 "[<csatorna>] [--count]\n"
 "\n"
-"Kiírja a neveket <csatorna>-ban. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve. Ha a --count opció meg van adva, csak a nevek számát írja ki."
+"Kiírja a neveket <csatorna>-ban. <csatorna> csak akkor szükséges, ha az "
+"üzenet nem a csatornában van elküldve. Ha a --count opció meg van adva, csak "
+"a nevek számát írja ki."
 
-#: plugin.py:831
+#: plugin.py:931
 msgid "You don't have access to that information."
 msgstr "Nincs hozzáférésed ehhez az információhoz."
 
-#: plugin.py:845
+#: plugin.py:946
 msgid ""
 "Internal message for notifying all the #channel,ops in a channel of\n"
 "        a given situation."
 msgstr "Belső üzenet #csatorna,op-ok értesítésére egy adott szituációban."
 
-#: plugin.py:848
+#: plugin.py:949
 msgid "Alert to all %s ops: %s"
 msgstr "Riasztás minden %s operátornak: %s"
 
-#: plugin.py:850
+#: plugin.py:951
 msgid " (from %s)"
 msgstr "(%s-tól)"
 
-#: plugin.py:858
+#: plugin.py:963
 msgid ""
 "[<channel>] <text>\n"
 "\n"
-"        Sends <text> to all the users in <channel> who have the <channel>,op\n"
+"        Sends <text> to all the users in <channel> who have the <channel>,"
+"op\n"
 "        capability.\n"
 "        "
 msgstr ""
 "[<csatorna>] [<név> ...]\n"
 "\n"
-"Ha rendelkezel a #csatorna,halfop képességgel, ez fél-operátor státuszt ad minden <név>-nek, amit megadsz. Ha nem adsz meg <név>-et, ez neked ad fél-operátor státuszt. <csatorna> csak akkor szükséges, ha az üzenet nem a csatornában van elküldve."
+"Ha rendelkezel a #csatorna,halfop képességgel, ez fél-operátor státuszt ad "
+"minden <név>-nek, amit megadsz. Ha nem adsz meg <név>-et, ez neked ad fél-"
+"operátor státuszt. <csatorna> csak akkor szükséges, ha az üzenet nem a "
+"csatornában van elküldve."
 
+#: plugin.py:973
+msgid ""
+"[<channel>] [<reason>]\n"
+"\n"
+"        Tells the bot to part the list of channels you give it.  <channel> "
+"is\n"
+"        only necessary if you want the bot to part a channel other than the\n"
+"        current channel.  If <reason> is specified, use it as the part\n"
+"        message.  Otherwise, the default part message specified in\n"
+"        supybot.plugins.Channel.partMsg will be used. No part message will "
+"be\n"
+"        used if no default is configured.\n"
+"        "
+msgstr ""
+
+#: plugin.py:994
+#, fuzzy
+msgid "I'm not in %s."
+msgstr "Nem láttam %s-t."
+
+#~ msgid ""
+#~ "I cowardly refuse to devoice myself.  If you really want me devoiced, "
+#~ "tell me to op you and then devoice me yourself."
+#~ msgstr ""
+#~ "Gyáván megtagadom, hogy eltávolítsam magamról a hangot. Ha el akarod "
+#~ "távolítani rólam a hangot, mondd, hogy adjak operátor státuszt neked, és "
+#~ "távolítsd el rólam a hangot."
+
+#, fuzzy
+#~ msgid ""
+#~ "[<channel>]\n"
+#~ "\n"
+#~ "            If you have the #channel,op capability, this will show you "
+#~ "the\n"
+#~ "            current persistent bans on the <channel>.\n"
+#~ "            "
+#~ msgstr ""
+#~ "[<csatorna>]\n"
+#~ "\n"
+#~ "Ha rendelkezel a #csatorna,op képességgel, ez megmutatja neked a "
+#~ "jelenlegi tiltásokat <csatorna>-n."

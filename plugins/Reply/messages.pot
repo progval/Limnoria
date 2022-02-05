@@ -5,17 +5,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:37
+#: plugin.py:38
 #, docstring
 msgid ""
 "This plugin contains a few commands that construct various types of\n"
@@ -24,7 +24,7 @@ msgid ""
 "    "
 msgstr ""
 
-#: plugin.py:43
+#: plugin.py:44
 #, docstring
 msgid ""
 "<text>\n"
@@ -34,7 +34,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:53
+#: plugin.py:54
 #, docstring
 msgid ""
 "<text>\n"
@@ -44,7 +44,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:66
+#: plugin.py:67
 #, docstring
 msgid ""
 "<text>\n"
@@ -54,7 +54,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:76
+#: plugin.py:77
 #, docstring
 msgid ""
 "<text>\n"
@@ -63,7 +63,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:85
+#: plugin.py:86
 #, docstring
 msgid ""
 "<str> [<str> ...]\n"

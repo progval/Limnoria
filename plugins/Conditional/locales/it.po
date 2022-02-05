@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-07-08 09:05+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,40 +10,41 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
-#: plugin.py:64
-#, docstring
+#: plugin.py:59
 msgid ""
-"Add the help for 'plugin help Conditional' here\n"
-"    This should describe *how* to use this plugin."
+"This plugin provides logic operators and other commands that\n"
+"    enable you to run commands only if a condition is true. Useful for "
+"nested\n"
+"    commands and scripting."
 msgstr ""
 
-#: plugin.py:71
-#, docstring
+#: plugin.py:66
 msgid "Run a command from message, as if command was sent over IRC."
 msgstr ""
 
-#: plugin.py:80
-#, docstring
+#: plugin.py:76
 msgid ""
 "<condition> <ifcommand> <elsecommand>\n"
 "\n"
-"        Runs <ifcommand> if <condition> evaluates to true, runs <elsecommand>\n"
+"        Runs <ifcommand> if <condition> evaluates to true, runs "
+"<elsecommand>\n"
 "        if it evaluates to false.\n"
 "\n"
-"        Use other logical operators defined in this plugin and command nesting\n"
+"        Use other logical operators defined in this plugin and command "
+"nesting\n"
 "        to your advantage here.\n"
 "        "
 msgstr ""
 "<condizione> <comando_if> <comando_else>\n"
 "\n"
-"        Esegue <comando_if> se <la condizione> analizzata è vera, esegue <comando_else> se falsa.\n"
+"        Esegue <comando_if> se <la condizione> analizzata è vera, esegue "
+"<comando_else> se falsa.\n"
 "\n"
-"        Utilizza gli altri operatori logici presenti in questo plugin e i comandi nidificati a tuo vantaggio.\n"
+"        Utilizza gli altri operatori logici presenti in questo plugin e i "
+"comandi nidificati a tuo vantaggio.\n"
 "        "
 
-#: plugin.py:97
-#, docstring
+#: plugin.py:92
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -55,8 +56,7 @@ msgstr ""
 "        Restituisce True se tutte le condizioni fornite sono vere.\n"
 "        "
 
-#: plugin.py:109
-#, docstring
+#: plugin.py:104
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -68,8 +68,7 @@ msgstr ""
 "        Restituisce True se almeno una delle condizioni fornite è vera.\n"
 "        "
 
-#: plugin.py:121
-#, docstring
+#: plugin.py:116
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
 "\n"
@@ -81,8 +80,7 @@ msgstr ""
 "        Restituisce True se solo una delle condizioni fornite è vera.\n"
 "        "
 
-#: plugin.py:133
-#, docstring
+#: plugin.py:128
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -92,12 +90,12 @@ msgid ""
 msgstr ""
 "<elemento1> <elemento2>\n"
 "\n"
-"        Effettua una comparazione di stringhe tra <elemento1> ed <elemento2>.\n"
+"        Effettua una comparazione di stringhe tra <elemento1> ed "
+"<elemento2>.\n"
 "        Restituisce True se sono uguali.\n"
 "        "
 
-#: plugin.py:146
-#, docstring
+#: plugin.py:141
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -107,12 +105,12 @@ msgid ""
 msgstr ""
 "<elemento1> <elemento2>\n"
 "\n"
-"        Effettua una comparazione di stringhe tra <elemento1> ed <elemento2>.\n"
+"        Effettua una comparazione di stringhe tra <elemento1> ed "
+"<elemento2>.\n"
 "        Restituisce True se non sono uguali.\n"
 "        "
 
-#: plugin.py:159
-#, docstring
+#: plugin.py:154
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -122,12 +120,12 @@ msgid ""
 msgstr ""
 "<elemento1> <elemento2>\n"
 "\n"
-"        Effettua una comparazione di stringhe tra <elemento1> ed <elemento2>.\n"
+"        Effettua una comparazione di stringhe tra <elemento1> ed "
+"<elemento2>.\n"
 "        Restituisce True se <elemento1> è maggiore di <elemento2>.\n"
 "        "
 
-#: plugin.py:172
-#, docstring
+#: plugin.py:167
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -137,12 +135,12 @@ msgid ""
 msgstr ""
 "<elemento1> <elemento2>\n"
 "\n"
-"        Effettua una comparazione di stringhe tra <elemento1> ed <elemento2>.\n"
+"        Effettua una comparazione di stringhe tra <elemento1> ed "
+"<elemento2>.\n"
 "        Restituisce True se <elemento1> è maggiore o uguale a <elemento2>.\n"
 "        "
 
-#: plugin.py:185
-#, docstring
+#: plugin.py:180
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -152,12 +150,12 @@ msgid ""
 msgstr ""
 "<elemento1> <elemento2>\n"
 "\n"
-"        Effettua una comparazione di stringhe tra <elemento1> ed <elemento2>.\n"
+"        Effettua una comparazione di stringhe tra <elemento1> ed "
+"<elemento2>.\n"
 "        Restituisce True se <elemento1> è minore di <elemento2>.\n"
 "        "
 
-#: plugin.py:198
-#, docstring
+#: plugin.py:193
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -167,17 +165,20 @@ msgid ""
 msgstr ""
 "<elemento1> <elemento2>\n"
 "\n"
-"        Effettua una comparazione di stringhe tra <elemento1> ed <elemento2>.\n"
+"        Effettua una comparazione di stringhe tra <elemento1> ed "
+"<elemento2>.\n"
 "        Restituisce True se <elemento1> è minore o uguale a <elemento2>.\n"
 "        "
 
-#: plugin.py:211
-#, docstring
+#: plugin.py:206
+#, fuzzy
 msgid ""
-"<item1> <item2>\n"
+"[--case-insensitive] <item1> <item2>\n"
 "\n"
 "        Determines if <item1> is a substring of <item2>.\n"
 "        Returns true if <item1> is contained in <item2>.\n"
+"\n"
+"        Will only match case if --case-insensitive is not given.\n"
 "        "
 msgstr ""
 "<elemento1> <elemento2>\n"
@@ -186,8 +187,7 @@ msgstr ""
 "        Restituisce True se <elemento1> è contenuto in <elemento2>.\n"
 "        "
 
-#: plugin.py:224
-#, docstring
+#: plugin.py:226
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -201,8 +201,7 @@ msgstr ""
 "        Restituisce True se sono uguali.\n"
 "        "
 
-#: plugin.py:237
-#, docstring
+#: plugin.py:239
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -216,8 +215,7 @@ msgstr ""
 "        Restituisce True se non sono uguali.\n"
 "        "
 
-#: plugin.py:250
-#, docstring
+#: plugin.py:252
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -231,8 +229,7 @@ msgstr ""
 "        Restituisce True se <elemento1> è maggiore di <elemento2>.\n"
 "        "
 
-#: plugin.py:263
-#, docstring
+#: plugin.py:265
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -246,8 +243,7 @@ msgstr ""
 "        Restituisce True se <elemento1> è maggiore o uguale a <elemento2>.\n"
 "        "
 
-#: plugin.py:276
-#, docstring
+#: plugin.py:278
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -261,8 +257,7 @@ msgstr ""
 "        Restituisce True se <elemento1> è minore di <elemento2>.\n"
 "        "
 
-#: plugin.py:289
-#, docstring
+#: plugin.py:291
 msgid ""
 "<item1> <item2>\n"
 "\n"
@@ -276,3 +271,11 @@ msgstr ""
 "        Restituisce True se <elemento1> è minore o uguale a <elemento2>.\n"
 "        "
 
+#: plugin.py:303
+msgid ""
+"<testcommand>\n"
+"\n"
+"        Runs <testcommand> and returns true if it raises an error;\n"
+"        false otherwise.\n"
+"        "
+msgstr ""

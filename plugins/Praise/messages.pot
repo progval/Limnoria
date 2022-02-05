@@ -5,37 +5,44 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether the bot will show the ids of\n"
 "    a praise when the praise is given."
 msgstr ""
 
-#: plugin.py:39
+#: plugin.py:40
 #, docstring
 msgid ""
-"Praise is a plugin for ... well, praising things.  Feel free to add\n"
+"\n"
+"    Praise is a plugin for ... well, praising things.  Feel free to add\n"
 "    your own flavor to it by customizing what praises it gives.  Use \"praise\n"
 "    add <text>\" to add new ones, making sure to include \"$who\" in <text> where\n"
 "    you want to insert the thing being praised.\n"
+"\n"
+"    Example:\n"
+"\n"
+"    * If you add ``hugs $who``\n"
+"    * Someone says ``@praise ChanServ``.\n"
+"    * ``* bot hugs ChanServ``\n"
 "    "
 msgstr ""
 
-#: plugin.py:53
+#: plugin.py:61
 msgid "Praises must contain $who."
 msgstr ""
 
-#: plugin.py:57
+#: plugin.py:65
 #, docstring
 msgid ""
 "[<channel>] [<id>] <who|what> [for <reason>]\n"
@@ -46,15 +53,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:73
+#: plugin.py:81
 msgid "There is no praise with id #%i."
 msgstr ""
 
-#: plugin.py:78
+#: plugin.py:86
 msgid "There are no praises in my database for %s."
 msgstr ""
 
-#: plugin.py:86
+#: plugin.py:94
 msgid " for "
 msgstr ""
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2012-03-16 12:41+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,8 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
-#: config.py:46
+#: config.py:47
 msgid ""
 "Determines whether the cpu command will list\n"
 "    the time taken by children as well as the bot's process."
@@ -19,22 +18,27 @@ msgstr ""
 "Determina se il comando cpu elencherà il tempo impiegato\n"
 "    dal processo figlio così come il processo del bot."
 
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether the cpu command will\n"
 "    provide the number of threads spawned and active."
 msgstr ""
 "Determina se il comando cpu fornirà il numero di thread avviati e attivi."
 
-#: config.py:52
+#: config.py:53
 msgid ""
 "Determines whether the cpu command will report\n"
 "    the amount of memory being used by the bot."
 msgstr ""
 "Determina se il comando cpu riporterà la quantità di memoria usata dal bot."
 
-#: plugin.py:71
-#, docstring
+#: plugin.py:48
+msgid ""
+"This plugin allows you to view different bot statistics, for example,\n"
+"    uptime."
+msgstr ""
+
+#: plugin.py:75
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -46,20 +50,19 @@ msgstr ""
 "        Riporta lo stato del bot.\n"
 "        "
 
-#: plugin.py:80
+#: plugin.py:83
 msgid "%s as %L"
 msgstr "%s come %L"
 
-#: plugin.py:81
+#: plugin.py:84
 msgid "I am connected to %L."
 msgstr "Sono connesso a %L."
 
-#: plugin.py:83
+#: plugin.py:86
 msgid "I am currently in code profiling mode."
 msgstr "Sto analizzando i dati."
 
-#: plugin.py:89
-#, docstring
+#: plugin.py:92
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -71,12 +74,25 @@ msgstr ""
 "        Riporta gli attuali thread attivi.\n"
 "        "
 
-#: plugin.py:95
+#: plugin.py:98
 msgid "I have spawned %n; %n %b still currently active: %L."
 msgstr "Ho avviato %n; %n %b attualmente ancora attivi: %L."
 
-#: plugin.py:103
-#, docstring
+#: plugin.py:105
+#, fuzzy
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Returns the number of processes that have been spawned, and list of\n"
+"        ones that are still active.\n"
+"        "
+msgstr ""
+"non necessita argomenti\n"
+"\n"
+"        Riporta gli attuali thread attivi.\n"
+"        "
+
+#: plugin.py:120
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -88,16 +104,19 @@ msgstr ""
 "        Riporta alcune statistiche interessanti riguardanti la rete.\n"
 "        "
 
-#: plugin.py:111
+#: plugin.py:128
 msgid "an indeterminate amount of time"
 msgstr "una quantità di tempo indeterminato"
 
-#: plugin.py:112
-msgid "I have received %s messages for a total of %S.  I have sent %s messages for a total of %S.  I have been connected to %s for %s."
-msgstr "Ho ricevuto %s messaggi per un totale di %S. Ho inviato %s messaggi per un totale di %S. Sono connesso a %s da %s."
+#: plugin.py:129
+msgid ""
+"I have received %s messages for a total of %S.  I have sent %s messages for "
+"a total of %S.  I have been connected to %s for %s."
+msgstr ""
+"Ho ricevuto %s messaggi per un totale di %S. Ho inviato %s messaggi per un "
+"totale di %S. Sono connesso a %s da %s."
 
-#: plugin.py:121
-#, docstring
+#: plugin.py:138
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -109,24 +128,37 @@ msgstr ""
 "        Riporta alcune statistiche interessanti riguardanti la CPU.\n"
 "        "
 
-#: plugin.py:131
-msgid "My children have taken %.2f seconds of user time and %.2f seconds of system time for a total of %.2f seconds of CPU time."
-msgstr "I miei processi figli hanno impiegato %.2f secondi di tempo a livello utente e %.2f secondi a livello di sistema per un totale di %.2f secondi di tempo di CPU."
+#: plugin.py:148
+msgid ""
+"My children have taken %.2f seconds of user time and %.2f seconds of system "
+"time for a total of %.2f seconds of CPU time."
+msgstr ""
+"I miei processi figli hanno impiegato %.2f secondi di tempo a livello utente "
+"e %.2f secondi a livello di sistema per un totale di %.2f secondi di tempo "
+"di CPU."
 
-#: plugin.py:138
-msgid "I have taken %.2f seconds of user time and %.2f seconds of system time, for a total of %.2f seconds of CPU time.  %s"
-msgstr "Ho impiegato %.2f secondi di tempo a livello utente e %.2f secondi a livello di sistema per un totale di %.2f secondi di tempo di CPU.  %s"
+#: plugin.py:155
+msgid ""
+"I have taken %.2f seconds of user time and %.2f seconds of system time, for "
+"a total of %.2f seconds of CPU time.  %s"
+msgstr ""
+"Ho impiegato %.2f secondi di tempo a livello utente e %.2f secondi a livello "
+"di sistema per un totale di %.2f secondi di tempo di CPU.  %s"
 
-#: plugin.py:160
+#: plugin.py:177
 msgid "Unable to run ps command."
 msgstr "Impossibile eseguire il comando ps."
 
-#: plugin.py:166
+#: plugin.py:184
 msgid "  I'm taking up %S of memory."
 msgstr " Sto impiegando il %S di memoria. "
 
-#: plugin.py:175
-#, docstring
+#: plugin.py:187
+#, fuzzy
+msgid "  I'm taking up an unknown amount of memory."
+msgstr " Sto impiegando il %S di memoria. "
+
+#: plugin.py:195
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -138,12 +170,11 @@ msgstr ""
 "        Riporta alcune statistiche interessanti riguardanti i comandi.\n"
 "        "
 
-#: plugin.py:185
+#: plugin.py:205
 msgid "I offer a total of %n in %n.  I have processed %n."
 msgstr "Offro un totale di %n in %n. Ho elaborato %n."
 
-#: plugin.py:194
-#, docstring
+#: plugin.py:214
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -155,8 +186,7 @@ msgstr ""
 "        Restituisce un elenco dei comandi offerti dal bot.\n"
 "        "
 
-#: plugin.py:208
-#, docstring
+#: plugin.py:228
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -168,12 +198,11 @@ msgstr ""
 "        Riporta da quanto tempo il bot è in esecuzione.\n"
 "        "
 
-#: plugin.py:212
+#: plugin.py:232
 msgid "I have been running for %s."
 msgstr "Sono in funzione da %s."
 
-#: plugin.py:219
-#, docstring
+#: plugin.py:239
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -185,8 +214,7 @@ msgstr ""
 "        Restituisce i server ai quali è connesso il bot.\n"
 "        "
 
-#: plugin.py:228
-#, docstring
+#: plugin.py:248
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -197,4 +225,3 @@ msgstr ""
 "\n"
 "        Restituisce la network alla quale è connesso il bot.\n"
 "        "
-

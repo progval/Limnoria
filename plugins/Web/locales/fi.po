@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Web plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 14:42+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 14:42+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: config.py:50
+#: config.py:51
 msgid ""
 "Determines whether the bot will output the\n"
 "    HTML title of URLs it sees in the channel."
@@ -25,7 +25,7 @@ msgstr ""
 "Määrittää tulostaako botti\n"
 "    kanavalle näkimiensä URL-osoitteiden HTML otsikot."
 
-#: config.py:53
+#: config.py:54
 msgid ""
 "Determines whether the bot will notfiy the user\n"
 "    about network exceptions like hostnotfound, timeout ...."
@@ -33,7 +33,22 @@ msgstr ""
 "Määrittää ilmoitetaanko käyttäjää verkkovirheistä,\n"
 " kuten isäntää ei löydy, aikakatkaisu ...."
 
-#: config.py:56
+#: config.py:57
+msgid ""
+"Determines whether domain names should be\n"
+"    displayed by the title snarfer."
+msgstr ""
+
+#: config.py:60
+#, fuzzy
+msgid ""
+"Determines whether the title snarfer will\n"
+"    query all URLs in a message, or only the first one."
+msgstr ""
+"Määrittää tulostaako botti\n"
+"    kanavalle näkimiensä URL-osoitteiden HTML otsikot."
+
+#: config.py:63
 msgid ""
 "Determines whether the domain name displayed\n"
 "    by the snarfer will be the original one (posted on IRC) or the target "
@@ -45,7 +60,17 @@ msgstr ""
 " vai kohde domainin nimi (seuraten uudelleenohjauksia siinä tapauksessa, "
 "että niitä on)."
 
-#: config.py:60
+#: config.py:67
+msgid ""
+"Determines the string used at before\n"
+"    a web page's title."
+msgstr ""
+
+#: config.py:67
+msgid "Title:"
+msgstr ""
+
+#: config.py:70
 msgid ""
 "Determines what URLs matching the given regexp\n"
 "    will not be snarfed.  Give the empty string if you have no URLs that "
@@ -58,7 +83,13 @@ msgstr ""
 "haluaisi tulevan\n"
 "    kaapatuiksi."
 
-#: config.py:72
+#: config.py:74
+msgid ""
+"Determines whether the title snarfer checks\n"
+"    if the author of a message is ignored."
+msgstr ""
+
+#: config.py:90
 msgid ""
 "Determines the maximum number of\n"
 "    bytes the bot will download via the 'fetch' command in this plugin."
@@ -66,32 +97,65 @@ msgstr ""
 "Määrittää enimmäismäärän bittejä, jotka botti lataa \n"
 "     käyttämällä 'fetch' komentoa tässä lisäosassa."
 
-#: plugin.py:90
+#: plugin.py:99
+#, fuzzy
 msgid ""
 "Runs a command in a forked process with limited memory resources\n"
-"    to prevent memory bomb caused by specially crafted http responses."
+"        to prevent memory bomb caused by specially crafted http responses.\n"
+"\n"
+"        On CPython versions with support for limiting the number of "
+"headers,\n"
+"        this is the identity function"
 msgstr ""
 "Suorittaa komennon forkatussa prosessissa rajoitetuilla muistiresursseilla\n"
 " estääkseen muistipommin, jonka aiheuttavat vartavasten luodut http-"
 "vastaukset."
 
-#: plugin.py:102
+#: plugin.py:113
+#, fuzzy
+msgid ""
+"Runs a command in a forked process with limited memory resources\n"
+"        to prevent memory bomb caused by specially crafted http responses."
+msgstr ""
+"Suorittaa komennon forkatussa prosessissa rajoitetuilla muistiresursseilla\n"
+" estääkseen muistipommin, jonka aiheuttavat vartavasten luodut http-"
+"vastaukset."
+
+#: plugin.py:125
 msgid "Page is too big or the server took too much time to answer the request."
 msgstr "Sivu on liian suuri tai palvelin vastasi pyyntöön liian hitaasti."
 
-#: plugin.py:111
+#: plugin.py:134
 msgid "Display a nice error instead of \"An error has occurred\"."
 msgstr "Näytä kiva virheilmoitus ilmoitukset \"Virhe on tapahtunut\" sijaan."
 
-#: plugin.py:121
-msgid "Add the help for \"help Web\" here."
+#: plugin.py:143
+#, fuzzy
+msgid "Add the help for 'help Web' here."
 msgstr "Lisää ohje komennolle \"help Web\" tähän."
 
-#: plugin.py:166
-msgid "Title: %s (at %s)"
+#: plugin.py:171
+#, fuzzy
+msgid "Could not guess the page's encoding. (Try installing python-charade.)"
+msgstr ""
+"Sivun merkistökoodausta ei pystytty arvaamaan. (Kokeile python-charade:n "
+"asentamista.)"
+
+#: plugin.py:192
+msgid "That URL appears to have no HTML title."
+msgstr "Tuolla URL-osoitteella ei vaikuta olevan HTTP otsikkoa."
+
+#: plugin.py:195
+msgid "That URL appears to have no HTML title within the first %S."
+msgstr ""
+"Tuolla URL-osoitteella ei vaikuta olevan HTML otsikkoa ensinmäisissä %S."
+
+#: plugin.py:237
+#, fuzzy
+msgid " (at %s)"
 msgstr "Otsikko: %s (sivustolla %s)"
 
-#: plugin.py:188
+#: plugin.py:262
 msgid ""
 "<url>\n"
 "\n"
@@ -105,11 +169,21 @@ msgstr ""
 "        HTTP URL-osoitteet ovat kelvollisia.\n"
 "        "
 
-#: plugin.py:198
+#: plugin.py:273
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#: plugin.py:210
+#: plugin.py:283
+msgid ""
+"<url>\n"
+"\n"
+"        If the <url> is redirected to another page, returns the URL of that\n"
+"        page. This works even if there are multiple redirects.\n"
+"        Only HTTP urls are valid.\n"
+"        Useful to \"un-tinify\" URLs."
+msgstr ""
+
+#: plugin.py:299
 msgid ""
 "<url>\n"
 "\n"
@@ -123,11 +197,11 @@ msgstr ""
 "        vain HTTP URL-osoitteet ovat kelvollisia.\n"
 "        "
 
-#: plugin.py:226
+#: plugin.py:315
 msgid "That URL has no specified doctype."
 msgstr "Tuo URL-osoite ei ole määrittänyt doctypeä."
 
-#: plugin.py:233
+#: plugin.py:321
 msgid ""
 "<url>\n"
 "\n"
@@ -142,17 +216,17 @@ msgstr ""
 "        vain HTTP URL-osoitteet ovat kelvollisia.\n"
 "        "
 
-#: plugin.py:245 plugin.py:250
+#: plugin.py:336 plugin.py:341
 msgid "%u is %S long."
 msgstr "%u on %S pitkä."
 
-#: plugin.py:252
+#: plugin.py:343
 msgid "The server didn't tell me how long %u is but it's longer than %S."
 msgstr ""
 "Palvelin ei kertonut minulle, kuinka pitkä %u on, mutta se on pidempi kuin "
 "%S."
 
-#: plugin.py:263
+#: plugin.py:353
 msgid ""
 "[--no-filter] <url>\n"
 "\n"
@@ -168,23 +242,7 @@ msgstr ""
 "        DCC, ...) ei riisuta.\n"
 "        "
 
-#: plugin.py:281
-#, fuzzy
-msgid "Could not guess the page's encoding. (Try installing python-charade.)"
-msgstr ""
-"Sivun merkistökoodausta ei pystytty arvaamaan. (Kokeile python-charade:n "
-"asentamista.)"
-
-#: plugin.py:295
-msgid "That URL appears to have no HTML title."
-msgstr "Tuolla URL-osoitteella ei vaikuta olevan HTTP otsikkoa."
-
-#: plugin.py:297
-msgid "That URL appears to have no HTML title within the first %S."
-msgstr ""
-"Tuolla URL-osoitteella ei vaikuta olevan HTML otsikkoa ensinmäisissä %S."
-
-#: plugin.py:303
+#: plugin.py:374
 msgid ""
 "<text>\n"
 "\n"
@@ -196,7 +254,7 @@ msgstr ""
 "        Palauttaa URL lainatun muodon tekstistä.\n"
 "        "
 
-#: plugin.py:312
+#: plugin.py:382
 msgid ""
 "<text>\n"
 "\n"
@@ -208,7 +266,7 @@ msgstr ""
 "        Palauttaa tekstin URL lainaamattomassa muodossa.\n"
 "        "
 
-#: plugin.py:324
+#: plugin.py:393
 msgid ""
 "<url>\n"
 "\n"
@@ -227,7 +285,7 @@ msgstr ""
 "        tämä komento poistetaan käytöstä.\n"
 "        "
 
-#: plugin.py:335
+#: plugin.py:405
 msgid ""
 "This command is disabled (supybot.plugins.Web.fetch.maximum is set to 0)."
 msgstr ""

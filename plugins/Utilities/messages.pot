@@ -5,22 +5,22 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 13:30+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:41
+#: plugin.py:43
 #, docstring
 msgid "Provides useful commands for bot scripting / command nesting."
 msgstr ""
 
-#: plugin.py:46
+#: plugin.py:48
 #, docstring
 msgid ""
 "requires no arguments\n"
@@ -30,7 +30,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:60
+#: plugin.py:59
 #, docstring
 msgid ""
 "[<text>]\n"
@@ -43,7 +43,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:73
+#: plugin.py:72
 #, docstring
 msgid ""
 "<text> [<text> ...]\n"
@@ -54,7 +54,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:87
+#: plugin.py:86
 #, docstring
 msgid ""
 "<text>\n"
@@ -66,7 +66,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:100
+#: plugin.py:99
 #, docstring
 msgid ""
 "<arg> [<arg> ...]\n"
@@ -75,7 +75,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:110
+#: plugin.py:109
 #, docstring
 msgid ""
 "<arg> [<arg> ...]\n"
@@ -84,7 +84,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:121
+#: plugin.py:120
 #, docstring
 msgid ""
 "<num> <arg> [<arg> ...]\n"
@@ -93,7 +93,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:134
+#: plugin.py:133
 #, docstring
 msgid ""
 "<arg> [<arg> ...]\n"
@@ -102,12 +102,26 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:143
+#: plugin.py:142
 #, docstring
 msgid ""
 "<command> <text>\n"
 "\n"
 "        Tokenizes <text> and calls <command> with the resulting arguments.\n"
 "        "
+msgstr ""
+
+#: plugin.py:157
+#, docstring
+msgid ""
+"<variable> = <value> in <command>\n"
+"\n"
+"        Defines <variable> to be equal to <value> in the <command>\n"
+"        and runs the <command>.\n"
+"        '=' and 'in' can be omitted."
+msgstr ""
+
+#: plugin.py:165
+msgid "Cannot set a variable that already exists."
 msgstr ""
 

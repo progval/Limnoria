@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot ChannelStats\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: config.py:60
+#: config.py:62
 msgid ""
 "Determines whether the bot will keep channel\n"
 "    statistics on itself, possibly skewing the channel stats (especially in\n"
@@ -21,7 +21,7 @@ msgstr ""
 "tilastot itsellään, mahdollisesti vinouttaen kanava tilastot (etenkin\n"
 "tilanteissa, joissa botti on välittämässä kanavien välillä verkossa)."
 
-#: config.py:64
+#: config.py:66
 msgid ""
 "Determines what\n"
 "    words (i.e., pieces of text with no spaces in them) are considered\n"
@@ -31,7 +31,7 @@ msgstr ""
 "sanat (esim. tekstin paloja ilman välilyöntiä niiden välissä ) lasketaan\n"
 "    'hymiöiksi' tilastojen pitämisen takia."
 
-#: config.py:68
+#: config.py:70
 #, fuzzy
 msgid ""
 "Determines what words\n"
@@ -43,7 +43,7 @@ msgstr ""
 "    (esim. paloja tekstiä ilman välilyöntiä välissä ) lasketaan 'surioiksi'\n"
 "tilastojen pitämistä varten."
 
-#: plugin.py:167
+#: plugin.py:169
 msgid ""
 "This plugin keeps stats of the channel and returns them with\n"
 "    the command 'channelstats'."
@@ -51,7 +51,7 @@ msgstr ""
 "Tämä plugini säilyttää tilastoja kanavasta ja palauttaa ne komennolla\n"
 " 'channelstats'."
 
-#: plugin.py:248
+#: plugin.py:240
 msgid ""
 "[<channel>] [<name>]\n"
 "\n"
@@ -68,11 +68,11 @@ msgstr ""
 " ei ole annettu, se on oletuksena viestin lähettänyt henkilö.\n"
 "        "
 
-#: plugin.py:264
+#: plugin.py:258
 msgid "I couldn't find you in my user database."
 msgstr "Minä en voi löytää sinua käyttäjä tietokannastani."
 
-#: plugin.py:277
+#: plugin.py:271
 #, fuzzy
 msgid ""
 "%s has sent %n; a total of %n, %n, %n, and %n; %s of those messages %s. %s "
@@ -83,40 +83,40 @@ msgstr ""
 "on liittynyt %n, poistunut kanavalta %n, sulkenut %n, potkinut jonkun %n, "
 "ollut potkittu %n, vaihtanut aihetta %n, vaihtanut tilaa %n."
 
-#: plugin.py:284
+#: plugin.py:278
 msgid "character"
 msgstr "merkki"
 
-#: plugin.py:285 plugin.py:379
+#: plugin.py:279 plugin.py:368
 msgid "word"
 msgstr "sana"
 
-#: plugin.py:286 plugin.py:380
+#: plugin.py:280 plugin.py:369
 msgid "smiley"
 msgstr "hymiö"
 
-#: plugin.py:287 plugin.py:381
+#: plugin.py:281 plugin.py:370
 msgid "frown"
 msgstr "surio"
 
-#: plugin.py:289 plugin.py:382
+#: plugin.py:283 plugin.py:371
 msgid "was an ACTION"
 msgstr "oli TOIMINTO"
 
-#: plugin.py:290 plugin.py:383
+#: plugin.py:284 plugin.py:372
 msgid "were ACTIONs"
 msgstr "olivat TOIMINTOja"
 
-#: plugin.py:292 plugin.py:293 plugin.py:294 plugin.py:295 plugin.py:296
-#: plugin.py:297 plugin.py:298
+#: plugin.py:286 plugin.py:287 plugin.py:288 plugin.py:289 plugin.py:290
+#: plugin.py:291 plugin.py:292
 msgid "time"
 msgstr "aika"
 
-#: plugin.py:301
+#: plugin.py:295
 msgid "I have no stats for that %s in %s."
 msgstr "Minulla ei ole tilastoja %s:stä %s:ään."
 
-#: plugin.py:310
+#: plugin.py:301
 msgid ""
 "[<channel>] <stat expression>\n"
 "\n"
@@ -139,24 +139,15 @@ msgstr ""
 " lauseke sisältäen nämä arvot on sallittu.\n"
 "        "
 
-#: plugin.py:324
-msgid ""
-"There's really no reason why you should have underscores or brackets in your "
-"mathematical expression.  Please remove them."
-msgstr ""
-"Ei ole mitään syytä miksi haluaisit alaviivoja tai sulkuja matemaattisessa "
-"lausekkeessa.  Ole hyvä ja poista ne."
-
-#: plugin.py:328
-#, fuzzy
-msgid "You can't use lambda in this command."
-msgstr "Et voi käyttää lambdaa tässä komennossa."
-
-#: plugin.py:342
+#: plugin.py:327
 msgid "stat variable"
 msgstr "aloita muuttuja"
 
-#: plugin.py:358
+#: plugin.py:329
+msgid "Invalid syntax: %s"
+msgstr ""
+
+#: plugin.py:347
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -172,15 +163,15 @@ msgstr ""
 "kanavalla itsessään.\n"
 "        "
 
-#: plugin.py:364
+#: plugin.py:353
 msgid "I am not in %s."
 msgstr "En ole kanavalla %s."
 
-#: plugin.py:366
+#: plugin.py:355
 msgid "You must be in %s to use this command."
 msgstr "Sinun on oltava kanavalla %s käyttääksesi tätä komentoa."
 
-#: plugin.py:373
+#: plugin.py:362
 #, fuzzy
 msgid ""
 "On %s there %h been %i messages, containing %i characters, %n, %n, and %n; "
@@ -191,38 +182,49 @@ msgstr ""
 "noista viesteistä %s.  On ollut %n, %n, %n, %n, %n, ja %n.   %b tällä "
 "hetkellä %n kanavalla on huipulla %n."
 
-#: plugin.py:384
+#: plugin.py:373
 msgid "join"
 msgstr "liity"
 
-#: plugin.py:385
+#: plugin.py:374
 msgid "part"
 msgstr "poistu"
 
-#: plugin.py:386
+#: plugin.py:375
 msgid "quit"
 msgstr "poistu"
 
-#: plugin.py:387
+#: plugin.py:376
 msgid "kick"
 msgstr "potki"
 
-#: plugin.py:388
+#: plugin.py:377
 msgid "mode"
 msgstr "tila"
 
-#: plugin.py:388 plugin.py:389
+#: plugin.py:377 plugin.py:378
 msgid "change"
 msgstr "vaihdos"
 
-#: plugin.py:389
+#: plugin.py:378
 msgid "topic"
 msgstr "aihe"
 
-#: plugin.py:391 plugin.py:392
+#: plugin.py:380 plugin.py:381
 msgid "user"
 msgstr "käyttäjä"
 
-#: plugin.py:395
+#: plugin.py:384
 msgid "I've never been on %s."
 msgstr "En ole ikinä ollut %s:llä."
+
+#~ msgid ""
+#~ "There's really no reason why you should have underscores or brackets in "
+#~ "your mathematical expression.  Please remove them."
+#~ msgstr ""
+#~ "Ei ole mitään syytä miksi haluaisit alaviivoja tai sulkuja "
+#~ "matemaattisessa lausekkeessa.  Ole hyvä ja poista ne."
+
+#, fuzzy
+#~ msgid "You can't use lambda in this command."
+#~ msgstr "Et voi käyttää lambdaa tässä komennossa."

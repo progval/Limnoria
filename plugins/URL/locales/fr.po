@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-08-10 11:27+CEST\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -13,15 +13,26 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Determines what URLs are not to be snarfed and\n"
-"    stored in the database for the channel; URLs matching the given regexp will\n"
-"    not be snarfed.  Give the empty string if you have no URLs that you'd like\n"
+"    stored in the database for the channel; URLs matching the given regexp "
+"will\n"
+"    not be snarfed.  Give the empty string if you have no URLs that you'd "
+"like\n"
 "    to exclude from being snarfed."
-msgstr "Détermine quelles URLs sont écoutées et stockées dans la base de canal ; les URLs correspondant à l'expression régulière ne seront pas écoutées. Donnez une chaîne vide si vous ne voulez exclure aucune URL"
+msgstr ""
+"Détermine quelles URLs sont écoutées et stockées dans la base de canal ; les "
+"URLs correspondant à l'expression régulière ne seront pas écoutées. Donnez "
+"une chaîne vide si vous ne voulez exclure aucune URL"
 
-#: plugin.py:89
+#: plugin.py:67
+msgid ""
+"This plugin records how many URLs have been mentioned in\n"
+"    a channel and what the last URL was."
+msgstr ""
+
+#: plugin.py:93
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -31,30 +42,42 @@ msgid ""
 msgstr ""
 "[<canal>]\n"
 "\n"
-"Retourne le nombre d'URLs dans ma base de données d'URLs. <canal> n'est nécessaire que si le message n'est pas envoyé sur la canal lui-même."
+"Retourne le nombre d'URLs dans ma base de données d'URLs. <canal> n'est "
+"nécessaire que si le message n'est pas envoyé sur la canal lui-même."
 
-#: plugin.py:96
+#: plugin.py:100
 msgid "I have %n in my database."
 msgstr "J'ai %n dans ma base de données."
 
-#: plugin.py:101
+#: plugin.py:105
 #, fuzzy
 msgid ""
 "[<channel>] [--{from,with,without,near,proto} <value>] [--nolimit]\n"
 "\n"
-"        Gives the last URL matching the given criteria.  --from is from whom\n"
-"        the URL came; --proto is the protocol the URL used; --with is something\n"
-"        inside the URL; --without is something that should not be in the URL;\n"
-"        --near is something in the same message as the URL.  If --nolimit is\n"
+"        Gives the last URL matching the given criteria.  --from is from "
+"whom\n"
+"        the URL came; --proto is the protocol the URL used; --with is "
+"something\n"
+"        inside the URL; --without is something that should not be in the "
+"URL;\n"
+"        --near is something in the same message as the URL.  If --nolimit "
+"is\n"
 "        given, returns all the URLs that are found to just the URL.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canal>] [--{from,with,without,near,proto} <valeur>] [--nolimit]\n"
 "\n"
-"Donne la dernière URL correspondant aux critères. --from correspond à l'utilisateur ayant posé l'URL ; --proto est le protocole utilisé pour l'URL ; --with est quelque chose dans l'URL ; --without est le contraire de --with --near est quelque chose dans le même message que l'URL ; si --nolimit est donné, retourne toutes les URLs trouvées, et non une seule.        <canal> n'est nécessaire que si la commande n'est pas envoyée        sur le canal lui-même."
+"Donne la dernière URL correspondant aux critères. --from correspond à "
+"l'utilisateur ayant posé l'URL ; --proto est le protocole utilisé pour "
+"l'URL ; --with est quelque chose dans l'URL ; --without est le contraire de "
+"--with --near est quelque chose dans le même message que l'URL ; si --"
+"nolimit est donné, retourne toutes les URLs trouvées, et non une "
+"seule.        <canal> n'est nécessaire que si la commande n'est pas "
+"envoyée        sur le canal lui-même."
 
-#: plugin.py:143
+#: plugin.py:147
 msgid "No URLs matched that criteria."
 msgstr "Aucune URL ne correspond à ces critères."

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2010-10-17 18:28+CEST\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -13,7 +13,11 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
 
-#: plugin.py:84
+#: plugin.py:81
+msgid "Will tell you how lame a nick is by the command 'nickometer [nick]'."
+msgstr ""
+
+#: plugin.py:88
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -23,9 +27,9 @@ msgid ""
 msgstr ""
 "[<nick>]\n"
 "\n"
-"Mesure la décrédibilité du nick. Si le nick n'est pas donné, utilise le nick de la personne donnant la commande."
+"Mesure la décrédibilité du nick. Si le nick n'est pas donné, utilise le nick "
+"de la personne donnant la commande."
 
-#: plugin.py:226
+#: plugin.py:231
 msgid "The \"lame nick-o-meter\" reading for \"%s\" is %s%%."
 msgstr "Le \"décrédibilit-o-mètre\" pour \"%s\" donne %s%%."
-

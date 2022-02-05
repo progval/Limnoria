@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-07-07 11:07+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,28 +10,32 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether the bot will randomly grab\n"
-"    possibly-suitable quotes on occasion.  The suitability of a given message\n"
+"    possibly-suitable quotes on occasion.  The suitability of a given "
+"message\n"
 "    is determined by ..."
 msgstr ""
-"Determina se il bot pescherà in modo casuale citazioni adatte all'occasione.\n"
+"Determina se il bot pescherà in modo casuale citazioni adatte "
+"all'occasione.\n"
 "    L'idoneità del messaggio è determinata da ..."
 
-#: config.py:54
+#: config.py:55
 msgid ""
 "Determines about how many seconds, on\n"
 "    average, should elapse between random grabs.  This is only an average\n"
 "    value; grabs can happen from any time after half this time until never,\n"
 "    although that's unlikely to occur."
 msgstr ""
-"Determina quanti secondi, in media, devono passare tra due recuperi casuali.\n"
-"    Questa è solo un valore medio; il recupero delle citazioni può accadere da\n"
-"    qualsiasi momento dopo la metà di questo tempo fino a mai, seppur improbabile."
+"Determina quanti secondi, in media, devono passare tra due recuperi "
+"casuali.\n"
+"    Questa è solo un valore medio; il recupero delle citazioni può accadere "
+"da\n"
+"    qualsiasi momento dopo la metà di questo tempo fino a mai, seppur "
+"improbabile."
 
-#: config.py:59
+#: config.py:60
 msgid ""
 "Determines the minimum\n"
 "    number of words in a message for it to be considered for random\n"
@@ -40,74 +44,78 @@ msgstr ""
 "Determina il numero minimo di parole in un messaggio per essere considerato\n"
 "    un recupero casuale."
 
-#: config.py:63
+#: config.py:64
 msgid ""
 "Determines the\n"
 "    minimum number of characters in a message for it to be considered for\n"
 "    random grabbing."
 msgstr ""
-"Determina il numero minimo di caratteri in un messaggio per essere considerato\n"
+"Determina il numero minimo di caratteri in un messaggio per essere "
+"considerato\n"
 "    un recupero casuale."
 
-#: plugin.py:66
+#: plugin.py:67
 msgid "%s (Said by: %s; grabbed by %s at %t)"
 msgstr "%s (Detto da: %s; pescato da %s il %t)"
 
-#: plugin.py:226
-#, docstring
-msgid "Add the help for \"help QuoteGrabs\" here."
+#: plugin.py:234
+msgid ""
+"Stores and displays quotes from channels. Quotes are stored randomly\n"
+"    and/or on user request."
 msgstr ""
 
-#: plugin.py:265
-#, docstring
+#: plugin.py:277
 msgid ""
 "[<channel>] <nick>\n"
 "\n"
 "        Grabs a quote from <channel> by <nick> for the quotegrabs table.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canale>] <nick>\n"
 "\n"
-"        Recupera una citazione di <nick> da <canale> per la tabella delle citazioni.\n"
-"        <canale> è necessario solo se il messaggio non viene inviato nel canale stesso.\n"
+"        Recupera una citazione di <nick> da <canale> per la tabella delle "
+"citazioni.\n"
+"        <canale> è necessario solo se il messaggio non viene inviato nel "
+"canale stesso.\n"
 "        "
 
-#: plugin.py:278
+#: plugin.py:290
 msgid "You can't quote grab yourself."
 msgstr "Non puoi recuperare citazioni da solo."
 
-#: plugin.py:285
+#: plugin.py:305
 msgid "I couldn't find a proper message to grab."
 msgstr "Impossibile trovare un messaggio da recuperare."
 
-#: plugin.py:290
-#, docstring
+#: plugin.py:310
 msgid ""
 "[<channel>] <number>\n"
 "\n"
 "        Removes the grab <number> (the last by default) on <channel>.\n"
-"        <channel> is only necessary if the message isn't sent in the channel\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canale>] <numero>\n"
 "\n"
 "        Rimuove la citazione <numero> (di default l'ultima) su <canale>.\n"
-"        <canale> è necessario solo se il messaggio non viene inviato nel canale stesso.\n"
+"        <canale> è necessario solo se il messaggio non viene inviato nel "
+"canale stesso.\n"
 "        "
 
-#: plugin.py:301
+#: plugin.py:321
 msgid "Nothing to ungrab."
 msgstr "Niente da rimuovere."
 
-#: plugin.py:303
+#: plugin.py:323
 msgid "Invalid grab number."
 msgstr "Numero citazione non valido."
 
-#: plugin.py:308
-#, docstring
+#: plugin.py:328
 msgid ""
 "[<channel>] <nick>\n"
 "\n"
@@ -117,81 +125,93 @@ msgid ""
 msgstr ""
 "[<canale>] <nick>\n"
 "\n"
-"        Riporta il <nick> dell'ultima citazione catturata in <canale>. <canale>\n"
-"        è necessario solo se il messaggio non viene inviato nel canale stesso.\n"
+"        Riporta il <nick> dell'ultima citazione catturata in <canale>. "
+"<canale>\n"
+"        è necessario solo se il messaggio non viene inviato nel canale "
+"stesso.\n"
 "        "
 
-#: plugin.py:316
+#: plugin.py:336
 msgid "I couldn't find a matching quotegrab for %s."
 msgstr "Impossibile trovare una citazione corrispondente a %s."
 
-#: plugin.py:322
-#, docstring
+#: plugin.py:342
 msgid ""
 "[<channel>] <nick>\n"
 "\n"
-"        Returns a list of shortened quotes that have been grabbed for <nick>\n"
+"        Returns a list of shortened quotes that have been grabbed for "
+"<nick>\n"
 "        as well as the id of each quote.  These ids can be used to get the\n"
-"        full quote.  <channel> is only necessary if the message isn't sent in\n"
+"        full quote.  <channel> is only necessary if the message isn't sent "
+"in\n"
 "        the channel itself.\n"
 "        "
 msgstr ""
 "[<canale>] <nick>\n"
 "\n"
-"        Riporta un elenco di citazioni in versione ridotta che sono state pescate per <nick>\n"
-"        e l'ID di ognuna. Questi ID possono essere utilizzati per recuperare la citazione\n"
-"        completa. <canale> è necessario solo se il messaggio non viene inviato nel canale stesso.\n"
+"        Riporta un elenco di citazioni in versione ridotta che sono state "
+"pescate per <nick>\n"
+"        e l'ID di ognuna. Questi ID possono essere utilizzati per recuperare "
+"la citazione\n"
+"        completa. <canale> è necessario solo se il messaggio non viene "
+"inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:339
+#: plugin.py:359
 msgid "I couldn't find any quotegrabs for %s."
 msgstr "Impossibile trovare una citazione per %s."
 
-#: plugin.py:345
-#, docstring
+#: plugin.py:365
 msgid ""
 "[<channel>] [<nick>]\n"
 "\n"
-"        Returns a randomly grabbed quote, optionally choosing only from those\n"
-"        quotes grabbed for <nick>.  <channel> is only necessary if the message\n"
+"        Returns a randomly grabbed quote, optionally choosing only from "
+"those\n"
+"        quotes grabbed for <nick>.  <channel> is only necessary if the "
+"message\n"
 "        isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canale>] [<nick>]\n"
 "\n"
-"        Restituisce una citazione pescata in modo casuale, eventualmente scegliendo solo quelle\n"
-"        di <nick>. <canale> è necessario solo se il messaggio non viene inviato nel canale stesso.\n"
+"        Restituisce una citazione pescata in modo casuale, eventualmente "
+"scegliendo solo quelle\n"
+"        di <nick>. <canale> è necessario solo se il messaggio non viene "
+"inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:355
+#: plugin.py:375
 msgid "Couldn't get a random quote for that nick."
 msgstr "Impossibile ottenere una citazione casuale per questo nick."
 
-#: plugin.py:357
-msgid "Couldn't get a random quote.  Are there any grabbed quotes in the database?"
-msgstr "Impossibile ottenere una citazione casuale. Ci sono delle citazioni nel database?"
+#: plugin.py:377
+msgid ""
+"Couldn't get a random quote.  Are there any grabbed quotes in the database?"
+msgstr ""
+"Impossibile ottenere una citazione casuale. Ci sono delle citazioni nel "
+"database?"
 
-#: plugin.py:363
-#, docstring
+#: plugin.py:383 plugin.py:397
 msgid ""
 "[<channel>] <id>\n"
 "\n"
-"        Return the quotegrab with the given <id>.  <channel> is only necessary\n"
+"        Return the quotegrab with the given <id>.  <channel> is only "
+"necessary\n"
 "        if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canale>] <id>\n"
 "\n"
-"        Restituisce la citazione con l'<id> specificato. <canale> è necessario\n"
+"        Restituisce la citazione con l'<id> specificato. <canale> è "
+"necessario\n"
 "        solo se il messaggio non viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:371
+#: plugin.py:391 plugin.py:405
 msgid "No quotegrab for id %s"
 msgstr "Nessuna citazione per l'id %s."
 
-#: plugin.py:377
-#, docstring
+#: plugin.py:411
 msgid ""
 "[<channel>] <text>\n"
 "\n"
@@ -205,7 +225,6 @@ msgstr ""
 "        messaggio non viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:392
+#: plugin.py:426
 msgid "No quotegrabs matching %s"
 msgstr "Nessuna citazione corrispondente a %s."
-

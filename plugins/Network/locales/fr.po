@@ -1,28 +1,37 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-01-21 22:36+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
-"Language: fr_FR\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: ASCII\n"
 "X-Generator: Poedit 1.5.4\n"
-"Language: fr\n"
 
-#: plugin.py:58
+#: plugin.py:47
 msgid ""
-"[--ssl] <network> [<host[:port]>] [<password>]\n"
+"Provides network-related commands, such as connecting to multiple networks\n"
+"    and checking latency to the server."
+msgstr ""
+
+#: plugin.py:59
+#, fuzzy
+msgid ""
+"[--nossl] <network> [<host[:port]>] [<password>]\n"
 "\n"
 "        Connects to another network (which will be represented by the name\n"
 "        provided in <network>) at <host:port>.  If port is not provided, it\n"
-"        defaults to 6667, the default port for IRC.  If password is\n"
-"        provided, it will be sent to the server in a PASS command.  If --ssl "
+"        defaults to 6697, the default port for IRC with SSL.  If password "
 "is\n"
-"        provided, an SSL connection will be attempted.\n"
+"        provided, it will be sent to the server in a PASS command.  If --"
+"nossl is\n"
+"        provided, an SSL connection will not be attempted, and the port "
+"will\n"
+"        default to 6667.\n"
 "        "
 msgstr ""
 "[--ssl] <nom> [<hôte[:port]>] [<mot de passe>]\n"
@@ -32,26 +41,26 @@ msgstr ""
 "le <mot de passe> est fourni, l'envoie au serveur par la commande PASS. Si --"
 "ssl est fourni, une connexion SSL sera requise."
 
-#: plugin.py:68
+#: plugin.py:74
 msgid "I'm already connected to %s."
 msgstr "Je suis déjà connecté à %s."
 
-#: plugin.py:88
+#: plugin.py:96
 msgid "A server must be provided if the network is not already registered."
 msgstr "Un serveur doit être fourni si le réseau n'est pas déjà enregistré."
 
-#: plugin.py:96
+#: plugin.py:104
 msgid "Connection to %s initiated."
 msgstr "Connexion à %s initialisée."
 
-#: plugin.py:103
+#: plugin.py:110
+#, fuzzy
 msgid ""
-"[<network>] [<quit message>]\n"
+"<network> [<quit message>]\n"
 "\n"
 "        Disconnects from the network represented by the network <network>.\n"
 "        If <quit message> is given, quits the network with the given quit\n"
-"        message.  <network> is only necessary if the network is different\n"
-"        from the network the command is sent on.\n"
+"        message.\n"
 "        "
 msgstr ""
 "[<réseau>] [<message de quit>]\n"
@@ -60,11 +69,11 @@ msgstr ""
 "réseau avec ce message. Le <réseau> n'est nécessaire que s'il ne s'agit pas "
 "du réseau sur lequel la commande est envoyée."
 
-#: plugin.py:115
+#: plugin.py:124
 msgid "Disconnection to %s initiated."
 msgstr "Déconnexion à %s initialisée."
 
-#: plugin.py:121
+#: plugin.py:129
 msgid ""
 "[<network>] [<quit message>]\n"
 "\n"
@@ -84,7 +93,7 @@ msgstr ""
 "fourni, quitte le réseau avec ce message. Le <réseau> n'est nécessaire que "
 "s'il ne s'agit pas du réseau sur lequel la commande est envoyée."
 
-#: plugin.py:138
+#: plugin.py:148
 msgid ""
 "<network> <command> [<arg> ...]\n"
 "\n"
@@ -95,55 +104,29 @@ msgstr ""
 "\n"
 "Envoie la <commande> au bot (avec les arguments) sur le <réseau>."
 
-#: plugin.py:213
-msgid "is an op on %L"
-msgstr "est op sur %L"
+#: plugin.py:156
+#, fuzzy
+msgid ""
+"<command> [<arg> ...]\n"
+"\n"
+"        Perform <command> (with its associated <arg>s) on all networks.\n"
+"        "
+msgstr ""
+"<réseau> <commande> [<arg> ...]\n"
+"\n"
+"Envoie la <commande> au bot (avec les arguments) sur le <réseau>."
 
-#: plugin.py:215
-msgid "is a halfop on %L"
-msgstr "est halfop sur %L"
-
-#: plugin.py:217
-msgid "is voiced on %L"
-msgstr "est voicé sur %L"
-
-#: plugin.py:220
-msgid "is also on %L"
-msgstr "est aussi sur %L"
-
-#: plugin.py:222
-msgid "is on %L"
-msgstr "est sur %L"
-
-#: plugin.py:225
-msgid "isn't on any non-secret channels"
-msgstr "n'est sur aucun canal non secret"
-
-#: plugin.py:234 plugin.py:235 plugin.py:241
-msgid "<unknown>"
-msgstr "<inconnu>"
-
-#: plugin.py:248
-msgid " identified"
-msgstr " identifié"
-
-#: plugin.py:254
-msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
-msgstr "%s (%s) a été%s sur le serveur %s depuis %s (idle depuis %s) et %s.%s"
-
-#: plugin.py:258
-msgid "%s (%s) has been%s on server %s and disconnect on %s."
-msgstr "%s (%s) a été%s sur le serveur %s puis c’est déconnecté à %s."
-
-#: plugin.py:272
-msgid "There is no %s on %s."
+#: plugin.py:209
+#, fuzzy
+msgid "There is no user %s on %s."
 msgstr "Il n'y a pas de %s sur %s."
 
-#: plugin.py:274
-msgid "There was no %s on %s."
+#: plugin.py:211
+#, fuzzy
+msgid "There was no user %s on %s."
 msgstr "Il n'y a pas eu de %s sur %s."
 
-#: plugin.py:282 plugin.py:298
+#: plugin.py:218 plugin.py:231
 msgid ""
 "[<network>] <nick>\n"
 "\n"
@@ -160,22 +143,25 @@ msgstr ""
 "nécessaire que s'il ne s'agit pas du réseau sur lequel la commande est "
 "envoyée."
 
-#: plugin.py:314
+#: plugin.py:244
 msgid ""
-"takes no arguments\n"
+"[--all]\n"
 "\n"
 "        Returns the networks to which the bot is currently connected.\n"
+"        If --all is given, also includes networks known by the bot,\n"
+"        but not connected to.\n"
 "        "
 msgstr ""
-"ne prend pas d'argument\n"
-" \n"
-"Retourne la liste des réseaux auxquels le bot est actuellement connecté."
 
-#: plugin.py:327
+#: plugin.py:255
+msgid "disconnected"
+msgstr ""
+
+#: plugin.py:264
 msgid "%.2f seconds."
 msgstr "%.2f secondes"
 
-#: plugin.py:331
+#: plugin.py:267
 msgid ""
 "[<network>]\n"
 "\n"
@@ -191,11 +177,11 @@ msgstr ""
 "Retourne la latence actuelle du <réseau>. Le <réseau> n'est nécessaire que "
 "s'il ne s'agit pas du réseau sur lequel la commande est envoyée."
 
-#: plugin.py:337
+#: plugin.py:273
 msgid "Latency check (from %s)."
 msgstr "Vérification de lance (de %s)."
 
-#: plugin.py:345
+#: plugin.py:280
 msgid ""
 "[<network>]\n"
 "\n"
@@ -210,10 +196,11 @@ msgstr ""
 "Retourne le 'driver' actuel pour le <réseau>. Le <réseau> n'est nécessaire "
 "que s'il ne s'agit pas du réseau sur lequel la commande est envoyée."
 
-#: plugin.py:356
+#: plugin.py:290
+#, fuzzy
 msgid ""
 "[<network>]\n"
-"        \n"
+"\n"
 "        Returns the time duration since the connection was established.\n"
 "        "
 msgstr ""
@@ -221,6 +208,59 @@ msgstr ""
 "\n"
 "Indique depuis combien de temps la connexion est établie."
 
-#: plugin.py:363
+#: plugin.py:297
 msgid "I've been connected to %s for %s."
 msgstr "Je suis connecté à %s depuis %s."
+
+#: plugin.py:302
+#, fuzzy
+msgid ""
+"[<network>]\n"
+"\n"
+"        Returns the list of IRCv3 capabilities available on the network.\n"
+"        "
+msgstr ""
+"[<network>]\n"
+"\n"
+"Indique depuis combien de temps la connexion est établie."
+
+#~ msgid "is an op on %L"
+#~ msgstr "est op sur %L"
+
+#~ msgid "is a halfop on %L"
+#~ msgstr "est halfop sur %L"
+
+#~ msgid "is voiced on %L"
+#~ msgstr "est voicé sur %L"
+
+#~ msgid "is also on %L"
+#~ msgstr "est aussi sur %L"
+
+#~ msgid "is on %L"
+#~ msgstr "est sur %L"
+
+#~ msgid "isn't on any non-secret channels"
+#~ msgstr "n'est sur aucun canal non secret"
+
+#~ msgid "<unknown>"
+#~ msgstr "<inconnu>"
+
+#~ msgid " identified"
+#~ msgstr " identifié"
+
+#~ msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
+#~ msgstr ""
+#~ "%s (%s) a été%s sur le serveur %s depuis %s (idle depuis %s) et %s.%s"
+
+#~ msgid "%s (%s) has been%s on server %s and disconnect on %s."
+#~ msgstr "%s (%s) a été%s sur le serveur %s puis c’est déconnecté à %s."
+
+#~ msgid ""
+#~ "takes no arguments\n"
+#~ "\n"
+#~ "        Returns the networks to which the bot is currently connected.\n"
+#~ "        "
+#~ msgstr ""
+#~ "ne prend pas d'argument\n"
+#~ " \n"
+#~ "Retourne la liste des réseaux auxquels le bot est actuellement connecté."

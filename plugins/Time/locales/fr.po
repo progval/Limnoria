@@ -1,19 +1,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-01-21 16:48+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
-"Language: fr_FR\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: ASCII\n"
 "X-Generator: Poedit 1.5.4\n"
-"Language: fr\n"
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Determines the\n"
 "    format string for timestamps.  Refer to the Python documentation for "
@@ -27,7 +26,11 @@ msgstr ""
 "Si vous définissez cette variable à une chaîne vide, le timestamp ne sera "
 "pas affiché."
 
-#: plugin.py:64
+#: plugin.py:75
+msgid "This plugin allows you to use different time-related functions."
+msgstr ""
+
+#: plugin.py:78
 msgid ""
 "[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]\n"
 "\n"
@@ -46,7 +49,7 @@ msgstr ""
 "est \"seconds 2h 30m\", ce qui retournera 9000. Utile pour planifier des "
 "évènement à un certain nombre de secondes dans le futur."
 
-#: plugin.py:99
+#: plugin.py:113
 msgid ""
 "[<time string>]\n"
 "\n"
@@ -63,7 +66,7 @@ msgstr ""
 "n'importe lequel des formats naturels, essayez seulement, et voyez si ça "
 "marche.<moment> vaut l’instant actuel par défaut."
 
-#: plugin.py:110 plugin.py:127
+#: plugin.py:124 plugin.py:141
 msgid ""
 "This command is not available on this bot, ask the owner to install the "
 "python-dateutil library."
@@ -71,11 +74,11 @@ msgstr ""
 "Cette commande n’est pas disponible sur ce bot, demandez au/à la "
 "propriétaire d’installer la bibliothèque python-dateutil."
 
-#: plugin.py:117 plugin.py:136
+#: plugin.py:131 plugin.py:150
 msgid "That's right now!"
 msgstr "C'est maintenant !"
 
-#: plugin.py:122
+#: plugin.py:136
 msgid ""
 "<time string>\n"
 "\n"
@@ -86,7 +89,7 @@ msgstr ""
 "\n"
 "Retourne le nombre de secondes depuis le <moment>."
 
-#: plugin.py:141
+#: plugin.py:155
 msgid ""
 "[<seconds since epoch>]\n"
 "\n"
@@ -100,17 +103,19 @@ msgstr ""
 "        Renvoie le ctime pour le moment il y a <temps> secondes, ou le "
 "ctime        courant, si aucun <temps> n'est donné."
 
-#: plugin.py:147
+#: plugin.py:161
 msgid "number of seconds since epoch"
 msgstr "nombre de secondes depuis une époque"
 
-#: plugin.py:152
+#: plugin.py:166
+#, fuzzy
 msgid ""
-"[<format>] [<seconds since epoch>]\n"
+"[<channel>] [<format>] [<seconds since epoch>]\n"
 "\n"
 "        Returns the current time in <format> format, or, if <format> is not\n"
 "        given, uses the configurable format for the current channel.  If no\n"
-"        <seconds since epoch> time is given, the current time is used.\n"
+"        <seconds since epoch> time is given, the current time is used. If\n"
+"        <channel> is given without <format>, uses the format for <channel>.\n"
 "        "
 msgstr ""
 "[<format>] [<temps>]\n"
@@ -119,7 +124,7 @@ msgstr ""
 "donné, utilise le format actuellement configuré pour le canal. Si le <temps> "
 "n'est pas donné, le temps actuel est utilisé."
 
-#: plugin.py:169
+#: plugin.py:188
 msgid ""
 "<seconds>\n"
 "\n"
@@ -131,26 +136,46 @@ msgstr ""
 "\n"
 "Retourne le nombre de <secondes>, joliement formatté."
 
-#: plugin.py:179
+#: plugin.py:198
+#, fuzzy
 msgid ""
-"<region>/<city>\n"
+"<region>/<city> (or <region>/<state>/<city>)\n"
 "\n"
-"        Takes a city and its region, and returns the locale time."
+"        Takes a city and its region, and returns its local time. This\n"
+"        command uses the IANA Time Zone Database."
 msgstr ""
 "<zone>/<ville>\n"
 "\n"
 "Prend en argument une ville et sa zone, et retourne le temps local."
 
-#: plugin.py:185
-msgid ""
-"Python-tz is required by the command, but is not installed on this computer."
-msgstr ""
-"Python-tz est requis par la commande, mais n'est pas installé sur cet "
-"ordinateur."
-
-#: plugin.py:191
+#: plugin.py:205
 msgid "Unknown timezone"
 msgstr "Timezone inconnue"
+
+#: plugin.py:207
+msgid ""
+"Timezone-related commands are not available. Your administrator need to "
+"either upgrade Python to version 3.9 or greater, or install pytz."
+msgstr ""
+
+#: plugin.py:219
+msgid ""
+"[<year> <month> <day>]\n"
+"        Returns a the Discordian date today, or an optional different date."
+msgstr ""
+
+#: plugin.py:230
+msgid ""
+"The 'ddate' module is not installed. Use '%s -m pip install --user ddate' or "
+"see %u for more information."
+msgstr ""
+
+#~ msgid ""
+#~ "Python-tz is required by the command, but is not installed on this "
+#~ "computer."
+#~ msgstr ""
+#~ "Python-tz est requis par la commande, mais n'est pas installé sur cet "
+#~ "ordinateur."
 
 #~ msgid "A timezone must be in the format region/city."
 #~ msgstr "Une timezone doit être dans le format zone/ville."

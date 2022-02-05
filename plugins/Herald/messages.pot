@@ -5,75 +5,75 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:46
+#: config.py:47
 msgid ""
 "Determines whether messages will be sent to the\n"
 "    channel when a recognized user joins; basically enables or disables the\n"
 "    plugin."
 msgstr ""
 
-#: config.py:50
+#: config.py:51
 msgid ""
 "Determines what capability (if any) is required to\n"
 "    add/change/remove the herald of another user."
 msgstr ""
 
-#: config.py:53
+#: config.py:54
 msgid ""
 "Determines the minimum number of seconds\n"
 "    between heralds."
 msgstr ""
 
-#: config.py:56
+#: config.py:57
 msgid ""
 "Determines the minimum number of seconds\n"
 "    after parting that the bot will not herald the person when they\n"
 "    rejoin."
 msgstr ""
 
-#: config.py:60
+#: config.py:61
 msgid ""
 "Determines the minimum number of seconds\n"
 "    after a netsplit that the bot will not herald the users that split."
 msgstr ""
 
-#: config.py:63
+#: config.py:64
 msgid ""
 "Sets the default herald to use.  If a user has a\n"
 "    personal herald specified, that will be used instead.  If set to the empty\n"
 "    string, the default herald will be disabled."
 msgstr ""
 
-#: config.py:67
+#: config.py:68
 msgid ""
 "Determines whether the default herald will be\n"
 "    sent as a NOTICE instead of a PRIVMSG."
 msgstr ""
 
-#: config.py:70
+#: config.py:71
 msgid ""
 "Determines whether the default herald will be\n"
 "    sent publicly."
 msgstr ""
 
-#: plugin.py:58
+#: plugin.py:59
 #, docstring
 msgid ""
 "This plugin allows you to set welcome messages (heralds) to people who\n"
 "    are recognized by the bot when they join a channel."
 msgstr ""
 
-#: plugin.py:145
+#: plugin.py:152
 #, docstring
 msgid ""
 "[<channel>] [--remove|<msg>]\n"
@@ -85,11 +85,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:164
+#: plugin.py:171
 msgid "I do not have a default herald set for %s."
 msgstr ""
 
-#: plugin.py:172
+#: plugin.py:179
 #, docstring
 msgid ""
 "[<channel>] [<user|nick>]\n"
@@ -101,11 +101,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:183
+#: plugin.py:190
 msgid "I have no herald for %s."
 msgstr ""
 
-#: plugin.py:203
+#: plugin.py:210
 #, docstring
 msgid ""
 "[<channel>] <user|nick> <msg>\n"
@@ -116,7 +116,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:216
+#: plugin.py:223
 #, docstring
 msgid ""
 "[<channel>] [<user|nick>]\n"
@@ -129,11 +129,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:229
+#: plugin.py:236
 msgid "I have no herald for that user."
 msgstr ""
 
-#: plugin.py:234
+#: plugin.py:241
 #, docstring
 msgid ""
 "[<channel>] [<user|nick>] <regexp>\n"

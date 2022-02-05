@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-06-28 19:40+CEST\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -13,28 +13,45 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
 
-#: config.py:38
+#: config.py:39
 msgid "The default dictd server is dict.org."
 msgstr "Le serveur dictd par défaut est dict.org"
 
-#: config.py:39
+#: config.py:40
 msgid "Would you like to specify a different dictd server?"
 msgstr "Voulez-vous spécifier un serveur dictd différent ?"
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Determines what server the bot will\n"
 "    retrieve definitions from."
 msgstr "Détermine de quel serveur le bot récupérera les définitions."
 
-#: config.py:48
+#: config.py:49
+#, fuzzy
 msgid ""
-"Determines the default dictionary the bot will\n"
-"    ask for definitions in.  If this value is '*' (without the quotes) the bot\n"
-"    will use all dictionaries to define words."
-msgstr "Détermine le dictionnaire par défaut dans lequel le bot cherchera les définitions. Si la valeur est '*' (sans les guillemets), le bot utilisera tous les dictionnaires pour définir le mot."
+"Determines the default dictionary the bot\n"
+"    will ask for definitions in.  If this value is '*' (without the quotes)\n"
+"    the bot will use all dictionaries to define words."
+msgstr ""
+"Détermine le dictionnaire par défaut dans lequel le bot cherchera les "
+"définitions. Si la valeur est '*' (sans les guillemets), le bot utilisera "
+"tous les dictionnaires pour définir le mot."
 
-#: plugin.py:54
+#: config.py:53
+msgid ""
+"Determines whether the bot will show which\n"
+"    dictionaries responded to a query, if the selected dictionary is '*'.\n"
+"    "
+msgstr ""
+
+#: plugin.py:47
+msgid ""
+"This plugin provides a function to look up words from different\n"
+"    dictionaries."
+msgstr ""
+
+#: plugin.py:52
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -45,7 +62,7 @@ msgstr ""
 "\n"
 "Retourne les dictionnaires valides pour la commande dict."
 
-#: plugin.py:70
+#: plugin.py:68
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -56,7 +73,7 @@ msgstr ""
 "\n"
 "Retourne un dictionnaire valide aléatoire."
 
-#: plugin.py:85
+#: plugin.py:83
 msgid ""
 "[<dictionary>] <word>\n"
 "\n"
@@ -66,29 +83,32 @@ msgid ""
 msgstr ""
 "[<dictionnaire>] <mot>\n"
 "\n"
-"Recherche la définition du mot sur le serveur dictd spécifié par la variable de configuration supybot.plugins.Dict.server."
+"Recherche la définition du mot sur le serveur dictd spécifié par la variable "
+"de configuration supybot.plugins.Dict.server."
 
-#: plugin.py:108
+#: plugin.py:106
 msgid "You must give a word to define."
 msgstr "Vous devez donner un mot à définir."
 
-#: plugin.py:114
+#: plugin.py:112
 msgid "No definition for %q could be found."
 msgstr "La définition de %q ne peut être trouvée."
 
-#: plugin.py:117
+#: plugin.py:115
 msgid "No definition for %q could be found in %s"
 msgstr "La définition de %q ne peut être trouvée dans %s."
 
-#: plugin.py:129
+#: plugin.py:128
 msgid "%L responded: %s"
 msgstr "%L a répondu : %s"
 
-#: plugin.py:136
+#: plugin.py:135
+#, fuzzy
 msgid ""
 "<word> [<word> ...]\n"
 "\n"
-"        Gets a random synonym from the Moby Thesaurus (moby-thes) database.\n"
+"        Gets a random synonym from the Moby Thesaurus (moby-thesaurus) "
+"database.\n"
 "\n"
 "        If given many words, gets a random synonym for each of them.\n"
 "\n"
@@ -97,5 +117,7 @@ msgid ""
 msgstr ""
 "<word> [<word> ...]\n"
 "\n"
-"Récupère un synonyme au hasard de la base de données du Moby Thesaurus (moby-thes). Si plusieurs mots sont donnés, récupère un synonyme au hasard pour chacun d'eux. Citez les phrases pour qu'elles soient traitées comme un unique mot."
-
+"Récupère un synonyme au hasard de la base de données du Moby Thesaurus (moby-"
+"thes). Si plusieurs mots sont donnés, récupère un synonyme au hasard pour "
+"chacun d'eux. Citez les phrases pour qu'elles soient traitées comme un "
+"unique mot."

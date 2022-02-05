@@ -5,17 +5,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Determines what URLs are not to be snarfed and\n"
 "    stored in the database for the channel; URLs matching the given regexp will\n"
@@ -23,14 +23,14 @@ msgid ""
 "    to exclude from being snarfed."
 msgstr ""
 
-#: plugin.py:65
+#: plugin.py:67
 #, docstring
 msgid ""
 "This plugin records how many URLs have been mentioned in\n"
 "    a channel and what the last URL was."
 msgstr ""
 
-#: plugin.py:91
+#: plugin.py:93
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -40,11 +40,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:98
+#: plugin.py:100
 msgid "I have %n in my database."
 msgstr ""
 
-#: plugin.py:103
+#: plugin.py:105
 #, docstring
 msgid ""
 "[<channel>] [--{from,with,without,near,proto} <value>] [--nolimit]\n"
@@ -59,7 +59,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:145
+#: plugin.py:147
 msgid "No URLs matched that criteria."
 msgstr ""
 

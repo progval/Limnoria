@@ -5,95 +5,110 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 11:29+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:46
+#: config.py:47
 msgid ""
 "Determines whether this plugin is enabled.\n"
 "    "
 msgstr ""
 
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether this plugin will automode\n"
 "    owners even if they don't have op/halfop/voice/whatever capability."
 msgstr ""
 
-#: config.py:52
+#: config.py:53
 msgid ""
 "Determines whether the bot will\n"
 "    check for 'alternative capabilities' (ie. autoop, autohalfop,\n"
 "    autovoice) in addition to/instead of classic ones."
 msgstr ""
 
-#: config.py:56
+#: config.py:57
 msgid ""
 "Determines whether the bot will \"fall\n"
 "    through\" to halfop/voicing when auto-opping is turned off but\n"
 "    auto-halfopping/voicing are turned on."
 msgstr ""
 
-#: config.py:60
+#: config.py:61
 msgid ""
 "Determines whether the bot will automatically\n"
 "    op people with the <channel>,op capability when they join the channel.\n"
 "    "
 msgstr ""
 
-#: config.py:64
+#: config.py:65
 msgid ""
 "Determines whether the bot will automatically\n"
 "    halfop people with the <channel>,halfop capability when they join the\n"
 "    channel."
 msgstr ""
 
-#: config.py:68
+#: config.py:69
 msgid ""
 "Determines whether the bot will automatically\n"
 "    voice people with the <channel>,voice capability when they join the\n"
 "    channel."
 msgstr ""
 
-#: config.py:72
+#: config.py:73
 msgid ""
 "Determines whether the bot will automatically\n"
 "    ban people who join the channel and are on the banlist."
 msgstr ""
 
-#: config.py:75
+#: config.py:76
 msgid ""
 "Determines how many seconds the bot\n"
 "    will automatically ban a person when banning."
 msgstr ""
 
-#: config.py:79
+#: config.py:80
 msgid ""
 "Determines how many seconds the bot will wait\n"
 "    before applying a mode. Has no effect on bans."
 msgstr ""
 
-#: config.py:83
+#: config.py:84
 msgid ""
 "Extra modes that will be\n"
 "    applied to a user. Example syntax: user1+o-v user2+v user3-v"
 msgstr ""
 
-#: plugin.py:48
+#: plugin.py:49
 #, docstring
 msgid ""
-"This plugin, when configured, allows the bot to automatically set modes\n"
-"    on users when they join."
+"\n"
+"    This plugin, when configured, allows the bot to automatically set modes\n"
+"    on users when they join.\n"
+"\n"
+"    * if ``plugins.automode.op`` is set to ``True``, users with the\n"
+"      ``#channel,op`` capability are opped when they join.\n"
+"    * if ``plugins.automode.halfop`` is set to ``True``, users with the\n"
+"      ``#channel,halfop`` are halfopped when they join.\n"
+"    * if ``plugins.automode.voice`` is set to ``True``, users with the\n"
+"      ``#channel,voice`` are voiced when they join.\n"
+"\n"
+"    This plugin also kbans people on ``@channel ban list``\n"
+"    (``config plugins.automode.ban``) when they join and if moding users with\n"
+"    lower capability is enabled, that is also applied to users with higher\n"
+"    capability (``config plugins.automode.fallthrough``).\n"
+"\n"
+"    "
 msgstr ""
 
-#: plugin.py:80
+#: plugin.py:97
 #, docstring
 msgid ""
 "Determines whether or not a mode has already\n"

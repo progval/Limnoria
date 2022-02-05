@@ -5,22 +5,22 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:36
+#: plugin.py:37
 #, docstring
 msgid "This plugin allows you to add quotes to the database for a channel."
 msgstr ""
 
-#: plugin.py:39
+#: plugin.py:40
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -30,7 +30,16 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:48
+#: plugin.py:49
 msgid "I have no quotes in my database for %s."
+msgstr ""
+
+#: plugin.py:53
+#, docstring
+msgid ""
+"[<channel>] <id> <text>\n"
+"        Replace quote <id> with <text>. <channel> is only necessary if\n"
+"        the message isn't sent in the channel itself.\n"
+"        "
 msgstr ""
 

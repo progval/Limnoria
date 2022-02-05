@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Dict plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 12:23+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,15 +17,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: config.py:38
+#: config.py:39
 msgid "The default dictd server is dict.org."
 msgstr "Oletus dictd-palvelin on dict.org."
 
-#: config.py:39
+#: config.py:40
 msgid "Would you like to specify a different dictd server?"
 msgstr "Tahtoisitko määrittää eri dictd-palvelimen?"
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Determines what server the bot will\n"
 "    retrieve definitions from."
@@ -33,7 +33,7 @@ msgstr ""
 "Määrittää miltä palvelimelta botti\n"
 "hakee määritykset."
 
-#: config.py:48
+#: config.py:49
 #, fuzzy
 msgid ""
 "Determines the default dictionary the bot\n"
@@ -44,13 +44,20 @@ msgstr ""
 "pyytää määrityksiä.  Jos arvo on '*' (ilman lainausmerkkejä) botti\n"
 "käyttää kaikkia sanakirjoja määrittääkseen sanat."
 
-#: plugin.py:46
+#: config.py:53
+msgid ""
+"Determines whether the bot will show which\n"
+"    dictionaries responded to a query, if the selected dictionary is '*'.\n"
+"    "
+msgstr ""
+
+#: plugin.py:47
 msgid ""
 "This plugin provides a function to look up words from different\n"
 "    dictionaries."
 msgstr "Tämä plugin tarjoaa toiminnon sanojen etsimiseen eri sanakirjoista."
 
-#: plugin.py:51
+#: plugin.py:52
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -62,7 +69,7 @@ msgstr ""
 "        Palauttaa sanakirjat, jotka kelpaavat dict komennolle.\n"
 "        "
 
-#: plugin.py:67
+#: plugin.py:68
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -74,7 +81,7 @@ msgstr ""
 "        Palauttaa satunnaisen kelvollisen sanakirjan.\n"
 "        "
 
-#: plugin.py:82
+#: plugin.py:83
 msgid ""
 "[<dictionary>] <word>\n"
 "\n"
@@ -88,23 +95,23 @@ msgstr ""
 "        supybot.plugins.Dict.server asetus arvossa.\n"
 "        "
 
-#: plugin.py:105
+#: plugin.py:106
 msgid "You must give a word to define."
 msgstr "Sinun täytyy antaa sana määritettäväksi."
 
-#: plugin.py:111
+#: plugin.py:112
 msgid "No definition for %q could be found."
 msgstr "Määritystä %q:lle ei löydetty."
 
-#: plugin.py:114
+#: plugin.py:115
 msgid "No definition for %q could be found in %s"
 msgstr "Määritystä %q:lle ei löydetty %s:stä."
 
-#: plugin.py:126
+#: plugin.py:128
 msgid "%L responded: %s"
 msgstr "%L vastasi: %s"
 
-#: plugin.py:133
+#: plugin.py:135
 #, fuzzy
 msgid ""
 "<word> [<word> ...]\n"

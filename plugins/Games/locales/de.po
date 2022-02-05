@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-11-10 23:19+0100\n"
 "Last-Translator: Florian Besser <fbesser@gmail.com>\n"
 "Language-Team: DE <DE@DE>\n"
@@ -14,6 +14,12 @@ msgstr ""
 
 #: plugin.py:46
 msgid ""
+"This plugin provides some small games like (Russian) roulette,\n"
+"    eightball, monologue, coin and dice."
+msgstr ""
+
+#: plugin.py:50
+msgid ""
 "takes no arguments\n"
 "\n"
 "        Flips a coin and returns the result.\n"
@@ -23,15 +29,15 @@ msgstr ""
 "\n"
 "Wirft eine Münze und gibt das Ergebnis aus."
 
-#: plugin.py:51
+#: plugin.py:55
 msgid "heads"
 msgstr "Kopf"
 
-#: plugin.py:53
+#: plugin.py:57
 msgid "tails"
 msgstr "Zahl"
 
-#: plugin.py:58
+#: plugin.py:62
 msgid ""
 "<dice>d<sides>\n"
 "\n"
@@ -42,37 +48,56 @@ msgid ""
 msgstr ""
 "<würfel>d<Seiten>\n"
 "\n"
-"Wirft einen Würfel mit <Seiten> Anzahl der Seiten, <Würfel> mal. z.B. 2d6 wirft 2 Würfel mit 6 Seiten; 10d10 wirft 10 mal einen 10 seitigen Würfel."
+"Wirft einen Würfel mit <Seiten> Anzahl der Seiten, <Würfel> mal. z.B. 2d6 "
+"wirft 2 Würfel mit 6 Seiten; 10d10 wirft 10 mal einen 10 seitigen Würfel."
 
-#: plugin.py:66
+#: plugin.py:70
 msgid "You can't roll more than 1000 dice."
 msgstr "Du kannst nicht mehr wie 1000 Würfel werfen."
 
-#: plugin.py:68
+#: plugin.py:72
 msgid "Dice can't have more than 100 sides."
 msgstr "Würfel kann nicht mehr als 100 Seiten haben."
 
-#: plugin.py:70
+#: plugin.py:74
 msgid "Dice can't have fewer than 3 sides."
 msgstr "Würfel können nicht weniger wie 3 Seiten haben."
 
-#: plugin.py:78
+#: plugin.py:82
 msgid "Dice must be of the form <dice>d<sides>"
 msgstr "Würfel muss mit <Würfel>d<Seite> angegeben werden"
 
-#: plugin.py:82
-msgid "It is possible.|Yes!|Of course.|Naturally.|Obviously.|It shall be.|The outlook is good.|It is so.|One would be wise to think so.|The answer is certainly yes."
-msgstr "Es ist möglich.| Ja!|Natürlich.|Natürlicher.|Ist doch klar.|So soll es sein.|Es sieht gut aus.|So ist es.| Es wäre gut so zu denken.|Die Antwort ist sicherlich ja."
-
 #: plugin.py:86
-msgid "In your dreams.|I doubt it very much.|No chance.|The outlook is poor.|Unlikely.|About as likely as pigs flying.|You're kidding, right?|NO!|NO.|No.|The answer is a resounding no."
-msgstr "In deinen Träumen.|Ich zweifel das stark an.| Keine Chance.|Es sieht schlecht aus.|Unwahrscheinlich.|So wahrscheinlich wie fliegende Schweine.| Du machst Witze, oder?|NEIN!|NEIN.|Nein.| Die Antwort ist ein klares Nein."
+msgid ""
+"It is possible.|Yes!|Of course.|Naturally.|Obviously.|It shall be.|The "
+"outlook is good.|It is so.|One would be wise to think so.|The answer is "
+"certainly yes."
+msgstr ""
+"Es ist möglich.| Ja!|Natürlich.|Natürlicher.|Ist doch klar.|So soll es sein.|"
+"Es sieht gut aus.|So ist es.| Es wäre gut so zu denken.|Die Antwort ist "
+"sicherlich ja."
 
 #: plugin.py:90
-msgid "Maybe...|No clue.|_I_ don't know.|The outlook is hazy, please ask again later.|What are you asking me for?|Come again?|You know the answer better than I.|The answer is def-- oooh! shiny thing!"
-msgstr "Vielleicht...| Keine Ahnung.| Ich weiß nicht.|Die Aussicht ist unklar, frag später nochmal.|Nach was fragst du mich?|Kommst du wieder?|Du weißt die Antwort besser als ich.|Die Antwort ist defin---- OHH! Da glänzt was!"
+msgid ""
+"In your dreams.|I doubt it very much.|No chance.|The outlook is poor.|"
+"Unlikely.|About as likely as pigs flying.|You're kidding, right?|NO!|NO.|No.|"
+"The answer is a resounding no."
+msgstr ""
+"In deinen Träumen.|Ich zweifel das stark an.| Keine Chance.|Es sieht "
+"schlecht aus.|Unwahrscheinlich.|So wahrscheinlich wie fliegende Schweine.| "
+"Du machst Witze, oder?|NEIN!|NEIN.|Nein.| Die Antwort ist ein klares Nein."
 
-#: plugin.py:107
+#: plugin.py:94
+msgid ""
+"Maybe...|No clue.|_I_ don't know.|The outlook is hazy, please ask again "
+"later.|What are you asking me for?|Come again?|You know the answer better "
+"than I.|The answer is def-- oooh! shiny thing!"
+msgstr ""
+"Vielleicht...| Keine Ahnung.| Ich weiß nicht.|Die Aussicht ist unklar, frag "
+"später nochmal.|Nach was fragst du mich?|Kommst du wieder?|Du weißt die "
+"Antwort besser als ich.|Die Antwort ist defin---- OHH! Da glänzt was!"
+
+#: plugin.py:111
 msgid ""
 "[<question>]\n"
 "\n"
@@ -83,7 +108,7 @@ msgstr ""
 "\n"
 "Frage deine Frage und dir wird eine Antwort gegeben."
 
-#: plugin.py:121
+#: plugin.py:125
 msgid ""
 "[spin]\n"
 "\n"
@@ -93,43 +118,48 @@ msgid ""
 msgstr ""
 "[spin]\n"
 "\n"
-"Feuert den Revolver. Falls eine Patrone in der Kammer war, bist du tod. Sag mir das ich die Kammern drehen soll, dann werde ich das tun."
+"Feuert den Revolver. Falls eine Patrone in der Kammer war, bist du tod. Sag "
+"mir das ich die Kammern drehen soll, dann werde ich das tun."
 
-#: plugin.py:128
+#: plugin.py:132
 msgid "*SPIN* Are you feeling lucky?"
 msgstr "*DREHE* Denkst du du hast Glück?"
 
-#: plugin.py:137
+#: plugin.py:142
 msgid "*BANG* Hey, who put a blank in here?!"
 msgstr "*BANG* Hey, wer hat hier eine leere Patrone reingetan?!"
 
-#: plugin.py:139
+#: plugin.py:144
 msgid "reloads and spins the chambers."
 msgstr "läd nach und dreht die Kammer."
 
-#: plugin.py:141
+#: plugin.py:146
 msgid "*click*"
 msgstr "*klick*"
 
-#: plugin.py:148
+#: plugin.py:153
 msgid ""
 "[<channel>]\n"
 "\n"
 "        Returns the number of consecutive lines you've sent in <channel>\n"
-"        without being interrupted by someone else (i.e. how long your current\n"
-"        'monologue' is).  <channel> is only necessary if the message isn't sent\n"
+"        without being interrupted by someone else (i.e. how long your "
+"current\n"
+"        'monologue' is).  <channel> is only necessary if the message isn't "
+"sent\n"
 "        in the channel itself.\n"
 "        "
 msgstr ""
 "[<Kanal>]\n"
 "\n"
-"Gibt die Anzahl der aufeinderfolgenen Zeilen an, die du im <Kanal> gesendet hast, ohne von jemand anderem unterbrochen worden zu sein (z.B. wie lang dein momentaner Monolog ist). <Kanal> ist nur nötig falls die Nachricht nicht im Kanal selbst gesendet wurde."
+"Gibt die Anzahl der aufeinderfolgenen Zeilen an, die du im <Kanal> gesendet "
+"hast, ohne von jemand anderem unterbrochen worden zu sein (z.B. wie lang "
+"dein momentaner Monolog ist). <Kanal> ist nur nötig falls die Nachricht "
+"nicht im Kanal selbst gesendet wurde."
 
-#: plugin.py:167
+#: plugin.py:172
 msgid "Your current monologue is at least %n long."
 msgstr "Dein momentaner Monolog ist mindestens %n lang."
 
-#: plugin.py:168
+#: plugin.py:173
 msgid "line"
 msgstr "Zeile"
-

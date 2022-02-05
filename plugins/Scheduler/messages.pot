@@ -5,27 +5,36 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 13:29+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:49
+#: plugin.py:53
 #, docstring
 msgid "This plugin allows you to schedule commands to execute at a later time."
 msgstr ""
 
-#: plugin.py:112
+#: plugin.py:143
 #, docstring
 msgid "Makes a function suitable for scheduling from command."
 msgstr ""
 
-#: plugin.py:132
+#: plugin.py:155
+#, docstring
+msgid "Makes a function suitable for scheduling text"
+msgstr ""
+
+#: plugin.py:160
+msgid "Reminder: %s"
+msgstr ""
+
+#: plugin.py:181
 #, docstring
 msgid ""
 "<seconds> <command>\n"
@@ -38,11 +47,26 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:142
+#: plugin.py:191
 msgid "Event #%i added."
 msgstr ""
 
-#: plugin.py:147
+#: plugin.py:196
+#, docstring
+msgid ""
+" <seconds> <text>\n"
+"\n"
+"        Sets a reminder with string <text> to run <seconds> seconds in the\n"
+"        future. For example, 'scheduler remind [seconds 30m] \"Hello World\"'\n"
+"        will return '<nick> Reminder: Hello World' 30 minutes after being set.\n"
+"        "
+msgstr ""
+
+#: plugin.py:204
+msgid "Reminder Event #%i added."
+msgstr ""
+
+#: plugin.py:209
 #, docstring
 msgid ""
 "<id>\n"
@@ -51,27 +75,28 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:161 plugin.py:163
+#: plugin.py:223 plugin.py:225
 msgid "Invalid event id."
 msgstr ""
 
-#: plugin.py:177
+#: plugin.py:244
 #, docstring
 msgid ""
-"<name> <seconds> <command>\n"
+"[--delay <delay>] <name> <seconds> <command>\n"
 "\n"
 "        Schedules the command <command> to run every <seconds> seconds,\n"
 "        starting now (i.e., the command runs now, and every <seconds> seconds\n"
 "        thereafter).  <name> is a name by which the command can be\n"
 "        unscheduled.\n"
+"        If --delay is given, starts in <delay> seconds instead of now.\n"
 "        "
 msgstr ""
 
-#: plugin.py:186
+#: plugin.py:255
 msgid "There is already an event with that name, please choose another name."
 msgstr ""
 
-#: plugin.py:196
+#: plugin.py:270
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -80,7 +105,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:207
+#: plugin.py:290
 msgid "There are currently no scheduled commands."
 msgstr ""
 

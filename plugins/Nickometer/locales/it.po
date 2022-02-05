@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-06-12 17:05+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,8 +10,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: plugin.py:84
-#, docstring
+#: plugin.py:81
+msgid "Will tell you how lame a nick is by the command 'nickometer [nick]'."
+msgstr ""
+
+#: plugin.py:88
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -25,7 +28,6 @@ msgstr ""
 "        quello della persona che ha dato il comando.\n"
 "        "
 
-#: plugin.py:226
+#: plugin.py:231
 msgid "The \"lame nick-o-meter\" reading for \"%s\" is %s%%."
 msgstr "Il \"nick-o-meter lamer\" per \"%s\" è %s%%."
-

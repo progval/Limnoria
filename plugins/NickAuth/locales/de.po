@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: NickAuth plugin in Limnoria\n"
-"POT-Creation-Date: 2012-11-04 11:10+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2013-01-25 23:59+0100\n"
 "Last-Translator: Alexander Minges <alexander.minges@gmail.com>\n"
 "Language-Team: Deutsch <alexander.minges@gmail.com>\n"
@@ -18,20 +18,26 @@ msgstr ""
 "X-Generator: Gtranslator 2.91.6\n"
 
 #: plugin.py:47
-msgid "Support authentication based on nicks and network services."
+msgid ""
+"\n"
+"    This plugin allows users to use their network services account to\n"
+"    authenticate to the bot.\n"
+"\n"
+"    They first have to use ``@nickauth nick add <the nick>`` while being\n"
+"    identified to the bot and then use ``@auth`` when they want to\n"
+"    identify to the bot.\n"
+"    "
 msgstr ""
-"Unterstützt die Authentifizierung basierend auf Nicknamen und Netzwerk-"
-"Diensten."
 
-#: plugin.py:54 plugin.py:59
+#: plugin.py:62 plugin.py:67
 msgid "You are not authenticated."
 msgstr "Du bist nicht authentifiziert."
 
-#: plugin.py:62
+#: plugin.py:70
 msgid "You must be owner to do that."
 msgstr "Du musst der Eigentümer sein, um dies tun zu können."
 
-#: plugin.py:67
+#: plugin.py:75
 msgid ""
 "[<network>] <user> <nick>\n"
 "\n"
@@ -51,11 +57,11 @@ msgstr ""
 "            <Netzwerk> ist standardmäßig das aktuelle Netzwerk.\n"
 "            "
 
-#: plugin.py:80
+#: plugin.py:88
 msgid "This nick is already used by someone on this network."
 msgstr "Dieser Nick wird bereits von jemandem in diesem Netzwerk genutzt."
 
-#: plugin.py:89
+#: plugin.py:97
 msgid ""
 "[<network>] <user> <nick>\n"
 "\n"
@@ -72,11 +78,11 @@ msgstr ""
 "            <Netzwerk> ist standardmäßig das aktuelle Netzwerk.\n"
 "            "
 
-#: plugin.py:101
+#: plugin.py:109
 msgid "This nick is not registered to you on this network."
 msgstr "Dieser Nick ist nicht von Dir in diesem Netzwerk registriert."
 
-#: plugin.py:110
+#: plugin.py:118
 msgid ""
 "[<network>] [<user>]\n"
 "\n"
@@ -90,11 +96,20 @@ msgstr ""
 "            <Netzwerk> ist standardmäßig das aktuelle Netzwerk.\n"
 "            "
 
-#: plugin.py:125
+#: plugin.py:127
+msgid "You are not identified and <user> is not given."
+msgstr ""
+
+#: plugin.py:138
 msgid "You have no recognized nick on this network."
 msgstr "Du hast keinen bekannten Nick in diesem Netzwerk."
 
-#: plugin.py:132
+#: plugin.py:141
+#, fuzzy
+msgid "%s has no recognized nick on this network."
+msgstr "Du hast keinen bekannten Nick in diesem Netzwerk."
+
+#: plugin.py:148
 msgid ""
 "takes no argument\n"
 "\n"
@@ -109,10 +124,33 @@ msgstr ""
 "        Netzwerk-Dienst bekannt bist.\n"
 "        "
 
-#: plugin.py:158
+#: plugin.py:159
+msgid ""
+"If the messages has a server tag with account name, tries to\n"
+"        authenticate it."
+msgstr ""
+
+#: plugin.py:180
+msgid ""
+"Your secure flag is true and your hostmask doesn't match any of your known "
+"hostmasks."
+msgstr ""
+
+#: plugin.py:184
 msgid "You are now authenticated as %s."
 msgstr "Du bist nun als %s authentifiziert."
 
-#: plugin.py:160
-msgid "No user has this nick on this network."
-msgstr "Kein Benutzer hat diesen Nick in diesem Netzwerk."
+#: plugin.py:186
+msgid ""
+"No user claimed the nick %s on this network. If this is you, you should "
+"connect with an other method and use the \"nickauth nick add\" command, or "
+"ask the owner of the bot to do it."
+msgstr ""
+
+#~ msgid "Support authentication based on nicks and network services."
+#~ msgstr ""
+#~ "Unterstützt die Authentifizierung basierend auf Nicknamen und Netzwerk-"
+#~ "Diensten."
+
+#~ msgid "No user has this nick on this network."
+#~ msgstr "Kein Benutzer hat diesen Nick in diesem Netzwerk."

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: NickAuth plugin in Limnoria\n"
-"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 14:16+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
@@ -17,23 +17,27 @@ msgstr ""
 "Plural-Forms: \n"
 "X-Generator: Poedit 1.6.10\n"
 
-# I added explaining on what this does to brackets as the explanation was a little unclear.
 #: plugin.py:47
-msgid "Supports authentication based on nicks and network services."
+msgid ""
+"\n"
+"    This plugin allows users to use their network services account to\n"
+"    authenticate to the bot.\n"
+"\n"
+"    They first have to use ``@nickauth nick add <the nick>`` while being\n"
+"    identified to the bot and then use ``@auth`` when they want to\n"
+"    identify to the bot.\n"
+"    "
 msgstr ""
-"Tukee tunnistautumista käyttäen nimimerkkejä ja verkkopalveluita.\n"
-" (Kirjautuessasi sisään NickServille botti tunnistaa sinut, mikäli olet \n"
-" kertonut botille nimimerkkisi)."
 
-#: plugin.py:54 plugin.py:59
+#: plugin.py:62 plugin.py:67
 msgid "You are not authenticated."
 msgstr "Et ole tunnistautunut."
 
-#: plugin.py:62
+#: plugin.py:70
 msgid "You must be owner to do that."
 msgstr "Vain omistaja voi tehdä tuon."
 
-#: plugin.py:67
+#: plugin.py:75
 msgid ""
 "[<network>] <user> <nick>\n"
 "\n"
@@ -50,11 +54,11 @@ msgstr ""
 "sillä\n"
 " voidaan tunnistautua. <Verkko> on oletuksena nykyinen verkko."
 
-#: plugin.py:80
+#: plugin.py:88
 msgid "This nick is already used by someone on this network."
 msgstr "Joku muu käyttää jo tuota nimimerkkiä tässä verkossa."
 
-#: plugin.py:89
+#: plugin.py:97
 msgid ""
 "[<network>] <user> <nick>\n"
 "\n"
@@ -68,11 +72,11 @@ msgstr ""
 " Poistaa <nimimerkin> <käyttäjän> omistamista nimimerkeistä <verkossa>.\n"
 " <Verkko> on oletuksena nykyinen verkko."
 
-#: plugin.py:101
+#: plugin.py:109
 msgid "This nick is not registered to you on this network."
 msgstr "Tuota nimimerkkiä ei ole rekisteröity käyttöösi tässä verkossa."
 
-#: plugin.py:110
+#: plugin.py:118
 msgid ""
 "[<network>] [<user>]\n"
 "\n"
@@ -85,19 +89,19 @@ msgstr ""
 " Luettelee <käyttäjän> nimimerkit <verkossa>.\n"
 " <Verkko> on oletuksena nykyinen verkko."
 
-#: plugin.py:119
+#: plugin.py:127
 msgid "You are not identified and <user> is not given."
 msgstr "Et ole tunnistautunut, etkä antanut <käyttäjä> parametriä."
 
-#: plugin.py:130
+#: plugin.py:138
 msgid "You have no recognized nick on this network."
 msgstr "Sinulla ei ole tunnettua nimimerkkiä tässä verkossa."
 
-#: plugin.py:133
+#: plugin.py:141
 msgid "%s has no recognized nick on this network."
 msgstr "Käyttäjällä %s ei ole tunnistettua nimimerkkiä tässä verkossa."
 
-#: plugin.py:140
+#: plugin.py:148
 msgid ""
 "takes no argument\n"
 "\n"
@@ -111,7 +115,13 @@ msgstr ""
 " Mikäli et saa vastausta, se tarkoittaa ettet ole tunnistautunut "
 "verkkopalveluille."
 
-#: plugin.py:167
+#: plugin.py:159
+msgid ""
+"If the messages has a server tag with account name, tries to\n"
+"        authenticate it."
+msgstr ""
+
+#: plugin.py:180
 msgid ""
 "Your secure flag is true and your hostmask doesn't match any of your known "
 "hostmasks."
@@ -119,10 +129,23 @@ msgstr ""
 "Secure-asetuksesi on true ja hostmaskisi ei täsmää yhteenkään\n"
 " tunnettuun hostmaskiisi."
 
-#: plugin.py:171
+#: plugin.py:184
 msgid "You are now authenticated as %s."
 msgstr "Olet nyt tunnistautunut käyttäjäksi %s."
 
-#: plugin.py:173
-msgid "No user has this nick on this network."
-msgstr "Yhdelläkään käyttäjällä ei ole nimimerkkiä tässä verkossa."
+#: plugin.py:186
+msgid ""
+"No user claimed the nick %s on this network. If this is you, you should "
+"connect with an other method and use the \"nickauth nick add\" command, or "
+"ask the owner of the bot to do it."
+msgstr ""
+
+# I added explaining on what this does to brackets as the explanation was a little unclear.
+#~ msgid "Supports authentication based on nicks and network services."
+#~ msgstr ""
+#~ "Tukee tunnistautumista käyttäen nimimerkkejä ja verkkopalveluita.\n"
+#~ " (Kirjautuessasi sisään NickServille botti tunnistaa sinut, mikäli olet \n"
+#~ " kertonut botille nimimerkkisi)."
+
+#~ msgid "No user has this nick on this network."
+#~ msgstr "Yhdelläkään käyttäjällä ei ole nimimerkkiä tässä verkossa."

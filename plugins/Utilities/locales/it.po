@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-06-15 18:37+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,45 +10,54 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: plugin.py:43
+msgid "Provides useful commands for bot scripting / command nesting."
+msgstr ""
 
-#: plugin.py:45
-#, docstring
+#: plugin.py:48
 msgid ""
 "requires no arguments\n"
 "\n"
-"        Does nothing.  Useful sometimes for sequencing commands when you don't\n"
+"        Does nothing.  Useful sometimes for sequencing commands when you "
+"don't\n"
 "        care about their non-error return values.\n"
 "        "
 msgstr ""
 "non necessita argomenti\n"
 "\n"
-"        Non fa niente. Utile per eseguire comandi in sequenza quando non ci si\n"
+"        Non fa niente. Utile per eseguire comandi in sequenza quando non ci "
+"si\n"
 "        cura del valore dello stato di uscita restituito.\n"
 "        "
 
 #: plugin.py:59
-#, docstring
 msgid ""
 "[<text>]\n"
 "\n"
-"        Does nothing except to reply with a success message.  This is useful\n"
-"        when you want to run multiple commands as nested commands, and don't\n"
-"        care about their output as long as they're successful.  An error, of\n"
+"        Does nothing except to reply with a success message.  This is "
+"useful\n"
+"        when you want to run multiple commands as nested commands, and "
+"don't\n"
+"        care about their output as long as they're successful.  An error, "
+"of\n"
 "        course, will break out of this command.  <text>, if given, will be\n"
 "        appended to the end of the success message.\n"
 "        "
 msgstr ""
 "[<testo>]\n"
 "\n"
-"        Non fa nient'altro che rispondere con un messaggio di successo. Utile\n"
-"        quando si vuole eseguire comandi multipli come nidificati, e non ci si\n"
-"        cura del loro output finché questi riescono con successo. Un errore,\n"
-"        naturalmente, interromperà questo comando. <testo>, se fornito, sarà\n"
+"        Non fa nient'altro che rispondere con un messaggio di successo. "
+"Utile\n"
+"        quando si vuole eseguire comandi multipli come nidificati, e non ci "
+"si\n"
+"        cura del loro output finché questi riescono con successo. Un "
+"errore,\n"
+"        naturalmente, interromperà questo comando. <testo>, se fornito, "
+"sarà\n"
 "        aggiunto alla fine del messaggio di successo.\n"
 "        "
 
 #: plugin.py:72
-#, docstring
 msgid ""
 "<text> [<text> ...]\n"
 "\n"
@@ -59,30 +68,34 @@ msgid ""
 msgstr ""
 "<testo> [<testo> ...]\n"
 "\n"
-"        Restituisce l'ultimo argomento dato. Utile quando si vogliono eseguire\n"
+"        Restituisce l'ultimo argomento dato. Utile quando si vogliono "
+"eseguire\n"
 "        comandi nidificati ottenendo solo l'output dell'ultimo.\n"
 "        "
 
 #: plugin.py:86
-#, docstring
 msgid ""
 "<text>\n"
 "\n"
-"        Returns the arguments given it.  Uses our standard substitute on the\n"
+"        Returns the arguments given it.  Uses our standard substitute on "
+"the\n"
 "        string(s) given to it; $nick (or $who), $randomNick, $randomInt,\n"
-"        $botnick, $channel, $user, $host, $today, $now, and $randomDate are all\n"
+"        $botnick, $channel, $user, $host, $today, $now, and $randomDate are "
+"all\n"
 "        handled appropriately.\n"
 "        "
 msgstr ""
 "<testo>\n"
 "\n"
-"        Restituisce gli argomenti dati. Utilizza il nostro sistema di sostituzione\n"
-"        standard con la stringa fornita; $nick (o $who), $randomNick, $randomInt, $botnick,\n"
-"        $channel, $user, $host, $today, $now e $randomDate sono tutte gestite correttamente.\n"
+"        Restituisce gli argomenti dati. Utilizza il nostro sistema di "
+"sostituzione\n"
+"        standard con la stringa fornita; $nick (o $who), $randomNick, "
+"$randomInt, $botnick,\n"
+"        $channel, $user, $host, $today, $now e $randomDate sono tutte "
+"gestite correttamente.\n"
 "        "
 
 #: plugin.py:99
-#, docstring
 msgid ""
 "<arg> [<arg> ...]\n"
 "\n"
@@ -95,7 +108,19 @@ msgstr ""
 "        "
 
 #: plugin.py:109
-#, docstring
+#, fuzzy
+msgid ""
+"<arg> [<arg> ...]\n"
+"\n"
+"        Sorts the arguments given.\n"
+"        "
+msgstr ""
+"<argomento> [<argomento> ...]\n"
+"\n"
+"        Conta gli argomenti forniti.\n"
+"        "
+
+#: plugin.py:120
 msgid ""
 "<num> <arg> [<arg> ...]\n"
 "\n"
@@ -107,8 +132,7 @@ msgstr ""
 "        Sceglie in modo casuale un certo <numero> di argomenti.\n"
 "        "
 
-#: plugin.py:122
-#, docstring
+#: plugin.py:133
 msgid ""
 "<arg> [<arg> ...]\n"
 "\n"
@@ -120,8 +144,7 @@ msgstr ""
 "        Conta gli argomenti forniti.\n"
 "        "
 
-#: plugin.py:131
-#, docstring
+#: plugin.py:142
 msgid ""
 "<command> <text>\n"
 "\n"
@@ -133,3 +156,15 @@ msgstr ""
 "        Tokenizza <testo> e chiama <comando> con gli argomenti risultanti.\n"
 "        "
 
+#: plugin.py:157
+msgid ""
+"<variable> = <value> in <command>\n"
+"\n"
+"        Defines <variable> to be equal to <value> in the <command>\n"
+"        and runs the <command>.\n"
+"        '=' and 'in' can be omitted."
+msgstr ""
+
+#: plugin.py:165
+msgid "Cannot set a variable that already exists."
+msgstr ""

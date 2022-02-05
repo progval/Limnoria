@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Games plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:29+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 11:36+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: plugin.py:45
+#: plugin.py:46
 msgid ""
 "This plugin provides some small games like (Russian) roulette,\n"
 "    eightball, monologue, coin and dice."
@@ -25,7 +25,7 @@ msgstr ""
 "Tämä plugini sisältää joitakin pieniä pelejä, kuten (venäläisen) ruletin,\n"
 " kasipalllon, monologin, kolikon heittäminen ja nopan heittäminen."
 
-#: plugin.py:49
+#: plugin.py:50
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -37,15 +37,15 @@ msgstr ""
 "        Heittää rahan ja palauttaa tuloksen.\n"
 "        "
 
-#: plugin.py:54
+#: plugin.py:55
 msgid "heads"
 msgstr "kruuna"
 
-#: plugin.py:56
+#: plugin.py:57
 msgid "tails"
 msgstr "klaava"
 
-#: plugin.py:61
+#: plugin.py:62
 msgid ""
 "<dice>d<sides>\n"
 "\n"
@@ -61,23 +61,23 @@ msgstr ""
 "        kymmenen-sivuista noppaa.\n"
 "        "
 
-#: plugin.py:69
+#: plugin.py:70
 msgid "You can't roll more than 1000 dice."
 msgstr "Et voi heittää useampaa kuin tuhatta noppaa."
 
-#: plugin.py:71
+#: plugin.py:72
 msgid "Dice can't have more than 100 sides."
 msgstr "Nopalla ei voi olla useampaa kuin sataa sivua."
 
-#: plugin.py:73
+#: plugin.py:74
 msgid "Dice can't have fewer than 3 sides."
 msgstr "Nopalla ei voi olla vähempää kuin kolmea sivua."
 
-#: plugin.py:81
+#: plugin.py:82
 msgid "Dice must be of the form <dice>d<sides>"
 msgstr "Nopan täytyy olla muodossa <noppa>d<sivuja>."
 
-#: plugin.py:85
+#: plugin.py:86
 msgid ""
 "It is possible.|Yes!|Of course.|Naturally.|Obviously.|It shall be.|The "
 "outlook is good.|It is so.|One would be wise to think so.|The answer is "
@@ -87,7 +87,7 @@ msgstr ""
 "Hyvät näkymät.|Se on niin.|Erään olisi viisasta ajatella niin.|Vastaus on "
 "varmasti kyllä."
 
-#: plugin.py:89
+#: plugin.py:90
 msgid ""
 "In your dreams.|I doubt it very much.|No chance.|The outlook is poor.|"
 "Unlikely.|About as likely as pigs flying.|You're kidding, right?|NO!|NO.|No.|"
@@ -97,7 +97,7 @@ msgstr ""
 "Epätodennäköisesti.|Yhtä todennäköisesti, kuin siat lentävät.|Kai sinä "
 "pilailet?|EI!|EI.|Ei.|Vastaus on raikuva ei."
 
-#: plugin.py:93
+#: plugin.py:94
 msgid ""
 "Maybe...|No clue.|_I_ don't know.|The outlook is hazy, please ask again "
 "later.|What are you asking me for?|Come again?|You know the answer better "
@@ -107,7 +107,7 @@ msgstr ""
 "myöhemmin uudelleen.|Miksi kysyt minulta?|Tule uudelleen?|Sinä tiedät "
 "vastauksen paremmin kuin minä.|Vastaus on var-- oooh! kiiltävä esine!"
 
-#: plugin.py:110
+#: plugin.py:111
 msgid ""
 "[<question>]\n"
 "\n"
@@ -119,7 +119,7 @@ msgstr ""
 "        Kysy kysymys ja vastaus annetaan.\n"
 "        "
 
-#: plugin.py:124
+#: plugin.py:125
 msgid ""
 "[spin]\n"
 "\n"
@@ -133,23 +133,23 @@ msgstr ""
 "        Käske minun pyöräyttää kammiota ja minä teen sen.\n"
 "        "
 
-#: plugin.py:131
+#: plugin.py:132
 msgid "*SPIN* Are you feeling lucky?"
 msgstr "*Pyörähdys* Tuntuuko sinusta onnekkaalta?"
 
-#: plugin.py:141
+#: plugin.py:142
 msgid "*BANG* Hey, who put a blank in here?!"
 msgstr "*PANG* Hei, kuka laittoi tuon laudan tuohon?!"
 
-#: plugin.py:143
+#: plugin.py:144
 msgid "reloads and spins the chambers."
 msgstr "lataa ja pyöräyttää kammioita."
 
-#: plugin.py:145
+#: plugin.py:146
 msgid "*click*"
 msgstr "*klick*"
 
-#: plugin.py:152
+#: plugin.py:153
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -171,10 +171,10 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:171
+#: plugin.py:172
 msgid "Your current monologue is at least %n long."
 msgstr "Sinun nykyinen monologisi on ainakin %n pitkä."
 
-#: plugin.py:172
+#: plugin.py:173
 msgid "line"
 msgstr "rivi"

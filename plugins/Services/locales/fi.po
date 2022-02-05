@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-08-13 23:02+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -15,23 +15,26 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
-#: config.py:39
-msgid "Determines what password the bot will use with NickServ when identifying as %s."
-msgstr "Määrittää mitä salasanaa botti käyttää, kun tunnistautuu %s:ksi NickServillä."
+#: config.py:40
+msgid ""
+"Determines what password the bot will use with NickServ when identifying as "
+"%s."
+msgstr ""
+"Määrittää mitä salasanaa botti käyttää, kun tunnistautuu %s:ksi NickServillä."
 
-#: config.py:49
+#: config.py:50
 msgid "What is your registered nick?"
 msgstr "Mikä on rekisteröity nimimerkkisi?"
 
-#: config.py:50
+#: config.py:51
 msgid "What is your password for that nick?"
 msgstr "Mikä on salasanasi tuolle nimimerkille?"
 
-#: config.py:51
+#: config.py:52
 msgid "What is your ChanServ named?"
 msgstr "Minkä niminen ChanServisi on?"
 
-#: config.py:52
+#: config.py:53
 msgid "What is your NickServ named?"
 msgstr "Minkä niminen NickServisi on?"
 
@@ -65,12 +68,14 @@ msgstr ""
 "Määrittää liittyykö botti millekään kanavalle ennen\n"
 "    kuin se on tunnistautunut.  Tämä voi olla hyödyllinen, esimerkiksi, jos\n"
 "    sinulla on vhost, jota ei aseteta ennen kuin tunnistaudut, tai jos olet\n"
-"    liittymässä +r kanaville, jotka eivät salli sinun liittyvän, paitsi jos olet tunnistautunut."
+"    liittymässä +r kanaville, jotka eivät salli sinun liittyvän, paitsi jos "
+"olet tunnistautunut."
 
 #: config.py:86
+#, fuzzy
 msgid ""
 "Determines how many seconds the bot will\n"
-"    wait between successive GHOST attempts."
+"    wait between successive GHOST attempts. Set this to 0 to disable GHOST."
 msgstr ""
 "Määrittää monta sekuntia botti odottaa\n"
 "    GHOSTaus yritysten välillä."
@@ -123,19 +128,23 @@ msgstr ""
 "Määrittää pyytääkö botti ChanServiltä äänen, kun\n"
 "    se liittyy kanavalle."
 
-#: plugin.py:47
+#: plugin.py:54
 msgid ""
 "This plugin handles dealing with Services on networks that provide them.\n"
-"    Basically, you should use the \"password\" command to tell the bot a nick to\n"
-"    identify with and what password to use to identify with that nick.  You can\n"
+"    Basically, you should use the \"password\" command to tell the bot a "
+"nick to\n"
+"    identify with and what password to use to identify with that nick.  You "
+"can\n"
 "    use the password command multiple times if your bot has multiple nicks\n"
 "    registered.  Also, be sure to configure the NickServ and ChanServ\n"
-"    configuration variables to match the NickServ and ChanServ nicks on your\n"
+"    configuration variables to match the NickServ and ChanServ nicks on "
+"your\n"
 "    network.  Other commands such as identify, op, etc. should not be\n"
 "    necessary if the bot is properly configured."
 msgstr ""
 "Tämä lisäosa hoitaa palvelut verkoissa, jotka tarjoavat niitä.\n"
-"    Perusteellisesti, sinun pitäisi käyttää komentoa \"password\" kertoaksesi botille\n"
+"    Perusteellisesti, sinun pitäisi käyttää komentoa \"password\" "
+"kertoaksesi botille\n"
 "    millä salasanalla ja tunnuksella se tunnistautuu.  Voit käyttää\n"
 "    salasanakomentoa monta kertaa, mikäli botillasi on monta rekisteröityä\n"
 "    nimimerkkiä.  Varmista myös, että asetusarvot täsmäävät\n"
@@ -143,11 +152,15 @@ msgstr ""
 "    Muiden komentojen, kuten identify, op, jne. ei\n"
 "    pitäisi olla vaadittuja, jos botti on määritetty hyvin."
 
-#: plugin.py:397
-msgid "You must set supybot.plugins.Services.ChanServ before I'm able to send the %s command."
-msgstr "Sinun täytyy asettaa supybot.plugins.Services.ChanServ ennen kuin pystyn lähettämään komennon %s."
+#: plugin.py:441
+msgid ""
+"You must set supybot.plugins.Services.ChanServ before I'm able to send the "
+"%s command."
+msgstr ""
+"Sinun täytyy asettaa supybot.plugins.Services.ChanServ ennen kuin pystyn "
+"lähettämään komennon %s."
 
-#: plugin.py:403
+#: plugin.py:447
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -157,15 +170,16 @@ msgid ""
 msgstr ""
 "[<kanava>]\n"
 "\n"
-"        Yrittää päästä ChanServin oppaamaksi <kanavalla>.  <Kanava> on vaadittu vain,\n"
+"        Yrittää päästä ChanServin oppaamaksi <kanavalla>.  <Kanava> on "
+"vaadittu vain,\n"
 "        jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:409
+#: plugin.py:453
 msgid "I'm already opped in %s."
 msgstr "Minut on jo opattu kanavalla %s."
 
-#: plugin.py:416
+#: plugin.py:460
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -175,50 +189,58 @@ msgid ""
 msgstr ""
 "[<kanava>]\n"
 "\n"
-"        Yrittää saada ChanServiltä äänen <kanavalla>.  <Kanava> on vaadittu vain, jos\n"
+"        Yrittää saada ChanServiltä äänen <kanavalla>.  <Kanava> on vaadittu "
+"vain, jos\n"
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:422
+#: plugin.py:466
 msgid "I'm already voiced in %s."
 msgstr "Minulla on jo ääni kanavalla %s."
 
-#: plugin.py:439
+#: plugin.py:483
 msgid ""
 "[<channel>]\n"
 "\n"
-"        Attempts to get unbanned by ChanServ in <channel>.  <channel> is only\n"
-"        necessary if the message isn't sent in the channel itself, but chances\n"
+"        Attempts to get unbanned by ChanServ in <channel>.  <channel> is "
+"only\n"
+"        necessary if the message isn't sent in the channel itself, but "
+"chances\n"
 "        are, if you need this command, you're not sending it in the channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<kanava>]\n"
 "\n"
-"        Yrittää poistaa porttikiellon <kanavalta> käyttämällä ChanServiä.  <Kanava> on vaadittu vain, jos\n"
-"        viestiä ei lähetetä kanavalla itsellään, mutta luultavast jos tarvitset tätä komentoa, et ole kanavallai\n"
+"        Yrittää poistaa porttikiellon <kanavalta> käyttämällä ChanServiä.  "
+"<Kanava> on vaadittu vain, jos\n"
+"        viestiä ei lähetetä kanavalla itsellään, mutta luultavast jos "
+"tarvitset tätä komentoa, et ole kanavallai\n"
 "        itsellään.\n"
 "        "
 
-#: plugin.py:460
+#: plugin.py:504
 msgid ""
 "[<channel>]\n"
 "\n"
-"        Attempts to get invited by ChanServ to <channel>.  <channel> is only\n"
-"        necessary if the message isn't sent in the channel itself, but chances\n"
+"        Attempts to get invited by ChanServ to <channel>.  <channel> is "
+"only\n"
+"        necessary if the message isn't sent in the channel itself, but "
+"chances\n"
 "        are, if you need this command, you're not sending it in the channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<channel>]\n"
 "\n"
-"        Yrittää saada ChanServiltä kutsun <kanavalle>.  <Kanava> on vaadittu vain,\n"
+"        Yrittää saada ChanServiltä kutsun <kanavalle>.  <Kanava> on vaadittu "
+"vain,\n"
 "        jos viestiä ei lähetetä kanavalla itsellään, mutta luultavasti\n"
 "        jos tarvitset tätä komentoa, et lähetä sitä kanavalla\n"
 "        itsellään.\n"
 "        "
 
-#: plugin.py:481
+#: plugin.py:526
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -230,15 +252,19 @@ msgstr ""
 "        Tunnistautuu NickServille käyttämällä nykyistä nimimerkkiä.\n"
 "        "
 
-#: plugin.py:490
+#: plugin.py:535
 msgid "I don't have a configured password for my current nick."
 msgstr "Minulla ei ole määritettyä salasanaa nimimerkilleni."
 
-#: plugin.py:493
-msgid "You must set supybot.plugins.Services.NickServ before I'm able to do identify."
-msgstr "Sinun täytyy asettaa supybot.plugins.Services.NickServ ennen kuin pystyn tunnistautumaan."
+#: plugin.py:538
+msgid ""
+"You must set supybot.plugins.Services.NickServ before I'm able to do "
+"identify."
+msgstr ""
+"Sinun täytyy asettaa supybot.plugins.Services.NickServ ennen kuin pystyn "
+"tunnistautumaan."
 
-#: plugin.py:499
+#: plugin.py:544
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -248,51 +274,136 @@ msgid ""
 msgstr ""
 "[<nimimerkki>]\n"
 "\n"
-"        Ghostaa botin annetun nimimerkin ja ottaa sen.  Jos nimimerkkiä ei ole annettu,\n"
+"        Ghostaa botin annetun nimimerkin ja ottaa sen.  Jos nimimerkkiä ei "
+"ole annettu,\n"
 "        ghostaa botin määritetyn nimimerkin ja ottaa sen.\n"
 "        "
 
-#: plugin.py:508
+#: plugin.py:553
 msgid "I cowardly refuse to ghost myself."
 msgstr "Minä pelkurimaisesti kieltäydyn ghostaamasta itseäni."
 
-#: plugin.py:513
-msgid "You must set supybot.plugins.Services.NickServ before I'm able to ghost a nick."
-msgstr "Sinun täytyy asettaa supybot.plugins.Services.NickServ ennen kuin pystyn ghostaamaan nimimerkin."
+#: plugin.py:558
+msgid ""
+"You must set supybot.plugins.Services.NickServ before I'm able to ghost a "
+"nick."
+msgstr ""
+"Sinun täytyy asettaa supybot.plugins.Services.NickServ ennen kuin pystyn "
+"ghostaamaan nimimerkin."
 
-#: plugin.py:519
+#: plugin.py:563
+msgid ""
+"<text>\n"
+"\n"
+"        Sends the <text> to NickServ. For example, to register to NickServ\n"
+"        on Atheme, use: @nickserv REGISTER <password> <email-address>."
+msgstr ""
+
+#: plugin.py:572
+#, fuzzy
+msgid ""
+"You must set supybot.plugins.Services.NickServ before I'm able to message "
+"NickServ"
+msgstr ""
+"Sinun täytyy asettaa supybot.plugins.Services.NickServ ennen kuin pystyn "
+"ghostaamaan nimimerkin."
+
+#: plugin.py:577
+msgid ""
+"<text>\n"
+"\n"
+"        Sends the <text> to ChanServ. For example, to register a channel\n"
+"        on Atheme, use: @chanserv REGISTER <#channel>."
+msgstr ""
+
+#: plugin.py:586
+#, fuzzy
+msgid ""
+"You must set supybot.plugins.Services.ChanServ before I'm able to message "
+"ChanServ"
+msgstr ""
+"Sinun täytyy asettaa supybot.plugins.Services.ChanServ ennen kuin pystyn "
+"lähettämään komennon %s."
+
+#: plugin.py:593
 msgid ""
 "<nick> [<password>]\n"
 "\n"
-"        Sets the NickServ password for <nick> to <password>.  If <password> is\n"
+"        Sets the NickServ password for <nick> to <password>.  If <password> "
+"is\n"
 "        not given, removes <nick> from the configured nicks.\n"
 "        "
 msgstr ""
 "<nimimerkki> [<salasana>]\n"
 "\n"
-"        Asettaa NickServin salasanan <nimimerkille> <salasanaksi>.  Jos <salasana> ei\n"
+"        Asettaa NickServin salasanan <nimimerkille> <salasanaksi>.  Jos "
+"<salasana> ei\n"
 "        ole annettu, poistaa <nimimerkin> määritetyistä nimimerkeistä.\n"
 "        "
 
-#: plugin.py:529
+#: plugin.py:605
 msgid "That nick was not configured with a password."
 msgstr "Tuota nimimerkkiä ei ole määritetty salasanan kanssa."
 
-#: plugin.py:540
+#: plugin.py:618
 msgid ""
 "takes no arguments\n"
 "\n"
-"        Returns the nicks that this plugin is configured to identify and ghost\n"
+"        Returns the nicks that this plugin is configured to identify and "
+"ghost\n"
 "        with.\n"
 "        "
 msgstr ""
 "ei ota parametrejä\n"
 "\n"
-"        Palauttaa nimimerkin, jolla tämä lisäosa on määritetty tunnistautumaan ja\n"
+"        Palauttaa nimimerkin, jolla tämä lisäosa on määritetty "
+"tunnistautumaan ja\n"
 "        ghostaamaan.\n"
 "        "
 
-#: plugin.py:550
+#: plugin.py:628
 msgid "I'm not currently configured for any nicks."
 msgstr "Minulle ei ole tällä hetkellä määritetty yhtään nimimerkkiä."
 
+#: plugin.py:635
+msgid "Experimental IRC extensions are not enabled for this bot."
+msgstr ""
+
+#: plugin.py:641
+msgid "This network does not support draft/account-registration."
+msgstr ""
+
+#: plugin.py:647
+msgid "This network does not support labeled-response."
+msgstr ""
+
+#: plugin.py:653
+msgid "This bot is already authenticated on the network."
+msgstr ""
+
+#: plugin.py:658
+msgid ""
+"[<network>] <password> [<email>]\n"
+"\n"
+"        Uses the experimental REGISTER command to create an account for the "
+"bot\n"
+"        on the <network>, using the <password> and the <email> if provided.\n"
+"        Some networks may require the email.\n"
+"        You may need to use the 'services verify' command afterward to "
+"confirm\n"
+"        your email address."
+msgstr ""
+
+#: plugin.py:672
+msgid "This network requires an email address to register."
+msgstr ""
+
+#: plugin.py:686
+msgid ""
+"[<network>] <account> <code>\n"
+"\n"
+"        If the <network> requires a verification code, you need to call "
+"this\n"
+"        command with the code the server gave you to finish the\n"
+"        registration."
+msgstr ""

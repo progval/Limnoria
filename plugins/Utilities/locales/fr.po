@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-20 11:29+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -13,32 +13,45 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
 
-#: plugin.py:45
+#: plugin.py:43
+msgid "Provides useful commands for bot scripting / command nesting."
+msgstr ""
+
+#: plugin.py:48
 msgid ""
 "requires no arguments\n"
 "\n"
-"        Does nothing.  Useful sometimes for sequencing commands when you don't\n"
+"        Does nothing.  Useful sometimes for sequencing commands when you "
+"don't\n"
 "        care about their non-error return values.\n"
 "        "
 msgstr ""
 "ne requiert pas d'argument\n"
 "\n"
-"Ne fait rien. Utile pour séquencer les commandes lorsque vous vous fichez de leur valeur de retour."
+"Ne fait rien. Utile pour séquencer les commandes lorsque vous vous fichez de "
+"leur valeur de retour."
 
 #: plugin.py:59
 msgid ""
 "[<text>]\n"
 "\n"
-"        Does nothing except to reply with a success message.  This is useful\n"
-"        when you want to run multiple commands as nested commands, and don't\n"
-"        care about their output as long as they're successful.  An error, of\n"
+"        Does nothing except to reply with a success message.  This is "
+"useful\n"
+"        when you want to run multiple commands as nested commands, and "
+"don't\n"
+"        care about their output as long as they're successful.  An error, "
+"of\n"
 "        course, will break out of this command.  <text>, if given, will be\n"
 "        appended to the end of the success message.\n"
 "        "
 msgstr ""
 "[<texte>]\n"
 "\n"
-"Ne fait rien excepté répondre avec un message de succès. C'est utile lorsque vous voulez lancer plusieurs commandes comme commandes imbriquées, et vous ne voulez pas vous occuper de leur retour, du moment que ce n'est pas une erreur. Si c'est une erreur, bien sûr, la commande s'arrêtera. <texte>, si il est donné, sera ajouté à la fin du message de succès."
+"Ne fait rien excepté répondre avec un message de succès. C'est utile lorsque "
+"vous voulez lancer plusieurs commandes comme commandes imbriquées, et vous "
+"ne voulez pas vous occuper de leur retour, du moment que ce n'est pas une "
+"erreur. Si c'est une erreur, bien sûr, la commande s'arrêtera. <texte>, si "
+"il est donné, sera ajouté à la fin du message de succès."
 
 #: plugin.py:72
 msgid ""
@@ -51,21 +64,28 @@ msgid ""
 msgstr ""
 "<texte> [<texte> ...]\n"
 "\n"
-"Retourne le dernier argument de la commande. Utile lorsque vous avez plusieurs commandes imbriquées, mais seulement la sortie de la dernière sera retournée."
+"Retourne le dernier argument de la commande. Utile lorsque vous avez "
+"plusieurs commandes imbriquées, mais seulement la sortie de la dernière sera "
+"retournée."
 
 #: plugin.py:86
 msgid ""
 "<text>\n"
 "\n"
-"        Returns the arguments given it.  Uses our standard substitute on the\n"
+"        Returns the arguments given it.  Uses our standard substitute on "
+"the\n"
 "        string(s) given to it; $nick (or $who), $randomNick, $randomInt,\n"
-"        $botnick, $channel, $user, $host, $today, $now, and $randomDate are all\n"
+"        $botnick, $channel, $user, $host, $today, $now, and $randomDate are "
+"all\n"
 "        handled appropriately.\n"
 "        "
 msgstr ""
 "<texte>\n"
 "\n"
-"Retourne les arguments donnés. Utilise notre système de substitution standard sur la/les chaîne(s) qui lui est donnée ; $nick (ou $who), $randomNick, $randomInt, $botnick, $channel, $user, $host, $today, $now, et $randomDate sont tous gérés correctement."
+"Retourne les arguments donnés. Utilise notre système de substitution "
+"standard sur la/les chaîne(s) qui lui est donnée ; $nick (ou $who), "
+"$randomNick, $randomInt, $botnick, $channel, $user, $host, $today, $now, et "
+"$randomDate sont tous gérés correctement."
 
 #: plugin.py:99
 msgid ""
@@ -79,6 +99,18 @@ msgstr ""
 "Mélange les arguments donnés."
 
 #: plugin.py:109
+#, fuzzy
+msgid ""
+"<arg> [<arg> ...]\n"
+"\n"
+"        Sorts the arguments given.\n"
+"        "
+msgstr ""
+"<argument> [<argument> ...]\n"
+"\n"
+"Retorune le nombre d'<argument>s donnés."
+
+#: plugin.py:120
 msgid ""
 "<num> <arg> [<arg> ...]\n"
 "\n"
@@ -89,7 +121,7 @@ msgstr ""
 "\n"
 "Choisi de façon aléatoire un certain <nombre> d'<argument>s."
 
-#: plugin.py:122
+#: plugin.py:133
 msgid ""
 "<arg> [<arg> ...]\n"
 "\n"
@@ -100,7 +132,7 @@ msgstr ""
 "\n"
 "Retorune le nombre d'<argument>s donnés."
 
-#: plugin.py:131
+#: plugin.py:142
 msgid ""
 "<command> <text>\n"
 "\n"
@@ -111,3 +143,15 @@ msgstr ""
 "\n"
 "Tokénise le <texte> et appelle la commande avec l'argument résultant."
 
+#: plugin.py:157
+msgid ""
+"<variable> = <value> in <command>\n"
+"\n"
+"        Defines <variable> to be equal to <value> in the <command>\n"
+"        and runs the <command>.\n"
+"        '=' and 'in' can be omitted."
+msgstr ""
+
+#: plugin.py:165
+msgid "Cannot set a variable that already exists."
+msgstr ""

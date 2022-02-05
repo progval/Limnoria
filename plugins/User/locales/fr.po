@@ -1,19 +1,39 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-01-22 07:53+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-07-05 00:10+0200\n"
 "Last-Translator: \n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
-"Language: fr_FR\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: ASCII\n"
 "X-Generator: Poedit 1.5.4\n"
-"Language: fr\n"
 
-#: plugin.py:52
+#: config.py:48
+msgid ""
+"Determines whether the output of 'user list'\n"
+"    will be sent in private. This prevents mass-highlights of people who "
+"use\n"
+"    their nick as their bot username."
+msgstr ""
+
+#: config.py:52
+msgid ""
+"Determines what message the bot sends\n"
+"    when a user isn't identified or recognized."
+msgstr ""
+
+#: plugin.py:46
+msgid ""
+"Provides commands for dealing with users, such as registration and\n"
+"    authentication to the bot. This is a core Supybot plugin that should\n"
+"    not be removed!"
+msgstr ""
+
+#: plugin.py:55
 msgid ""
 "[--capability=<capability>] [<glob>]\n"
 "\n"
@@ -27,20 +47,21 @@ msgstr ""
 "Retourne les utilisateurs enregistrés correspondant au <glob>. Si <glob> "
 "n'est pas donné, retourne tous les noms d'utilisateur."
 
-#: plugin.py:67
+#: plugin.py:70
 msgid "This is a private capability. Only admins can see who has it."
 msgstr ""
 "C'est une capacité privée. Seuls les admins peuvent voir qui la possède."
 
-#: plugin.py:92
+#: plugin.py:97
 msgid "There are no matching registered users."
 msgstr "Il n'y a pas d'utilisateur enregistré correspondant."
 
-#: plugin.py:94
+#: plugin.py:99
 msgid "There are no registered users."
 msgstr "Il n'y a pas d'utilisateur enregistré."
 
-#: plugin.py:100
+#: plugin.py:105
+#, fuzzy
 msgid ""
 "<name> <password>\n"
 "\n"
@@ -55,6 +76,7 @@ msgid ""
 "        This command (and all other commands that include a password) must "
 "be\n"
 "        sent to the bot privately, not in a channel.\n"
+"        Use \"!\" instead of <password> to disable password authentication.\n"
 "        "
 msgstr ""
 "<nom> <mot de passe>\n"
@@ -68,23 +90,27 @@ msgstr ""
 "autres commandes qui nécessitent un mot de passe) doivent être envoyées en "
 "privé, et non sur un canal."
 
-#: plugin.py:113
+#: plugin.py:119
 msgid "That name is already assigned to someone."
 msgstr "Ce nom est déjà utilisé par quelqu'un."
 
-#: plugin.py:118
+#: plugin.py:124
 msgid "username"
 msgstr "nom d'utilisateur"
 
-#: plugin.py:119
+#: plugin.py:125
 msgid "Hostmasks are not valid usernames."
 msgstr "Les masques d'hôte ne sont pas des noms d'utilisateur valides."
 
-#: plugin.py:126
+#: plugin.py:132
 msgid "Your hostmask is already registered to %s"
 msgstr "Votre masque d'hôte est déjà enregistré à %s"
 
-#: plugin.py:142
+#: plugin.py:141 plugin.py:221
+msgid "The password must be at least 3 characters long."
+msgstr ""
+
+#: plugin.py:159
 msgid ""
 "<name> [<password>]\n"
 "\n"
@@ -98,7 +124,7 @@ msgstr ""
 "appellant cette commande est le propriétaire, le mot de passe n'est pas "
 "requis."
 
-#: plugin.py:157
+#: plugin.py:174
 msgid ""
 "This command has been disabled.  You'll have to ask the owner of this bot to "
 "unregister your user."
@@ -106,7 +132,7 @@ msgstr ""
 "Cette commande a été désactivée. Vous devez contacter le propriétaire du bot "
 "pour vous désenregistrer."
 
-#: plugin.py:170
+#: plugin.py:187
 msgid ""
 "<name> <new name> [<password>]\n"
 "\n"
@@ -125,21 +151,22 @@ msgstr ""
 "masque d'hôte. Si vous avez le paramètre <mot de passe> le message doit être "
 "envoyé en privé (et non sur un canal)."
 
-#: plugin.py:179
+#: plugin.py:196
 msgid "%q is already registered."
 msgstr "%q est déjà enregistré."
 
-#: plugin.py:193
+#: plugin.py:210
+#, fuzzy
 msgid ""
 "[<name>] <old password> <new password>\n"
 "\n"
 "            Sets the new password for the user specified by <name> to <new\n"
-"            password>.  Obviously this message must be sent to the bot\n"
+"            password>. Obviously this message must be sent to the bot\n"
 "            privately (not in a channel). If the requesting user is an "
 "owner\n"
-"            user (and the user whose password is being changed isn't that "
-"same\n"
-"            owner user), then <old password> needn't be correct.\n"
+"            user, then <old password> needn't be correct.\n"
+"            If the <new password> is \"!\", password login will be "
+"disabled.\n"
 "            "
 msgstr ""
 "<nom> <ancien mot de passe> <nouveau mot de passe>\n"
@@ -150,7 +177,7 @@ msgstr ""
 "change le mot de passe n'est pas le même propriétaire), l'<ancien mot de "
 "passe> ne requiert pas d'être correct."
 
-#: plugin.py:221
+#: plugin.py:244
 msgid ""
 "<password> [<True|False>]\n"
 "\n"
@@ -159,8 +186,7 @@ msgid ""
 "            Requires that the person's hostmask be in the list of hostmasks "
 "for\n"
 "            that user in addition to the password being correct.  When the\n"
-"            secure flag is set, the user *must* identify before they "
-"can be\n"
+"            secure flag is set, the user *must* identify before they can be\n"
 "            recognized.  If a specific True/False value is not given, it\n"
 "            inverts the current value.\n"
 "            "
@@ -173,11 +199,11 @@ msgstr ""
 "*doit* être identifié avant d'être reconnu. Si l'argument on/off n'est pas "
 "donné, l'état courant est inversé."
 
-#: plugin.py:236
+#: plugin.py:259
 msgid "Secure flag set to %s"
 msgstr "Flag secure déjà défini à %s"
 
-#: plugin.py:244
+#: plugin.py:267
 msgid ""
 "<hostmask|nick>\n"
 "\n"
@@ -191,15 +217,15 @@ msgstr ""
 "Retourne le nom d'utilisateur de la personne spécifiée par <masque d'hôte> "
 "ou par <nick>, si cette personne est enregistrée."
 
-#: plugin.py:253
+#: plugin.py:276
 msgid "I haven't seen %s."
 msgstr "Je n'ai pas vu %s."
 
-#: plugin.py:258
+#: plugin.py:281
 msgid "I don't know who that is."
 msgstr "Je ne sais pas qui c'est."
 
-#: plugin.py:264
+#: plugin.py:287
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -213,7 +239,7 @@ msgstr ""
 "Retourne le masque d'hôte de <nick>. Si <nick> n'est pas donné, retourne le "
 "masque d'hôte de la personne envoyant la commande."
 
-#: plugin.py:276
+#: plugin.py:299
 msgid ""
 "[<name>]\n"
 "\n"
@@ -229,15 +255,15 @@ msgstr ""
 "n'est pas spécifié, retourne le masque d'hôte de la personne appelant la "
 "commande."
 
-#: plugin.py:288
+#: plugin.py:311
 msgid "%s has no registered hostmasks."
 msgstr "%s n'a pas de masque d'hôte enregistré."
 
-#: plugin.py:295
+#: plugin.py:318
 msgid "You may only retrieve your own hostmasks."
 msgstr "Vous ne pouvez récupérer que vos propres masques d'hôte."
 
-#: plugin.py:311
+#: plugin.py:334
 msgid ""
 "[<name>] [<hostmask>] [<password>]\n"
 "\n"
@@ -267,11 +293,11 @@ msgstr ""
 "donné, il s'agit par défaut de votre nom d'utilisateur. Ce message doit être "
 "envoyé au bot en privé (pas sur un canal) si il contient un mot de passe."
 
-#: plugin.py:325
+#: plugin.py:349
 msgid "hostmask"
 msgstr "masque d'hôte"
 
-#: plugin.py:326
+#: plugin.py:350
 msgid ""
 "Make sure your hostmask includes a nick, then an exclamation point (!), then "
 "a user, then an at symbol (@), then a host.  Feel free to use wildcards (* "
@@ -283,11 +309,17 @@ msgstr ""
 "(* et ?, qui fonctionnent comme dans la ligne de commande), dans n'importe "
 "lequel de ces termes."
 
-#: plugin.py:336 plugin.py:359
+#: plugin.py:361 plugin.py:382
+#, fuzzy
+msgid "That hostmask is already registered to %s."
+msgstr "Ce masque d'hôte est déjà enregistré."
+
+#: plugin.py:364 plugin.py:385
 msgid "That hostmask is already registered."
 msgstr "Ce masque d'hôte est déjà enregistré."
 
-#: plugin.py:367
+#: plugin.py:395
+#, fuzzy
 msgid ""
 "[<name>] [<hostmask>] [<password>]\n"
 "\n"
@@ -302,12 +334,7 @@ msgid ""
 "            password.  If <hostmask> is\n"
 "            not given, it defaults to your current hostmask.  If <name> is "
 "not\n"
-"            given, it defaults to your currently identified name.  This "
-"message\n"
-"            must be sent to the bot privately (not on a channel) since it "
-"may\n"
-"            contain a password.\n"
-"\n"
+"            given, it defaults to your currently identified name.\n"
 "            "
 msgstr ""
 "[<nom>] [<masque d'hôte>] [<mot de passe>]\n"
@@ -322,125 +349,19 @@ msgstr ""
 "Ce message doit être envoyé au bot en privé (pas sur un canal) si il "
 "contient un mot de passe."
 
-#: plugin.py:393
+#: plugin.py:417
 msgid "All hostmasks removed."
 msgstr "Tous les masques d'hôte ont été supprimés."
 
-#: plugin.py:397
+#: plugin.py:421
 msgid "There was no such hostmask."
 msgstr "Il n'y avait pas ce masque d'hôte."
 
-#: plugin.py:414
+#: plugin.py:434
 msgid "GPG features are not enabled."
 msgstr "Les fonctionnalités liées à GPG ne sont pas activées."
 
-#: plugin.py:423
-msgid ""
-"<key id> <key server>\n"
-"\n"
-"            Add a GPG key to your account."
-msgstr ""
-"<id de clé> <serveur de clé>\n"
-"\n"
-"Ajoute une clé GPG à votre compte."
-
-#: plugin.py:427
-msgid "This key is already associated with your account."
-msgstr "Cette clé est déjà associée à votre compte."
-
-#: plugin.py:431
-msgid "%n imported, %i unchanged, %i not imported."
-msgstr "%n importée(s), %i inchangée(s), %i non importée(s)"
-
-#: plugin.py:432
-msgid "key"
-msgstr "clé"
-
-#: plugin.py:443
-msgid "You must give a valid key id"
-msgstr "Vous devez donner un identifiant de clé valide"
-
-#: plugin.py:445
-msgid "You must give a valid key server"
-msgstr "Vous devez donner un serveur de clé valide"
-
-#: plugin.py:449
-msgid ""
-"<fingerprint>\n"
-"\n"
-"            Remove a GPG key from your account."
-msgstr ""
-"<empreinte>\n"
-"\n"
-"Supprime une clé GPG de votre compte."
-
-#: plugin.py:462
-msgid "GPG key not associated with your account."
-msgstr "La clé GPG n’est pas associée à votre compte."
-
-#: plugin.py:467
-msgid ""
-"takes no arguments\n"
-"\n"
-"            Send you a token that you'll have to sign with your key."
-msgstr ""
-"ne prend pas d’argument\n"
-"\n"
-"Vous donne un jeton que vous devez signer avec votre clé."
-
-#: plugin.py:474
-msgid ""
-"Your token is: %s. Please sign it with your GPG key, paste it somewhere, and "
-"call the 'auth' command with the URL to the (raw) file containing the "
-"signature."
-msgstr ""
-"Votre jeton est : %s. Veuillez le signer avec votre clé GPG, le paster "
-"quelque part, et appeler la commande « auth » avec l’URL du fichier (brut) "
-"contenant la signature."
-
-#: plugin.py:488
-msgid ""
-"<url>\n"
-"\n"
-"            Check the GPG signature at the <url> and authenticates you if\n"
-"            the key used is associated to a user."
-msgstr ""
-"<url>\n"
-"\n"
-"Vérifie que la signature GPG à l’<url> et vous authentifie si la clé est "
-"associée à un utilisateur."
-
-#: plugin.py:495
-msgid "Signature or token not found."
-msgstr "Signature ou jeton non trouvé."
-
-#: plugin.py:499
-msgid "Unknown token. It may have expired before you submit it."
-msgstr ""
-"Jeton inconnu. Il se peut qu’il ait expiré avant que vous ne l’ayez soumis."
-
-#: plugin.py:502
-msgid "Your hostname/nick changed in the process. Authentication aborted."
-msgstr ""
-"Votre nom d’hôte/nick a changé durant le processus. Authentification annulée."
-
-#: plugin.py:513
-msgid "You are now authenticated as %s."
-msgstr "Vous êtes maintenant identifié(e) en tant que %s."
-
-#: plugin.py:516
-msgid "Unknown GPG key."
-msgstr "Clé GPG inconnue."
-
-#: plugin.py:518
-msgid ""
-"Signature could not be verified. Make sure this is a valid GPG signature and "
-"the URL is valid."
-msgstr ""
-"La signature n’a pas pu être vérifiée. Assurez vous que c’est une signature "
-"GPG valide et que l’URL est valide."
-
-#: plugin.py:524
+#: plugin.py:439
 msgid ""
 "[<name>]\n"
 "\n"
@@ -455,7 +376,7 @@ msgstr ""
 "<nom> n'est pas spécifié, retourne les capacités de l'utilisateur appelant "
 "la commande."
 
-#: plugin.py:544
+#: plugin.py:459
 msgid ""
 "<name> <password>\n"
 "\n"
@@ -471,7 +392,7 @@ msgstr ""
 "qui requierent un mot de passe) doivent être envoyées en privé au bot, et "
 "non sur un canal."
 
-#: plugin.py:556
+#: plugin.py:471
 msgid ""
 "Your secure flag is true and your hostmask doesn't match any of your known "
 "hostmasks."
@@ -479,7 +400,7 @@ msgstr ""
 "Votre flag secure est True, et votre masque d'hôte ne correspond à aucune de "
 "vos masques d'hôte connus."
 
-#: plugin.py:566
+#: plugin.py:481
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -497,7 +418,7 @@ msgstr ""
 "le bot vous reconnait grâce au masque d'hôte ; il continuera alors à vous "
 "reconnaître."
 
-#: plugin.py:575
+#: plugin.py:490
 msgid ""
 "If you remain recognized after giving this command, you're being recognized "
 "by hostmask, rather than by password.  You must remove whatever hostmask is "
@@ -508,7 +429,7 @@ msgstr ""
 "supprimer tout masque d'hôte susceptible de vous reconnaitre, dans le but de "
 "ne pas être reconnu(e)."
 
-#: plugin.py:584
+#: plugin.py:499
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -519,11 +440,14 @@ msgstr ""
 "\n"
 "Retourne le nom de l'utilisateur appellant la commande."
 
-#: plugin.py:592
-msgid "I don't recognize you."
-msgstr "Je ne vous reconnais pas."
+#: plugin.py:508
+msgid ""
+"I don't recognize you. You can message me either of these two commands: "
+"\"user identify <username> <password>\" to log in or \"user register "
+"<username> <password>\" to register."
+msgstr ""
 
-#: plugin.py:597
+#: plugin.py:514
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -534,11 +458,106 @@ msgstr ""
 "\n"
 "Retourne des statistiques sur la base de données."
 
-#: plugin.py:615
+#: plugin.py:532
 msgid "I have %s registered users with %s registered hostmasks; %n and %n."
 msgstr ""
 "J'ai %s utilisateurs enregistrés, avec %s masques d'hôte enregistrés ; %n et "
 "%n."
+
+#~ msgid ""
+#~ "<key id> <key server>\n"
+#~ "\n"
+#~ "            Add a GPG key to your account."
+#~ msgstr ""
+#~ "<id de clé> <serveur de clé>\n"
+#~ "\n"
+#~ "Ajoute une clé GPG à votre compte."
+
+#~ msgid "This key is already associated with your account."
+#~ msgstr "Cette clé est déjà associée à votre compte."
+
+#~ msgid "%n imported, %i unchanged, %i not imported."
+#~ msgstr "%n importée(s), %i inchangée(s), %i non importée(s)"
+
+#~ msgid "key"
+#~ msgstr "clé"
+
+#~ msgid "You must give a valid key id"
+#~ msgstr "Vous devez donner un identifiant de clé valide"
+
+#~ msgid "You must give a valid key server"
+#~ msgstr "Vous devez donner un serveur de clé valide"
+
+#~ msgid ""
+#~ "<fingerprint>\n"
+#~ "\n"
+#~ "            Remove a GPG key from your account."
+#~ msgstr ""
+#~ "<empreinte>\n"
+#~ "\n"
+#~ "Supprime une clé GPG de votre compte."
+
+#~ msgid "GPG key not associated with your account."
+#~ msgstr "La clé GPG n’est pas associée à votre compte."
+
+#~ msgid ""
+#~ "takes no arguments\n"
+#~ "\n"
+#~ "            Send you a token that you'll have to sign with your key."
+#~ msgstr ""
+#~ "ne prend pas d’argument\n"
+#~ "\n"
+#~ "Vous donne un jeton que vous devez signer avec votre clé."
+
+#~ msgid ""
+#~ "Your token is: %s. Please sign it with your GPG key, paste it somewhere, "
+#~ "and call the 'auth' command with the URL to the (raw) file containing the "
+#~ "signature."
+#~ msgstr ""
+#~ "Votre jeton est : %s. Veuillez le signer avec votre clé GPG, le paster "
+#~ "quelque part, et appeler la commande « auth » avec l’URL du fichier "
+#~ "(brut) contenant la signature."
+
+#~ msgid ""
+#~ "<url>\n"
+#~ "\n"
+#~ "            Check the GPG signature at the <url> and authenticates you "
+#~ "if\n"
+#~ "            the key used is associated to a user."
+#~ msgstr ""
+#~ "<url>\n"
+#~ "\n"
+#~ "Vérifie que la signature GPG à l’<url> et vous authentifie si la clé est "
+#~ "associée à un utilisateur."
+
+#~ msgid "Signature or token not found."
+#~ msgstr "Signature ou jeton non trouvé."
+
+#~ msgid "Unknown token. It may have expired before you submit it."
+#~ msgstr ""
+#~ "Jeton inconnu. Il se peut qu’il ait expiré avant que vous ne l’ayez "
+#~ "soumis."
+
+#~ msgid "Your hostname/nick changed in the process. Authentication aborted."
+#~ msgstr ""
+#~ "Votre nom d’hôte/nick a changé durant le processus. Authentification "
+#~ "annulée."
+
+#~ msgid "You are now authenticated as %s."
+#~ msgstr "Vous êtes maintenant identifié(e) en tant que %s."
+
+#~ msgid "Unknown GPG key."
+#~ msgstr "Clé GPG inconnue."
+
+#~ msgid ""
+#~ "Signature could not be verified. Make sure this is a valid GPG signature "
+#~ "and the URL is valid."
+#~ msgstr ""
+#~ "La signature n’a pas pu être vérifiée. Assurez vous que c’est une "
+#~ "signature GPG valide et que l’URL est valide."
+
+#~ msgid "I don't recognize you."
+#~ msgstr "Je ne vous reconnais pas."
 
 #~ msgid ""
 #~ "<name> <hostmask> [<password>]\n"

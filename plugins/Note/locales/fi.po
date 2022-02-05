@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Note plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 14:13+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,11 +17,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: plugin.py:125
+#: plugin.py:126
 msgid "Allows you to send notes to other users."
 msgstr "Sallii muistiinpanojen lähettämisen toisille käyttäjille."
 
-#: plugin.py:183
+#: plugin.py:184
 msgid ""
 "<recipient>,[<recipient>,[...]] <text>\n"
 "\n"
@@ -36,7 +36,7 @@ msgstr ""
 "        määrittää erottamalla nimet pilkuilla.\n"
 "        "
 
-#: plugin.py:199
+#: plugin.py:200
 msgid ""
 "<id> <text>\n"
 "\n"
@@ -48,7 +48,7 @@ msgstr ""
 "        Lähettää muistiinpanon vastaukseksi <id:seen>.\n"
 "        "
 
-#: plugin.py:223
+#: plugin.py:224
 msgid ""
 "<id>\n"
 "\n"
@@ -62,7 +62,7 @@ msgstr ""
 "        muistiinpanon tekijä, ja sen täytyy olla lukematon.\n"
 "        "
 
-#: plugin.py:255
+#: plugin.py:256
 msgid ""
 "<id>\n"
 "\n"
@@ -77,7 +77,7 @@ msgstr ""
 "        komentoa nähdäksesi mitä lukemattomia muistiinpanoja sinulla on.\n"
 "        "
 
-#: plugin.py:285
+#: plugin.py:286
 msgid ""
 "[--{regexp} <value>] [--sent] [<glob>]\n"
 "\n"
@@ -98,7 +98,7 @@ msgstr ""
 "muistiinpanoista .\n"
 "        "
 
-#: plugin.py:327
+#: plugin.py:328
 msgid ""
 "[--{old,sent}] [--{from,to} <user>]\n"
 "\n"
@@ -121,7 +121,7 @@ msgstr ""
 "lähettänyt <käyttäjälle>.\n"
 "        "
 
-#: plugin.py:368
+#: plugin.py:369
 msgid ""
 "takes no arguments\n"
 "\n"

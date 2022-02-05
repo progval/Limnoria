@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Finnish translation of Config plugin in Supybot\n"
-"POT-Creation-Date: 2014-12-20 13:30+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -11,15 +11,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: plugin.py:103
+#: plugin.py:86
+msgid ""
+"Prevents changing certain config variables to gain shell access via\n"
+"    a vulnerable IRC network."
+msgstr ""
+
+#: plugin.py:110
+msgid ""
+"This configuration variable is not writeable via IRC. To change it you have "
+"to: 1) use the 'flush' command 2) edit the config file 3) use the 'config "
+"reload' command."
+msgstr ""
+
+#: plugin.py:141
 msgid "configuration variable"
 msgstr "asetusarvo"
 
-#: plugin.py:109
+#: plugin.py:147
 msgid "settable configuration variable"
 msgstr "asetettava asetusarvo"
 
-#: plugin.py:114
+#: plugin.py:152
 msgid ""
 "Provides access to the Supybot configuration. This is\n"
 "    a core Supybot plugin that should not be removed!"
@@ -27,17 +40,20 @@ msgstr ""
 "Tarjoaa pääsyn Supybotin asetuksiin. Tämä on Supybotin ydin plugini, jota ei "
 "pitäisi poistaa!"
 
-#: plugin.py:138
+#: plugin.py:185
+#, fuzzy
 msgid ""
 "<group>\n"
 "\n"
 "        Returns the configuration variables available under the given\n"
 "        configuration <group>.  If a variable has values under it, it is\n"
-"        preceded by an '@' sign.  If a variable is a 'ChannelValue', that "
+"        preceded by an '@' sign.  If a variable is channel-specific, that "
 "is,\n"
 "        it can be separately configured for each channel using the "
 "'channel'\n"
 "        command in this plugin, it is preceded by an '#' sign.\n"
+"        And if a variable is a network-specific, it is preceded by a ':' "
+"sign.\n"
 "        "
 msgstr ""
 "<ryhmä>\n"
@@ -49,11 +65,11 @@ msgstr ""
 "komentoa tässä lisäosassa, se on merkitty '#' merkillä.\n"
 "        "
 
-#: plugin.py:150
+#: plugin.py:198
 msgid "There don't seem to be any values in %s."
 msgstr "%s:ssä ei näytä olevan yhtään asetusarvoja."
 
-#: plugin.py:156
+#: plugin.py:204
 msgid ""
 "<word>\n"
 "\n"
@@ -65,15 +81,49 @@ msgstr ""
 "Etsii <sanaa> nykyisistä asetus arvoista.\n"
 "        "
 
-#: plugin.py:169
+#: plugin.py:218 plugin.py:237 plugin.py:255
 msgid "There were no matching configuration variables."
 msgstr "Täsmääviä asetusarvoja ei löytynyt."
 
-#: plugin.py:176
-msgid "Global: %s; %s: %s"
-msgstr "Globaali: %s; %s: %s"
+#: plugin.py:223
+#, fuzzy
+msgid ""
+"<phrase>\n"
+"\n"
+"        Searches for <phrase> in the help of current configuration "
+"variables.\n"
+"        "
+msgstr ""
+"<sana>\n"
+"\n"
+"Etsii <sanaa> nykyisistä asetus arvoista.\n"
+"        "
 
-#: plugin.py:187
+#: plugin.py:242
+#, fuzzy
+msgid ""
+"<word>\n"
+"\n"
+"        Searches for <word> in the values of current configuration "
+"variables.\n"
+"        "
+msgstr ""
+"<sana>\n"
+"\n"
+"Etsii <sanaa> nykyisistä asetus arvoista.\n"
+"        "
+
+#: plugin.py:267
+msgid ""
+"Global: %(global_value)s; %(channel_name)s @ %(network_name)s: "
+"%(channel_value)s"
+msgstr ""
+
+#: plugin.py:276
+msgid "Global: %(global_value)s; %(network_name)s: %(network_value)s"
+msgstr ""
+
+#: plugin.py:293
 msgid ""
 "That registry variable has no value.  Use the list command in this plugin to "
 "see what variables are available in this group."
@@ -81,15 +131,19 @@ msgstr ""
 "Sillä rekisteriarvolla ei ole arvoa. Käytä list komentoa tässä lisäosassa "
 "nähdäksesi mitä arvoja on saatavilla tässä ryhmässä."
 
-#: plugin.py:202
+#: plugin.py:304
+#, fuzzy
 msgid ""
-"[<channel>] <name> [<value>]\n"
+"[<network>] [<channel>] <name> [<value>]\n"
 "\n"
 "        If <value> is given, sets the channel configuration variable for "
 "<name>\n"
-"        to <value> for <channel>.  Otherwise, returns the current channel\n"
+"        to <value> for <channel> on the <network>.\n"
+"        Otherwise, returns the current channel\n"
 "        configuration value of <name>.  <channel> is only necessary if the\n"
-"        message isn't sent in the channel itself."
+"        message isn't sent in the channel itself. More than one channel may\n"
+"        be given at once by separating them with commas.\n"
+"        <network> defaults to the current network."
 msgstr ""
 "[<kanava>] <nimi> [<arvo>]\n"
 "\n"
@@ -98,12 +152,37 @@ msgstr ""
 "<nimen> nykyisen kanava asetusarvon.  <Kanava> on vaadittu vain\n"
 "jos viestiä ei lähetetä kanavalla itsellään."
 
-#: plugin.py:209
+#: plugin.py:314
 msgid ""
 "That configuration variable is not a channel-specific configuration variable."
 msgstr "Tällä asetusarvolla ei ole kanava kohtaista asetusarvoa."
 
-#: plugin.py:222
+#: plugin.py:355
+#, fuzzy
+msgid ""
+"[<network>] <name> [<value>]\n"
+"\n"
+"        If <value> is given, sets the network configuration variable for "
+"<name>\n"
+"        to <value> for <network>.\n"
+"        Otherwise, returns the current network configuration value of "
+"<name>.\n"
+"        <network> defaults to the current network."
+msgstr ""
+"[<kanava>] <nimi> [<arvo>]\n"
+"\n"
+"Jos <arvo> on annettu, asettaa <nimen> kanavan asetusarvon\n"
+"<arvoksi>  <kanavalle>. Muutoin, palauttaa nykyisen \n"
+"<nimen> nykyisen kanava asetusarvon.  <Kanava> on vaadittu vain\n"
+"jos viestiä ei lähetetä kanavalla itsellään."
+
+#: plugin.py:362
+#, fuzzy
+msgid ""
+"That configuration variable is not a network-specific configuration variable."
+msgstr "Tällä asetusarvolla ei ole kanava kohtaista asetusarvoa."
+
+#: plugin.py:380
 msgid ""
 "<name> [<value>]\n"
 "\n"
@@ -120,7 +199,7 @@ msgstr ""
 "        \"supybot.\" .\n"
 "        "
 
-#: plugin.py:236
+#: plugin.py:399
 msgid ""
 "<name>\n"
 "\n"
@@ -132,16 +211,16 @@ msgstr ""
 " Palauttaa asetusarvon kuvauksen <nimi>.\n"
 "        "
 
-#: plugin.py:250
+#: plugin.py:412
 msgid "  (Current global value: %s;  current channel value: %s)"
 msgstr ""
 "(Nykyinen globaali asetusarvo: %s; nykyinen kanavakohtainen asetusarvo: %s)"
 
-#: plugin.py:254 plugin.py:256
+#: plugin.py:416 plugin.py:418
 msgid "  (Current value: %s)"
 msgstr "  (Nykyinen arvo: %s)"
 
-#: plugin.py:259
+#: plugin.py:421
 msgid ""
 "That configuration group exists, but seems to have no help.  Try \"config "
 "list %s\" to see if it has any children values."
@@ -149,11 +228,11 @@ msgstr ""
 "Tuo asetusryhmä on olemassa, mutta sillä ei näytä olevan ohjetta.  Käytä "
 "komentoa \"config list %s\" nähdäksesi onko sillä yhtään alempia arvoja."
 
-#: plugin.py:263
+#: plugin.py:425
 msgid "%s has no help."
 msgstr "%s:llä ei ole ohjetta."
 
-#: plugin.py:268
+#: plugin.py:430
 msgid ""
 "<name>\n"
 "\n"
@@ -165,7 +244,7 @@ msgstr ""
 "Palauttaa asetusarvon oletusarvon <nimi>.\n"
 "        "
 
-#: plugin.py:278
+#: plugin.py:440
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -179,7 +258,7 @@ msgstr ""
 " tietokanta, rekisteri, jne.).\n"
 "        "
 
-#: plugin.py:289
+#: plugin.py:451
 msgid ""
 "<filename>\n"
 "\n"
@@ -200,14 +279,49 @@ msgstr ""
 "julkisesti näyttämiseen.\n"
 "        "
 
-#: plugin.py:303
+#: plugin.py:469
 msgid ""
 "<name>\n"
 "\n"
 "        Resets the configuration variable <name> to its default value.\n"
+"        Use commands 'reset channel' and 'reset network' instead to make\n"
+"        a channel- or network- specific value inherit from the global one.\n"
 "        "
 msgstr ""
-"<nimi>\n"
+
+#: plugin.py:488
+msgid ""
+"[<network>] [<channel>] <name>\n"
 "\n"
-" Palauttaa asetusarvon <nimi> oletukseksi.\n"
-"        "
+"            Resets the channel-specific value of variable <name>, so that\n"
+"            it will match the network-specific value (or the global one\n"
+"            if the latter isn't set).\n"
+"            <network> and <channel> default to the current network and\n"
+"            channel.\n"
+"            "
+msgstr ""
+
+#: plugin.py:516
+msgid ""
+"[<network>] [<channel>] <name>\n"
+"\n"
+"            Resets the network-specific value of variable <name>, so that\n"
+"            it will match the global.\n"
+"            <network> defaults to the current network and\n"
+"            channel.\n"
+"            "
+msgstr ""
+
+#~ msgid "Global: %s; %s: %s"
+#~ msgstr "Globaali: %s; %s: %s"
+
+#~ msgid ""
+#~ "<name>\n"
+#~ "\n"
+#~ "        Resets the configuration variable <name> to its default value.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<nimi>\n"
+#~ "\n"
+#~ " Palauttaa asetusarvon <nimi> oletukseksi.\n"
+#~ "        "

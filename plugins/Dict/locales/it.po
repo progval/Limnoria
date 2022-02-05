@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-06-28 20:21+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,32 +10,45 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
-#: config.py:38
+#: config.py:39
 msgid "The default dictd server is dict.org."
 msgstr "Il server dictd predefinito è dict.org."
 
-#: config.py:39
+#: config.py:40
 msgid "Would you like to specify a different dictd server?"
 msgstr "Vuoi specificare un server dictd diverso?"
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Determines what server the bot will\n"
 "    retrieve definitions from."
 msgstr "Determina da quale server il bot recupererà le definizioni."
 
-#: config.py:48
+#: config.py:49
+#, fuzzy
 msgid ""
-"Determines the default dictionary the bot will\n"
-"    ask for definitions in.  If this value is '*' (without the quotes) the bot\n"
-"    will use all dictionaries to define words."
+"Determines the default dictionary the bot\n"
+"    will ask for definitions in.  If this value is '*' (without the quotes)\n"
+"    the bot will use all dictionaries to define words."
 msgstr ""
-"Determina il dizionario predefinito dal quale il bot chiederà le definizioni.\n"
+"Determina il dizionario predefinito dal quale il bot chiederà le "
+"definizioni.\n"
 "    Se il valore è \"*\" (senza virgolette) il bot userà tutti i dizionari."
 
-#: plugin.py:54
-#, docstring
+#: config.py:53
+msgid ""
+"Determines whether the bot will show which\n"
+"    dictionaries responded to a query, if the selected dictionary is '*'.\n"
+"    "
+msgstr ""
+
+#: plugin.py:47
+msgid ""
+"This plugin provides a function to look up words from different\n"
+"    dictionaries."
+msgstr ""
+
+#: plugin.py:52
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -47,8 +60,7 @@ msgstr ""
 "        Riporta i dizionari validi per il comando dict.\n"
 "        "
 
-#: plugin.py:70
-#, docstring
+#: plugin.py:68
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -60,8 +72,7 @@ msgstr ""
 "        Riporta un dizionario casuale.\n"
 "        "
 
-#: plugin.py:85
-#, docstring
+#: plugin.py:83
 msgid ""
 "[<dictionary>] <word>\n"
 "\n"
@@ -75,28 +86,29 @@ msgstr ""
 "        variabile supybot.plugins.Dict.server.\n"
 "        "
 
-#: plugin.py:108
+#: plugin.py:106
 msgid "You must give a word to define."
 msgstr "Devi fornire una parola da definire."
 
-#: plugin.py:114
+#: plugin.py:112
 msgid "No definition for %q could be found."
 msgstr "Non è stata trovata nessuna definizione per %q."
 
-#: plugin.py:117
+#: plugin.py:115
 msgid "No definition for %q could be found in %s"
 msgstr "Non è stata trovata nessuna definizione per %q in %s"
 
-#: plugin.py:129
+#: plugin.py:128
 msgid "%L responded: %s"
 msgstr "%L ha risposto: %s"
 
-#: plugin.py:136
-#, docstring
+#: plugin.py:135
+#, fuzzy
 msgid ""
 "<word> [<word> ...]\n"
 "\n"
-"        Gets a random synonym from the Moby Thesaurus (moby-thes) database.\n"
+"        Gets a random synonym from the Moby Thesaurus (moby-thesaurus) "
+"database.\n"
 "\n"
 "        If given many words, gets a random synonym for each of them.\n"
 "\n"
@@ -105,10 +117,12 @@ msgid ""
 msgstr ""
 "<parola> [<parola> ...]\n"
 "\n"
-"        Ricava un sinonimo casuale dal database di Moby Thesaurus (moby-thes).\n"
+"        Ricava un sinonimo casuale dal database di Moby Thesaurus (moby-"
+"thes).\n"
 "\n"
-"        Se sono state fornite più parole ottiene un sinonimo casuale per ognuna.\n"
+"        Se sono state fornite più parole ottiene un sinonimo casuale per "
+"ognuna.\n"
 "\n"
-"        Affinché vengano trattate come un'unica frase racchiuderle tra virgolette.\n"
+"        Affinché vengano trattate come un'unica frase racchiuderle tra "
+"virgolette.\n"
 "        "
-

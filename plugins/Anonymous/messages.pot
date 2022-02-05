@@ -5,46 +5,47 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether\n"
 "    the bot should require people trying to use this plugin to be in the\n"
 "    channel they wish to anonymously send to."
 msgstr ""
 
-#: config.py:53
+#: config.py:54
 msgid ""
 "Determines whether the bot should require\n"
 "    people trying to use this plugin to be registered."
 msgstr ""
 
-#: config.py:56
+#: config.py:57
 msgid ""
 "Determines what capability (if any) the bot should\n"
 "    require people trying to use this plugin to have."
 msgstr ""
 
-#: config.py:59
+#: config.py:60
 msgid ""
 "Determines whether the bot will allow the\n"
 "    \"tell\" command to be used. If true, the bot will allow the \"tell\"\n"
 "    command to send private messages to other users."
 msgstr ""
 
-#: plugin.py:41
+#: plugin.py:45
 #, docstring
 msgid ""
-"This plugin allows users to act through the bot anonymously.  The 'do'\n"
+"\n"
+"    This plugin allows users to act through the bot anonymously.  The 'do'\n"
 "    command has the bot perform an anonymous action in a given channel, and\n"
 "    the 'say' command allows other people to speak through the bot.  Since\n"
 "    this can be fairly well abused, you might want to set\n"
@@ -54,26 +55,51 @@ msgid ""
 "    supybot.plugins.Anonymous.requirePresenceInChannel, or you can require\n"
 "    that the user be registered by setting\n"
 "    supybot.plugins.Anonymous.requireRegistration.\n"
+"\n"
+"    Example: Proving that you are the owner\n"
+"    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"
+"\n"
+"    When you ask for cloak/vhost for your bot, the network operators will\n"
+"    often ask you to prove that you own the bot. You can do this for example\n"
+"    with the following method::\n"
+"\n"
+"        @load Anonymous\n"
+"        @config plugins.anonymous.requirecapability owner\n"
+"        @config plugins.anonymous.allowprivatetarget True\n"
+"        @anonymous say <operator nick> Hi, my owner is <your nick> :)\n"
+"\n"
+"    This\n"
+"    * Loads the plugin.\n"
+"    * Makes the plugin require that you are the owner\n"
+"\n"
+"      * If anyone could send private messages as the bot, they could also\n"
+"        access network services.\n"
+"\n"
+"    * Allows sending private messages\n"
+"    * Sends message ``Hi, my owner is <your nick> :)`` to ``operator nick``.\n"
+"\n"
+"      * Note that you won't see the messages that are sent to the bot.\n"
+"\n"
 "    "
 msgstr ""
 
-#: plugin.py:65
+#: plugin.py:98
 msgid "You must be in %s to %q in there."
 msgstr ""
 
-#: plugin.py:69
+#: plugin.py:102
 msgid "I'm lobotomized in %s."
 msgstr ""
 
-#: plugin.py:72
+#: plugin.py:105
 msgid "That channel has set its capabilities so as to disallow the use of this plugin."
 msgstr ""
 
-#: plugin.py:75
+#: plugin.py:108
 msgid "This command is disabled (supybot.plugins.Anonymous.allowPrivateTarget is False)."
 msgstr ""
 
-#: plugin.py:80
+#: plugin.py:112
 #, docstring
 msgid ""
 "<channel> <text>\n"
@@ -82,7 +108,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:92
+#: plugin.py:124
 #, docstring
 msgid ""
 "<nick> <text>\n"
@@ -92,12 +118,48 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:106
+#: plugin.py:137
 #, docstring
 msgid ""
 "<channel> <action>\n"
 "\n"
 "        Performs <action> in <channel>.\n"
 "        "
+msgstr ""
+
+#: plugin.py:148
+#, docstring
+msgid ""
+"<channel> <reaction> <nick>\n"
+"\n"
+"        Sends the <reaction> to <nick>'s last message.\n"
+"        <reaction> is typically a smiley or an emoji.\n"
+"\n"
+"        This may not be supported on the current network, as this\n"
+"        command depends on IRCv3 features.\n"
+"        This is also not supported if\n"
+"        supybot.protocols.irc.experimentalExtensions disabled\n"
+"        (don't enable it unless you know what you are doing).\n"
+"        "
+msgstr ""
+
+#: plugin.py:162
+msgid "Unable to react, supybot.protocols.irc.experimentalExtensions is disabled."
+msgstr ""
+
+#: plugin.py:167
+msgid "Unable to react, the network does not support message-tags."
+msgstr ""
+
+#: plugin.py:172
+msgid "Unable to react, the network does not allow draft/reply and/or draft/react."
+msgstr ""
+
+#: plugin.py:181
+msgid "I couldn't find a message from %s in my history of %s messages."
+msgstr ""
+
+#: plugin.py:189
+msgid "Unable to react, %s's last message does not have a message id."
 msgstr ""
 

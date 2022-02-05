@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 12:41+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-03-22 16:16+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -16,35 +16,47 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: plugin.py:81
+#: plugin.py:44
+msgid ""
+"\n"
+"    Provides replies to common CTCPs (version, time, etc.), and a command\n"
+"    to fetch version responses from channels.\n"
+"\n"
+"    Please note that the command `ctcp version` cannot receive any responses "
+"if the channel is\n"
+"    mode +C or similar which prevents CTCP requests to channel.\n"
+"    "
+msgstr ""
+
+#: plugin.py:89
 msgid "^PING(?: (.+))?$"
 msgstr "^PING(?: (.+))?$"
 
-#: plugin.py:90
+#: plugin.py:98
 msgid "^VERSION$"
 msgstr "^VERSION$"
 
-#: plugin.py:95
+#: plugin.py:103
 msgid "^USERINFO$"
 msgstr "^USERINFO$"
 
-#: plugin.py:100
+#: plugin.py:108
 msgid "^TIME$"
 msgstr "^TIME$"
 
-#: plugin.py:105
+#: plugin.py:113
 msgid "^FINGER$"
 msgstr "^FINGER$"
 
-#: plugin.py:108
+#: plugin.py:116
 msgid "Supybot, the best Python IRC bot in existence!"
 msgstr "Supybot, paras Pythonilla toteutettu IRC-botti, joka on olemassa!"
 
-#: plugin.py:111
+#: plugin.py:119
 msgid "^SOURCE$"
 msgstr "^SOURCE$"
 
-#: plugin.py:127
+#: plugin.py:135
 #, fuzzy
 msgid ""
 "[<channel>] [--nicks]\n"

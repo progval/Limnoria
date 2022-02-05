@@ -5,17 +5,21 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 13:30+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:46
+#: config.py:48
+msgid "Regex which alias names must match in order to be valid"
+msgstr ""
+
+#: plugin.py:48
 #, docstring
 msgid ""
 "Returns the channel the msg came over or the channel given in args.\n"
@@ -25,36 +29,57 @@ msgid ""
 "    "
 msgstr ""
 
-#: plugin.py:105
+#: plugin.py:110
 #, docstring
 msgid ""
-"Encodes [a-z0-9.]+ into [a-z][a-z0-9].\n"
-"    Format: a<number of escaped chars>a(<index>d)+<word without dots>."
+"Encodes dots and pipes\n"
+"    Format: a<number of escaped chars>a(<index>(d|p))+<word without dots or pipes>."
 msgstr ""
 
-#: plugin.py:221
+#: plugin.py:226
 msgid " at least"
 msgstr ""
 
-#: plugin.py:223 plugin.py:228
+#: plugin.py:228 plugin.py:233
 msgid ""
 "<an alias,%s %n>\n"
 "\n"
 "Alias for %q."
 msgstr ""
 
-#: plugin.py:224 plugin.py:229
+#: plugin.py:229 plugin.py:234
 msgid "argument"
 msgstr ""
 
-#: plugin.py:234
+#: plugin.py:239
 #, docstring
 msgid ""
-"This plugin allows users to define aliases to commands and combinations\n"
-"    of commands (via nesting)."
+"\n"
+"    This plugin allows users to define aliases to commands and combinations\n"
+"    of commands (via nesting).\n"
+"    This plugin is only kept for backward compatibility, you should use the\n"
+"    built-in Aka plugin instead (you can migrate your existing aliases using\n"
+"    the 'importaliasdatabase' command.\n"
+"\n"
+"    To add an alias, `trout`, which expects a word as an argument::\n"
+"\n"
+"        <jamessan> @alias add trout \"action slaps $1 with a large trout\"\n"
+"        <bot> jamessan: The operation succeeded.\n"
+"        <jamessan> @trout me\n"
+"        * bot slaps me with a large trout\n"
+"\n"
+"    To add an alias, `lastfm`, which expects a last.fm user and replies with\n"
+"    their recently played items::\n"
+"\n"
+"        @alias add lastfm \"rss [format concat http://ws.audioscrobbler.com/1.0/user/ [format concat [urlquote $1] /recenttracks.rss]]\"\n"
+"\n"
+"    Note that if the nested commands being aliased hadn't been quoted, then\n"
+"    those commands would have been run immediately, and `@lastfm` would always\n"
+"    reply with the same information, the result of those commands.\n"
+"    "
 msgstr ""
 
-#: plugin.py:299
+#: plugin.py:357
 #, docstring
 msgid ""
 "<alias>\n"
@@ -63,11 +88,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:308 plugin.py:322
+#: plugin.py:365 plugin.py:378
 msgid "There is no such alias."
 msgstr ""
 
-#: plugin.py:313
+#: plugin.py:370
 #, docstring
 msgid ""
 "<alias>\n"
@@ -76,11 +101,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:334
+#: plugin.py:386
 msgid "That name isn't valid.  Try %q instead."
 msgstr ""
 
-#: plugin.py:379
+#: plugin.py:426
 #, docstring
 msgid ""
 "<name> <command>\n"
@@ -94,12 +119,34 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:402
+#: plugin.py:449
 #, docstring
 msgid ""
 "<name>\n"
 "\n"
 "        Removes the given alias, if unlocked.\n"
 "        "
+msgstr ""
+
+#: plugin.py:463
+#, docstring
+msgid ""
+"[--locked|--unlocked]\n"
+"\n"
+"        Lists alias names of a particular type, defaults to all aliases if no\n"
+"        --locked or --unlocked option is given.\n"
+"        "
+msgstr ""
+
+#: plugin.py:470
+msgid "Cannot specify --locked and --unlocked simultaneously"
+msgstr ""
+
+#: plugin.py:486
+msgid "There are no aliases of that type."
+msgstr ""
+
+#: plugin.py:488
+msgid "There are no aliases."
 msgstr ""
 

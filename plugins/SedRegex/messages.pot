@@ -1,0 +1,109 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: config.py:51
+msgid "Should errors be displayed?"
+msgstr ""
+
+#: config.py:53
+msgid "Should the replacement text be bolded?"
+msgstr ""
+
+#: config.py:55
+msgid ""
+"Should Perl/sed-style regex replacing\n"
+"                     work in this channel?"
+msgstr ""
+
+#: config.py:58
+msgid ""
+"Should Perl/sed regex replacing\n"
+"                     ignore messages which look like valid regex?"
+msgstr ""
+
+#: config.py:61
+msgid ""
+"Sets the timeout when processing a single\n"
+"                                   regexp. The default should be adequate unless\n"
+"                                   you have a busy or low-powered system that\n"
+"                                   cannot process regexps quickly enough. However,\n"
+"                                   you will not want to set this value too high\n"
+"                                   as that would make your bot vulnerable to ReDoS\n"
+"                                   attacks."
+msgstr ""
+
+#: plugin.py:60
+#, docstring
+msgid ""
+"\n"
+"    Enable SedRegex on the desired channels:\n"
+"    ``config channel #yourchannel plugins.sedregex.enable True``\n"
+"    After enabling SedRegex, typing a regex in the form\n"
+"    ``s/text/replacement/`` will make the bot announce replacements.\n"
+"\n"
+"    ::\n"
+"\n"
+"       20:24 <jlu5> helli world\n"
+"       20:24 <jlu5> s/i/o/\n"
+"       20:24 <Limnoria> jlu5 meant to say: hello world\n"
+"\n"
+"    You can also do ``othernick: s/text/replacement/`` to only replace\n"
+"    messages from a certain user. Supybot ignores are respected by the plugin,\n"
+"    and messages from ignored users will only be considered if their nick is\n"
+"    explicitly given.\n"
+"\n"
+"    Regex flags\n"
+"    ^^^^^^^^^^^\n"
+"\n"
+"    The following regex flags (i.e. the ``g`` in ``s/abc/def/g``, etc.) are\n"
+"    supported:\n"
+"\n"
+"    - ``i``: case insensitive replacement\n"
+"    - ``g``: replace all occurences of the original text\n"
+"    - ``s``: *(custom flag specific to this plugin)* replace only messages\n"
+"      from the caller\n"
+"    "
+msgstr ""
+
+#: plugin.py:165
+msgid "SedRegex parser error: %s"
+msgstr ""
+
+#: plugin.py:184
+msgid "Search timed out."
+msgstr ""
+
+#: plugin.py:186
+msgid "Search not found in the last %i IRC messages on this network."
+msgstr ""
+
+#: plugin.py:189
+msgid "SedRegex replacer error: %s"
+msgstr ""
+
+#: plugin.py:242
+msgid "%s meant to say: %s"
+msgstr ""
+
+#: plugin.py:245
+msgid "SedRegex error: %s"
+msgstr ""
+
+#: plugin.py:248
+msgid "SedRegex: Search %r not found in the last %i messages of %s."
+msgstr ""
+

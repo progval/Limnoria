@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2015-01-24 19:31+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2015-01-24 19:31+0100\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: \n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: config.py:39
+#: config.py:40
 msgid ""
 "This plugin offers a snarfer that will go retrieve a shorter\n"
 "             version of long URLs that are sent to the channel.  Would you\n"
@@ -27,17 +27,24 @@ msgstr ""
 " version pitkistä URL-osoitteista, jotka lähetetään kanavalle. Haluaisitko\n"
 " tämän kaappaajan olevan käytössä?"
 
-#: config.py:45 config.py:49
-msgid "Valid values include 'ln', 'tiny', 'goo', 'ur1', and 'x0'."
+#: config.py:46
+#, fuzzy
+msgid "Valid values include 'tiny', 'ur1', and 'x0'."
 msgstr "Kelvolliset arvot ovat 'ln', 'tiny', 'goo', 'ur1' ja 'x0' ."
 
-#: config.py:70
+#: config.py:50
+#, fuzzy
+msgid "Valid values include 'ln', 'tiny', 'ur1', and 'x0'."
+msgstr "Kelvolliset arvot ovat 'ln', 'tiny', 'goo', 'ur1' ja 'x0' ."
+
+#: config.py:71
+#, fuzzy
 msgid ""
 "Determines whether the\n"
 "    shrink snarfer is enabled.  This snarfer will watch for URLs in the\n"
 "    channel, and if they're sufficiently long (as determined by\n"
 "    supybot.plugins.ShrinkUrl.minimumLength) it will post a\n"
-"    smaller URL from either ln-s.net or tinyurl.com, as denoted in\n"
+"    smaller URL from the service as denoted in\n"
 "    supybot.plugins.ShrinkUrl.default."
 msgstr ""
 "Määrittää onko kutistuskaappain käytössä.\n"
@@ -48,7 +55,7 @@ msgstr ""
 "    joko sivustolta ln-s.net tai tinyurl.com, riippuen, minkä asetuksen\n"
 "    supybot.plugins.ShrinkUrl.default määrittää."
 
-#: config.py:77
+#: config.py:78
 msgid ""
 "Determines whether the snarfer will show the\n"
 "    domain of the URL being snarfed along with the shrunken URL."
@@ -56,7 +63,7 @@ msgstr ""
 "Määrittää näyttääkö kaappaaja kaapatun URL-osoitteen domainin lyhennetyn\n"
 "    URL-osoitteen kanssa."
 
-#: config.py:80
+#: config.py:81
 msgid ""
 "The minimum length a URL must be before\n"
 "    the bot will shrink it."
@@ -64,7 +71,7 @@ msgstr ""
 "Vähimmäispituus joka URL-osoitteen täytyy olla, ennen kuin\n"
 "    botti kutistaa sen."
 
-#: config.py:83
+#: config.py:84
 msgid ""
 "Determines what URLs are to be snarfed; URLs\n"
 "    matching the regexp given will not be snarfed.  Give the empty string "
@@ -76,7 +83,7 @@ msgstr ""
 "Anna tyhjä merkkiketju, jos\n"
 "    et halua estää mitään URL-osoitetta tulemasta kaapatuksi."
 
-#: config.py:87
+#: config.py:88
 msgid ""
 "Determines whether the bot will shrink the\n"
 "    URLs of outgoing messages if those URLs are longer than\n"
@@ -86,7 +93,7 @@ msgstr ""
 "    URL-osoitteet, jos ne ovat pidempiä kuin\n"
 "    supybot.plugins.ShrinkUrl.minimumLength."
 
-#: config.py:91
+#: config.py:92
 msgid ""
 "Determines what website the bot will use when\n"
 "    shrinking a URL."
@@ -94,7 +101,7 @@ msgstr ""
 "Määrittää mitä verkkosivua botti käyttää lyhentäessään\n"
 "    URL-osoitetta."
 
-#: config.py:94
+#: config.py:95
 msgid ""
 "Determines whether this plugin will bold\n"
 "    certain portions of its replies."
@@ -102,7 +109,7 @@ msgstr ""
 "Määrittää korostaako botti tietyt osat\n"
 "    vastauksissaan."
 
-#: config.py:97
+#: config.py:98
 msgid ""
 "If set to a non-empty value, specifies the list of\n"
 "    services to rotate through for the shrinkSnarfer and outFilter."
@@ -111,7 +118,7 @@ msgstr ""
 "    palveluista, joita käytetään kutistuskaappaajalle ja ulostulon "
 "suodattimelle."
 
-#: plugin.py:90
+#: plugin.py:101
 msgid ""
 "This plugin features commands to shorten URLs through different services,\n"
 "    like tinyurl."
@@ -120,19 +127,7 @@ msgstr ""
 "kuten esimerkiksi\n"
 " tinyurl:illa."
 
-#: plugin.py:192
-msgid ""
-"<url>\n"
-"\n"
-"        Returns an ln-s.net version of <url>.\n"
-"        "
-msgstr ""
-"<URL-osoite>\n"
-"\n"
-"        Palauttaa ln-s.net version <URL-osoitteesta>.\n"
-"        "
-
-#: plugin.py:219
+#: plugin.py:205
 msgid ""
 "<url>\n"
 "\n"
@@ -145,18 +140,7 @@ msgstr ""
 "osoitteesta>.\n"
 "        "
 
-#: plugin.py:252
-msgid ""
-"<url>\n"
-"\n"
-"        Returns an goo.gl version of <url>.\n"
-"        "
-msgstr ""
-"<url>\n"
-"\n"
-" Palauttaa goo.gl-palvelun lyhentämän version <URL-osoitteesta>."
-
-#: plugin.py:282
+#: plugin.py:235
 msgid ""
 "<url>\n"
 "\n"
@@ -167,7 +151,7 @@ msgstr ""
 " Palauttaa ur1-version <url:stä>.\n"
 "        "
 
-#: plugin.py:309
+#: plugin.py:262
 msgid ""
 "<url>\n"
 "\n"
@@ -179,16 +163,36 @@ msgstr ""
 "        Palauttaa x0.no palvelun lyhentämän version <URL-osoitteesta>.\n"
 "        "
 
-#: plugin.py:336
-msgid ""
-"<url>\n"
-"\n"
-"        Returns an expanded version of <url>.\n"
-"        "
-msgstr ""
-"<url>\n"
-" Palauttaa laajennetun version <url-osoitteesta>.\n"
-"        "
+#~ msgid ""
+#~ "<url>\n"
+#~ "\n"
+#~ "        Returns an ln-s.net version of <url>.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<URL-osoite>\n"
+#~ "\n"
+#~ "        Palauttaa ln-s.net version <URL-osoitteesta>.\n"
+#~ "        "
+
+#~ msgid ""
+#~ "<url>\n"
+#~ "\n"
+#~ "        Returns an goo.gl version of <url>.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<url>\n"
+#~ "\n"
+#~ " Palauttaa goo.gl-palvelun lyhentämän version <URL-osoitteesta>."
+
+#~ msgid ""
+#~ "<url>\n"
+#~ "\n"
+#~ "        Returns an expanded version of <url>.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<url>\n"
+#~ " Palauttaa laajennetun version <url-osoitteesta>.\n"
+#~ "        "
 
 #~ msgid ""
 #~ "<url>\n"

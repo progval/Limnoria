@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-06-12 14:14+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,13 +10,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: plugin.py:42
-#, docstring
-msgid "Add the help for \"help Internet\" here."
+#: plugin.py:45
+msgid ""
+"Provides commands to query DNS, search WHOIS databases,\n"
+"    and convert IPs to hex."
 msgstr ""
 
-#: plugin.py:46
-#, docstring
+#: plugin.py:50
 msgid ""
 "<host|ip>\n"
 "\n"
@@ -28,12 +28,11 @@ msgstr ""
 "        Restituisce l'ip di <host> o il DNS inverso di <ip>.\n"
 "        "
 
-#: plugin.py:53 plugin.py:60 plugin.py:64
+#: plugin.py:57 plugin.py:72
 msgid "Host not found."
 msgstr "Host non trovato."
 
-#: plugin.py:76
-#, docstring
+#: plugin.py:87
 msgid ""
 "<domain>\n"
 "\n"
@@ -45,40 +44,35 @@ msgstr ""
 "        Restituisce le informazioni WHOIS sulla registrazione di <dominio>.\n"
 "        "
 
-#: plugin.py:82
-msgid "domain"
-msgstr "dominio"
-
-#: plugin.py:111
+#: plugin.py:149
 msgid "updated %s"
 msgstr "aggiornato il %s"
 
-#: plugin.py:114
+#: plugin.py:152
 msgid "registered %s"
 msgstr "registrato il %s"
 
-#: plugin.py:117
+#: plugin.py:155
 msgid "expires %s"
 msgstr "scade il %s"
 
-#: plugin.py:137
+#: plugin.py:175
 msgid " <registered at %s>"
 msgstr " <registrato il %s>"
 
-#: plugin.py:139
+#: plugin.py:177
 msgid " <registered by %s>"
 msgstr " <registrato da %s>"
 
-#: plugin.py:144
+#: plugin.py:184
 msgid "%s%s is %L."
 msgstr "%s%s è %L."
 
-#: plugin.py:147
+#: plugin.py:187
 msgid "I couldn't find such a domain."
 msgstr "Non riesco a trovare un dominio."
 
-#: plugin.py:152
-#, docstring
+#: plugin.py:192
 msgid ""
 "<ip>\n"
 "\n"
@@ -90,3 +84,5 @@ msgstr ""
 "        Restituisce l'IP esadecimale per questo IP.\n"
 "        "
 
+#~ msgid "domain"
+#~ msgstr "dominio"

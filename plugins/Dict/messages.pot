@@ -5,45 +5,52 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:38
+#: config.py:39
 msgid "The default dictd server is dict.org."
 msgstr ""
 
-#: config.py:39
+#: config.py:40
 msgid "Would you like to specify a different dictd server?"
 msgstr ""
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Determines what server the bot will\n"
 "    retrieve definitions from."
 msgstr ""
 
-#: config.py:48
+#: config.py:49
 msgid ""
 "Determines the default dictionary the bot\n"
 "    will ask for definitions in.  If this value is '*' (without the quotes)\n"
 "    the bot will use all dictionaries to define words."
 msgstr ""
 
-#: plugin.py:46
+#: config.py:53
+msgid ""
+"Determines whether the bot will show which\n"
+"    dictionaries responded to a query, if the selected dictionary is '*'.\n"
+"    "
+msgstr ""
+
+#: plugin.py:47
 #, docstring
 msgid ""
 "This plugin provides a function to look up words from different\n"
 "    dictionaries."
 msgstr ""
 
-#: plugin.py:51
+#: plugin.py:52
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -52,7 +59,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:67
+#: plugin.py:68
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -61,7 +68,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:82
+#: plugin.py:83
 #, docstring
 msgid ""
 "[<dictionary>] <word>\n"
@@ -71,23 +78,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:105
+#: plugin.py:106
 msgid "You must give a word to define."
 msgstr ""
 
-#: plugin.py:111
+#: plugin.py:112
 msgid "No definition for %q could be found."
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:115
 msgid "No definition for %q could be found in %s"
 msgstr ""
 
-#: plugin.py:126
+#: plugin.py:128
 msgid "%L responded: %s"
 msgstr ""
 
-#: plugin.py:133
+#: plugin.py:135
 #, docstring
 msgid ""
 "<word> [<word> ...]\n"

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Math plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 12:16+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -58,7 +58,7 @@ msgstr ""
 "Muunna basesta mikä tahansa numero, 2:sta 36:teen, millä tahansa muulla\n"
 "       basella , 2:sta 36:teen. Palauttaa merkkiketjun."
 
-#: plugin.py:169
+#: plugin.py:134
 #, fuzzy
 msgid ""
 "<math expression>\n"
@@ -84,39 +84,23 @@ msgstr ""
 "        '10**24' ei ehkä ole tarkka.\n"
 "        "
 
-#: plugin.py:180
-msgid ""
-"There's no reason you should have fancy non-ASCII characters in your "
-"mathematical expression. Please remove them."
-msgstr ""
-"Ei ole mitään syytä miksi matemaattisessa ilmaisussasi pitäisi olla kivoja "
-"ei-ASCII merkkejä. Ole hyvä ja poista ne."
-
-#: plugin.py:185 plugin.py:239
-msgid ""
-"There's really no reason why you should have underscores or brackets in your "
-"mathematical expression.  Please remove them."
-msgstr ""
-"Ei todella ole mitään syytä miksi sinulla pitäisi olla alaviivoja tai "
-"sulkuja matemaattisessa lausekkeessasi.  Ole hyvä ja poista ne."
-
-#: plugin.py:191 plugin.py:247
-msgid "You can't use lambda in this command."
-msgstr "Et voi käyttää Lambdaa tässä komennossa."
-
-#: plugin.py:221 plugin.py:255
+#: plugin.py:148 plugin.py:173
 msgid "The answer exceeded %s or so."
 msgstr "Vastaus ylittää %s:än tai niin."
 
-#: plugin.py:223 plugin.py:257
-msgid "Something in there wasn't a valid number."
-msgstr "Jokin siinä ei ole kelvollinen numero."
+#: plugin.py:150 plugin.py:175
+msgid "Invalid syntax: %s"
+msgstr ""
 
-#: plugin.py:225 plugin.py:259
+#: plugin.py:152 plugin.py:177
 msgid "%s is not a defined function."
 msgstr "%s ei ole määritetty funktio."
 
-#: plugin.py:232
+#: plugin.py:154
+msgid "Memory error (too much recursion?)"
+msgstr ""
+
+#: plugin.py:161
 msgid ""
 "<math expression>\n"
 "\n"
@@ -133,7 +117,7 @@ msgstr ""
 "        'trusted' valtuuden.\n"
 "        "
 
-#: plugin.py:269
+#: plugin.py:187
 #, fuzzy
 msgid ""
 "<rpn math expression>\n"
@@ -146,19 +130,19 @@ msgstr ""
 "        Palauttaa RPN lausekkeen arvon.\n"
 "        "
 
-#: plugin.py:294
+#: plugin.py:212
 msgid "Not enough arguments for %s"
 msgstr "Ei tarpeeksi parametrejä %s:lle."
 
-#: plugin.py:307
+#: plugin.py:225
 msgid "%q is not a defined function."
 msgstr "%q ei ole määritetty funktio."
 
-#: plugin.py:314
+#: plugin.py:232
 msgid "Stack: [%s]"
 msgstr "Pino: [%s]"
 
-#: plugin.py:318
+#: plugin.py:236
 msgid ""
 "[<number>] <unit> to <other unit>\n"
 "\n"
@@ -173,7 +157,7 @@ msgstr ""
 "        on oletuksena 1. Yksikkö tiedoille, katso 'units' komento.\n"
 "        "
 
-#: plugin.py:348
+#: plugin.py:266
 msgid ""
 " [<type>]\n"
 "\n"
@@ -191,3 +175,23 @@ msgstr ""
 "        käyttää parametreinä. Kun kutsuttu tyyppinä parametrissä, palaittaa\n"
 "        sen tyyppiset yksiköt.\n"
 "        "
+
+#~ msgid ""
+#~ "There's no reason you should have fancy non-ASCII characters in your "
+#~ "mathematical expression. Please remove them."
+#~ msgstr ""
+#~ "Ei ole mitään syytä miksi matemaattisessa ilmaisussasi pitäisi olla "
+#~ "kivoja ei-ASCII merkkejä. Ole hyvä ja poista ne."
+
+#~ msgid ""
+#~ "There's really no reason why you should have underscores or brackets in "
+#~ "your mathematical expression.  Please remove them."
+#~ msgstr ""
+#~ "Ei todella ole mitään syytä miksi sinulla pitäisi olla alaviivoja tai "
+#~ "sulkuja matemaattisessa lausekkeessasi.  Ole hyvä ja poista ne."
+
+#~ msgid "You can't use lambda in this command."
+#~ msgstr "Et voi käyttää Lambdaa tässä komennossa."
+
+#~ msgid "Something in there wasn't a valid number."
+#~ msgstr "Jokin siinä ei ole kelvollinen numero."

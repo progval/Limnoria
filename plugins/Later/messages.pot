@@ -5,91 +5,107 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Determines the maximum number of\n"
 "    messages to be queued for a user.  If this value is 0, there is no maximum.\n"
 "    "
 msgstr ""
 
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether users will be notified in\n"
 "    the first place in which they're seen, or in private."
 msgstr ""
 
-#: config.py:52
+#: config.py:53
 msgid ""
 "Determines whether users will be notified upon\n"
 "    joining any channel the bot is in, or only upon sending a message."
 msgstr ""
 
-#: config.py:55
+#: config.py:56
 msgid ""
 "Determines the maximum number of\n"
 "    days that a message will remain queued for a user. After this time elapses,\n"
 "    the message will be deleted. If this value is 0, there is no maximum."
 msgstr ""
 
-#: plugin.py:46
-#, docstring
+#: config.py:62
 msgid ""
-"Used to do things later; currently, it only allows the sending of\n"
-"    nick-based notes.  Do note (haha!) that these notes are *not* private\n"
-"    and don't even pretend to be; if you want such features, consider using the\n"
-"    Note plugin."
+"Determines whether senders' hostname will be\n"
+"    shown in messages (instead of just the nick)."
 msgstr ""
 
-#: plugin.py:86
+#: plugin.py:51
+#, docstring
+msgid ""
+"\n"
+"    Used to do things later; currently, it only allows the sending of\n"
+"    nick-based notes.  Do note (haha!) that these notes are *not* private\n"
+"    and don't even pretend to be; if you want such features, consider using the\n"
+"    Note plugin.\n"
+"\n"
+"    Use the ``later tell`` command to leave a message to a user.\n"
+"    If you sent the message by accident or want to cancel it,\n"
+"    you can use the `later undo` command to remove the latest later,\n"
+"    which you have sent.\n"
+"\n"
+"    You can also see the people who have notes waiting for them by using\n"
+"    the `later notes` command. If you specify a nickname in ``later notes``\n"
+"    command, you will see the notes, which are waiting for the nickname.\n"
+"\n"
+"    Privacy\n"
+"    -------\n"
+"\n"
+"    As you probably noticed from above, this plugin isn't private.\n"
+"    Everyone can see notes sent by anyone and the laters are sent on channel\n"
+"    by default and as the \"plugin help later\" says::\n"
+"\n"
+"        Used to do things later; currently, it only allows the sending of nick-based notes. Do note (haha!) that these notes are *not* private and don't even pretend to be; if you want such features, consider using the Note plugin.\n"
+"\n"
+"    The Note plugin identifies people by username instead of nickname\n"
+"    and allows only users to send notes.\n"
+"    The only people who are able to read notes are the sender, receiver,\n"
+"    and the owner.\n"
+"\n"
+"    "
+msgstr ""
+
+#: plugin.py:117
 msgid "just now"
 msgstr ""
 
-#: plugin.py:106
+#: plugin.py:164
 #, docstring
 msgid ""
-"Validate nick according to the IRC RFC 2812 spec.\n"
+"<nick1[,nick2[,...]]> <text>\n"
 "\n"
-"        Reference: http://tools.ietf.org/rfcmarkup?doc=2812#section-2.3.1\n"
-"\n"
-"        Some irc clients' tab-completion feature appends 'address' characters\n"
-"        to nick, such as ':' or ','. We try correcting for that by trimming\n"
-"        a char off the end.\n"
-"\n"
-"        If nick incorrigibly invalid, return False, otherwise,\n"
-"        return (possibly trimmed) nick.\n"
-"        "
-msgstr ""
-
-#: plugin.py:151
-#, docstring
-msgid ""
-"<nick> <text>\n"
-"\n"
-"        Tells <nick> <text> the next time <nick> is seen.  <nick> can\n"
+"        Tells each <nickX> <text> the next time <nickX> is seen.  <nickX> can\n"
 "        contain wildcard characters, and the first matching nick will be\n"
 "        given the note.\n"
 "        "
 msgstr ""
 
-#: plugin.py:159
+#: plugin.py:174
 msgid "I can't send notes to myself."
 msgstr ""
 
-#: plugin.py:169
-msgid "That person's message queue is already full."
+#: plugin.py:185
+msgid "These recipients' message queue are already full: %L"
 msgstr ""
 
-#: plugin.py:174
+#: plugin.py:193
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -99,19 +115,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:185
+#: plugin.py:204
 msgid "I have no notes for that nick."
 msgstr ""
 
-#: plugin.py:190
+#: plugin.py:209
 msgid "I currently have notes waiting for %L."
 msgstr ""
 
-#: plugin.py:193
+#: plugin.py:212
 msgid "I have no notes waiting to be delivered."
 msgstr ""
 
-#: plugin.py:198
+#: plugin.py:217
 #, docstring
 msgid ""
 "<nick>\n"
@@ -120,11 +136,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:207
+#: plugin.py:226
 msgid "There were no notes for %r"
 msgstr ""
 
-#: plugin.py:212
+#: plugin.py:231
 #, docstring
 msgid ""
 "<nick>\n"
@@ -133,15 +149,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:217
+#: plugin.py:236
 msgid "There are no note waiting for %s."
 msgstr ""
 
-#: plugin.py:228
+#: plugin.py:247
 msgid "There are no note from you waiting for %s."
 msgstr ""
 
-#: plugin.py:252
+#: plugin.py:275
 msgid "Sent %s: <%s> %s"
 msgstr ""
 

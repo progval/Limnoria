@@ -5,37 +5,29 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2015-01-23 08:27+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:32
-#, docstring
-msgid ""
-"\n"
-"This is for debugging purposes only and you shouldn't load this it unless\n"
-"a Supybot developer requests you to debug some issue.\n"
-msgstr ""
-
-#: plugin.py:47
+#: plugin.py:50
 #, docstring
 msgid "Pseudo-module"
 msgstr ""
 
-#: plugin.py:68
+#: plugin.py:77
 #, docstring
 msgid ""
 "This plugin provides debugging abilities for Supybot. It\n"
 "    should not be loaded with a default installation."
 msgstr ""
 
-#: plugin.py:89
+#: plugin.py:98
 #, docstring
 msgid ""
 "<expression>\n"
@@ -46,7 +38,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:107
+#: plugin.py:117
 #, docstring
 msgid ""
 "<statement>\n"
@@ -55,7 +47,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:116
+#: plugin.py:127
 #, docstring
 msgid ""
 "<expression>\n"
@@ -64,7 +56,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:127
+#: plugin.py:139
 #, docstring
 msgid ""
 "<exception name>\n"
@@ -73,7 +65,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:139
+#: plugin.py:152
 #, docstring
 msgid ""
 "<raw IRC message>\n"
@@ -82,7 +74,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:148
+#: plugin.py:161
 #, docstring
 msgid ""
 "[<filename>]\n"
@@ -92,7 +84,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:162
+#: plugin.py:176
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -101,7 +93,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:171
+#: plugin.py:186
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -110,7 +102,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:179
+#: plugin.py:194
 #, docstring
 msgid ""
 "[<times>]\n"
@@ -120,7 +112,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:192
+#: plugin.py:207
 #, docstring
 msgid ""
 "takes no arguments\n"

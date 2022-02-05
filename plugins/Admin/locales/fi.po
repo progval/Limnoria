@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Finnish translation of Admin plugin in Supybot\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 12:19+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -31,27 +31,27 @@ msgstr ""
 msgid "Nick/channel temporarily unavailable."
 msgstr "Nimimerkki/kanava on väliaikaisesti saavuttamattomissa."
 
-#: plugin.py:75
+#: plugin.py:85
 msgid "Cannot join %s, it's full."
 msgstr "Ei voida liittyä kanavalle %s, se on täynnä."
 
-#: plugin.py:83
+#: plugin.py:93
 msgid "Cannot join %s, I was not invited."
 msgstr "Ei voi liittyä kanavalle %s, minua ei ole kutsuttu."
 
-#: plugin.py:91
+#: plugin.py:101
 msgid "Cannot join %s, I am banned."
 msgstr "Ei voi liittyä kanavalle %s, se on antanut minulle porttikiellon."
 
-#: plugin.py:99
+#: plugin.py:109
 msgid "Cannot join %s, my keyword was wrong."
 msgstr "En voi liittyä kanavalle %s, minun avainsana oli väärä."
 
-#: plugin.py:107 plugin.py:116
+#: plugin.py:117 plugin.py:126
 msgid "Cannot join %s, I'm not identified with NickServ."
 msgstr "En voi liittyä kanavalle %s, koska en ole tunnistautunut NickServille."
 
-#: plugin.py:146
+#: plugin.py:156
 msgid ""
 "<channel> [<key>]\n"
 "\n"
@@ -67,48 +67,49 @@ msgstr ""
 "      yrittäessä liittyä kanavalle.\n"
 "        "
 
-#: plugin.py:159
+#: plugin.py:162
+msgid "channel"
+msgstr ""
+
+#: plugin.py:169
 msgid "I'm already too close to maximum number of channels for this network."
 msgstr "Minä olen jo liian lähellä kanavien maksimimäärää tässä verkossa."
 
-#: plugin.py:168
+#: plugin.py:178
+#, fuzzy
 msgid ""
 "takes no arguments\n"
 "\n"
-"        Returns the channels the bot is on.  Must be given in private, in "
-"order\n"
-"        to protect the secrecy of secret channels.\n"
+"        Returns the channels the bot is on.\n"
 "        "
 msgstr ""
 "Ei ota parametrejä\n"
 "\n"
-"     Palauttaa listan kanavista, joilla botti on.  Täytyy antaa "
-"yksityisviestillä salaistenkanavien\n"
-"     salaisuuden suojelemiseksi.\n"
-"        "
+"     Luetteloi hostmaskit jotka ovat botin huomiotta jättämis listalla.\n"
+"            "
 
-#: plugin.py:178
+#: plugin.py:187
 msgid "I'm not currently in any channels."
 msgstr "En juuri nyt ole millään kanavalla."
 
-#: plugin.py:184
+#: plugin.py:193
 msgid "My connection is restricted, I can't change nicks."
 msgstr "Minun yhteyteni on rajoitettu. En voi vaihtaa nimimerkkiä."
 
-#: plugin.py:191
+#: plugin.py:200
 msgid "Someone else is already using that nick."
 msgstr "Joku muu käyttää jo tuota nimimerkkiä."
 
-#: plugin.py:198
+#: plugin.py:207
 #, fuzzy
 msgid "I can't change nick, I'm currently banned in %s."
 msgstr "Minä en voi vaihtaa nimimerkkiä, koska palvelin sanoi %q"
 
-#: plugin.py:206
+#: plugin.py:215
 msgid "I can't change nicks, the server said %q."
 msgstr "Minä en voi vaihtaa nimimerkkiä, koska palvelin sanoi %q"
 
-#: plugin.py:220
+#: plugin.py:229
 msgid ""
 "[<nick>] [<network>]\n"
 "\n"
@@ -123,30 +124,7 @@ msgstr ""
 " nimimerkki palautetaan.\n"
 "        "
 
-#: plugin.py:237
-msgid ""
-"[<channel>] [<reason>]\n"
-"\n"
-"        Tells the bot to part the list of channels you give it.  <channel> "
-"is\n"
-"        only necessary if you want the bot to part a channel other than the\n"
-"        current channel.  If <reason> is specified, use it as the part\n"
-"        message.\n"
-"        "
-msgstr ""
-"[<kanava>] [<syy>]\n"
-"\n"
-"     Käskee botin poistua kanavilta, jotka annat sille.  <Kanava> on\n"
-"     vaadittu jos haluat botin poistuvat muulta, kuin \n"
-"     nykyiseltä kanavalta.  Jos <syy> on määritetty, sitä käytetään\n"
-"     poistumisviestissä.\n"
-"        "
-
-#: plugin.py:255
-msgid "I'm not in %s."
-msgstr "Minä en ole kanavalla %s."
-
-#: plugin.py:267
+#: plugin.py:248
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
@@ -162,7 +140,7 @@ msgstr ""
 "          ilmoittaa) määritetyn valtuuden <valtuus>\n"
 "            "
 
-#: plugin.py:287
+#: plugin.py:268
 msgid ""
 "The \"owner\" capability can't be added in the bot.  Use the supybot-adduser "
 "program (or edit the users.conf file yourself) to add an owner capability."
@@ -170,11 +148,11 @@ msgstr ""
 "\"Owner\" valtuutta ei voi lisätä botissa. Käytä supybot-adduser ohjelmaa "
 "(tai muokkaa users.conf tiedostoa itse) lisätäksesi owner valtuuden."
 
-#: plugin.py:298
+#: plugin.py:279
 msgid "You can't add capabilities you don't have."
 msgstr "Et voi lisätä valtuuksia, joita sinulla ei ole."
 
-#: plugin.py:303
+#: plugin.py:284
 msgid ""
 "<name|hostmask> <capability>\n"
 "\n"
@@ -190,15 +168,15 @@ msgstr ""
 "               <hostmask> sopii) määritetyn valtuuden <valtuus>\n"
 "            "
 
-#: plugin.py:315
+#: plugin.py:296
 msgid "That user doesn't have that capability."
 msgstr "Tuolla käyttäjällä ei tuota valtuutta."
 
-#: plugin.py:317
+#: plugin.py:298
 msgid "You can't remove capabilities you don't have."
 msgstr "Sinä et voi poistaa valtuuksia, joita sinulla ei ole."
 
-#: plugin.py:325
+#: plugin.py:306
 msgid ""
 "<hostmask|nick> [<expires>]\n"
 "\n"
@@ -222,7 +200,7 @@ msgstr ""
 "automaattisesti.\n"
 "            "
 
-#: plugin.py:338
+#: plugin.py:319
 msgid ""
 "<hostmask|nick>\n"
 "\n"
@@ -236,11 +214,11 @@ msgstr ""
 "     hostmaskista joka on tällä hetkellä yhdistetty <nimimerkkiin>.\n"
 "            "
 
-#: plugin.py:347
+#: plugin.py:328
 msgid "%s wasn't in the ignores database."
 msgstr "%s ei ollut huomiotta jätettävien tietokannassa."
 
-#: plugin.py:352
+#: plugin.py:333
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -252,11 +230,11 @@ msgstr ""
 "     Luetteloi hostmaskit jotka ovat botin huomiotta jättämis listalla.\n"
 "            "
 
-#: plugin.py:360
+#: plugin.py:341
 msgid "I'm not currently globally ignoring anyone."
 msgstr "En tällä hetkellä jätä ketään huomioitta globaalisti."
 
-#: plugin.py:364
+#: plugin.py:345
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -267,6 +245,51 @@ msgstr ""
 "\n"
 "        Tyhjentää nykyisen lähetysjonon tälle verkolle.\n"
 "        "
+
+#: plugin.py:354
+msgid ""
+"<command> [<arg> ...]\n"
+"\n"
+"        Perform <command> (with associated <arg>s on all channels on current "
+"network."
+msgstr ""
+
+#~ msgid ""
+#~ "takes no arguments\n"
+#~ "\n"
+#~ "        Returns the channels the bot is on.  Must be given in private, in "
+#~ "order\n"
+#~ "        to protect the secrecy of secret channels.\n"
+#~ "        "
+#~ msgstr ""
+#~ "Ei ota parametrejä\n"
+#~ "\n"
+#~ "     Palauttaa listan kanavista, joilla botti on.  Täytyy antaa "
+#~ "yksityisviestillä salaistenkanavien\n"
+#~ "     salaisuuden suojelemiseksi.\n"
+#~ "        "
+
+#~ msgid ""
+#~ "[<channel>] [<reason>]\n"
+#~ "\n"
+#~ "        Tells the bot to part the list of channels you give it.  "
+#~ "<channel> is\n"
+#~ "        only necessary if you want the bot to part a channel other than "
+#~ "the\n"
+#~ "        current channel.  If <reason> is specified, use it as the part\n"
+#~ "        message.\n"
+#~ "        "
+#~ msgstr ""
+#~ "[<kanava>] [<syy>]\n"
+#~ "\n"
+#~ "     Käskee botin poistua kanavilta, jotka annat sille.  <Kanava> on\n"
+#~ "     vaadittu jos haluat botin poistuvat muulta, kuin \n"
+#~ "     nykyiseltä kanavalta.  Jos <syy> on määritetty, sitä käytetään\n"
+#~ "     poistumisviestissä.\n"
+#~ "        "
+
+#~ msgid "I'm not in %s."
+#~ msgstr "Minä en ole kanavalla %s."
 
 #~ msgid "That nick is currently banned."
 #~ msgstr "Tuolla nimimerkillä on tällähetkellä porttikielto."

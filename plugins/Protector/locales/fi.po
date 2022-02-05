@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Protector plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 12:09+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -16,7 +16,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: config.py:47
+#: config.py:48
 msgid ""
 "Determines whether this plugin is enabled in a\n"
 "    given channel."
@@ -24,7 +24,7 @@ msgstr ""
 "Määrittää onko tämä lisäosa käytössä\n"
 "    annetulla kanavalla."
 
-#: config.py:54
+#: config.py:55
 msgid ""
 "Determines what nicks the bot will consider to\n"
 "    be immune from enforcement.  These nicks will not even have their "
@@ -38,7 +38,7 @@ msgstr ""
 "ChanServ tulee olemaan\n"
 "    tässä listassa."
 
-#: plugin.py:39
+#: plugin.py:40
 msgid ""
 "Prevents users from doing things they are not supposed to do on a channel,\n"
 "    even if they have +o or +h."

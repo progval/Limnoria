@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria User\n"
-"POT-Creation-Date: 2011-12-23 13:11+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-07-05 00:10+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -15,54 +15,89 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
-#: plugin.py:49
+#: config.py:48
+msgid ""
+"Determines whether the output of 'user list'\n"
+"    will be sent in private. This prevents mass-highlights of people who "
+"use\n"
+"    their nick as their bot username."
+msgstr ""
+
+#: config.py:52
+msgid ""
+"Determines what message the bot sends\n"
+"    when a user isn't identified or recognized."
+msgstr ""
+
+#: plugin.py:46
+msgid ""
+"Provides commands for dealing with users, such as registration and\n"
+"    authentication to the bot. This is a core Supybot plugin that should\n"
+"    not be removed!"
+msgstr ""
+
+#: plugin.py:55
 msgid ""
 "[--capability=<capability>] [<glob>]\n"
 "\n"
-"        Returns the valid registered usernames matching <glob>.  If <glob> is\n"
+"        Returns the valid registered usernames matching <glob>.  If <glob> "
+"is\n"
 "        not given, returns all registered usernames.\n"
 "        "
 msgstr ""
 
-#: plugin.py:80
+#: plugin.py:70
+msgid "This is a private capability. Only admins can see who has it."
+msgstr ""
+
+#: plugin.py:97
 msgid "There are no matching registered users."
 msgstr "Nincsenek egyező regisztrált felhasználók."
 
-#: plugin.py:82
+#: plugin.py:99
 msgid "There are no registered users."
 msgstr "Nincsenek regisztrált felhasználók."
 
-#: plugin.py:88
+#: plugin.py:105
 msgid ""
 "<name> <password>\n"
 "\n"
 "        Registers <name> with the given password <password> and the current\n"
-"        hostmask of the person registering.  You shouldn't register twice; if\n"
-"        you're not recognized as a user but you've already registered, use the\n"
-"        hostmask add command to add another hostmask to your already-registered\n"
+"        hostmask of the person registering.  You shouldn't register twice; "
+"if\n"
+"        you're not recognized as a user but you've already registered, use "
+"the\n"
+"        hostmask add command to add another hostmask to your already-"
+"registered\n"
 "        user, or use the identify command to identify just for a session.\n"
-"        This command (and all other commands that include a password) must be\n"
+"        This command (and all other commands that include a password) must "
+"be\n"
 "        sent to the bot privately, not in a channel.\n"
+"        Use \"!\" instead of <password> to disable password authentication.\n"
 "        "
 msgstr ""
 
-#: plugin.py:101
+#: plugin.py:119
 msgid "That name is already assigned to someone."
 msgstr "Az a név már hozzá van rendelve valakihez."
 
-#: plugin.py:106
+#: plugin.py:124
 msgid "username"
 msgstr "felhasználónév"
 
-#: plugin.py:107
+#: plugin.py:125
 msgid "Hostmasks are not valid usernames."
 msgstr "A hosztmaszkok nem érvényes felhasználónevek."
 
-#: plugin.py:114
+#: plugin.py:132
 msgid "Your hostmask is already registered to %s"
 msgstr "A hosztmaszkod már regisztrálva van %s-hoz."
 
-#: plugin.py:130
+#: plugin.py:141 plugin.py:221
+msgid "The password must be at least 3 characters long."
+msgstr ""
+
+#: plugin.py:159
 msgid ""
 "<name> [<password>]\n"
 "\n"
@@ -71,43 +106,53 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:145
-msgid "This command has been disabled.  You'll have to ask the owner of this bot to unregister your user."
-msgstr "Ez a parancs le lett tiltva. Meg kell kérned a bot tulajdonosát, hogy törölje a regisztrációdat."
+#: plugin.py:174
+msgid ""
+"This command has been disabled.  You'll have to ask the owner of this bot to "
+"unregister your user."
+msgstr ""
+"Ez a parancs le lett tiltva. Meg kell kérned a bot tulajdonosát, hogy "
+"törölje a regisztrációdat."
 
-#: plugin.py:158
+#: plugin.py:187
 msgid ""
 "<name> <new name> [<password>]\n"
 "\n"
 "        Changes your current user database name to the new name given.\n"
-"        <password> is only necessary if the user isn't recognized by hostmask.\n"
-"        This message must be sent to the bot privately (not on a channel) since\n"
+"        <password> is only necessary if the user isn't recognized by "
+"hostmask.\n"
+"        This message must be sent to the bot privately (not on a channel) "
+"since\n"
 "        it may contain a password.\n"
 "        "
 msgstr ""
 
-#: plugin.py:167
+#: plugin.py:196
 msgid "%q is already registered."
 msgstr "%q már regisztrálva van."
 
-#: plugin.py:181
+#: plugin.py:210
 msgid ""
 "[<name>] <old password> <new password>\n"
 "\n"
 "            Sets the new password for the user specified by <name> to <new\n"
-"            password>.  Obviously this message must be sent to the bot\n"
-"            privately (not in a channel). If the requesting user is an owner\n"
-"            user (and the user whose password is being changed isn't that same\n"
-"            owner user), then <old password> needn't be correct.\n"
+"            password>. Obviously this message must be sent to the bot\n"
+"            privately (not in a channel). If the requesting user is an "
+"owner\n"
+"            user, then <old password> needn't be correct.\n"
+"            If the <new password> is \"!\", password login will be "
+"disabled.\n"
 "            "
 msgstr ""
 
-#: plugin.py:209
+#: plugin.py:244
 msgid ""
 "<password> [<True|False>]\n"
 "\n"
-"            Sets the secure flag on the user of the person sending the message.\n"
-"            Requires that the person's hostmask be in the list of hostmasks for\n"
+"            Sets the secure flag on the user of the person sending the "
+"message.\n"
+"            Requires that the person's hostmask be in the list of hostmasks "
+"for\n"
 "            that user in addition to the password being correct.  When the\n"
 "            secure flag is set, the user *must* identify before they can be\n"
 "            recognized.  If a specific True/False value is not given, it\n"
@@ -115,104 +160,135 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:224
+#: plugin.py:259
 msgid "Secure flag set to %s"
 msgstr "A secure jelző be lett állítva %s-ra"
 
-#: plugin.py:232
+#: plugin.py:267
 msgid ""
 "<hostmask|nick>\n"
 "\n"
-"        Returns the username of the user specified by <hostmask> or <nick> if\n"
+"        Returns the username of the user specified by <hostmask> or <nick> "
+"if\n"
 "        the user is registered.\n"
 "        "
 msgstr ""
 
-#: plugin.py:241
+#: plugin.py:276
 msgid "I haven't seen %s."
 msgstr "Nem láttam %s-t."
 
-#: plugin.py:246
+#: plugin.py:281
 msgid "I don't know who that is."
 msgstr "Nem tudom, ki az."
 
-#: plugin.py:252
+#: plugin.py:287
 msgid ""
 "[<nick>]\n"
 "\n"
-"            Returns the hostmask of <nick>.  If <nick> isn't given, return the\n"
+"            Returns the hostmask of <nick>.  If <nick> isn't given, return "
+"the\n"
 "            hostmask of the person giving the command.\n"
 "            "
 msgstr ""
 
-#: plugin.py:264
+#: plugin.py:299
 msgid ""
 "[<name>]\n"
 "\n"
-"            Returns the hostmasks of the user specified by <name>; if <name>\n"
+"            Returns the hostmasks of the user specified by <name>; if "
+"<name>\n"
 "            isn't specified, returns the hostmasks of the user calling the\n"
 "            command.\n"
 "            "
 msgstr ""
 
-#: plugin.py:276
+#: plugin.py:311
 msgid "%s has no registered hostmasks."
 msgstr "%s-nak nincsenek regisztrált hosztmaszkjai."
 
-#: plugin.py:283
+#: plugin.py:318
 msgid "You may only retrieve your own hostmasks."
 msgstr "Csak a saját hosztmaszkjaidat szerezheted meg."
 
-#: plugin.py:299
+#: plugin.py:334
 msgid ""
 "[<name>] [<hostmask>] [<password>]\n"
 "\n"
-"            Adds the hostmask <hostmask> to the user specified by <name>.  The\n"
-"            <password> may only be required if the user is not recognized by\n"
+"            Adds the hostmask <hostmask> to the user specified by <name>.  "
+"The\n"
+"            <password> may only be required if the user is not recognized "
+"by\n"
 "            hostmask.  <password> is also not required if an owner user is\n"
-"            giving the command on behalf of some other user.  If <hostmask> is\n"
-"            not given, it defaults to your current hostmask.  If <name> is not\n"
-"            given, it defaults to your currently identified name.  This message\n"
-"            must be sent to the bot privately (not on a channel) since it may\n"
+"            giving the command on behalf of some other user.  If <hostmask> "
+"is\n"
+"            not given, it defaults to your current hostmask.  If <name> is "
+"not\n"
+"            given, it defaults to your currently identified name.  This "
+"message\n"
+"            must be sent to the bot privately (not on a channel) since it "
+"may\n"
 "            contain a password.\n"
 "            "
 msgstr ""
 
-#: plugin.py:313
+#: plugin.py:349
 msgid "hostmask"
 msgstr "hosztmaszk"
 
-#: plugin.py:314
-msgid "Make sure your hostmask includes a nick, then an exclamation point (!), then a user, then an at symbol (@), then a host.  Feel free to use wildcards (* and ?, which work just like they do on the command line) in any of these parts."
-msgstr "Győződj meg róla, hogy a hosztmaszkod tartalmaz egy nevet, aztán egy felkiáltójelet (!), aztán egy felhasználót, aztán egy kukac jelet (@), aztán egy hosztot. Nyugodtan használj helyettesítő karaktereket (* és ?, amelyek úgy működnek, mint a parancssorban) ezeknek a részeknek bármelyikében."
+#: plugin.py:350
+msgid ""
+"Make sure your hostmask includes a nick, then an exclamation point (!), then "
+"a user, then an at symbol (@), then a host.  Feel free to use wildcards (* "
+"and ?, which work just like they do on the command line) in any of these "
+"parts."
+msgstr ""
+"Győződj meg róla, hogy a hosztmaszkod tartalmaz egy nevet, aztán egy "
+"felkiáltójelet (!), aztán egy felhasználót, aztán egy kukac jelet (@), aztán "
+"egy hosztot. Nyugodtan használj helyettesítő karaktereket (* és ?, amelyek "
+"úgy működnek, mint a parancssorban) ezeknek a részeknek bármelyikében."
 
-#: plugin.py:324
-#: plugin.py:347
+#: plugin.py:361 plugin.py:382
+#, fuzzy
+msgid "That hostmask is already registered to %s."
+msgstr "Ez a hosztmaszk már regisztrálva van."
+
+#: plugin.py:364 plugin.py:385
 msgid "That hostmask is already registered."
 msgstr "Ez a hosztmaszk már regisztrálva van."
 
-#: plugin.py:355
+#: plugin.py:395
 msgid ""
-"<name> <hostmask> [<password>]\n"
+"[<name>] [<hostmask>] [<password>]\n"
 "\n"
 "            Removes the hostmask <hostmask> from the record of the user\n"
 "            specified by <name>.  If the hostmask given is 'all' then all\n"
-"            hostmasks will be removed.  The <password> may only be required if\n"
-"            the user is not recognized by their hostmask.  This message must be\n"
-"            sent to the bot privately (not on a channel) since it may contain a\n"
-"            password.\n"
+"            hostmasks will be removed.  The <password> may only be required "
+"if\n"
+"            the user is not recognized by their hostmask.  This message must "
+"be\n"
+"            sent to the bot privately (not on a channel) since it may "
+"contain a\n"
+"            password.  If <hostmask> is\n"
+"            not given, it defaults to your current hostmask.  If <name> is "
+"not\n"
+"            given, it defaults to your currently identified name.\n"
 "            "
 msgstr ""
 
-#: plugin.py:374
+#: plugin.py:417
 msgid "All hostmasks removed."
 msgstr "Minden hosztmaszk eltávolítva."
 
-#: plugin.py:378
+#: plugin.py:421
 msgid "There was no such hostmask."
 msgstr "Nem volt ilyen hosztmaszk."
 
-#: plugin.py:387
+#: plugin.py:434
+msgid "GPG features are not enabled."
+msgstr ""
+
+#: plugin.py:439
 msgid ""
 "[<name>]\n"
 "\n"
@@ -222,36 +298,49 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:407
+#: plugin.py:459
 msgid ""
 "<name> <password>\n"
 "\n"
 "        Identifies the user as <name>. This command (and all other\n"
-"        commands that include a password) must be sent to the bot privately,\n"
+"        commands that include a password) must be sent to the bot "
+"privately,\n"
 "        not in a channel.\n"
 "        "
 msgstr ""
 
-#: plugin.py:419
-msgid "Your secure flag is true and your hostmask doesn't match any of your known hostmasks."
-msgstr "A secure jelződ igaz és a hosztmaszkod nem egyezik egy ismert hosztmaszkoddal sem."
+#: plugin.py:471
+msgid ""
+"Your secure flag is true and your hostmask doesn't match any of your known "
+"hostmasks."
+msgstr ""
+"A secure jelződ igaz és a hosztmaszkod nem egyezik egy ismert "
+"hosztmaszkoddal sem."
 
-#: plugin.py:429
+#: plugin.py:481
 msgid ""
 "takes no arguments\n"
 "\n"
 "        Un-identifies you.  Note that this may not result in the desired\n"
-"        effect of causing the bot not to recognize you anymore, since you may\n"
-"        have added hostmasks to your user that can cause the bot to continue to\n"
+"        effect of causing the bot not to recognize you anymore, since you "
+"may\n"
+"        have added hostmasks to your user that can cause the bot to continue "
+"to\n"
 "        recognize you.\n"
 "        "
 msgstr ""
 
-#: plugin.py:438
-msgid "If you remain recognized after giving this command, you're being recognized by hostmask, rather than by password.  You must remove whatever hostmask is causing you to be recognized in order not to be recognized."
-msgstr "Ha felismerve maradsz e parancs kiadása után, hosztmaszk alapján vagy felismerve, jelszó helyett. El kell távolítanod akármilyen hosztmaszkot, amely a fekusmerésedet okozza, hogy ne legyél felismerve."
+#: plugin.py:490
+msgid ""
+"If you remain recognized after giving this command, you're being recognized "
+"by hostmask, rather than by password.  You must remove whatever hostmask is "
+"causing you to be recognized in order not to be recognized."
+msgstr ""
+"Ha felismerve maradsz e parancs kiadása után, hosztmaszk alapján vagy "
+"felismerve, jelszó helyett. El kell távolítanod akármilyen hosztmaszkot, "
+"amely a fekusmerésedet okozza, hogy ne legyél felismerve."
 
-#: plugin.py:447
+#: plugin.py:499
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -259,11 +348,14 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:455
-msgid "I don't recognize you."
-msgstr "Nem ismerlek fel."
+#: plugin.py:508
+msgid ""
+"I don't recognize you. You can message me either of these two commands: "
+"\"user identify <username> <password>\" to log in or \"user register "
+"<username> <password>\" to register."
+msgstr ""
 
-#: plugin.py:460
+#: plugin.py:514
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -271,7 +363,10 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:478
+#: plugin.py:532
 msgid "I have %s registered users with %s registered hostmasks; %n and %n."
-msgstr "%s regisztrált felhasználóm van %s regisztrált hosztmaszkkal; %n és %n."
+msgstr ""
+"%s regisztrált felhasználóm van %s regisztrált hosztmaszkkal; %n és %n."
 
+#~ msgid "I don't recognize you."
+#~ msgstr "Nem ismerlek fel."

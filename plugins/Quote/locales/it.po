@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-06-12 18:39+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,22 +10,41 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: plugin.py:38
-#, docstring
+#: plugin.py:37
+msgid "This plugin allows you to add quotes to the database for a channel."
+msgstr ""
+
+#: plugin.py:40
 msgid ""
 "[<channel>]\n"
 "\n"
-"        Returns a random quote from <channel>.  <channel> is only necessary if\n"
+"        Returns a random quote from <channel>.  <channel> is only necessary "
+"if\n"
 "        the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canale>]\n"
 "\n"
-"        Restituisce una citazione casuale da <canale>. <canale> è necessario solo\n"
+"        Restituisce una citazione casuale da <canale>. <canale> è necessario "
+"solo\n"
 "        se il messaggio non viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:47
+#: plugin.py:49
 msgid "I have no quotes in my database for %s."
 msgstr "Non ho citazioni per %s nel mio database."
 
+#: plugin.py:53
+#, fuzzy
+msgid ""
+"[<channel>] <id> <text>\n"
+"        Replace quote <id> with <text>. <channel> is only necessary if\n"
+"        the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<canale>]\n"
+"\n"
+"        Restituisce una citazione casuale da <canale>. <canale> è necessario "
+"solo\n"
+"        se il messaggio non viene inviato nel canale stesso.\n"
+"        "

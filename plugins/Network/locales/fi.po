@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Network plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:29+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 11:34+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: plugin.py:46
+#: plugin.py:47
 msgid ""
 "Provides network-related commands, such as connecting to multiple networks\n"
 "    and checking latency to the server."
@@ -27,15 +27,19 @@ msgstr ""
 " väillä olevan viiveen tarkistksen."
 
 #: plugin.py:59
+#, fuzzy
 msgid ""
-"[--ssl] <network> [<host[:port]>] [<password>]\n"
+"[--nossl] <network> [<host[:port]>] [<password>]\n"
 "\n"
 "        Connects to another network (which will be represented by the name\n"
 "        provided in <network>) at <host:port>.  If port is not provided, it\n"
-"        defaults to 6667, the default port for IRC.  If password is\n"
-"        provided, it will be sent to the server in a PASS command.  If --ssl "
+"        defaults to 6697, the default port for IRC with SSL.  If password "
 "is\n"
-"        provided, an SSL connection will be attempted.\n"
+"        provided, it will be sent to the server in a PASS command.  If --"
+"nossl is\n"
+"        provided, an SSL connection will not be attempted, and the port "
+"will\n"
+"        default to 6667.\n"
 "        "
 msgstr ""
 "[--ssl] <verkko> [<isäntä[:portti]>] [<salasana>]\n"
@@ -47,26 +51,26 @@ msgstr ""
 "        annettu, SSL yhteys muodostetaan.\n"
 "        "
 
-#: plugin.py:73
+#: plugin.py:74
 msgid "I'm already connected to %s."
 msgstr "Olen jo verkkoon %s."
 
-#: plugin.py:93
+#: plugin.py:96
 msgid "A server must be provided if the network is not already registered."
 msgstr "Palvelin täytyy antaa, mikäli verkko ei ole jo rekisteröity."
 
-#: plugin.py:101
+#: plugin.py:104
 msgid "Connection to %s initiated."
 msgstr "Yhdistäminen verkkoon %s aloitettu."
 
-#: plugin.py:108
+#: plugin.py:110
+#, fuzzy
 msgid ""
-"[<network>] [<quit message>]\n"
+"<network> [<quit message>]\n"
 "\n"
 "        Disconnects from the network represented by the network <network>.\n"
 "        If <quit message> is given, quits the network with the given quit\n"
-"        message.  <network> is only necessary if the network is different\n"
-"        from the network the command is sent on.\n"
+"        message.\n"
 "        "
 msgstr ""
 "[<verkko>] [<lopetus viesti>]\n"
@@ -78,11 +82,11 @@ msgstr ""
 "        viesti on lähetetty.\n"
 "        "
 
-#: plugin.py:120
+#: plugin.py:124
 msgid "Disconnection to %s initiated."
 msgstr "Yhteyden katkaisu verkosta %s aloitettu."
 
-#: plugin.py:126
+#: plugin.py:129
 msgid ""
 "[<network>] [<quit message>]\n"
 "\n"
@@ -107,7 +111,7 @@ msgstr ""
 "        nimimerkkiä.\n"
 "        "
 
-#: plugin.py:143
+#: plugin.py:148
 msgid ""
 "<network> <command> [<arg> ...]\n"
 "\n"
@@ -120,10 +124,11 @@ msgstr ""
 "<verkossa>.\n"
 "        "
 
-#: plugin.py:151
+#: plugin.py:156
+#, fuzzy
 msgid ""
-"<command> <args>...\n"
-"        \n"
+"<command> [<arg> ...]\n"
+"\n"
 "        Perform <command> (with its associated <arg>s) on all networks.\n"
 "        "
 msgstr ""
@@ -133,61 +138,17 @@ msgstr ""
 "verkoissa.\n"
 "        "
 
-#: plugin.py:234
-msgid "is an op on %L"
-msgstr "on kanavaoperaattori %L:llä"
-
-#: plugin.py:236
-msgid "is a halfop on %L"
-msgstr "on puolioperaattori %L:llä."
-
-#: plugin.py:238
-msgid "is voiced on %L"
-msgstr "on ääni %L:llä"
-
-#: plugin.py:241
-msgid "is also on %L"
-msgstr "on myös %L:llä"
-
-#: plugin.py:243
-msgid "is on %L"
-msgstr "on %L:llä."
-
-#: plugin.py:246
-#, fuzzy
-msgid ""
-"isn't on any non-secret channels or is using a channel-list hiding umode."
-msgstr "Ei ole yhdelläkään ei-salaisella kanavalla."
-
-#: plugin.py:256 plugin.py:257 plugin.py:263
-msgid "<unknown>"
-msgstr "<tuntematon>"
-
-#: plugin.py:270
-msgid " identified"
-msgstr "tunnistautunut"
-
-#: plugin.py:276
-#, fuzzy
-msgid "%s (%s) has been%s on server %s since %s (idle for %s). %s %s.%s"
-msgstr "%s (%s) on ollut %s palvelimella %s %s lähtien (idlannut %s) ja %s.%s"
-
-#: plugin.py:280
-#, fuzzy
-msgid "%s (%s) has been%s on server %s and disconnected on %s."
-msgstr "%s (%s) on ollut %s palvelimella %s %s lähtien (jouten %s) ja %s.%s"
-
-#: plugin.py:294
+#: plugin.py:209
 #, fuzzy
 msgid "There is no user %s on %s."
 msgstr "%s:ää ei ole verkossa %s."
 
-#: plugin.py:296
+#: plugin.py:211
 #, fuzzy
 msgid "There was no user %s on %s."
 msgstr "Nimimerkkiä %s ei ole verkossa %s."
 
-#: plugin.py:304 plugin.py:320
+#: plugin.py:218 plugin.py:231
 msgid ""
 "[<network>] <nick>\n"
 "\n"
@@ -206,7 +167,7 @@ msgstr ""
 "        lähetettiin.\n"
 "        "
 
-#: plugin.py:336
+#: plugin.py:244
 msgid ""
 "[--all]\n"
 "\n"
@@ -220,15 +181,15 @@ msgstr ""
 "sisällyttää myös verkot, jotka botti\n"
 " tuntee, mutta joihin botti ei ole yhteydessä juuri nyt."
 
-#: plugin.py:347
+#: plugin.py:255
 msgid "disconnected"
 msgstr "yhteys katkaistu"
 
-#: plugin.py:356
+#: plugin.py:264
 msgid "%.2f seconds."
 msgstr "%.2f sekuntia."
 
-#: plugin.py:360
+#: plugin.py:267
 msgid ""
 "[<network>]\n"
 "\n"
@@ -247,11 +208,11 @@ msgstr ""
 "        vaikuttamaan.\n"
 "        "
 
-#: plugin.py:366
+#: plugin.py:273
 msgid "Latency check (from %s)."
 msgstr "Viiveen tarkistus (%s:ltä)."
 
-#: plugin.py:374
+#: plugin.py:280
 msgid ""
 "[<network>]\n"
 "\n"
@@ -270,10 +231,11 @@ msgstr ""
 "        vaikuttaa.\n"
 "        "
 
-#: plugin.py:385
+#: plugin.py:290
+#, fuzzy
 msgid ""
 "[<network>]\n"
-"        \n"
+"\n"
 "        Returns the time duration since the connection was established.\n"
 "        "
 msgstr ""
@@ -281,9 +243,56 @@ msgstr ""
 "\n"
 " Palauttaa ajan, joka on kulunut siitä, kun yhteys muodostettiin.]"
 
-#: plugin.py:392
+#: plugin.py:297
 msgid "I've been connected to %s for %s."
 msgstr "Olen ollut yhteydessä verkkoon %s ajan %s."
+
+#: plugin.py:302
+#, fuzzy
+msgid ""
+"[<network>]\n"
+"\n"
+"        Returns the list of IRCv3 capabilities available on the network.\n"
+"        "
+msgstr ""
+"[<verkko>\n"
+"\n"
+" Palauttaa ajan, joka on kulunut siitä, kun yhteys muodostettiin.]"
+
+#~ msgid "is an op on %L"
+#~ msgstr "on kanavaoperaattori %L:llä"
+
+#~ msgid "is a halfop on %L"
+#~ msgstr "on puolioperaattori %L:llä."
+
+#~ msgid "is voiced on %L"
+#~ msgstr "on ääni %L:llä"
+
+#~ msgid "is also on %L"
+#~ msgstr "on myös %L:llä"
+
+#~ msgid "is on %L"
+#~ msgstr "on %L:llä."
+
+#, fuzzy
+#~ msgid ""
+#~ "isn't on any non-secret channels or is using a channel-list hiding umode."
+#~ msgstr "Ei ole yhdelläkään ei-salaisella kanavalla."
+
+#~ msgid "<unknown>"
+#~ msgstr "<tuntematon>"
+
+#~ msgid " identified"
+#~ msgstr "tunnistautunut"
+
+#, fuzzy
+#~ msgid "%s (%s) has been%s on server %s since %s (idle for %s). %s %s.%s"
+#~ msgstr ""
+#~ "%s (%s) on ollut %s palvelimella %s %s lähtien (idlannut %s) ja %s.%s"
+
+#, fuzzy
+#~ msgid "%s (%s) has been%s on server %s and disconnected on %s."
+#~ msgstr "%s (%s) on ollut %s palvelimella %s %s lähtien (jouten %s) ja %s.%s"
 
 #~ msgid ""
 #~ "takes no arguments\n"

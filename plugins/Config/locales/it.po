@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-06-28 12:33+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,42 +10,67 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: plugin.py:86
+msgid ""
+"Prevents changing certain config variables to gain shell access via\n"
+"    a vulnerable IRC network."
+msgstr ""
 
-#: plugin.py:103
+#: plugin.py:110
+msgid ""
+"This configuration variable is not writeable via IRC. To change it you have "
+"to: 1) use the 'flush' command 2) edit the config file 3) use the 'config "
+"reload' command."
+msgstr ""
+
+#: plugin.py:141
 msgid "configuration variable"
 msgstr "variabile di configurazione"
 
-#: plugin.py:109
+#: plugin.py:147
 msgid "settable configuration variable"
 msgstr "variabile di configurazione impostabile"
 
-#: plugin.py:136
-#, docstring
+#: plugin.py:152
+msgid ""
+"Provides access to the Supybot configuration. This is\n"
+"    a core Supybot plugin that should not be removed!"
+msgstr ""
+
+#: plugin.py:185
+#, fuzzy
 msgid ""
 "<group>\n"
 "\n"
 "        Returns the configuration variables available under the given\n"
 "        configuration <group>.  If a variable has values under it, it is\n"
-"        preceded by an '@' sign.  If a variable is a 'ChannelValue', that is,\n"
-"        it can be separately configured for each channel using the 'channel'\n"
+"        preceded by an '@' sign.  If a variable is channel-specific, that "
+"is,\n"
+"        it can be separately configured for each channel using the "
+"'channel'\n"
 "        command in this plugin, it is preceded by an '#' sign.\n"
+"        And if a variable is a network-specific, it is preceded by a ':' "
+"sign.\n"
 "        "
 msgstr ""
 "<gruppo>\n"
 "\n"
-"        Riporta le variabili di configurazione disponibili per il dato <gruppo>\n"
-"        di configurazione. Se una variabile ha delle sottovariabili, sarà preceduta\n"
-"        dal simbolo \"@\". Se una variabile è 'ChannelValue', ovvero può essere\n"
-"        configurata separatamente per ciascun canale tramite il comando \"channel\"\n"
+"        Riporta le variabili di configurazione disponibili per il dato "
+"<gruppo>\n"
+"        di configurazione. Se una variabile ha delle sottovariabili, sarà "
+"preceduta\n"
+"        dal simbolo \"@\". Se una variabile è 'ChannelValue', ovvero può "
+"essere\n"
+"        configurata separatamente per ciascun canale tramite il comando "
+"\"channel\"\n"
 "        di questo plugin, sarà precedutà dal simbolo \"#\".\n"
 "        "
 
-#: plugin.py:148
+#: plugin.py:198
 msgid "There don't seem to be any values in %s."
 msgstr "Non sembra esserci alcun valore in %s."
 
-#: plugin.py:154
-#, docstring
+#: plugin.py:204
 msgid ""
 "<word>\n"
 "\n"
@@ -57,57 +82,131 @@ msgstr ""
 "        Cerca <parola> nelle variabili di configurazione.\n"
 "        "
 
-#: plugin.py:167
+#: plugin.py:218 plugin.py:237 plugin.py:255
 msgid "There were no matching configuration variables."
 msgstr "Non c'è nessuna variabile di configurazione corrispondente."
 
-#: plugin.py:174
-msgid "Global: %s; %s: %s"
-msgstr "Globale: %s; %s: %s"
-
-#: plugin.py:185
-msgid "That registry variable has no value.  Use the list command in this plugin to see what variables are available in this group."
-msgstr "Questa variabile di registro non ha un valore. Utilizzare il comando \"list\" in questo plugin per vedere quali variabili sono disponibili per questo gruppo."
-
-#: plugin.py:200
-#, docstring
+#: plugin.py:223
+#, fuzzy
 msgid ""
-"[<channel>] <name> [<value>]\n"
+"<phrase>\n"
 "\n"
-"        If <value> is given, sets the channel configuration variable for <name>\n"
-"        to <value> for <channel>.  Otherwise, returns the current channel\n"
+"        Searches for <phrase> in the help of current configuration "
+"variables.\n"
+"        "
+msgstr ""
+"<parola>\n"
+"\n"
+"        Cerca <parola> nelle variabili di configurazione.\n"
+"        "
+
+#: plugin.py:242
+#, fuzzy
+msgid ""
+"<word>\n"
+"\n"
+"        Searches for <word> in the values of current configuration "
+"variables.\n"
+"        "
+msgstr ""
+"<parola>\n"
+"\n"
+"        Cerca <parola> nelle variabili di configurazione.\n"
+"        "
+
+#: plugin.py:267
+msgid ""
+"Global: %(global_value)s; %(channel_name)s @ %(network_name)s: "
+"%(channel_value)s"
+msgstr ""
+
+#: plugin.py:276
+msgid "Global: %(global_value)s; %(network_name)s: %(network_value)s"
+msgstr ""
+
+#: plugin.py:293
+msgid ""
+"That registry variable has no value.  Use the list command in this plugin to "
+"see what variables are available in this group."
+msgstr ""
+"Questa variabile di registro non ha un valore. Utilizzare il comando \"list"
+"\" in questo plugin per vedere quali variabili sono disponibili per questo "
+"gruppo."
+
+#: plugin.py:304
+#, fuzzy
+msgid ""
+"[<network>] [<channel>] <name> [<value>]\n"
+"\n"
+"        If <value> is given, sets the channel configuration variable for "
+"<name>\n"
+"        to <value> for <channel> on the <network>.\n"
+"        Otherwise, returns the current channel\n"
 "        configuration value of <name>.  <channel> is only necessary if the\n"
-"        message isn't sent in the channel itself."
+"        message isn't sent in the channel itself. More than one channel may\n"
+"        be given at once by separating them with commas.\n"
+"        <network> defaults to the current network."
 msgstr ""
 "[<canale>] <nome> [<valore>]\n"
 "\n"
-"        Se <valore> è fornito, imposta la variabile di configurazione <nome>\n"
+"        Se <valore> è fornito, imposta la variabile di configurazione "
+"<nome>\n"
 "        a <valore> per <canale>. Altrimenti restituisce l'attuale valore di\n"
-"        configurazione di <nome>. <canale> è necessario solo se il messaggio\n"
+"        configurazione di <nome>. <canale> è necessario solo se il "
+"messaggio\n"
 "        non viene inviato nel canale stesso."
 
-#: plugin.py:207
-msgid "That configuration variable is not a channel-specific configuration variable."
+#: plugin.py:314
+msgid ""
+"That configuration variable is not a channel-specific configuration variable."
 msgstr "Questa variabile di configurazione non è specifica di un canale."
 
-#: plugin.py:220
-#, docstring
+#: plugin.py:355
+#, fuzzy
+msgid ""
+"[<network>] <name> [<value>]\n"
+"\n"
+"        If <value> is given, sets the network configuration variable for "
+"<name>\n"
+"        to <value> for <network>.\n"
+"        Otherwise, returns the current network configuration value of "
+"<name>.\n"
+"        <network> defaults to the current network."
+msgstr ""
+"[<canale>] <nome> [<valore>]\n"
+"\n"
+"        Se <valore> è fornito, imposta la variabile di configurazione "
+"<nome>\n"
+"        a <valore> per <canale>. Altrimenti restituisce l'attuale valore di\n"
+"        configurazione di <nome>. <canale> è necessario solo se il "
+"messaggio\n"
+"        non viene inviato nel canale stesso."
+
+#: plugin.py:362
+#, fuzzy
+msgid ""
+"That configuration variable is not a network-specific configuration variable."
+msgstr "Questa variabile di configurazione non è specifica di un canale."
+
+#: plugin.py:380
 msgid ""
 "<name> [<value>]\n"
 "\n"
-"        If <value> is given, sets the value of <name> to <value>.  Otherwise,\n"
+"        If <value> is given, sets the value of <name> to <value>.  "
+"Otherwise,\n"
 "        returns the current value of <name>.  You may omit the leading\n"
 "        \"supybot.\" in the name if you so choose.\n"
 "        "
 msgstr ""
 "<nome> [<valore>]\n"
 "\n"
-"        Se <valore> è fornito, imposta il valore di <nome> a <valore>. Altrimenti riporta\n"
-"        l'attuale valore di <nome>. È possibile omettere \"supybot.\" prima del nome.\n"
+"        Se <valore> è fornito, imposta il valore di <nome> a <valore>. "
+"Altrimenti riporta\n"
+"        l'attuale valore di <nome>. È possibile omettere \"supybot.\" prima "
+"del nome.\n"
 "        "
 
-#: plugin.py:234
-#, docstring
+#: plugin.py:399
 msgid ""
 "<name>\n"
 "\n"
@@ -119,20 +218,27 @@ msgstr ""
 "        Riporta la descrizione della variabile di configurazione <nome>.\n"
 "        "
 
-#: plugin.py:242
+#: plugin.py:412
+msgid "  (Current global value: %s;  current channel value: %s)"
+msgstr ""
+
+#: plugin.py:416 plugin.py:418
 msgid "  (Current value: %s)"
 msgstr "  (Valore attuale: %s)"
 
-#: plugin.py:245
-msgid "That configuration group exists, but seems to have no help.  Try \"config list %s\" to see if it has any children values."
-msgstr "Questo gruppo di configurazione esiste ma sembra non avere un help. Prova \"config list %s\" per vedere se ha dei sottovalori."
+#: plugin.py:421
+msgid ""
+"That configuration group exists, but seems to have no help.  Try \"config "
+"list %s\" to see if it has any children values."
+msgstr ""
+"Questo gruppo di configurazione esiste ma sembra non avere un help. Prova "
+"\"config list %s\" per vedere se ha dei sottovalori."
 
-#: plugin.py:249
+#: plugin.py:425
 msgid "%s has no help."
 msgstr "%s non ha un help."
 
-#: plugin.py:254
-#, docstring
+#: plugin.py:430
 msgid ""
 "<name>\n"
 "\n"
@@ -141,11 +247,11 @@ msgid ""
 msgstr ""
 "<nome>\n"
 "\n"
-"        Riporta il valore predefinito della variabile di configurazione <nome>.\n"
+"        Riporta il valore predefinito della variabile di configurazione "
+"<nome>.\n"
 "        "
 
-#: plugin.py:264
-#, docstring
+#: plugin.py:440
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -155,17 +261,18 @@ msgid ""
 msgstr ""
 "non necessita argomenti\n"
 "\n"
-"        Ricarica i file di configurazione (database utenti, database canale, registro, ecc.).\n"
+"        Ricarica i file di configurazione (database utenti, database canale, "
+"registro, ecc.).\n"
 "        "
 
-#: plugin.py:275
-#, docstring
+#: plugin.py:451
 msgid ""
 "<filename>\n"
 "\n"
 "        Exports the public variables of your configuration to <filename>.\n"
 "        If you want to show someone your configuration file, but you don't\n"
-"        want that person to be able to see things like passwords, etc., this\n"
+"        want that person to be able to see things like passwords, etc., "
+"this\n"
 "        command will export a \"sanitized\" configuration file suitable for\n"
 "        showing publicly.\n"
 "        "
@@ -178,3 +285,38 @@ msgstr ""
 "        un file \"pulito\" adatto ad essere mostrato pubblicamente.\n"
 "        "
 
+#: plugin.py:469
+msgid ""
+"<name>\n"
+"\n"
+"        Resets the configuration variable <name> to its default value.\n"
+"        Use commands 'reset channel' and 'reset network' instead to make\n"
+"        a channel- or network- specific value inherit from the global one.\n"
+"        "
+msgstr ""
+
+#: plugin.py:488
+msgid ""
+"[<network>] [<channel>] <name>\n"
+"\n"
+"            Resets the channel-specific value of variable <name>, so that\n"
+"            it will match the network-specific value (or the global one\n"
+"            if the latter isn't set).\n"
+"            <network> and <channel> default to the current network and\n"
+"            channel.\n"
+"            "
+msgstr ""
+
+#: plugin.py:516
+msgid ""
+"[<network>] [<channel>] <name>\n"
+"\n"
+"            Resets the network-specific value of variable <name>, so that\n"
+"            it will match the global.\n"
+"            <network> defaults to the current network and\n"
+"            channel.\n"
+"            "
+msgstr ""
+
+#~ msgid "Global: %s; %s: %s"
+#~ msgstr "Globale: %s; %s: %s"

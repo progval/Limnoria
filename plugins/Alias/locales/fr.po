@@ -1,19 +1,22 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-01-22 13:38+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
-"Language: fr_FR\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: ASCII\n"
 "X-Generator: Poedit 1.5.4\n"
-"Language: fr\n"
 
-#: plugin.py:46
+#: config.py:48
+msgid "Regex which alias names must match in order to be valid"
+msgstr ""
+
+#: plugin.py:48
 msgid ""
 "Returns the channel the msg came over or the channel given in args.\n"
 "\n"
@@ -26,23 +29,19 @@ msgstr ""
 "Si le canal était donné en argument, args est modifié (le canal est "
 "supprimé)."
 
-#: plugin.py:108
+#: plugin.py:110
+#, fuzzy
 msgid ""
-"Encodes [a-z0-9.]+ into [a-z][a-z0-9].\n"
-"    Format: a<number of escaped chars>a(<index>d)+<word without dots>."
+"Encodes dots and pipes\n"
+"    Format: a<number of escaped chars>a(<index>(d|p))+<word without dots or "
+"pipes>."
 msgstr "."
 
-#: plugin.py:219
-msgid "You've attempted more nesting than is currently allowed on this bot."
-msgstr ""
-"Vous avez essayé d’utiliser plus d’imbrication que ce qui est actuellement "
-"autorisé sur ce bot."
-
-#: plugin.py:224
+#: plugin.py:226
 msgid " at least"
 msgstr "au moins"
 
-#: plugin.py:226 plugin.py:231
+#: plugin.py:228 plugin.py:233
 msgid ""
 "<an alias,%s %n>\n"
 "\n"
@@ -52,11 +51,42 @@ msgstr ""
 "\n"
 "Alias pour %q."
 
-#: plugin.py:227 plugin.py:232
+#: plugin.py:229 plugin.py:234
 msgid "argument"
 msgstr "argument"
 
-#: plugin.py:300
+#: plugin.py:239
+msgid ""
+"\n"
+"    This plugin allows users to define aliases to commands and combinations\n"
+"    of commands (via nesting).\n"
+"    This plugin is only kept for backward compatibility, you should use the\n"
+"    built-in Aka plugin instead (you can migrate your existing aliases "
+"using\n"
+"    the 'importaliasdatabase' command.\n"
+"\n"
+"    To add an alias, `trout`, which expects a word as an argument::\n"
+"\n"
+"        <jamessan> @alias add trout \"action slaps $1 with a large trout\"\n"
+"        <bot> jamessan: The operation succeeded.\n"
+"        <jamessan> @trout me\n"
+"        * bot slaps me with a large trout\n"
+"\n"
+"    To add an alias, `lastfm`, which expects a last.fm user and replies "
+"with\n"
+"    their recently played items::\n"
+"\n"
+"        @alias add lastfm \"rss [format concat http://ws.audioscrobbler."
+"com/1.0/user/ [format concat [urlquote $1] /recenttracks.rss]]\"\n"
+"\n"
+"    Note that if the nested commands being aliased hadn't been quoted, then\n"
+"    those commands would have been run immediately, and `@lastfm` would "
+"always\n"
+"    reply with the same information, the result of those commands.\n"
+"    "
+msgstr ""
+
+#: plugin.py:357
 msgid ""
 "<alias>\n"
 "\n"
@@ -67,11 +97,11 @@ msgstr ""
 "\n"
 "Vérouille un alias pour que personne d'autre ne puisse le changer."
 
-#: plugin.py:309 plugin.py:323
+#: plugin.py:365 plugin.py:378
 msgid "There is no such alias."
 msgstr "Cet alias n'existe pas."
 
-#: plugin.py:314
+#: plugin.py:370
 msgid ""
 "<alias>\n"
 "\n"
@@ -82,11 +112,11 @@ msgstr ""
 "\n"
 "Déverrouille un alias de façon à ce que des gens puissent le redéfinir."
 
-#: plugin.py:335
+#: plugin.py:386
 msgid "That name isn't valid.  Try %q instead."
 msgstr "Ce nom n'est pas valide. Essayez plutôt %q."
 
-#: plugin.py:383
+#: plugin.py:426
 msgid ""
 "<name> <command>\n"
 "\n"
@@ -112,7 +142,7 @@ msgstr ""
 "simplement *tous* les arguments restants, et ne peut être combiné avec des "
 "arguments optionnels."
 
-#: plugin.py:406
+#: plugin.py:449
 msgid ""
 "<name>\n"
 "\n"
@@ -122,3 +152,31 @@ msgstr ""
 "<nom>\n"
 "\n"
 "Supprime l'alias donné, si il n'est pas verrouillé."
+
+#: plugin.py:463
+msgid ""
+"[--locked|--unlocked]\n"
+"\n"
+"        Lists alias names of a particular type, defaults to all aliases if "
+"no\n"
+"        --locked or --unlocked option is given.\n"
+"        "
+msgstr ""
+
+#: plugin.py:470
+msgid "Cannot specify --locked and --unlocked simultaneously"
+msgstr ""
+
+#: plugin.py:486
+msgid "There are no aliases of that type."
+msgstr ""
+
+#: plugin.py:488
+#, fuzzy
+msgid "There are no aliases."
+msgstr "Cet alias n'existe pas."
+
+#~ msgid "You've attempted more nesting than is currently allowed on this bot."
+#~ msgstr ""
+#~ "Vous avez essayé d’utiliser plus d’imbrication que ce qui est "
+#~ "actuellement autorisé sur ce bot."

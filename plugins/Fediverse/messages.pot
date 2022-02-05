@@ -1,0 +1,140 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: config.py:60
+msgid ""
+"Determines whether the bot will output the profile of\n"
+"            @username@hostname accounts it sees in channel messages."
+msgstr ""
+
+#: config.py:71
+msgid ""
+"Determines whether the bot will output the profile of\n"
+"            URLs to Fediverse accounts it sees in channel messages."
+msgstr ""
+
+#: config.py:82
+msgid ""
+"Determines whether the bot will output the content of\n"
+"            statuses whose URLs it sees in channel messages."
+msgstr ""
+
+#: config.py:97
+msgid ""
+"Determines whether the content of a status will be shown\n"
+"            when the status has a Content Warning."
+msgstr ""
+
+#: plugin.py:54
+msgid ""
+"\n"
+"    You shouldn't be here, this subfolder is not for you. Go back to the\n"
+"    index and try out other plugins (if any)."
+msgstr ""
+
+#: plugin.py:119
+#, docstring
+msgid ""
+"Fetches information from ActivityPub servers.\n"
+"\n"
+"    Enabling Secure Fetch\n"
+"    ^^^^^^^^^^^^^^^^^^^^^\n"
+"\n"
+"    The default configuration works with most ActivityPub servers, but not\n"
+"    all of them, because they require an HTTP Signature to fetch profiles\n"
+"    and statuses.\n"
+"\n"
+"    Because of how HTTP Signatures work, you need to add some configuration\n"
+"    for Limnoria to support it.\n"
+"\n"
+"    First, you should set ``supybot.servers.http.port`` to a port you want\n"
+"    your bot to listen on (by default it's 8080). If there are already\n"
+"    plugins using it (eg. if Fediverse is already running), you should\n"
+"    either unload all of them and load them back, or restart your bot.\n"
+"\n"
+"    Then, you must configure a reverse-proxy in front of your bot (eg. nginx),\n"
+"    and it must support HTTPS.\n"
+"\n"
+"    Finally, set ``supybot.servers.http.publicUrl`` to the public URL of this\n"
+"    server (when opening this URL in your browser, it should show a page with\n"
+"    a title like \"Supybot web server index\").\n"
+"    "
+msgstr ""
+
+#: plugin.py:233
+msgid "<error: %s>"
+msgstr ""
+
+#: plugin.py:245
+msgid "%s: \002[CW %s]\002 %s"
+msgstr ""
+
+#: plugin.py:254
+msgid "%s: CW %s"
+msgstr ""
+
+#: plugin.py:258 plugin.py:292 plugin.py:300
+msgid "%s: %s"
+msgstr ""
+
+#: plugin.py:286
+#, docstring
+msgid ""
+"<@user@instance>\n"
+"\n"
+"        Returns generic information on the account @user@instance."
+msgstr ""
+
+#: plugin.py:376
+#, docstring
+msgid ""
+"<@user@instance>\n"
+"\n"
+"        Returnes the featured statuses of @user@instance (aka. pinned toots).\n"
+"        "
+msgstr ""
+
+#: plugin.py:382 plugin.py:388
+msgid "No featured statuses."
+msgstr ""
+
+#: plugin.py:399
+#, docstring
+msgid ""
+"<@user@instance>\n"
+"\n"
+"        Returned the last statuses of @user@instance.\n"
+"        "
+msgstr ""
+
+#: plugin.py:405
+msgid "No status."
+msgstr ""
+
+#: plugin.py:422
+#, docstring
+msgid ""
+"<url>\n"
+"\n"
+"        Shows the content of the status at <url>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:429
+msgid "Could not get status: %s"
+msgstr ""
+

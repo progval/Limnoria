@@ -5,17 +5,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:57
+#: plugin.py:59
 #, docstring
 msgid ""
 "This plugin provides logic operators and other commands that\n"
@@ -23,12 +23,12 @@ msgid ""
 "    commands and scripting."
 msgstr ""
 
-#: plugin.py:65
+#: plugin.py:66
 #, docstring
 msgid "Run a command from message, as if command was sent over IRC."
 msgstr ""
 
-#: plugin.py:74
+#: plugin.py:76
 #, docstring
 msgid ""
 "<condition> <ifcommand> <elsecommand>\n"
@@ -41,7 +41,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:91
+#: plugin.py:92
 #, docstring
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
@@ -50,7 +50,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:103
+#: plugin.py:104
 #, docstring
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
@@ -59,7 +59,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:115
+#: plugin.py:116
 #, docstring
 msgid ""
 "<cond1> [<cond2> ... <condN>]\n"
@@ -68,7 +68,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:127
+#: plugin.py:128
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -78,7 +78,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:140
+#: plugin.py:141
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -88,7 +88,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:153
+#: plugin.py:154
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -98,7 +98,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:166
+#: plugin.py:167
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -108,7 +108,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:179
+#: plugin.py:180
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -118,7 +118,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:192
+#: plugin.py:193
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -128,7 +128,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:205
+#: plugin.py:206
 #, docstring
 msgid ""
 "[--case-insensitive] <item1> <item2>\n"
@@ -140,7 +140,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:225
+#: plugin.py:226
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -150,7 +150,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:238
+#: plugin.py:239
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -160,7 +160,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:251
+#: plugin.py:252
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -170,7 +170,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:264
+#: plugin.py:265
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -180,7 +180,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:277
+#: plugin.py:278
 #, docstring
 msgid ""
 "<item1> <item2>\n"
@@ -190,13 +190,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:290
+#: plugin.py:291
 #, docstring
 msgid ""
 "<item1> <item2>\n"
 "\n"
 "        Does a numeric comparison on <item1> and <item2>.\n"
 "        Returns true if <item1> is less than or equal to <item2>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:303
+#, docstring
+msgid ""
+"<testcommand>\n"
+"\n"
+"        Runs <testcommand> and returns true if it raises an error;\n"
+"        false otherwise.\n"
 "        "
 msgstr ""
 

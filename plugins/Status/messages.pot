@@ -5,42 +5,42 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 11:29+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:46
+#: config.py:47
 msgid ""
 "Determines whether the cpu command will list\n"
 "    the time taken by children as well as the bot's process."
 msgstr ""
 
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether the cpu command will\n"
 "    provide the number of threads spawned and active."
 msgstr ""
 
-#: config.py:52
+#: config.py:53
 msgid ""
 "Determines whether the cpu command will report\n"
 "    the amount of memory being used by the bot."
 msgstr ""
 
-#: plugin.py:47
+#: plugin.py:48
 #, docstring
 msgid ""
 "This plugin allows you to view different bot statistics, for example,\n"
 "    uptime."
 msgstr ""
 
-#: plugin.py:74
+#: plugin.py:75
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -122,11 +122,15 @@ msgstr ""
 msgid "Unable to run ps command."
 msgstr ""
 
-#: plugin.py:183
+#: plugin.py:184
 msgid "  I'm taking up %S of memory."
 msgstr ""
 
-#: plugin.py:192
+#: plugin.py:187
+msgid "  I'm taking up an unknown amount of memory."
+msgstr ""
+
+#: plugin.py:195
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -135,11 +139,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:202
+#: plugin.py:205
 msgid "I offer a total of %n in %n.  I have processed %n."
 msgstr ""
 
-#: plugin.py:211
+#: plugin.py:214
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -148,7 +152,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:225
+#: plugin.py:228
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -157,11 +161,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:229
+#: plugin.py:232
 msgid "I have been running for %s."
 msgstr ""
 
-#: plugin.py:236
+#: plugin.py:239
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -170,7 +174,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:245
+#: plugin.py:248
 #, docstring
 msgid ""
 "takes no arguments\n"

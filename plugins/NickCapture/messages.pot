@@ -5,29 +5,29 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-03-22 16:34+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:47
+#: config.py:48
 msgid ""
 "Determines whether the bot will check\n"
 "    occasionally if its preferred nick is in use via the ISON command."
 msgstr ""
 
-#: config.py:50
+#: config.py:51
 msgid ""
 "Determines how often (in seconds) the bot\n"
 "    will check whether its nick ISON."
 msgstr ""
 
-#: plugin.py:40
+#: plugin.py:41
 #, docstring
 msgid ""
 "This plugin constantly tries to take whatever nick is configured as\n"
@@ -35,8 +35,18 @@ msgid ""
 "    will do the rest."
 msgstr ""
 
-#: plugin.py:93
+#: plugin.py:106
 #, docstring
 msgid "This is returned by the ISON command."
+msgstr ""
+
+#: plugin.py:113
+#, docstring
+msgid "This is sent by the MONITOR when a nick goes offline."
+msgstr ""
+
+#: plugin.py:123
+#, docstring
+msgid "Nick/channel is temporarily unavailable"
 msgstr ""
 

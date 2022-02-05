@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Todo plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 14:20+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: config.py:50
+#: config.py:51
 msgid ""
 "Determines whether users can read the\n"
 "    todo-list of another user."
@@ -25,14 +25,14 @@ msgstr ""
 "Määrittää voivatko käyttäjät lukea muiden käyttäjien\n"
 "    tehtävälistoja."
 
-#: plugin.py:122
+#: plugin.py:123
 msgid ""
 "This plugin allows you to create your own personal to-do list on\n"
 "    the bot."
 msgstr ""
 "Tämä plugin sallii käyttäjien tehdä henkilökohtaisia tehtävälistoja bottiin."
 
-#: plugin.py:138
+#: plugin.py:139
 msgid ""
 "[<username>] [<task id>]\n"
 "\n"
@@ -51,47 +51,47 @@ msgstr ""
 "        listaansa.\n"
 "        "
 
-#: plugin.py:149
+#: plugin.py:150
 msgid "You are not allowed to see other users todo-list."
 msgstr "Sinulla ei ole oikeutta katsoa toisten käyttäjien tehtävälistoja."
 
-#: plugin.py:156
+#: plugin.py:157
 msgid "#%i: %s"
 msgstr "#%i %s"
 
-#: plugin.py:161
+#: plugin.py:162
 msgid "%s for %s: %L"
 msgstr "%s %s:lle: %L"
 
-#: plugin.py:165
+#: plugin.py:166
 msgid "That user has no tasks in their todo list."
 msgstr "Tuolla käyttäjällä ei ole tehtäviä tehtävälistallaan."
 
-#: plugin.py:167
+#: plugin.py:168
 msgid "You have no tasks in your todo list."
 msgstr "Sinulla ei ole tehtäviä tehtävälistallasi."
 
-#: plugin.py:174
+#: plugin.py:175
 msgid "Active"
 msgstr "Aktiivinen"
 
-#: plugin.py:176
+#: plugin.py:177
 msgid "Inactive"
 msgstr "Epä-aktiivinen"
 
-#: plugin.py:178
+#: plugin.py:179
 msgid ", priority: %i"
 msgstr "tärkeysaste %i"
 
-#: plugin.py:181
+#: plugin.py:182
 msgid "%s todo for %s: %s (Added at %s)"
 msgstr "%s tehtävä %s:lle: %s (Lisätty %s)"
 
-#: plugin.py:185 plugin.py:269 plugin.py:283
+#: plugin.py:186 plugin.py:270 plugin.py:284
 msgid "task id"
 msgstr "tehtävä ID"
 
-#: plugin.py:190
+#: plugin.py:191
 msgid ""
 "[--priority=<num>] <text>\n"
 "\n"
@@ -110,11 +110,11 @@ msgstr ""
 "        Mikä tahansa kokonaisluku on kelvollinen.\n"
 "        "
 
-#: plugin.py:201
+#: plugin.py:202
 msgid "(Todo #%i added)"
 msgstr "Tehtävä %i lisätty"
 
-#: plugin.py:207
+#: plugin.py:208
 msgid ""
 "<task id> [<task id> ...]\n"
 "\n"
@@ -126,7 +126,7 @@ msgstr ""
 "        Poistaa <tehtävä ID(:eet)> henkilökohtaiselta tehtävälistaltasi.\n"
 "        "
 
-#: plugin.py:218
+#: plugin.py:219
 msgid ""
 "Task %i could not be removed either because that id doesn't exist or it has "
 "been removed already."
@@ -134,12 +134,12 @@ msgstr ""
 "Tehtävää %i ei voitu poistaa, koska se ei ollut olemassa tai se on jo "
 "poistettu."
 
-#: plugin.py:222
+#: plugin.py:223
 msgid ""
 "No tasks were removed because the following tasks could not be removed: %L."
 msgstr "Tehtäviä ei poistettu, koska seuraavia tehtäviä ei voitu poistaa: %L."
 
-#: plugin.py:232
+#: plugin.py:233
 msgid ""
 "[--{regexp} <value>] [<glob> <glob> ...]\n"
 "\n"
@@ -158,11 +158,11 @@ msgstr ""
 "        tehtäviin.\n"
 "        "
 
-#: plugin.py:255
+#: plugin.py:256
 msgid "No tasks matched that query."
 msgstr "Yksikään tehtävä ei täsmännyt tuohon hakuun."
 
-#: plugin.py:261
+#: plugin.py:262
 msgid ""
 "<id> <priority>\n"
 "\n"
@@ -175,7 +175,7 @@ msgstr ""
 "        Asettaa tehtävän ID tärkeysasteen annetulle arvolle.\n"
 "        "
 
-#: plugin.py:275
+#: plugin.py:276
 msgid ""
 "<task id> <regexp>\n"
 "\n"

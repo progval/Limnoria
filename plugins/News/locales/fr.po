@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2010-10-17 16:53+CEST\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -13,62 +13,74 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
 
-#: plugin.py:57
+#: plugin.py:58
 msgid "%s (Subject: %q, added by %s on %s)"
 msgstr "%s (Sujet : %q, ajouté par %s le %s)"
 
-#: plugin.py:61
+#: plugin.py:62
 msgid "%s (Subject: %q, added by %s on %s, expires at %s)"
 msgstr "%s (Sujet : %q, ajouté par %s le %s, expire à %s)"
 
-#: plugin.py:120
+#: plugin.py:110
+msgid "This plugin provides a means of maintaining News for a channel."
+msgstr ""
+
+#: plugin.py:122
 msgid ""
 "[<channel>] <expires> <subject>: <text>\n"
 "\n"
-"        Adds a given news item of <text> to a channel with the given <subject>.\n"
-"        If <expires> isn't 0, that news item will expire <expires> seconds from\n"
+"        Adds a given news item of <text> to a channel with the given "
+"<subject>.\n"
+"        If <expires> isn't 0, that news item will expire <expires> seconds "
+"from\n"
 "        now.  <channel> is only necessary if the message isn't sent in the\n"
 "        channel itself.\n"
 "        "
 msgstr ""
 "[<canal>] <expiration> <sujet>: <texte>\n"
 "\n"
-"Ajoute la news donnée, contenant le <texte> à un <canal>, avec le  <sujet> donné. Si l'<expiration> n'est pas 0, la news expirera dans le nombre donné de secondes. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Ajoute la news donnée, contenant le <texte> à un <canal>, avec le  <sujet> "
+"donné. Si l'<expiration> n'est pas 0, la news expirera dans le nombre donné "
+"de secondes. <canal> n'est nécessaire que si le message n'est pas envoyé sur "
+"le canal lui-même."
 
-#: plugin.py:132
+#: plugin.py:134
 msgid "(News item #%i added)"
 msgstr "(News #%i ajoutée)"
 
-#: plugin.py:137
+#: plugin.py:139
 msgid ""
 "[<channel>] [<id>]\n"
 "\n"
-"        Display the news items for <channel> in the format of '(#id) subject'.\n"
-"        If <id> is given, retrieve only that news item; otherwise retrieve all\n"
-"        news items.  <channel> is only necessary if the message isn't sent in\n"
+"        Display the news items for <channel> in the format of '(#id) "
+"subject'.\n"
+"        If <id> is given, retrieve only that news item; otherwise retrieve "
+"all\n"
+"        news items.  <channel> is only necessary if the message isn't sent "
+"in\n"
 "        the channel itself.\n"
 "        "
 msgstr ""
 "[<canal>] [<id>]\n"
 "\n"
-"Affiche une news sur le <canal> dans le format'(#id) sujet'. Si l'<id> est donné, ne récupère que la news correspondante ; sinon, récupère toutes les news. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Affiche une news sur le <canal> dans le format'(#id) sujet'. Si l'<id> est "
+"donné, ne récupère que la news correspondante ; sinon, récupère toutes les "
+"news. <canal> n'est nécessaire que si le message n'est pas envoyé sur le "
+"canal lui-même."
 
-#: plugin.py:148
+#: plugin.py:150
 msgid "News for %s: %s"
 msgstr "News pour %s : %s"
 
-#: plugin.py:151
+#: plugin.py:153
 msgid "No news for %s."
 msgstr "Pas de news pour %s."
 
-#: plugin.py:157
-#: plugin.py:171
-#: plugin.py:187
-#: plugin.py:203
+#: plugin.py:159 plugin.py:173 plugin.py:189 plugin.py:205
 msgid "news item id"
 msgstr "id de news"
 
-#: plugin.py:162
+#: plugin.py:164
 msgid ""
 "[<channel>] <id>\n"
 "\n"
@@ -78,40 +90,47 @@ msgid ""
 msgstr ""
 "[<canal>] <id>\n"
 "\n"
-"Retourne la news avec l'<id> du <canal>. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Retourne la news avec l'<id> du <canal>. <canal> n'est nécessaire que si le "
+"message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:176
+#: plugin.py:178
 msgid ""
 "[<channel>] <id> <regexp>\n"
 "\n"
 "        Changes the news item with <id> from <channel> according to the\n"
 "        regular expression <regexp>.  <regexp> should be of the form\n"
-"        s/text/replacement/flags.  <channel> is only necessary if the message\n"
+"        s/text/replacement/flags.  <channel> is only necessary if the "
+"message\n"
 "        isn't sent on the channel itself.\n"
 "        "
 msgstr ""
 "[<canal>] <id> <regexp>\n"
 "\n"
-"Change la news ayant cet <id> sur le <canal>, en accord avec l'expression régulière <regexp>. La <regexp> doit être de  la forme s/text/replacement/flags. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Change la news ayant cet <id> sur le <canal>, en accord avec l'expression "
+"régulière <regexp>. La <regexp> doit être de  la forme s/text/replacement/"
+"flags. <canal> n'est nécessaire que si le message n'est pas envoyé sur le "
+"canal lui-même."
 
-#: plugin.py:192
+#: plugin.py:194
 msgid ""
 "[<channel>] [<id>]\n"
 "\n"
 "        Returns the old news item for <channel> with <id>.  If no number is\n"
-"        given, returns all the old news items in reverse order.  <channel> is\n"
+"        given, returns all the old news items in reverse order.  <channel> "
+"is\n"
 "        only necessary if the message isn't sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canal>] [<id>]\n"
 "\n"
-"Retourne l'ancienne news du <canal> avec l'<id>. Si aucun nombre n'est donné, retourne toutes les anciennes news, dans l'ordre inverse. <canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
+"Retourne l'ancienne news du <canal> avec l'<id>. Si aucun nombre n'est "
+"donné, retourne toutes les anciennes news, dans l'ordre inverse. <canal> "
+"n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:208
+#: plugin.py:210
 msgid "Old news for %s: %s"
 msgstr "Anciennes news pour %s : %s"
 
-#: plugin.py:211
+#: plugin.py:213
 msgid "No old news for %s."
 msgstr "Pas d'ancienne news pour %s."
-

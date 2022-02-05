@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-06-15 13:13+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,9 +10,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: plugin.py:126
+msgid "Allows you to send notes to other users."
+msgstr ""
 
-#: plugin.py:181
-#, docstring
+#: plugin.py:184
 msgid ""
 "<recipient>,[<recipient>,[...]] <text>\n"
 "\n"
@@ -22,12 +24,12 @@ msgid ""
 msgstr ""
 "<destinatario>,[<destinatario>,[...]] <testo>\n"
 "\n"
-"        Invia una nuova nota all'utente specificato. Possono essere specificati\n"
+"        Invia una nuova nota all'utente specificato. Possono essere "
+"specificati\n"
 "        destinatari multipli separando i nomi con una virgola.\n"
 "        "
 
-#: plugin.py:197
-#, docstring
+#: plugin.py:200
 msgid ""
 "<id> <text>\n"
 "\n"
@@ -39,8 +41,7 @@ msgstr ""
 "        Invia una nota in risposta a <id>.\n"
 "        "
 
-#: plugin.py:221
-#, docstring
+#: plugin.py:224
 msgid ""
 "<id>\n"
 "\n"
@@ -54,8 +55,7 @@ msgstr ""
 "        È necessario esserne l'autore e non deve essere stata letta.\n"
 "        "
 
-#: plugin.py:253
-#, docstring
+#: plugin.py:256
 msgid ""
 "<id>\n"
 "\n"
@@ -65,33 +65,37 @@ msgid ""
 msgstr ""
 "<id>\n"
 "\n"
-"        Recupera una singola nota tramite il suo id univoco. Per sapere quali\n"
+"        Recupera una singola nota tramite il suo id univoco. Per sapere "
+"quali\n"
 "        note hai da leggere, utilizza il comando \"note list\".\n"
 "        "
 
-#: plugin.py:283
-#, docstring
+#: plugin.py:286
 msgid ""
 "[--{regexp} <value>] [--sent] [<glob>]\n"
 "\n"
-"        Searches your received notes for ones matching <glob>.  If --regexp is\n"
-"        given, its associated value is taken as a regexp and matched against\n"
+"        Searches your received notes for ones matching <glob>.  If --regexp "
+"is\n"
+"        given, its associated value is taken as a regexp and matched "
+"against\n"
 "        the notes.  If --sent is specified, only search sent notes.\n"
 "        "
 msgstr ""
 "[--{regexp} <valore>] [--sent] [<glob>]\n"
 "\n"
 "        Cerca le note ricevute che corrispondono a <glob>. Se --regexp è\n"
-"        usato, i valori ad essa associati sono presi come regexp e confrontati\n"
-"        con le note. Se si specifica --sent, verranno cercate solo le note spedite.\n"
+"        usato, i valori ad essa associati sono presi come regexp e "
+"confrontati\n"
+"        con le note. Se si specifica --sent, verranno cercate solo le note "
+"spedite.\n"
 "        "
 
-#: plugin.py:322
-#, docstring
+#: plugin.py:328
 msgid ""
 "[--{old,sent}] [--{from,to} <user>]\n"
 "\n"
-"        Retrieves the ids of all your unread notes.  If --old is given, list\n"
+"        Retrieves the ids of all your unread notes.  If --old is given, "
+"list\n"
 "        read notes.  If --sent is given, list notes that you have sent.  If\n"
 "        --from is specified, only lists notes sent to you from <user>.  If\n"
 "        --to is specified, only lists notes sent by you to <user>.\n"
@@ -100,12 +104,12 @@ msgstr ""
 "[--{old,sent}] [--{from,to} <utente>]\n"
 "\n"
 "        Recupera gli id di tutte le note non lette. Se --old è specificato,\n"
-"        elenca quelle lette; --sent elenca quelle spedite; --from solo quelle\n"
+"        elenca quelle lette; --sent elenca quelle spedite; --from solo "
+"quelle\n"
 "        inviate da <utente>; mentre --to elenca le note inviate a <utente>.\n"
 "        "
 
-#: plugin.py:363
-#, docstring
+#: plugin.py:369
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -116,4 +120,3 @@ msgstr ""
 "\n"
 "        Recupera la successiva nota non letta, se presente.\n"
 "        "
-

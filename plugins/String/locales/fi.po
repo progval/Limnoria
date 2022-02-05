@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: String plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 12:20+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: config.py:47
+#: config.py:48
 msgid ""
 "Determines the maximum size of a string\n"
 "    given to the levenshtein command.  The levenshtein command uses an "
@@ -41,7 +41,7 @@ msgstr ""
 "    tämä asetusarvo on olemassa, rajoittaakseen levenshtein komentoon "
 "annettujen parametrien määrää."
 
-#: config.py:58
+#: config.py:59
 msgid ""
 "Determines the maximum time, in seconds, that\n"
 "    a regular expression is given to execute before being terminated. Since\n"
@@ -58,16 +58,17 @@ msgstr ""
 " tämä matalana. Tavallisten säännöllisten lausekkeiden ei pitäisi kestää "
 "kauan."
 
-#: plugin.py:51
+#: plugin.py:53
 msgid "Provides useful commands for manipulating characters and strings."
 msgstr ""
 "Tarjoaa hyödyllisiä komentoja merkkien ja merkkiketjujen manipulointiin."
 
-#: plugin.py:54
+#: plugin.py:55
+#, fuzzy
 msgid ""
 "<letter>\n"
 "\n"
-"        Returns the 8-bit value of <letter>.\n"
+"        Returns the unicode codepoint of <letter>.\n"
 "        "
 msgstr ""
 "<kirjain>\n"
@@ -76,10 +77,11 @@ msgstr ""
 "        "
 
 #: plugin.py:63
+#, fuzzy
 msgid ""
 "<number>\n"
 "\n"
-"        Returns the character associated with the 8-bit value <number>\n"
+"        Returns the unicode character associated with codepoint <number>\n"
 "        "
 msgstr ""
 "<numero>\n"
@@ -88,10 +90,33 @@ msgstr ""
 "        "
 
 #: plugin.py:70
-msgid "That number doesn't map to an 8-bit character."
+#, fuzzy
+msgid "That number doesn't map to a unicode character."
 msgstr "Tuo numero ei kartoitu 8-bittiseen merkkiin."
 
-#: plugin.py:75
+#: plugin.py:74
+msgid ""
+"<character>\n"
+"\n"
+"        Returns the name of the given unicode <character>."
+msgstr ""
+
+#: plugin.py:82
+msgid "No name found for this character."
+msgstr ""
+
+#: plugin.py:86
+msgid ""
+"<name>\n"
+"\n"
+"        Searches for a unicode character from its <name>."
+msgstr ""
+
+#: plugin.py:92
+msgid "No character found with this name."
+msgstr ""
+
+#: plugin.py:96
 msgid ""
 "<encoding> <text>\n"
 "\n"
@@ -108,11 +133,11 @@ msgstr ""
 "        <http://docs.python.org/library/codecs.html#standard-encodings>.\n"
 "        "
 
-#: plugin.py:91 plugin.py:128
+#: plugin.py:112 plugin.py:151
 msgid "encoding"
 msgstr "salaus"
 
-#: plugin.py:110
+#: plugin.py:133
 msgid ""
 "<encoding> <text>\n"
 "\n"
@@ -130,11 +155,11 @@ msgstr ""
 "        <http://docs.python.org/library/codecs.html#standard-encodings>.\n"
 "        "
 
-#: plugin.py:134
+#: plugin.py:157
 msgid "base64 string"
 msgstr "base64 merkkiketju"
 
-#: plugin.py:135
+#: plugin.py:158
 msgid ""
 "Base64 strings must be a multiple of 4 in length, padded with '=' if "
 "necessary."
@@ -142,7 +167,7 @@ msgstr ""
 "Base64 merkkiketjujen täytyy olla kerrollisia 4:llä, pehmustettuna '='-"
 "merkillä jos vaadittu."
 
-#: plugin.py:151
+#: plugin.py:176
 msgid ""
 "<string1> <string2>\n"
 "\n"
@@ -158,7 +183,7 @@ msgstr ""
 "        <merkkiketju1:den> ja <merkkiketju2:den> välillä.)\n"
 "        "
 
-#: plugin.py:158
+#: plugin.py:183
 msgid ""
 "Levenshtein distance is a complicated algorithm, try it with some smaller "
 "inputs."
@@ -166,7 +191,7 @@ msgstr ""
 "Levenshtein etäisyys on monimutkainen algoritmi, kokeile sitä pienemmillä "
 "sisäänmenoilla."
 
-#: plugin.py:166
+#: plugin.py:190
 #, fuzzy
 msgid ""
 "<string> [<length>]\n"
@@ -185,7 +210,7 @@ msgstr ""
 "        käytä 0:aa.\n"
 "        "
 
-#: plugin.py:180
+#: plugin.py:203
 msgid ""
 "<text>\n"
 "\n"
@@ -197,7 +222,7 @@ msgstr ""
 "        Palauttaa <tekstin> pituuden.\n"
 "        "
 
-#: plugin.py:189
+#: plugin.py:211
 msgid ""
 "<regexp> <text>\n"
 "\n"
@@ -218,57 +243,93 @@ msgstr ""
 "        <tekstiin>.\n"
 "        "
 
-#: plugin.py:201
+#: plugin.py:219
 msgid "You probably don't want to match the empty string."
 msgstr "Et luultavasti halua täsmätä tyhjään merkkiketjuun."
 
-#: plugin.py:216
+#: plugin.py:236
+#, fuzzy
 msgid ""
 "<password> <text>\n"
 "\n"
-"        Returns <text> XOR-encrypted with <password>.  See\n"
-"        http://www.yoe.org/developer/xor.html for information about XOR\n"
-"        encryption.\n"
-"        "
-msgstr ""
-"<salasana> <teksti>\n"
-"\n"
-"        Palauttaa <tekstin> XOR-salattuna <salasanalla>.  Katso\n"
-"        http://www.yoe.org/developer/xor.html saadaksesi lisätietoja XOR\n"
-"        salauksesta.\n"
-"        "
-
-#: plugin.py:229
-msgid ""
-"<text>\n"
-"\n"
-"        Returns the md5 hash of a given string.  Read\n"
-"        http://www.rsasecurity.com/rsalabs/faq/3-6-6.html for more "
-"information\n"
-"        about md5.\n"
+"        Returns <text> XOR-encrypted with <password>.\n"
 "        "
 msgstr ""
 "<teksti>\n"
 "\n"
-"        Palauttaa md5 hashin annetusta merkkiketjusta.  Lue\n"
-"        http://www.rsasecurity.com/rsalabs/faq/3-6-6.html saadaksesi "
-"lisätietoja\n"
-"        md5:stä.\n"
+"        Palauttaa <tekstin> pituuden.\n"
 "        "
 
-#: plugin.py:240
+#: plugin.py:246
+#, fuzzy
 msgid ""
 "<text>\n"
 "\n"
-"        Returns the SHA hash of a given string.  Read\n"
-"        http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more "
-"information\n"
-"        about SHA.\n"
+"        Returns the md5 hash of a given string.\n"
 "        "
 msgstr ""
 "<teksti>\n"
 "\n"
-"        Palauttaa SHA hashin annetulle merkkiketjulle.  Lue\n"
-"        http://www.secure-hash-algorithm-md5-sha-1.co.uk/ saadaksesi\n"
-"        lisätietoa SHA:sta.\n"
+"        Palauttaa <tekstin> pituuden.\n"
 "        "
+
+#: plugin.py:254
+#, fuzzy
+msgid ""
+"<text>\n"
+"\n"
+"        Returns the SHA1 hash of a given string.\n"
+"        "
+msgstr ""
+"<teksti>\n"
+"\n"
+"        Palauttaa <tekstin> pituuden.\n"
+"        "
+
+#~ msgid ""
+#~ "<password> <text>\n"
+#~ "\n"
+#~ "        Returns <text> XOR-encrypted with <password>.  See\n"
+#~ "        http://www.yoe.org/developer/xor.html for information about XOR\n"
+#~ "        encryption.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<salasana> <teksti>\n"
+#~ "\n"
+#~ "        Palauttaa <tekstin> XOR-salattuna <salasanalla>.  Katso\n"
+#~ "        http://www.yoe.org/developer/xor.html saadaksesi lisätietoja XOR\n"
+#~ "        salauksesta.\n"
+#~ "        "
+
+#~ msgid ""
+#~ "<text>\n"
+#~ "\n"
+#~ "        Returns the md5 hash of a given string.  Read\n"
+#~ "        http://www.rsasecurity.com/rsalabs/faq/3-6-6.html for more "
+#~ "information\n"
+#~ "        about md5.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<teksti>\n"
+#~ "\n"
+#~ "        Palauttaa md5 hashin annetusta merkkiketjusta.  Lue\n"
+#~ "        http://www.rsasecurity.com/rsalabs/faq/3-6-6.html saadaksesi "
+#~ "lisätietoja\n"
+#~ "        md5:stä.\n"
+#~ "        "
+
+#~ msgid ""
+#~ "<text>\n"
+#~ "\n"
+#~ "        Returns the SHA hash of a given string.  Read\n"
+#~ "        http://www.secure-hash-algorithm-md5-sha-1.co.uk/ for more "
+#~ "information\n"
+#~ "        about SHA.\n"
+#~ "        "
+#~ msgstr ""
+#~ "<teksti>\n"
+#~ "\n"
+#~ "        Palauttaa SHA hashin annetulle merkkiketjulle.  Lue\n"
+#~ "        http://www.secure-hash-algorithm-md5-sha-1.co.uk/ saadaksesi\n"
+#~ "        lisätietoa SHA:sta.\n"
+#~ "        "

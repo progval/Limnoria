@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2012-07-25 23:33+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,21 +10,28 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: config.py:47
+#: config.py:48
 msgid ""
 "Determines whether this plugin is enabled in a\n"
 "    given channel."
-msgstr ""
-"Determina se il plugin è abilitato in un dato canale."
+msgstr "Determina se il plugin è abilitato in un dato canale."
 
-#: config.py:54
+#: config.py:55
 msgid ""
 "Determines what nicks the bot will consider to\n"
-"    be immune from enforcement.  These nicks will not even have their actions\n"
+"    be immune from enforcement.  These nicks will not even have their "
+"actions\n"
 "    watched by this plugin.  In general, only the ChanServ for this network\n"
 "    will be in this list."
 msgstr ""
-"Determina quali nick il bot considererà immuni, le azioni di questi nick non\n"
-"    verranno monitorate dal plugin. In linea di massima sarà presente nella lista\n"
+"Determina quali nick il bot considererà immuni, le azioni di questi nick "
+"non\n"
+"    verranno monitorate dal plugin. In linea di massima sarà presente nella "
+"lista\n"
 "    solo il ChanServ della rete."
 
+#: plugin.py:40
+msgid ""
+"Prevents users from doing things they are not supposed to do on a channel,\n"
+"    even if they have +o or +h."
+msgstr ""

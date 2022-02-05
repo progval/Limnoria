@@ -1,0 +1,45 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: config.py:62
+msgid ""
+"Whether the bot should reply to autocomplete\n"
+"    requests from clients."
+msgstr ""
+
+#: plugin.py:42
+#, docstring
+msgid "Takes a list of lists, and returns their longest common prefix."
+msgstr ""
+
+#: plugin.py:57
+#, docstring
+msgid ""
+"Returns the value of the +draft/autocomplete-response tag for the given\n"
+"    +draft/autocomplete-request payload."
+msgstr ""
+
+#: plugin.py:101
+#, docstring
+msgid "Returns a list of commands starting with the normalized_payload."
+msgstr ""
+
+#: plugin.py:121
+#, docstring
+msgid "Provides command completion for IRC clients that support it."
+msgstr ""
+

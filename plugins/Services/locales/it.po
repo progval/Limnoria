@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-07-10 12:57+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,24 +10,26 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: config.py:40
+msgid ""
+"Determines what password the bot will use with NickServ when identifying as "
+"%s."
+msgstr ""
+"Determina quale password il bot userà con NickServ per identificarsi come %s."
 
-#: config.py:39
-msgid "Determines what password the bot will use with NickServ when identifying as %s."
-msgstr "Determina quale password il bot userà con NickServ per identificarsi come %s."
-
-#: config.py:49
+#: config.py:50
 msgid "What is your registered nick?"
 msgstr "Qual è il tuo nick registrato?"
 
-#: config.py:50
+#: config.py:51
 msgid "What is your password for that nick?"
 msgstr "Qual è la password per questo nick?"
 
-#: config.py:51
+#: config.py:52
 msgid "What is your ChanServ named?"
 msgstr "Come si chiama ChanServ?"
 
-#: config.py:52
+#: config.py:53
 msgid "What is your NickServ named?"
 msgstr "Come si chiama NickServ?"
 
@@ -61,10 +63,13 @@ msgstr ""
 "    non permette il join a utenti non identificati."
 
 #: config.py:86
+#, fuzzy
 msgid ""
 "Determines how many seconds the bot will\n"
-"    wait between successive GHOST attempts."
-msgstr "Determina quanti secondi il bot aspetterà tra un tentativo di GHOST e l'altro."
+"    wait between successive GHOST attempts. Set this to 0 to disable GHOST."
+msgstr ""
+"Determina quanti secondi il bot aspetterà tra un tentativo di GHOST e "
+"l'altro."
 
 #: config.py:89
 msgid ""
@@ -88,46 +93,62 @@ msgstr "Determina quale password il bot userà con ChanServ."
 msgid ""
 "Determines whether the bot will request to get\n"
 "    opped by the ChanServ when it joins the channel."
-msgstr "Determina se il bot richiederà lo stato di op da ChanServ quando entra nel canale."
+msgstr ""
+"Determina se il bot richiederà lo stato di op da ChanServ quando entra nel "
+"canale."
 
 #: config.py:102
 msgid ""
 "Determines whether the bot will request to get\n"
 "    half-opped by the ChanServ when it joins the channel."
-msgstr "Determina se il bot richiederà lo stato di halfop da ChanServ quando entra nel canale."
+msgstr ""
+"Determina se il bot richiederà lo stato di halfop da ChanServ quando entra "
+"nel canale."
 
 #: config.py:105
 msgid ""
 "Determines whether the bot will request to get\n"
 "    voiced by the ChanServ when it joins the channel."
-msgstr "Determina se il bot richiederà il voice da ChanServ quando entra nel canale."
+msgstr ""
+"Determina se il bot richiederà il voice da ChanServ quando entra nel canale."
 
-#: plugin.py:47
-#, docstring
+#: plugin.py:54
 msgid ""
 "This plugin handles dealing with Services on networks that provide them.\n"
-"    Basically, you should use the \"password\" command to tell the bot a nick to\n"
-"    identify with and what password to use to identify with that nick.  You can\n"
+"    Basically, you should use the \"password\" command to tell the bot a "
+"nick to\n"
+"    identify with and what password to use to identify with that nick.  You "
+"can\n"
 "    use the password command multiple times if your bot has multiple nicks\n"
 "    registered.  Also, be sure to configure the NickServ and ChanServ\n"
-"    configuration variables to match the NickServ and ChanServ nicks on your\n"
+"    configuration variables to match the NickServ and ChanServ nicks on "
+"your\n"
 "    network.  Other commands such as identify, op, etc. should not be\n"
 "    necessary if the bot is properly configured."
 msgstr ""
-"Questo plugin gestisce i servizi su reti che li forniscono. Fondamentalmente\n"
-"    va usato il comando \"password\" per fornire al bot un nick con il quale\n"
-"    identificarsi e quale password usare; se il bot ha più nick registrati, è\n"
-"    possibile usare tale comando più volte. Assicurati di impostare le variabili\n"
-"    di configurazione NickServ e ChanServ in modo che corrispondano ai rispettivi\n"
-"    nick sulla rete in questione. Se il bot è ben configurato, gli altri comandi\n"
+"Questo plugin gestisce i servizi su reti che li forniscono. "
+"Fondamentalmente\n"
+"    va usato il comando \"password\" per fornire al bot un nick con il "
+"quale\n"
+"    identificarsi e quale password usare; se il bot ha più nick registrati, "
+"è\n"
+"    possibile usare tale comando più volte. Assicurati di impostare le "
+"variabili\n"
+"    di configurazione NickServ e ChanServ in modo che corrispondano ai "
+"rispettivi\n"
+"    nick sulla rete in questione. Se il bot è ben configurato, gli altri "
+"comandi\n"
 "    come \"identify\", \"op\", ecc. non dovrebbero essere necessari."
 
-#: plugin.py:397
-msgid "You must set supybot.plugins.Services.ChanServ before I'm able to send the %s command."
-msgstr "È necessario impostare la variabile supybot.plugins.Services.ChanServ affinché possa inviare il comando %s."
+#: plugin.py:441
+msgid ""
+"You must set supybot.plugins.Services.ChanServ before I'm able to send the "
+"%s command."
+msgstr ""
+"È necessario impostare la variabile supybot.plugins.Services.ChanServ "
+"affinché possa inviare il comando %s."
 
-#: plugin.py:403
-#, docstring
+#: plugin.py:447
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -138,15 +159,15 @@ msgstr ""
 "[<canale>]\n"
 "\n"
 "        Tenta di ricevere lo stato di op da ChanServ in <canale>. <canale>\n"
-"        è necessario solo se il messaggio non viene inviato nel canale stesso.\n"
+"        è necessario solo se il messaggio non viene inviato nel canale "
+"stesso.\n"
 "        "
 
-#: plugin.py:409
+#: plugin.py:453
 msgid "I'm already opped in %s."
 msgstr "Sono già op in %s."
 
-#: plugin.py:416
-#, docstring
+#: plugin.py:460
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -157,20 +178,22 @@ msgstr ""
 "[<canale>]\n"
 "\n"
 "        Tenta di ricevere il voice da ChanServ in <canale>. <canale> è\n"
-"        necessario solo se il messaggio non viene inviato nel canale stesso.\n"
+"        necessario solo se il messaggio non viene inviato nel canale "
+"stesso.\n"
 "        "
 
-#: plugin.py:422
+#: plugin.py:466
 msgid "I'm already voiced in %s."
 msgstr "Ho già il voice in %s."
 
-#: plugin.py:439
-#, docstring
+#: plugin.py:483
 msgid ""
 "[<channel>]\n"
 "\n"
-"        Attempts to get unbanned by ChanServ in <channel>.  <channel> is only\n"
-"        necessary if the message isn't sent in the channel itself, but chances\n"
+"        Attempts to get unbanned by ChanServ in <channel>.  <channel> is "
+"only\n"
+"        necessary if the message isn't sent in the channel itself, but "
+"chances\n"
 "        are, if you need this command, you're not sending it in the channel\n"
 "        itself.\n"
 "        "
@@ -178,30 +201,34 @@ msgstr ""
 "[<canale>]\n"
 "\n"
 "        Tenta di farsi rimuovere il ban da ChanServ in <canale>. <canale> è\n"
-"        necessario solo se il messaggio non viene inviato nel canale stesso, ma è\n"
-"        probabile che se serve questo comando non lo si stia inviando in canale.\n"
+"        necessario solo se il messaggio non viene inviato nel canale stesso, "
+"ma è\n"
+"        probabile che se serve questo comando non lo si stia inviando in "
+"canale.\n"
 "        "
 
-#: plugin.py:460
-#, docstring
+#: plugin.py:504
 msgid ""
 "[<channel>]\n"
 "\n"
-"        Attempts to get invited by ChanServ to <channel>.  <channel> is only\n"
-"        necessary if the message isn't sent in the channel itself, but chances\n"
+"        Attempts to get invited by ChanServ to <channel>.  <channel> is "
+"only\n"
+"        necessary if the message isn't sent in the channel itself, but "
+"chances\n"
 "        are, if you need this command, you're not sending it in the channel\n"
 "        itself.\n"
 "        "
 msgstr ""
 "[<canale>]\n"
 "\n"
-"        Tenta di essere invitato da ChanServ in <canale>. <canale> è necessario\n"
-"        solo se il messaggio non viene inviato nel canale stesso, ma è probabile\n"
+"        Tenta di essere invitato da ChanServ in <canale>. <canale> è "
+"necessario\n"
+"        solo se il messaggio non viene inviato nel canale stesso, ma è "
+"probabile\n"
 "        che se serve questo comando non lo si stia inviando in canale.\n"
 "        "
 
-#: plugin.py:481
-#, docstring
+#: plugin.py:526
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -213,16 +240,19 @@ msgstr ""
 "        Si identifica con NickServ utilizzando l'attuale nick in uso.\n"
 "        "
 
-#: plugin.py:490
+#: plugin.py:535
 msgid "I don't have a configured password for my current nick."
 msgstr "Non ho una password configurata per il mio attuale nick."
 
-#: plugin.py:493
-msgid "You must set supybot.plugins.Services.NickServ before I'm able to do identify."
-msgstr "È necessario impostare la variabile supybot.plugins.Services.NickServ affinché possa identificarmi."
+#: plugin.py:538
+msgid ""
+"You must set supybot.plugins.Services.NickServ before I'm able to do "
+"identify."
+msgstr ""
+"È necessario impostare la variabile supybot.plugins.Services.NickServ "
+"affinché possa identificarmi."
 
-#: plugin.py:499
-#, docstring
+#: plugin.py:544
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -232,24 +262,64 @@ msgid ""
 msgstr ""
 "[<nick>]\n"
 "\n"
-"        Termina una connessione \"fantasma\" (ghost) e riprende il nick del bot.\n"
+"        Termina una connessione \"fantasma\" (ghost) e riprende il nick del "
+"bot.\n"
 "        Se non è specificato alcun nick, riprende quello configurato.\n"
 "        "
 
-#: plugin.py:508
+#: plugin.py:553
 msgid "I cowardly refuse to ghost myself."
-msgstr "Codardamente mi rifiuto di terminare una connessione \"fantasma\" (ghost)."
+msgstr ""
+"Codardamente mi rifiuto di terminare una connessione \"fantasma\" (ghost)."
 
-#: plugin.py:513
-msgid "You must set supybot.plugins.Services.NickServ before I'm able to ghost a nick."
-msgstr "È necessario impostare la variabile supybot.plugins.Services.NickServ affinché possa riprendermi il nick (ghost)."
+#: plugin.py:558
+msgid ""
+"You must set supybot.plugins.Services.NickServ before I'm able to ghost a "
+"nick."
+msgstr ""
+"È necessario impostare la variabile supybot.plugins.Services.NickServ "
+"affinché possa riprendermi il nick (ghost)."
 
-#: plugin.py:519
-#, docstring
+#: plugin.py:563
+msgid ""
+"<text>\n"
+"\n"
+"        Sends the <text> to NickServ. For example, to register to NickServ\n"
+"        on Atheme, use: @nickserv REGISTER <password> <email-address>."
+msgstr ""
+
+#: plugin.py:572
+#, fuzzy
+msgid ""
+"You must set supybot.plugins.Services.NickServ before I'm able to message "
+"NickServ"
+msgstr ""
+"È necessario impostare la variabile supybot.plugins.Services.NickServ "
+"affinché possa riprendermi il nick (ghost)."
+
+#: plugin.py:577
+msgid ""
+"<text>\n"
+"\n"
+"        Sends the <text> to ChanServ. For example, to register a channel\n"
+"        on Atheme, use: @chanserv REGISTER <#channel>."
+msgstr ""
+
+#: plugin.py:586
+#, fuzzy
+msgid ""
+"You must set supybot.plugins.Services.ChanServ before I'm able to message "
+"ChanServ"
+msgstr ""
+"È necessario impostare la variabile supybot.plugins.Services.ChanServ "
+"affinché possa inviare il comando %s."
+
+#: plugin.py:593
 msgid ""
 "<nick> [<password>]\n"
 "\n"
-"        Sets the NickServ password for <nick> to <password>.  If <password> is\n"
+"        Sets the NickServ password for <nick> to <password>.  If <password> "
+"is\n"
 "        not given, removes <nick> from the configured nicks.\n"
 "        "
 msgstr ""
@@ -259,25 +329,68 @@ msgstr ""
 "        non è specificata, rimuove <nick> dai nick configurati.\n"
 "        "
 
-#: plugin.py:529
+#: plugin.py:605
 msgid "That nick was not configured with a password."
 msgstr "Questo nick non è stato configurato con una password."
 
-#: plugin.py:540
-#, docstring
+#: plugin.py:618
 msgid ""
 "takes no arguments\n"
 "\n"
-"        Returns the nicks that this plugin is configured to identify and ghost\n"
+"        Returns the nicks that this plugin is configured to identify and "
+"ghost\n"
 "        with.\n"
 "        "
 msgstr ""
 "non necessita argomenti\n"
 "\n"
-"        Restituisce i nick per i quali questo plugin è configurato per l'identificazione e il ghost.\n"
+"        Restituisce i nick per i quali questo plugin è configurato per "
+"l'identificazione e il ghost.\n"
 "        "
 
-#: plugin.py:550
+#: plugin.py:628
 msgid "I'm not currently configured for any nicks."
 msgstr "Al momento non sono configurato per alcun nick."
 
+#: plugin.py:635
+msgid "Experimental IRC extensions are not enabled for this bot."
+msgstr ""
+
+#: plugin.py:641
+msgid "This network does not support draft/account-registration."
+msgstr ""
+
+#: plugin.py:647
+msgid "This network does not support labeled-response."
+msgstr ""
+
+#: plugin.py:653
+msgid "This bot is already authenticated on the network."
+msgstr ""
+
+#: plugin.py:658
+msgid ""
+"[<network>] <password> [<email>]\n"
+"\n"
+"        Uses the experimental REGISTER command to create an account for the "
+"bot\n"
+"        on the <network>, using the <password> and the <email> if provided.\n"
+"        Some networks may require the email.\n"
+"        You may need to use the 'services verify' command afterward to "
+"confirm\n"
+"        your email address."
+msgstr ""
+
+#: plugin.py:672
+msgid "This network requires an email address to register."
+msgstr ""
+
+#: plugin.py:686
+msgid ""
+"[<network>] <account> <code>\n"
+"\n"
+"        If the <network> requires a verification code, you need to call "
+"this\n"
+"        command with the code the server gave you to finish the\n"
+"        registration."
+msgstr ""

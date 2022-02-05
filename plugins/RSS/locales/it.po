@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2012-06-03 04:49+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,113 +10,212 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
-#: config.py:49
-#, docstring
+#: config.py:50
 msgid "Valid values include 'asInFeed', 'oldestFirst', 'newestFirst'."
 msgstr "I valori validi sono 'asInFeed', 'oldestFirst', 'newestFirst'."
 
-#: config.py:54
-#, fuzzy
-msgid ""
-"Determines whether the bot will bold the title of the feed when\n"
-"    it announces news."
-msgstr ""
-"Determina se il bot mostrerà il titolo del feed in grassetto quando annuncia nuove notizie."
-
 #: config.py:57
+msgid ""
+"Determines what feeds should be accessible as\n"
+"    commands."
+msgstr "Determina quali feed siano accessibili come comandi."
+
+#: config.py:64
 msgid ""
 "Determines what string is\n"
 "    used to separate headlines in new feeds."
 msgstr ""
 "Determina quale stringa utilizzare per separare i titoli nei nuovi feed."
 
-#: config.py:60
-#, fuzzy
-msgid ""
-"Determines what\n"
-"    prefix is prepended (if any) to the news item announcements made in the\n"
-"    channel."
+#: config.py:67
+msgid "$date: $title <$link>"
 msgstr ""
-"Determina quale prefisso (eventuale) utilizzare per annunciare le notizie in canale."
 
-#: config.py:60
-#, fuzzy
-msgid "News from "
-msgstr "Nuove notizie da "
+#: config.py:67
+msgid ""
+"The format the bot\n"
+"    will use for displaying headlines of a RSS feed that is triggered\n"
+"    manually. In addition to fields defined by feedparser ($published\n"
+"    (the entry date), $title, $link, $description, $id, etc.), the "
+"following\n"
+"    variables can be used: $feed_name, $date (parsed date, as defined in\n"
+"    supybot.reply.format.time)"
+msgstr ""
 
-#: config.py:64
+#: config.py:74
+msgid "News from $feed_name: $title <$link>"
+msgstr ""
+
+#: config.py:75
+msgid ""
+"The format the bot will use for displaying headlines of a RSS feed\n"
+"    that is announced. See supybot.plugins.RSS.format for the available\n"
+"    variables."
+msgstr ""
+
+#: config.py:83
 msgid ""
 "Determines which RSS feeds\n"
 "    should be announced in the channel; valid input is a list of strings\n"
 "    (either registered RSS feeds or RSS feed URLs) separated by spaces."
 msgstr ""
-"Determina quali feed RSS sono annunciati in canale; una voce valida è un elenco di stringhe\n"
+"Determina quali feed RSS sono annunciati in canale; una voce valida è un "
+"elenco di stringhe\n"
 "    (sia di feed registrati sia di URL di feed) separate da spazi."
 
-#: config.py:68
+#: config.py:87
 msgid ""
 "Indicates how many seconds the bot will\n"
-"    wait between retrieving RSS feeds; requests made within this period will\n"
+"    wait between retrieving RSS feeds; requests made within this period "
+"will\n"
 "    return cached results."
 msgstr ""
-"Indica ogni quanti secondi il bot recupererà i feed RSS; le richieste effettuate\n"
+"Indica ogni quanti secondi il bot recupererà i feed RSS; le richieste "
+"effettuate\n"
 "    entro questo periodo verranno memorizzate nella cache."
 
-#: config.py:72
+#: config.py:91
+#, fuzzy
 msgid ""
 "Determines whether feed items should be\n"
-"    sorted by their update timestamp or kept in the same order as they appear\n"
-"    in a feed."
+"    sorted by their publication/update timestamp or kept in the same order "
+"as\n"
+"    they appear in a feed."
 msgstr ""
-"Determina se gli elementi del feed debbano essere ordinati per data di aggiornamento\n"
+"Determina se gli elementi del feed debbano essere ordinati per data di "
+"aggiornamento\n"
 "    o mantenuti nello stesso ordine con il quale appaiono."
 
-#: config.py:76
+#: config.py:95
 msgid ""
-"Determines what feeds should be accessible as\n"
-"    commands."
+"Determines whether announces will be sent\n"
+"    as notices instead of privmsgs."
 msgstr ""
-"Determina quali feed siano accessibili come comandi."
 
-#: config.py:79
+#: config.py:98
 msgid ""
-"Determines whether the bot will list the link\n"
-"    along with the title of the feed when the rss command is called.\n"
-"    supybot.plugins.RSS.announce.showLinks affects whether links will be\n"
-"    listed when a feed is automatically announced."
+"Indicates how many new news entries may\n"
+"    be sent at the same time. Extra entries will be discarded."
 msgstr ""
-"Determina se il bot elencherà i link con il titolo del feed quando viene richiamato\n"
-"    il comando \"rss\". La variabile supybot.plugins.RSS.announce.showLinks determina\n"
-"    se i link saranno mostrati quando un feed è annunciato automaticamente."
 
-#: config.py:100
+#: config.py:104
 msgid ""
-"Determines whether the bot will list the link\n"
-"    along with the title of the feed when a feed is automatically\n"
-"    announced."
+"Indicates how many headlines an rss feed\n"
+"    will output by default, if no number is provided."
 msgstr ""
-"Determina se il bot elencherà i link con il titolo del feed quando questo è annunciato automaticamente."
 
-#: plugin.py:62
-#, docstring
+#: config.py:107
 msgid ""
-"This plugin is useful both for announcing updates to RSS feeds in a\n"
-"    channel, and for retrieving the headlines of RSS feeds via command.  Use\n"
-"    the \"add\" command to add feeds to this plugin, and use the \"announce\"\n"
-"    command to determine what feeds should be announced in a given channel."
+"Indicates how many headlines an rss feed\n"
+"    will output when it is first added to announce for a channel."
 msgstr ""
-"Questo plugin è utile sia per annunciare feed RSS in un canale, sia per recuperare\n"
-"    i titoli dei feed tramite un comando. Utilizza il comando \"add\" per aggiungere\n"
-"    feed e \"announce\" per determinare quali feed devono essere annunciati in un dato canale."
 
-#: plugin.py:304
-#, docstring
+#: config.py:110
+msgid ""
+"Space separated list of \n"
+"    strings, lets you filter headlines to those containing one or more "
+"items\n"
+"    in this whitelist."
+msgstr ""
+
+#: config.py:114
+msgid ""
+"Space separated list of \n"
+"    strings, lets you filter headlines to those not containing any items\n"
+"    in this blacklist."
+msgstr ""
+
+#: config.py:127
+msgid ""
+"Feed-specific format. Defaults to\n"
+"            supybot.plugins.RSS.format if empty."
+msgstr ""
+
+#: config.py:130
+msgid ""
+"Feed-specific announce format.\n"
+"            Defaults to supybot.plugins.RSS.announceFormat if empty."
+msgstr ""
+
+#: config.py:133
+msgid ""
+"If set to a non-zero\n"
+"            value, overrides supybot.plugins.RSS.waitPeriod for this\n"
+"            particular feed."
+msgstr ""
+
+#: plugin.py:140
+msgid ""
+"[<number of headlines>]\n"
+"\n"
+"        Reports the titles for %s at the RSS feed %u.  If\n"
+"        <number of headlines> is given, returns only that many headlines.\n"
+"        RSS feeds are only looked up every supybot.plugins.RSS.waitPeriod\n"
+"        seconds, which defaults to 1800 (30 minutes) since that's what most\n"
+"        websites prefer."
+msgstr ""
+
+#: plugin.py:170
 msgid "Return feed items, sorted according to sortFeedItems."
 msgstr "Riporta gli elementi del feed in base a sortFeedItems."
 
-#: plugin.py:358
-#, docstring
+#: plugin.py:190
+msgid ""
+"\n"
+"    This plugin is useful both for announcing updates to RSS feeds in a\n"
+"    channel, and for retrieving the headlines of RSS feeds via command.  "
+"Use\n"
+"    the \"add\" command to add feeds to this plugin, and use the \"announce"
+"\"\n"
+"    command to determine what feeds should be announced in a given channel.\n"
+"\n"
+"    Basic usage\n"
+"    ^^^^^^^^^^^\n"
+"\n"
+"    1. Add a feed using\n"
+"       ``@rss add limnoria https://github.com/progval/Limnoria/tags.atom``.\n"
+"\n"
+"       * This is RSS feed of Limnoria's stable releases.\n"
+"       * You can now check the latest news from the feed with "
+"``@limnoria``.\n"
+"\n"
+"    2. To have new news automatically announced on the channel, use\n"
+"       ``@rss announce add Limnoria``.\n"
+"\n"
+"    To add another feed, simply replace limnoria and the address using name\n"
+"    of the feed and address of the feed. For example, YLE News:\n"
+"\n"
+"    1. ``@rss add yle http://yle.fi/uutiset/rss/uutiset.rss?osasto=news``\n"
+"    2. ``@rss announce add yle``\n"
+"\n"
+"    News on their own lines\n"
+"    ^^^^^^^^^^^^^^^^^^^^^^^\n"
+"\n"
+"    If you want the feed topics to be on their own lines instead of being "
+"separated by\n"
+"    the separator which you have configured you can set `reply.onetoone` to "
+"False.\n"
+"\n"
+"    Please first read the help for that configuration variable\n"
+"\n"
+"    ``@config help reply.onetoone``\n"
+"\n"
+"    and understand what it says and then you can do\n"
+"\n"
+"    ``@config reply.onetoone False``\n"
+"\n"
+"    "
+msgstr ""
+
+#: plugin.py:278
+msgid "I already have a command in this plugin named %s."
+msgstr ""
+
+#: plugin.py:284
+msgid "I already have a feed with that URL named %s."
+msgstr ""
+
+#: plugin.py:508
 msgid ""
 "<name> <url>\n"
 "\n"
@@ -126,11 +225,11 @@ msgid ""
 msgstr ""
 "<nome> <url>\n"
 "\n"
-"        Aggiunge un comando a questo plugin che cercherà i feed RSS all'URL specificato.\n"
+"        Aggiunge un comando a questo plugin che cercherà i feed RSS all'URL "
+"specificato.\n"
 "        "
 
-#: plugin.py:369
-#, docstring
+#: plugin.py:521
 msgid ""
 "<name>\n"
 "\n"
@@ -143,12 +242,11 @@ msgstr ""
 "        Rimuove il comando per cercare feed RSS con <nome>.\n"
 "        "
 
-#: plugin.py:375
+#: plugin.py:528
 msgid "That's not a valid RSS feed command name."
 msgstr "Questo non è un comando di feed RSS valido."
 
-#: plugin.py:386
-#, docstring
+#: plugin.py:547
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -158,54 +256,78 @@ msgid ""
 msgstr ""
 "[<canale>]\n"
 "\n"
-"            Restituisce l'elenco dei feed annunciati in <canale>. <canale> è\n"
-"            necessario solo se il messaggio non viene inviato nel canale stesso.\n"
+"            Restituisce l'elenco dei feed annunciati in <canale>. <canale> "
+"è\n"
+"            necessario solo se il messaggio non viene inviato nel canale "
+"stesso.\n"
 "            "
 
-#: plugin.py:393
+#: plugin.py:556
 msgid "I am currently not announcing any feeds."
 msgstr "Attualmente non sto annunciando alcun feed."
 
-#: plugin.py:398
-#, docstring
+#: plugin.py:561
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
-"            Adds the list of feeds to the current list of announced feeds in\n"
-"            <channel>.  Valid feeds include the names of registered feeds as\n"
+"            Adds the list of feeds to the current list of announced feeds "
+"in\n"
+"            <channel>.  Valid feeds include the names of registered feeds "
+"as\n"
 "            well as URLs for RSS feeds.  <channel> is only necessary if the\n"
 "            message isn't sent in the channel itself.\n"
 "            "
 msgstr ""
 "[<canale>] <nome|url> [<nome|url> ...]\n"
 "\n"
-"            Aggiunge l'elenco dei feed all'attuale elenco di quelli da annunciare in\n"
-"            <canale>. Valori validi includono sia i nomi dei feed registrati sia i loro URL.\n"
-"            <canale> è necessario solo se il messaggio non viene inviato nel canale stesso.\n"
+"            Aggiunge l'elenco dei feed all'attuale elenco di quelli da "
+"annunciare in\n"
+"            <canale>. Valori validi includono sia i nomi dei feed registrati "
+"sia i loro URL.\n"
+"            <canale> è necessario solo se il messaggio non viene inviato nel "
+"canale stesso.\n"
 "            "
 
-#: plugin.py:416
-#, docstring
+#: plugin.py:572
+msgid "These feeds are unknown: %L"
+msgstr ""
+
+#: plugin.py:593
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
-"            Removes the list of feeds from the current list of announced feeds\n"
-"            in <channel>.  Valid feeds include the names of registered feeds as\n"
+"            Removes the list of feeds from the current list of announced "
+"feeds\n"
+"            in <channel>.  Valid feeds include the names of registered feeds "
+"as\n"
 "            well as URLs for RSS feeds.  <channel> is only necessary if the\n"
 "            message isn't sent in the channel itself.\n"
 "            "
 msgstr ""
 "[<canale>] <nome|url> [<nome|url> ...]\n"
 "\n"
-"            Rimuove l'elenco dei feed dall'attuale elenco dei feed da annunciare in.\n"
-"            <canale>. Valori validi includono sia i nomi dei feed registrati sia i loro URL.\n"
-"            <canale> è necessario solo se il messaggio non viene inviato nel canale stesso.\n"
+"            Rimuove l'elenco dei feed dall'attuale elenco dei feed da "
+"annunciare in.\n"
+"            <canale>. Valori validi includono sia i nomi dei feed registrati "
+"sia i loro URL.\n"
+"            <canale> è necessario solo se il messaggio non viene inviato nel "
+"canale stesso.\n"
 "            "
 
-#: plugin.py:434
-#, docstring
+#: plugin.py:618
 msgid ""
-"<url> [<number of headlines>]\n"
+"<name|url>\n"
+"\n"
+"            Returns a list of channels that the given feed name or URL is "
+"being\n"
+"            announced to.\n"
+"            "
+msgstr ""
+
+#: plugin.py:642
+#, fuzzy
+msgid ""
+"<name|url> [<number of headlines>]\n"
 "\n"
 "        Gets the title components of the given RSS feed.\n"
 "        If <number of headlines> is given, return only that many headlines.\n"
@@ -217,12 +339,15 @@ msgstr ""
 "        Se <numero di titoli> è fornito, restituisce solo quella quantità.\n"
 "        "
 
-#: plugin.py:447
+#: plugin.py:658
 msgid "Couldn't get RSS feed."
 msgstr "Impossibile recuperare il feed RSS."
 
-#: plugin.py:462
-#, docstring
+#: plugin.py:661
+msgid " Parser error: "
+msgstr ""
+
+#: plugin.py:677
 msgid ""
 "<url|feed>\n"
 "\n"
@@ -236,11 +361,77 @@ msgstr ""
 "        URL, descrizione e data dell'ultimo aggiornamento.\n"
 "        "
 
-#: plugin.py:475
+#: plugin.py:692
 msgid "I couldn't retrieve that RSS feed."
 msgstr "Non riesco a recuperare questo feed RSS."
 
-#: plugin.py:488
+#: plugin.py:700
+msgid "time unavailable"
+msgstr ""
+
+#: plugin.py:701 plugin.py:702 plugin.py:703
+msgid "unavailable"
+msgstr ""
+
+#: plugin.py:705
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr "Titolo: %s;  URL: %u;  Descrizione: %s;  Ultimo aggiornamento: %s."
 
+#, fuzzy
+#~ msgid ""
+#~ "Determines whether the bot will bold the title of the feed when\n"
+#~ "    it announces news."
+#~ msgstr ""
+#~ "Determina se il bot mostrerà il titolo del feed in grassetto quando "
+#~ "annuncia nuove notizie."
+
+#, fuzzy
+#~ msgid ""
+#~ "Determines what\n"
+#~ "    prefix is prepended (if any) to the news item announcements made in "
+#~ "the\n"
+#~ "    channel."
+#~ msgstr ""
+#~ "Determina quale prefisso (eventuale) utilizzare per annunciare le notizie "
+#~ "in canale."
+
+#, fuzzy
+#~ msgid "News from "
+#~ msgstr "Nuove notizie da "
+
+#~ msgid ""
+#~ "Determines whether the bot will list the link\n"
+#~ "    along with the title of the feed when the rss command is called.\n"
+#~ "    supybot.plugins.RSS.announce.showLinks affects whether links will be\n"
+#~ "    listed when a feed is automatically announced."
+#~ msgstr ""
+#~ "Determina se il bot elencherà i link con il titolo del feed quando viene "
+#~ "richiamato\n"
+#~ "    il comando \"rss\". La variabile supybot.plugins.RSS.announce."
+#~ "showLinks determina\n"
+#~ "    se i link saranno mostrati quando un feed è annunciato "
+#~ "automaticamente."
+
+#~ msgid ""
+#~ "Determines whether the bot will list the link\n"
+#~ "    along with the title of the feed when a feed is automatically\n"
+#~ "    announced."
+#~ msgstr ""
+#~ "Determina se il bot elencherà i link con il titolo del feed quando questo "
+#~ "è annunciato automaticamente."
+
+#~ msgid ""
+#~ "This plugin is useful both for announcing updates to RSS feeds in a\n"
+#~ "    channel, and for retrieving the headlines of RSS feeds via command.  "
+#~ "Use\n"
+#~ "    the \"add\" command to add feeds to this plugin, and use the "
+#~ "\"announce\"\n"
+#~ "    command to determine what feeds should be announced in a given "
+#~ "channel."
+#~ msgstr ""
+#~ "Questo plugin è utile sia per annunciare feed RSS in un canale, sia per "
+#~ "recuperare\n"
+#~ "    i titoli dei feed tramite un comando. Utilizza il comando \"add\" per "
+#~ "aggiungere\n"
+#~ "    feed e \"announce\" per determinare quali feed devono essere "
+#~ "annunciati in un dato canale."

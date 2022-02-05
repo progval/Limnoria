@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-06-15 13:37+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,8 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
-#: config.py:46
+#: config.py:47
 msgid ""
 "Determines whether the bot will maintain the\n"
 "    channel limit to be slightly above the current number of people in the\n"
@@ -21,7 +20,7 @@ msgstr ""
 "    del numero di persone attualmente presenti, in modo da rendere più\n"
 "    difficili gli attacchi di cloni o droni."
 
-#: config.py:50
+#: config.py:51
 msgid ""
 "Determines the minimum number of free\n"
 "    spots that will be saved when limits are being enforced.  This should\n"
@@ -31,32 +30,36 @@ msgstr ""
 "    imposti i limiti. Ciò non dovrebbe essere inferiore al valore di\n"
 "    supybot.plugins.Limiter.limit.maximumExcess."
 
-#: config.py:54
+#: config.py:55
 msgid ""
 "Determines the maximum number of free spots\n"
-"    that will be saved when limits are being enforced.  This should always be\n"
+"    that will be saved when limits are being enforced.  This should always "
+"be\n"
 "    larger than supybot.plugins.Limiter.limit.minimumExcess."
 msgstr ""
-"Determina il numero massimo di posti liberi che verrà salvato quando saranno\n"
+"Determina il numero massimo di posti liberi che verrà salvato quando "
+"saranno\n"
 "    imposti i limiti. Ciò dovrebbe essere sempre maggiore del valore di\n"
 "    supybot.plugins.Limiter.limit.minimumExcess."
 
-#: plugin.py:39
-#, docstring
+#: plugin.py:40
 msgid ""
 "In order to use this plugin, its config values need to be properly\n"
 "    setup.  supybot.plugins.Limiter.enable needs to be set to True and\n"
 "    supybot.plugins.Limiter.{maximumExcess,minimumExcess} should be set to\n"
-"    values appropriate to your channel (if the defaults aren't satisfactory).\n"
+"    values appropriate to your channel (if the defaults aren't "
+"satisfactory).\n"
 "    Once these are set, and someone enters/leaves the channel, Supybot will\n"
 "    start setting the proper +l modes.\n"
 "    "
 msgstr ""
-"Per utilizzare questo plugin, è necessario configurare correttamente i valori.\n"
+"Per utilizzare questo plugin, è necessario configurare correttamente i "
+"valori.\n"
 "    supybot.plugins.Limiter.enable deve essere impostato a True e\n"
-"    supybot.plugins.Limiter.{maximumExcess,minimumExcess} va impostato con i\n"
+"    supybot.plugins.Limiter.{maximumExcess,minimumExcess} va impostato con "
+"i\n"
 "    valori appropriati al canale (se i predefiniti non sono soddisfacenti).\n"
-"    Una volta definiti, e qualcuno entra o esce dal canale, Supybot imposterà\n"
+"    Una volta definiti, e qualcuno entra o esce dal canale, Supybot "
+"imposterà\n"
 "    il mode +l corretto.\n"
 "    "
-

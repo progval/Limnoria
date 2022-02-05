@@ -5,23 +5,23 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: config.py:47
+#: config.py:48
 msgid ""
 "Determines whether this plugin is enabled in a\n"
 "    given channel."
 msgstr ""
 
-#: config.py:54
+#: config.py:55
 msgid ""
 "Determines what nicks the bot will consider to\n"
 "    be immune from enforcement.  These nicks will not even have their actions\n"
@@ -29,7 +29,7 @@ msgid ""
 "    will be in this list."
 msgstr ""
 
-#: plugin.py:39
+#: plugin.py:40
 #, docstring
 msgid ""
 "Prevents users from doing things they are not supposed to do on a channel,\n"

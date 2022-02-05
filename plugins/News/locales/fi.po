@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: News plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:29+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 11:41+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,19 +17,19 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: plugin.py:57
+#: plugin.py:58
 msgid "%s (Subject: %q, added by %s on %s)"
 msgstr "%s (Aihe: %q, lisännyt %s kanavalla %s)"
 
-#: plugin.py:61
+#: plugin.py:62
 msgid "%s (Subject: %q, added by %s on %s, expires at %s)"
 msgstr "%s (Aihe: %q, lisännyt %s kanavalla %s, vanhenee %s)"
 
-#: plugin.py:109
+#: plugin.py:110
 msgid "This plugin provides a means of maintaining News for a channel."
 msgstr "Tämä plugin sallii uutisten ylläpidon kanavalla."
 
-#: plugin.py:121
+#: plugin.py:122
 msgid ""
 "[<channel>] <expires> <subject>: <text>\n"
 "\n"
@@ -50,11 +50,11 @@ msgstr ""
 "        kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:133
+#: plugin.py:134
 msgid "(News item #%i added)"
 msgstr "(Uutisaihe #%i lisätty)"
 
-#: plugin.py:138
+#: plugin.py:139
 msgid ""
 "[<channel>] [<id>]\n"
 "\n"
@@ -76,19 +76,19 @@ msgstr ""
 "        kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:149
+#: plugin.py:150
 msgid "News for %s: %s"
 msgstr "Uutisia %s::lle %s"
 
-#: plugin.py:152
+#: plugin.py:153
 msgid "No news for %s."
 msgstr "Ei uutisia %s:lle."
 
-#: plugin.py:158 plugin.py:172 plugin.py:188 plugin.py:204
+#: plugin.py:159 plugin.py:173 plugin.py:189 plugin.py:205
 msgid "news item id"
 msgstr "uutisaihe id"
 
-#: plugin.py:163
+#: plugin.py:164
 msgid ""
 "[<channel>] <id>\n"
 "\n"
@@ -102,7 +102,7 @@ msgstr ""
 "        vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:177
+#: plugin.py:178
 msgid ""
 "[<channel>] <id> <regexp>\n"
 "\n"
@@ -123,7 +123,7 @@ msgstr ""
 "        kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:193
+#: plugin.py:194
 msgid ""
 "[<channel>] [<id>]\n"
 "\n"
@@ -142,10 +142,10 @@ msgstr ""
 "        vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:209
+#: plugin.py:210
 msgid "Old news for %s: %s"
 msgstr "Vanhoja uutisia %s:lle %s"
 
-#: plugin.py:212
+#: plugin.py:213
 msgid "No old news for %s."
 msgstr "Ei vanhoja uutisia %s:lle."

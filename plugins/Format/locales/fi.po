@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Format plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 11:29+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 11:40+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: plugin.py:41
+#: plugin.py:42
 msgid ""
 "Provides some commands for formatting text, such as making text bold or\n"
 "    capitalized."
@@ -25,7 +25,7 @@ msgstr ""
 "Tarjoaa komentoja tekstin muotoiluun, vaikkapa tekstin korostamiseen tai\n"
 " kirjainkoon muuttamiseen."
 
-#: plugin.py:45
+#: plugin.py:46
 msgid ""
 "<text>\n"
 "\n"
@@ -37,17 +37,7 @@ msgstr ""
 "        Palautttaa <tekstin> korostettuna.\n"
 "        "
 
-#: plugin.py:54
-msgid ""
-"<text>\n"
-"\n"
-"        Strips bold, underline, and colors from <text>."
-msgstr ""
-"<teksti>\n"
-"\n"
-" Riisuu <tekstistä> korostuksen, alleviivauksen ja värit."
-
-#: plugin.py:61
+#: plugin.py:55
 msgid ""
 "<text>\n"
 "\n"
@@ -59,7 +49,7 @@ msgstr ""
 "        Palauttaa <tekstin> käänteis-videona..\n"
 "        "
 
-#: plugin.py:70
+#: plugin.py:64
 msgid ""
 "<text>\n"
 "\n"
@@ -71,7 +61,7 @@ msgstr ""
 "        Palauttaa <tekstin> alleviivattuna.\n"
 "        "
 
-#: plugin.py:79
+#: plugin.py:73
 msgid ""
 "<foreground> [<background>] <text>\n"
 "\n"
@@ -86,7 +76,7 @@ msgstr ""
 "        <tausta> (jos annettu)\n"
 "        "
 
-#: plugin.py:89
+#: plugin.py:83
 msgid ""
 "<separator> <string 1> [<string> ...]\n"
 "\n"
@@ -98,7 +88,7 @@ msgstr ""
 "        Yhdistää kaikki parametrit yhteen <erottajalla>.\n"
 "        "
 
-#: plugin.py:98
+#: plugin.py:92
 msgid ""
 "<chars to translate> <chars to replace those with> <text>\n"
 "\n"
@@ -116,7 +106,7 @@ msgstr ""
 "        pituisia.\n"
 "        "
 
-#: plugin.py:105
+#: plugin.py:99
 msgid ""
 "<chars to translate> must be the same length as <chars to replace those "
 "with>."
@@ -124,7 +114,7 @@ msgstr ""
 "<Käännettävien merkkejen> täytyy olla saman pituisia, kuin <merkit, joilla "
 "ne korjataan>."
 
-#: plugin.py:112
+#: plugin.py:106
 msgid ""
 "<substring to translate> <substring to replace it with> <text>\n"
 "\n"
@@ -139,7 +129,7 @@ msgstr ""
 "        <alimerkkijonolla, joka korvaa sen> <tekstissä>.\n"
 "        "
 
-#: plugin.py:121
+#: plugin.py:115
 msgid ""
 "<text>\n"
 "\n"
@@ -151,7 +141,7 @@ msgstr ""
 "        Palauttaa <tekstin> isoilla kirjaimilla.\n"
 "        "
 
-#: plugin.py:130
+#: plugin.py:124
 msgid ""
 "<text>\n"
 "\n"
@@ -163,7 +153,7 @@ msgstr ""
 "        Palauttaa <tekstin> pienillä kirjaimilla.\n"
 "        "
 
-#: plugin.py:139
+#: plugin.py:133
 msgid ""
 "<text>\n"
 "\n"
@@ -175,7 +165,7 @@ msgstr ""
 "        Palauttaa <tekstin> aktivoituna.\n"
 "        "
 
-#: plugin.py:148
+#: plugin.py:142
 msgid ""
 "<text>\n"
 "\n"
@@ -187,7 +177,7 @@ msgstr ""
 "        Palauttaa <tekstin> otsikoituna.\n"
 "        "
 
-#: plugin.py:157
+#: plugin.py:151
 msgid ""
 "<text>\n"
 "\n"
@@ -199,7 +189,7 @@ msgstr ""
 "        Palauttaa tekstin kahden lainausmerkin sisällä.\n"
 "        "
 
-#: plugin.py:166
+#: plugin.py:160
 msgid ""
 "<string 1> <string 2>\n"
 "\n"
@@ -218,7 +208,7 @@ msgstr ""
 "        liitoksen poistamiksi.\n"
 "        "
 
-#: plugin.py:177
+#: plugin.py:171
 msgid ""
 "<size> <text>\n"
 "\n"
@@ -237,7 +227,7 @@ msgstr ""
 "        merkkiä <tekstin> lopusta.\n"
 "        "
 
-#: plugin.py:188
+#: plugin.py:182
 msgid ""
 "<number> <text>\n"
 "\n"
@@ -253,7 +243,7 @@ msgstr ""
 "        on \"foo bar baz\" ja <numero> on 2, palauttaa \"bar\" :in.\".\n"
 "        "
 
-#: plugin.py:201
+#: plugin.py:195
 msgid ""
 "<format string> [<arg> ...]\n"
 "\n"
@@ -273,6 +263,15 @@ msgstr ""
 "        merkkiketjuja.\n"
 "        "
 
-#: plugin.py:215
+#: plugin.py:209
 msgid "Not enough arguments for the format string."
 msgstr "Ei tarpeeksi parametrejä formaatti merkkiketjulle."
+
+#~ msgid ""
+#~ "<text>\n"
+#~ "\n"
+#~ "        Strips bold, underline, and colors from <text>."
+#~ msgstr ""
+#~ "<teksti>\n"
+#~ "\n"
+#~ " Riisuu <tekstistä> korostuksen, alleviivauksen ja värit."

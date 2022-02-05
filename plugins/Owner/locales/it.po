@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2012-03-15 23:59+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,13 +10,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: plugin.py:85
+msgid ""
+"Owner-only commands for core Supybot. This is a core Supybot module\n"
+"    that should not be removed!"
+msgstr ""
 
-#: plugin.py:273
-#, docstring
+#: plugin.py:319
+msgid ""
+"If the given message is a command, triggers Limnoria's\n"
+"        command-dispatching for that command.\n"
+"\n"
+"        Takes the same arguments as ``doPrivmsg`` would, but ``msg`` can\n"
+"        potentially be an artificial message synthesized in doBatch\n"
+"        from a multiline batch.\n"
+"\n"
+"        Usually, a command is a single message, so ``payload=msg."
+"params[0]``\n"
+"        However, when ``msg`` is part of a multiline message, the payload\n"
+"        is the concatenation of multiple messages.\n"
+"        See <https://ircv3.net/specs/extensions/multiline>.\n"
+"        "
+msgstr ""
+
+#: plugin.py:372
 msgid ""
 "<text>\n"
 "\n"
-"        Logs <text> to the global Supybot log at critical priority.  Useful for\n"
+"        Logs <text> to the global Supybot log at critical priority.  Useful "
+"for\n"
 "        marking logfiles for later searching.\n"
 "        "
 msgstr ""
@@ -26,8 +48,7 @@ msgstr ""
 "        Utile per contrassegnare i file di log per ricerche successive.\n"
 "        "
 
-#: plugin.py:283
-#, docstring
+#: plugin.py:382
 msgid ""
 "<text>\n"
 "\n"
@@ -37,29 +58,33 @@ msgid ""
 msgstr ""
 "<testo>\n"
 "\n"
-"        Invia <testo> a tutti i canali in cui il bot è attualmente presente e non è lobotomizzato.\n"
+"        Invia <testo> a tutti i canali in cui il bot è attualmente presente "
+"e non è lobotomizzato.\n"
 "        "
 
-#: plugin.py:298
-#, docstring
+#: plugin.py:403
 msgid ""
 "[--remove] <command> [<plugin>]\n"
 "\n"
 "        Sets the default plugin for <command> to <plugin>.  If --remove is\n"
-"        given, removes the current default plugin for <command>.  If no plugin\n"
-"        is given, returns the current default plugin set for <command>.  See\n"
+"        given, removes the current default plugin for <command>.  If no "
+"plugin\n"
+"        is given, returns the current default plugin set for <command>.  "
+"See\n"
 "        also, supybot.commands.defaultPlugins.importantPlugins.\n"
 "        "
 msgstr ""
 "[--remove] <comando> [<plugin>]\n"
 "\n"
-"        Imposta il plugin predefinito per <comando>. Se --remove è specificato, rimuove\n"
-"        l'attuale plugin per <comando>. Se non viene fornito alcun plugin, riporta quello\n"
-"        impostato per <comando>. Vedi anche supybot.commands.defaultPlugins.importantPlugins.\n"
+"        Imposta il plugin predefinito per <comando>. Se --remove è "
+"specificato, rimuove\n"
+"        l'attuale plugin per <comando>. Se non viene fornito alcun plugin, "
+"riporta quello\n"
+"        impostato per <comando>. Vedi anche supybot.commands.defaultPlugins."
+"importantPlugins.\n"
 "        "
 
-#: plugin.py:336
-#, docstring
+#: plugin.py:441
 msgid ""
 "<string to be sent to the server>\n"
 "\n"
@@ -71,24 +96,30 @@ msgstr ""
 "        Invia la data stringa direttamente al server.\n"
 "        "
 
-#: plugin.py:350
-#, docstring
+#: plugin.py:455
+#, fuzzy
 msgid ""
 "[<text>]\n"
 "\n"
-"        Exits the bot with the QUIT message <text>.  If <text> is not given,\n"
-"        the default quit message (supybot.plugins.Owner.quitMsg) will be used.\n"
-"        If there is no default quitMsg set, your nick will be used.\n"
+"        Exits the bot with the QUIT message <text>.  If <text> is not "
+"given,\n"
+"        the default quit message (supybot.plugins.Owner.quitMsg) will be "
+"used.\n"
+"        If there is no default quitMsg set, your nick will be used. The "
+"standard\n"
+"        substitutions ($version, $nick, etc.) are all handled "
+"appropriately.\n"
 "        "
 msgstr ""
 "[<testo>]\n"
 "\n"
-"        Fa uscire il bot con un certo messaggio di QUIT. Se <testo> non è specificato verrà\n"
-"        utilizzato quello configurato in supybot.plugins.Owner.quitMsg, altrimenti il tuo nick.\n"
+"        Fa uscire il bot con un certo messaggio di QUIT. Se <testo> non è "
+"specificato verrà\n"
+"        utilizzato quello configurato in supybot.plugins.Owner.quitMsg, "
+"altrimenti il tuo nick.\n"
 "        "
 
-#: plugin.py:366
-#, docstring
+#: plugin.py:473
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -99,29 +130,33 @@ msgstr ""
 "non necessita argomenti\n"
 "\n"
 "        Esegue tutti i periodici \"flusher\" in world.flushers. Ciò include\n"
-"        il salvataggio su disco di tutti i log e tutte le modifiche di configurazione.\n"
+"        il salvataggio su disco di tutti i log e tutte le modifiche di "
+"configurazione.\n"
 "        "
 
-#: plugin.py:376
-#, docstring
+#: plugin.py:483
 msgid ""
 "[<level>]\n"
 "\n"
-"        Runs the standard upkeep stuff (flushes and gc.collects()).  If given\n"
+"        Runs the standard upkeep stuff (flushes and gc.collects()).  If "
+"given\n"
 "        a level, runs that level of upkeep (currently, the only supported\n"
-"        level is \"high\", which causes the bot to flush a lot of caches as well\n"
+"        level is \"high\", which causes the bot to flush a lot of caches as "
+"well\n"
 "        as do normal upkeep stuff).\n"
 "        "
 msgstr ""
 "[<livello>]\n"
 "\n"
-"        Esegue tutte le operazioni standard di mantenimento (flush e gc.collects()).\n"
-"        Se si specifica un livello, esegue quel livello di mantenimento (al momento\n"
-"        l'unico gestito è \"high\", che svuota la cache molto più del normale).\n"
+"        Esegue tutte le operazioni standard di mantenimento (flush e gc."
+"collects()).\n"
+"        Se si specifica un livello, esegue quel livello di mantenimento (al "
+"momento\n"
+"        l'unico gestito è \"high\", che svuota la cache molto più del "
+"normale).\n"
 "        "
 
-#: plugin.py:415
-#, docstring
+#: plugin.py:529
 msgid ""
 "[--deprecated] <plugin>\n"
 "\n"
@@ -135,12 +170,12 @@ msgstr ""
 "\n"
 "        Carica <plugin> da qualsiasi directory indicata dalla variabile\n"
 "        conf.supybot.directories.plugins; solitamente questa include quella\n"
-"        principale dell'installazione e \"plugins\" nella directory attuale.\n"
+"        principale dell'installazione e \"plugins\" nella directory "
+"attuale.\n"
 "        --deprecated è necessario per caricare plugin deprecati.\n"
 "        "
 
-#: plugin.py:450
-#, docstring
+#: plugin.py:567
 msgid ""
 "<plugin>\n"
 "\n"
@@ -150,11 +185,11 @@ msgid ""
 msgstr ""
 "<plugin>\n"
 "\n"
-"        Ricarica <plugin>; utilizzare il comando \"list\" per ottenere l'elenco di quelli attualmente caricati.\n"
+"        Ricarica <plugin>; utilizzare il comando \"list\" per ottenere "
+"l'elenco di quelli attualmente caricati.\n"
 "        "
 
-#: plugin.py:479
-#, docstring
+#: plugin.py:602
 msgid ""
 "<plugin>\n"
 "\n"
@@ -165,65 +200,75 @@ msgid ""
 msgstr ""
 "<plugin>\n"
 "\n"
-"        De-carica <plugin>; utilizzare il comando \"list\" per ottenere l'elenco\n"
-"        di quelli attualmente caricati.\n. Il plugin Owner non può essere de-caricato.\n"
+"        De-carica <plugin>; utilizzare il comando \"list\" per ottenere "
+"l'elenco\n"
+"        di quelli attualmente caricati.\n"
+". Il plugin Owner non può essere de-caricato.\n"
 "        "
 
-#: plugin.py:503
-#, docstring
+#: plugin.py:631
 msgid ""
 "{add|remove} <capability>\n"
 "\n"
-"        Adds or removes (according to the first argument) <capability> from the\n"
+"        Adds or removes (according to the first argument) <capability> from "
+"the\n"
 "        default capabilities given to users (the configuration variable\n"
 "        supybot.capabilities stores these).\n"
 "        "
 msgstr ""
 "{add|remove} <capacità>\n"
 "\n"
-"        Aggiunge o rimuove (in base al primo argomento) <capacità> da quelle predefinite\n"
-"        date agli utenti (salvate nella variabile di configurazione supybot.capabilities).\n"
+"        Aggiunge o rimuove (in base al primo argomento) <capacità> da quelle "
+"predefinite\n"
+"        date agli utenti (salvate nella variabile di configurazione supybot."
+"capabilities).\n"
 "        "
 
-#: plugin.py:528
-#, docstring
+#: plugin.py:656
 msgid ""
 "[<plugin>] <command>\n"
 "\n"
-"        Disables the command <command> for all users (including the owners).\n"
-"        If <plugin> is given, only disables the <command> from <plugin>.  If\n"
-"        you want to disable a command for most users but not for yourself, set\n"
+"        Disables the command <command> for all users (including the "
+"owners).\n"
+"        If <plugin> is given, only disables the <command> from <plugin>.  "
+"If\n"
+"        you want to disable a command for most users but not for yourself, "
+"set\n"
 "        a default capability of -plugin.command or -command (if you want to\n"
 "        disable the command in all plugins).\n"
 "        "
 msgstr ""
 "[<plugin>] <comando>\n"
 "\n"
-"        Disabilita <comando> per tutti gli utenti (compreso il proprietario).\n"
-"        Se <plugin> è specificato, viene disabilitato solo <comando> da <plugin>.\n"
-"        Se si vuole disabilitare un comando per tutti gli utenti tranne se stessi,\n"
-"        impostare una capacità predefinita -plugin.command o -command (questa\n"
+"        Disabilita <comando> per tutti gli utenti (compreso il "
+"proprietario).\n"
+"        Se <plugin> è specificato, viene disabilitato solo <comando> da "
+"<plugin>.\n"
+"        Se si vuole disabilitare un comando per tutti gli utenti tranne se "
+"stessi,\n"
+"        impostare una capacità predefinita -plugin.command o -command "
+"(questa\n"
 "        disabilita il comando in tutti i plugin).\n"
 "        "
 
-#: plugin.py:555
-#, docstring
+#: plugin.py:683
 msgid ""
 "[<plugin>] <command>\n"
 "\n"
 "        Enables the command <command> for all users.  If <plugin>\n"
-"        if given, only enables the <command> from <plugin>.  This command is\n"
+"        if given, only enables the <command> from <plugin>.  This command "
+"is\n"
 "        the inverse of disable.\n"
 "        "
 msgstr ""
 "[<plugin>] <comando>\n"
 "\n"
 "        Abilita <comando> per tutti gli utenti. Se <plugin> è specificato,\n"
-"        viene disabilitato solo <comando> da <plugin>. È il contrario di \"disable\".\n"
+"        viene disabilitato solo <comando> da <plugin>. È il contrario di "
+"\"disable\".\n"
 "        "
 
-#: plugin.py:574
-#, docstring
+#: plugin.py:702
 msgid ""
 "<plugin> <command> <new name>\n"
 "\n"
@@ -235,8 +280,7 @@ msgstr ""
 "        Rinomina <comando> in <plugin> con <nuovo nome>.\n"
 "        "
 
-#: plugin.py:591
-#, docstring
+#: plugin.py:719
 msgid ""
 "<plugin>\n"
 "\n"
@@ -246,11 +290,11 @@ msgid ""
 msgstr ""
 "<plugin>\n"
 "\n"
-"        Rimuove tutte le rinominazioni in <plugin>. Dopo questo comando il plugin verrà ricaricato.\n"
+"        Rimuove tutte le rinominazioni in <plugin>. Dopo questo comando il "
+"plugin verrà ricaricato.\n"
 "        "
 
-#: plugin.py:604
-#, docstring
+#: plugin.py:732
 msgid ""
 "takes no argument\n"
 "\n"
@@ -259,4 +303,3 @@ msgstr ""
 "non necessita argomenti\n"
 "\n"
 "        Ricarica la localizzazione del bot."
-

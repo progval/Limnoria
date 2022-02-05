@@ -1,0 +1,139 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: config.py:63
+msgid ""
+"Determines the capabilities required (if any) to open and\n"
+"            close polls.\n"
+"            Use 'channel,capab' for channel-level capabilities.\n"
+"            Note that absence of an explicit anticapability means user has\n"
+"            capability.\n"
+"            "
+msgstr ""
+
+#: plugin.py:51
+#, docstring
+msgid ""
+"Provides a simple way to vote on answers to a question\n"
+"\n"
+"    For example, this creates a poll::\n"
+"\n"
+"       <admin> @poll add \"Is this a test?\" \"Yes\" \"No\" \"Maybe\"\n"
+"       <bot> The operation succeeded.  Poll # 42 created.\n"
+"\n"
+"    Creates a poll that can be voted on in this way::\n"
+"\n"
+"       <citizen1> @vote 42 Yes\n"
+"       <citizen2> @vote 42 No\n"
+"       <citizen3> @vote 42 No\n"
+"\n"
+"    And results::\n"
+"\n"
+"        <admin> @poll results\n"
+"        <bot> 2 votes for No, 1 vote for Yes, and 0 votes for Maybe\n"
+"\n"
+"    Longer answers are possible, and voters only need to use the first\n"
+"    word of each answer to vote. For example, this creates a poll that\n"
+"    can be voted on in the same way::\n"
+"\n"
+"       <admin> @poll add \"Is this a test?\" \"Yes totally\" \"No no no\" \"Maybe\"\n"
+"       <bot> The operation succeeded.  Poll # 43 created.\n"
+"\n"
+"    You can also add a number or letter at the beginning of each question to\n"
+"    make it easier::\n"
+"\n"
+"       <admin> @poll add \"Who is the best captain?\" \"1 James T Kirk\" \"2 Jean-Luc Picard\" \"3 Benjamin Sisko\" \"4 Kathryn Janeway\"\n"
+"       <bot> The operation succeeded.  Poll # 44 created.\n"
+"\n"
+"       <trekkie1> @vote 42 1\n"
+"       <trekkie2> @vote 42 4\n"
+"       <trekkie3> @vote 42 4\n"
+"    "
+msgstr ""
+
+#: plugin.py:114
+msgid "A poll with this ID does not exist in this channel."
+msgstr ""
+
+#: plugin.py:121
+#, docstring
+msgid ""
+"[<channel>] <question> <answer1> [<answer2> [<answer3> [...]]]\n"
+"\n"
+"        Creates a new poll with the specified <question> and answers\n"
+"        on the <channel>.\n"
+"        The first word of each answer is used as its id to vote,\n"
+"        so each answer should start with a different word.\n"
+"\n"
+"        <channel> is only necessary if this command is run in private,\n"
+"        and defaults to the current channel otherwise."
+msgstr ""
+
+#: plugin.py:145
+msgid "Duplicate answer identifier(s): %L"
+msgstr ""
+
+#: plugin.py:155
+msgid "Poll # %d created."
+msgstr ""
+
+#: plugin.py:159
+#, docstring
+msgid ""
+"[<channel>] <poll_id>\n"
+"\n"
+"        Closes the specified poll."
+msgstr ""
+
+#: plugin.py:167
+msgid "This poll was already closed."
+msgstr ""
+
+#: plugin.py:180
+#, docstring
+msgid ""
+"[<channel>] <poll_id> <answer_id>\n"
+"\n"
+"        Registers your vote on the poll <poll_id> as being the answer\n"
+"        identified by <answer_id> (which is the first word of each possible\n"
+"        answer)."
+msgstr ""
+
+#: plugin.py:189
+msgid "This poll is closed."
+msgstr ""
+
+#: plugin.py:192
+msgid "You already voted on this poll."
+msgstr ""
+
+#: plugin.py:197
+msgid "Invalid answer ID. Valid answers are: %L"
+msgstr ""
+
+#: plugin.py:209
+#, docstring
+msgid ""
+"[<channel>] <poll_id>\n"
+"\n"
+"        Returns the results of the specified poll."
+msgstr ""
+
+#: plugin.py:221
+msgid "%n for %s"
+msgstr ""
+

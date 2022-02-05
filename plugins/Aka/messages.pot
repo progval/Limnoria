@@ -5,13 +5,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 13:30+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -22,76 +22,147 @@ msgid ""
 "    on long commands."
 msgstr ""
 
-#: plugin.py:140 plugin.py:264 plugin.py:507
+#: config.py:61
+msgid ""
+"Determines whether the Akas will be\n"
+"    browsable through the HTTP server."
+msgstr ""
+
+#: plugin.py:141 plugin.py:274 plugin.py:732
 msgid "This Aka already exists."
 msgstr ""
 
-#: plugin.py:169 plugin.py:181 plugin.py:195 plugin.py:291 plugin.py:308
-#: plugin.py:325
-msgid "This Aka does not exist"
+#: plugin.py:170 plugin.py:182 plugin.py:196 plugin.py:301 plugin.py:318
+#: plugin.py:335 plugin.py:912
+msgid "This Aka does not exist."
 msgstr ""
 
-#: plugin.py:293
+#: plugin.py:303
 msgid "This Aka is already locked."
 msgstr ""
 
-#: plugin.py:310
+#: plugin.py:320
 msgid "This Aka is already unlocked."
 msgstr ""
 
-#: plugin.py:372
-#, docstring
-msgid ""
-"Aka is the improved version of the Alias plugin. It stores akas outside\n"
-"    of the bot.conf, which doesn't have risk of corrupting the bot.conf file\n"
-"    (this often happens when there are Unicode issues). Aka also\n"
-"    introduces multi-worded akas."
+#: plugin.py:465
+msgid "By %s at %s"
 msgstr ""
 
-#: plugin.py:481
+#: plugin.py:501
+#, docstring
+msgid ""
+"\n"
+"    This plugin allows users to define aliases to commands and combinations\n"
+"    of commands (via nesting).\n"
+"\n"
+"    Importing from Alias\n"
+"    ^^^^^^^^^^^^^^^^^^^^\n"
+"\n"
+"    Add an aka, Alias, which eases the transitioning to Aka from Alias.\n"
+"\n"
+"    First we will load Alias and Aka::\n"
+"\n"
+"        <jamessan> @load Alias\n"
+"        <bot> jamessan: The operation succeeded.\n"
+"        <jamessan> @load Aka\n"
+"        <bot> jamessan: The operation succeeded.\n"
+"\n"
+"    Then we import the Alias database to Aka in case it exists and unload\n"
+"    Alias::\n"
+"\n"
+"        <jamessan> @importaliasdatabase\n"
+"        <bot> jamessan: The operation succeeded.\n"
+"        <jamessan> @unload Alias\n"
+"        <bot> jamessan: The operation succeeded.\n"
+"\n"
+"    And now we will finally add the Aka ``alias`` itself::\n"
+"\n"
+"        <jamessan> @aka add \"alias\" \"aka $1 $*\"\n"
+"        <bot> jamessan: The operation succeeded.\n"
+"\n"
+"    Now you can use Aka as you used Alias before.\n"
+"\n"
+"    Trout\n"
+"    ^^^^^\n"
+"\n"
+"    Add an aka, trout, which expects a word as an argument::\n"
+"\n"
+"        <jamessan> @aka add trout \"reply action slaps $1 with a large trout\"\n"
+"        <bot> jamessan: The operation succeeded.\n"
+"        <jamessan> @trout me\n"
+"        * bot slaps me with a large trout\n"
+"\n"
+"    This ``trout`` aka requires the plugin ``Reply`` to be loaded since it\n"
+"    provides the ``action`` command.\n"
+"\n"
+"    LastFM\n"
+"    ^^^^^^\n"
+"\n"
+"    Add an aka, ``lastfm``, which expects a last.fm username and replies with\n"
+"    their most recently played item::\n"
+"\n"
+"        @aka add lastfm \"rss [format concat http://ws.audioscrobbler.com/1.0/user/ [format concat [web urlquote $1] /recenttracks.rss]]\"\n"
+"\n"
+"    This ``lastfm`` aka requires the following plugins to be loaded: ``RSS``,\n"
+"    ``Format`` and ``Web``.\n"
+"\n"
+"    ``RSS`` provides ``rss``, ``Format`` provides ``concat`` and ``Web`` provides\n"
+"    ``urlquote``.\n"
+"\n"
+"    Note that if the nested commands being aliased hadn't been quoted, then\n"
+"    those commands would have been run immediately, and ``@lastfm`` would always\n"
+"    reply with the same information, the result of those commands.\n"
+"    "
+msgstr ""
+
+#: plugin.py:699
 msgid "You've attempted more nesting than is currently allowed on this bot."
 msgstr ""
 
-#: plugin.py:485
+#: plugin.py:703
 msgid " at least"
 msgstr ""
 
-#: plugin.py:494
+#: plugin.py:712
 msgid "Locked by %s at %s"
 msgstr ""
 
-#: plugin.py:497
+#: plugin.py:717
 msgid ""
-"<an alias,%s %n>\n"
+"<a global alias,%s %n>\n"
 "\n"
 "Alias for %q.%s"
 msgstr ""
 
-#: plugin.py:498
+#: plugin.py:718 plugin.py:722
 msgid "argument"
 msgstr ""
 
-#: plugin.py:504
+#: plugin.py:721
+msgid ""
+"<an alias on %s,%s %n>\n"
+"\n"
+"Alias for %q.%s"
+msgstr ""
+
+#: plugin.py:729
 msgid "You can't overwrite commands in this plugin."
 msgstr ""
 
-#: plugin.py:509
+#: plugin.py:734
 msgid "This Aka has too many spaces in its name."
 msgstr ""
 
-#: plugin.py:514
+#: plugin.py:739
 msgid "Can't mix $* and optional args (@1, etc.)"
 msgstr ""
 
-#: plugin.py:516
-msgid "There can be only one $* in an alias."
-msgstr ""
-
-#: plugin.py:523
+#: plugin.py:746
 msgid "This Aka is locked."
 msgstr ""
 
-#: plugin.py:527
+#: plugin.py:750
 #, docstring
 msgid ""
 "[--channel <#channel>] <name> <command>\n"
@@ -106,12 +177,12 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:541 plugin.py:573 plugin.py:604 plugin.py:636 plugin.py:659
-#: plugin.py:682
+#: plugin.py:764 plugin.py:796 plugin.py:827 plugin.py:859 plugin.py:882
+#: plugin.py:905 plugin.py:951 plugin.py:994
 msgid "%r is not a valid channel."
 msgstr ""
 
-#: plugin.py:559
+#: plugin.py:782
 #, docstring
 msgid ""
 "[--channel <#channel>] <name> <command>\n"
@@ -126,7 +197,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:596
+#: plugin.py:819
 #, docstring
 msgid ""
 "[--channel <#channel>] <name>\n"
@@ -135,14 +206,14 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:618
+#: plugin.py:841
 #, docstring
 msgid ""
 "Check if the user has any of the required capabilities to manage\n"
 "        the regexp database."
 msgstr ""
 
-#: plugin.py:628
+#: plugin.py:851
 #, docstring
 msgid ""
 "[--channel <#channel>] <alias>\n"
@@ -151,7 +222,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:651
+#: plugin.py:874
 #, docstring
 msgid ""
 "[--channel <#channel>] <alias>\n"
@@ -160,7 +231,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:674
+#: plugin.py:897
 #, docstring
 msgid ""
 "[--channel <#channel>] <alias>\n"
@@ -169,11 +240,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:689
-msgid "This Aka does not exist."
-msgstr ""
-
-#: plugin.py:694
+#: plugin.py:917
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -181,11 +248,42 @@ msgid ""
 "        Imports the Alias database into Aka's, and clean the former."
 msgstr ""
 
-#: plugin.py:699
+#: plugin.py:922
 msgid "Alias plugin is not loaded."
 msgstr ""
 
-#: plugin.py:709
+#: plugin.py:933
 msgid "Error occured when importing the %n: %L"
+msgstr ""
+
+#: plugin.py:941
+#, docstring
+msgid ""
+"[--channel <#channel>] [--keys] [--unlocked|--locked]\n"
+"\n"
+"        Lists all Akas defined for <channel>. If <channel> is not specified,\n"
+"        lists all global Akas. If --keys is given, lists only the Aka names\n"
+"        and not their commands."
+msgstr ""
+
+#: plugin.py:960
+msgid "--locked and --unlocked are incompatible options."
+msgstr ""
+
+#: plugin.py:980
+msgid "No Akas found."
+msgstr ""
+
+#: plugin.py:985
+#, docstring
+msgid ""
+"[--channel <#channel>] <query>\n"
+"\n"
+"        Searches Akas defined for <channel>. If <channel> is not specified,\n"
+"        searches all global Akas."
+msgstr ""
+
+#: plugin.py:1004
+msgid "No matching Akas were found."
 msgstr ""
 

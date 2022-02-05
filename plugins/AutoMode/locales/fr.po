@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-01-21 19:30+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-01-21 19:33+0100\n"
 "Last-Translator: \n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -14,13 +14,13 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: config.py:46
+#: config.py:47
 msgid ""
 "Determines whether this plugin is enabled.\n"
 "    "
 msgstr "Détermine si ce plugin est activé."
 
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether this plugin will automode\n"
 "    owners even if they don't have op/halfop/voice/whatever capability."
@@ -28,7 +28,7 @@ msgstr ""
 "Détermine si ce plugin mettra des modes automatiques sur les owners, même si "
 "ils n'ont pas la capacité op/halfop/voice/..."
 
-#: config.py:52
+#: config.py:53
 msgid ""
 "Determines whether the bot will\n"
 "    check for 'alternative capabilities' (ie. autoop, autohalfop,\n"
@@ -37,7 +37,7 @@ msgstr ""
 "Détermine si le bot vérifiera les « capacités alternatives » (ie. autoop, "
 "autohalfop, autovoice) en plus/à la place des capacités classiques."
 
-#: config.py:56
+#: config.py:57
 msgid ""
 "Determines whether the bot will \"fall\n"
 "    through\" to halfop/voicing when auto-opping is turned off but\n"
@@ -46,7 +46,7 @@ msgstr ""
 "Détermine si le bot ne halfopera/voicera pas lorsque l'auto-op est "
 "désactivé, même si l'auto-halfopvoice est activé."
 
-#: config.py:60
+#: config.py:61
 msgid ""
 "Determines whether the bot will automatically\n"
 "    op people with the <channel>,op capability when they join the channel.\n"
@@ -55,7 +55,7 @@ msgstr ""
 "Détermine si le bot opera automatiquement les gens qui ont la capacité "
 "<canal>,op lorsqu'ils rejoignent le canal."
 
-#: config.py:64
+#: config.py:65
 msgid ""
 "Determines whether the bot will automatically\n"
 "    halfop people with the <channel>,halfop capability when they join the\n"
@@ -64,7 +64,7 @@ msgstr ""
 "Détermine si le bot halfopera les gens qui ont la capacité <canal>,halfop "
 "lorsqu'ils rejoignent le canal."
 
-#: config.py:68
+#: config.py:69
 msgid ""
 "Determines whether the bot will automatically\n"
 "    voice people with the <channel>,voice capability when they join the\n"
@@ -73,7 +73,7 @@ msgstr ""
 "Détermine si le bot voicera automatiquement les gens avec la capacité "
 "<canal>,voice lorsqu'ils rejoingent le canal."
 
-#: config.py:72
+#: config.py:73
 msgid ""
 "Determines whether the bot will automatically\n"
 "    ban people who join the channel and are on the banlist."
@@ -81,7 +81,7 @@ msgstr ""
 "Détermine si le bot bannira automatiquement les personnes qui rejoignent le "
 "canal et qui sont sur la liste de bannissement."
 
-#: config.py:75
+#: config.py:76
 msgid ""
 "Determines how many seconds the bot\n"
 "    will automatically ban a person when banning."
@@ -89,7 +89,7 @@ msgstr ""
 "Détermine combien de secondes durera le bannissement que le bot posera sur "
 "une personne."
 
-#: config.py:79
+#: config.py:80
 msgid ""
 "Determines how many seconds the bot will wait\n"
 "    before applying a mode. Has no effect on bans."
@@ -97,7 +97,7 @@ msgstr ""
 "Détermine combien de secondes le bot attendra avant d'appliquer un mode. "
 "Cela n'a aucun effet sur les bannissements."
 
-#: config.py:83
+#: config.py:84
 msgid ""
 "Extra modes that will be\n"
 "    applied to a user. Example syntax: user1+o-v user2+v user3-v"
@@ -105,7 +105,29 @@ msgstr ""
 "Des modes supplémentaires à appliquer à un utilisateur. Par exemple : "
 "user1+o-v user2+v user3-v"
 
-#: plugin.py:78
+#: plugin.py:49
+msgid ""
+"\n"
+"    This plugin, when configured, allows the bot to automatically set modes\n"
+"    on users when they join.\n"
+"\n"
+"    * if ``plugins.automode.op`` is set to ``True``, users with the\n"
+"      ``#channel,op`` capability are opped when they join.\n"
+"    * if ``plugins.automode.halfop`` is set to ``True``, users with the\n"
+"      ``#channel,halfop`` are halfopped when they join.\n"
+"    * if ``plugins.automode.voice`` is set to ``True``, users with the\n"
+"      ``#channel,voice`` are voiced when they join.\n"
+"\n"
+"    This plugin also kbans people on ``@channel ban list``\n"
+"    (``config plugins.automode.ban``) when they join and if moding users "
+"with\n"
+"    lower capability is enabled, that is also applied to users with higher\n"
+"    capability (``config plugins.automode.fallthrough``).\n"
+"\n"
+"    "
+msgstr ""
+
+#: plugin.py:97
 msgid ""
 "Determines whether or not a mode has already\n"
 "                        been applied."

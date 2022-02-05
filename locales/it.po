@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot-fr\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-07-05 00:13+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,478 +10,698 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-
-#: src/callbacks.py:184
+#: src/callbacks.py:217
 msgid "Error: "
 msgstr "Errore: "
 
-#: src/callbacks.py:198
+#: src/callbacks.py:233
 msgid "Error: I tried to send you an empty message."
 msgstr "Errore: ho cercato di inviarti un messaggio vuoto."
 
-#: src/callbacks.py:292
-msgid "Missing \"%s\".  You may want to quote your arguments with double quotes in order to prevent extra brackets from being evaluated as nested commands."
-msgstr "\"%s\" mancante. Dovresti racchiudere gli argomenti tra virgolette per evitare che le parentesi vengano interpretate come comandi nidificati."
+#: src/callbacks.py:361
+msgid ""
+"Missing \"%s\".  You may want to quote your arguments with double quotes in "
+"order to prevent extra brackets from being evaluated as nested commands."
+msgstr ""
+"\"%s\" mancante. Dovresti racchiudere gli argomenti tra virgolette per "
+"evitare che le parentesi vengano interpretate come comandi nidificati."
 
-#: src/callbacks.py:322
-msgid "\"|\" with nothing preceding.  I obviously can't do a pipe with nothing before the |."
-msgstr "\"|\" con niente che la precede. Ovviamente non posso usare una pipe senza nulla prima di |."
+#: src/callbacks.py:390
+msgid ""
+"\"|\" with nothing preceding.  I obviously can't do a pipe with nothing "
+"before the |."
+msgstr ""
+"\"|\" con niente che la precede. Ovviamente non posso usare una pipe senza "
+"nulla prima di |."
 
-#: src/callbacks.py:330
-msgid "Spurious \"%s\".  You may want to quote your arguments with double quotes in order to prevent extra brackets from being evaluated as nested commands."
-msgstr "\"%s\" eccedente. Dovresti racchiudere gli argomenti tra virgolette per evitare che le parentesi vengano interpretate come comandi nidificati."
+#: src/callbacks.py:398
+msgid ""
+"Spurious \"%s\".  You may want to quote your arguments with double quotes in "
+"order to prevent extra brackets from being evaluated as nested commands."
+msgstr ""
+"\"%s\" eccedente. Dovresti racchiudere gli argomenti tra virgolette per "
+"evitare che le parentesi vengano interpretate come comandi nidificati."
 
-#: src/callbacks.py:339
-msgid "\"|\" with nothing following.  I obviously can't do a pipe with nothing after the |."
-msgstr "\"|\" con niente che la segue. Ovviamente non posso usare una pipe senza nulla dopo di |."
+#: src/callbacks.py:407
+msgid ""
+"\"|\" with nothing following.  I obviously can't do a pipe with nothing "
+"after the |."
+msgstr ""
+"\"|\" con niente che la segue. Ovviamente non posso usare una pipe senza "
+"nulla dopo di |."
 
-#: src/callbacks.py:524
+#: src/callbacks.py:623
 msgid "%s is not a valid %s."
 msgstr "%s non è un %s valido."
 
-#: src/callbacks.py:526
+#: src/callbacks.py:625
 msgid "That's not a valid %s."
 msgstr "Questo non è un %s valido."
 
-#: src/callbacks.py:604
-msgid "You've attempted more nesting than is currently allowed on this bot."
-msgstr "Hai tentato di nidificare più di quanto sia attualmente consentito."
-
-#: src/callbacks.py:773
-msgid "The command %q is available in the %L plugins.  Please specify the plugin whose command you wish to call by using its name as a command before %q."
-msgstr "Il comando %q è disponibile nei plugin %L. Specifica in quale plugin si trova quello che desideri usare aggiungendo il suo nome prima di %q."
-
-#: src/callbacks.py:869 src/callbacks.py:882
+#: src/callbacks.py:794
 msgid "(XX more messages)"
 msgstr "(XX altri messaggi)"
 
-#: src/callbacks.py:914
+#: src/callbacks.py:849
 msgid "more message"
 msgstr "altro messaggio"
 
-#: src/callbacks.py:916
+#: src/callbacks.py:851
 msgid "more messages"
 msgstr "altri messaggi"
 
-#: src/callbacks.py:1033
+#: src/callbacks.py:986
+msgid "You've attempted more nesting than is currently allowed on this bot."
+msgstr "Hai tentato di nidificare più di quanto sia attualmente consentito."
+
+#: src/callbacks.py:1171
+msgid ""
+"The command %q is available in the %L plugins.  Please specify the plugin "
+"whose command you wish to call by using its name as a command before %q."
+msgstr ""
+"Il comando %q è disponibile nei plugin %L. Specifica in quale plugin si "
+"trova quello che desideri usare aggiungendo il suo nome prima di %q."
+
+#: src/callbacks.py:1356
 msgid ""
 "Determines what commands are currently disabled.  Such\n"
-"    commands will not appear in command lists, etc.  They will appear not even\n"
+"    commands will not appear in command lists, etc.  They will appear not "
+"even\n"
 "    to exist."
 msgstr ""
-"Determina quali comandi sono attualmente disabilitati. Questi non appariranno\n"
+"Determina quali comandi sono attualmente disabilitati. Questi non "
+"appariranno\n"
 "    nell'elenco dei comandi, ecc.; sarà come se non esistessero."
 
-#: src/callbacks.py:1231
+#: src/callbacks.py:1595
 msgid "Invalid arguments for %s."
 msgstr "Argomenti non validi per %s."
 
-#: src/callbacks.py:1257
+#: src/callbacks.py:1627
 msgid "The %q command has no help."
 msgstr "Il comando %q non ha un help."
 
-#: src/commands.py:228
+#: src/commands.py:284
 msgid "integer"
 msgstr "intero"
 
-#: src/commands.py:239
+#: src/commands.py:295
 msgid "non-integer value"
 msgstr "valore non intero"
 
-#: src/commands.py:250
+#: src/commands.py:306
 msgid "floating point number"
 msgstr "numero in virgola mobile"
 
-#: src/commands.py:259
+#: src/commands.py:315
 msgid "positive integer"
 msgstr "intero positivo"
 
-#: src/commands.py:263
+#: src/commands.py:319
 msgid "non-negative integer"
 msgstr "intero non negativo"
 
-#: src/commands.py:266
+#: src/commands.py:322
 msgid "index"
 msgstr "indice"
 
-#: src/commands.py:291
+#: src/commands.py:347
 msgid "number of seconds"
 msgstr "numero di secondi"
 
-#: src/commands.py:298
+#: src/commands.py:354
 msgid "boolean"
 msgstr "booleano"
 
-#: src/commands.py:312 src/commands.py:320 src/commands.py:328
-#: src/commands.py:336
+#: src/commands.py:368 src/commands.py:375 src/commands.py:384
+#: src/commands.py:391 src/commands.py:400
 msgid "do that"
 msgstr "fare ciò"
 
-#: src/commands.py:316 src/commands.py:324 src/commands.py:332
-#: src/commands.py:340
+#: src/commands.py:371 src/commands.py:378 src/commands.py:387
+#: src/commands.py:394 src/commands.py:403
 msgid "I'm not even in %s."
 msgstr "Non sono in %s."
 
-#: src/commands.py:318
+#: src/commands.py:373
 msgid "I need to be voiced to %s."
 msgstr "Devo avere il voice per %s."
 
-#: src/commands.py:326
+#: src/commands.py:381
+#, fuzzy
+msgid "I need to be at least voiced to %s."
+msgstr "Devo almeno essere halfop per %s."
+
+#: src/commands.py:389
 msgid "I need to be halfopped to %s."
 msgstr "Devo essere halfop per %s."
 
-#: src/commands.py:334
-msgid "I need to be opped to %s."
-msgstr "Devo essere op per %s."
-
-#: src/commands.py:344
+#: src/commands.py:397
 msgid "I need to be at least halfopped to %s."
 msgstr "Devo almeno essere halfop per %s."
 
-#: src/commands.py:362
-msgid "nick or hostmask"
-msgstr "nick o hostmask"
+#: src/commands.py:405
+msgid "I need to be opped to %s."
+msgstr "Devo essere op per %s."
 
-#: src/commands.py:414 src/commands.py:417
-msgid "regular expression"
-msgstr "espressione regolare"
-
-#: src/commands.py:428
-msgid "That nick is too long for this server."
-msgstr "Il nick è troppo lungo per questo server."
-
-#: src/commands.py:477 src/commands.py:496
-msgid "I'm not in %s."
-msgstr "Non sono in %s."
-
-#: src/commands.py:481
-msgid "This command may only be given in a channel that I am in."
-msgstr "Questo comando può essere dato solo in un canale in cui sono presente."
-
-#: src/commands.py:494
-msgid "You must be in %s."
-msgstr "Devo essere in %s."
-
-#: src/commands.py:498
+#: src/commands.py:411 src/commands.py:569
 msgid "channel"
 msgstr "canale"
 
-#: src/commands.py:505
+#: src/commands.py:424
+msgid "nick or hostmask"
+msgstr "nick o hostmask"
+
+#: src/commands.py:478
+msgid "regular expression"
+msgstr "espressione regolare"
+
+#: src/commands.py:489 src/commands.py:493
+msgid "nick"
+msgstr ""
+
+#: src/commands.py:490
+msgid "That nick is too long for this server."
+msgstr "Il nick è troppo lungo per questo server."
+
+#: src/commands.py:501
+#, fuzzy
+msgid "I haven't seen %s."
+msgstr "Non sono in %s."
+
+#: src/commands.py:548 src/commands.py:567
+msgid "I'm not in %s."
+msgstr "Non sono in %s."
+
+#: src/commands.py:552
+msgid "This command may only be given in a channel that I am in."
+msgstr "Questo comando può essere dato solo in un canale in cui sono presente."
+
+#: src/commands.py:565
+msgid "You must be in %s."
+msgstr "Devo essere in %s."
+
+#: src/commands.py:576
 msgid "%s is not in %s."
 msgstr "%s non è in %s."
 
-#: src/commands.py:539
+#: src/commands.py:624
 msgid "You must not give the empty string as an argument."
 msgstr "Non puoi darmi una stringa vuota come argomento."
 
-#: src/commands.py:556
+#: src/commands.py:632
+#, fuzzy
+msgid "You must not give a string containing spaces as an argument."
+msgstr "Non puoi darmi una stringa vuota come argomento."
+
+#: src/commands.py:642
 msgid "This message must be sent in a channel."
 msgstr "Questo messaggio va inviato in canale."
 
-#: src/commands.py:602
+#: src/commands.py:674 src/commands.py:681
+msgid "url"
+msgstr ""
+
+#: src/commands.py:687
+msgid "IRI"
+msgstr ""
+
+#: src/commands.py:693
+msgid "email"
+msgstr ""
+
+#: src/commands.py:703 src/commands.py:711
 msgid "http url"
 msgstr "URL HTTP"
 
-#: src/commands.py:609
+#: src/commands.py:718
 msgid "command name"
 msgstr "nome comando"
 
-#: src/commands.py:617
+#: src/commands.py:726
 msgid "ip"
 msgstr "IP"
 
-#: src/commands.py:623
+#: src/commands.py:732
 msgid "letter"
 msgstr "lettera"
 
-#: src/commands.py:655
+#: src/commands.py:764
 msgid "plugin"
 msgstr "plugin"
 
-#: src/commands.py:663
+#: src/commands.py:772
 msgid "irc color"
 msgstr "colore IRC"
 
-#: src/conf.py:104
+#: src/conf.py:130
 msgid ""
 "Determines whether this plugin is loaded\n"
 "         by default."
 msgstr "Determina se questo plugin sia caricato in modo predefinito."
 
-#: src/conf.py:108
+#: src/conf.py:134
 msgid ""
 "Determines whether this plugin is\n"
 "        publicly visible."
 msgstr "Determina se questo plugin sia visibile pubblicamente."
 
-#: src/conf.py:202
+#: src/conf.py:231
 msgid "Determines the bot's default nick."
 msgstr "Determina il nick predefinito del bot."
 
-#: src/conf.py:205
+#: src/conf.py:234
 msgid ""
 "Determines what alternative\n"
-"   nicks will be used if the primary nick (supybot.nick) isn't available.  A\n"
-"   %s in this nick is replaced by the value of supybot.nick when used. If no\n"
-"   alternates are given, or if all are used, the supybot.nick will be perturbed\n"
+"   nicks will be used if the primary nick (supybot.nick) isn't available.  "
+"A\n"
+"   %s in this nick is replaced by the value of supybot.nick when used. If "
+"no\n"
+"   alternates are given, or if all are used, the supybot.nick will be "
+"perturbed\n"
 "   appropriately until an unused nick is found."
 msgstr ""
 "Determina quali nick alternativi utilizzare se il principale (supybot.nick)\n"
-"   non è disponibile; un %s in questo nick è sostituito dal valore di supybot.nick.\n"
-"   Se non è fornita alcuna alternativa, o sono tutti in uso, supybot.nick sarà\n"
+"   non è disponibile; un %s in questo nick è sostituito dal valore di "
+"supybot.nick.\n"
+"   Se non è fornita alcuna alternativa, o sono tutti in uso, supybot.nick "
+"sarà\n"
 "   modificato in modo appropriato finché ne trova uno non utilizzato."
 
-#: src/conf.py:212
+#: src/conf.py:241
 msgid ""
 "Determines the bot's ident string, if the server\n"
 "    doesn't provide one by default."
-msgstr "Determina l'ident (ciò che precede @ nella hostmask) nel caso in cui il server non ne fornisca una."
-
-#: src/conf.py:223
-msgid ""
-"Determines the user the bot sends to the server.\n"
-"    A standard user using the current version of the bot will be generated if\n"
-"    this is left empty."
 msgstr ""
-"Determina il nome utente inviato al server dal bot. Se lasciato vuoto, ne verrà\n"
+"Determina l'ident (ciò che precede @ nella hostmask) nel caso in cui il "
+"server non ne fornisca una."
+
+#: src/conf.py:258
+#, fuzzy
+msgid ""
+"Determines the real name which the bot sends to\n"
+"    the server. A standard real name using the current version of the bot\n"
+"    will be generated if this is left empty."
+msgstr ""
+"Determina il nome utente inviato al server dal bot. Se lasciato vuoto, ne "
+"verrà\n"
 "    generato uno standard utilizzando la versione del bot."
 
-#: src/conf.py:231
+#: src/conf.py:267
 msgid "Determines what networks the bot will connect to."
 msgstr "Determina su quali reti si connetterà il bot."
 
-#: src/conf.py:273
+#: src/conf.py:377
 msgid ""
 "Determines what password will be used on %s.  Yes, we know that\n"
 "        technically passwords are server-specific and not network-specific,\n"
 "        but this is the best we can do right now."
 msgstr ""
-"Determina quale password utilizzare su %s. Sì, sappiamo che tecnicamente le password\n"
-"        sono specifiche per il server e non per la rete, ma per ora è il meglio che possiamo fare."
+"Determina quale password utilizzare su %s. Sì, sappiamo che tecnicamente le "
+"password\n"
+"        sono specifiche per il server e non per la rete, ma per ora è il "
+"meglio che possiamo fare."
 
-#: src/conf.py:277
+#: src/conf.py:381
+#, fuzzy
 msgid ""
-"Determines what servers the bot will connect to for %s.  Each will\n"
-"        be tried in order, wrapping back to the first when the cycle is\n"
-"        completed."
+"Space-separated list of servers the bot will connect to for %s.\n"
+"        Each will be tried in order, wrapping back to the first when the "
+"cycle\n"
+"        is completed."
 msgstr ""
 "Determina a quali server si connetterà il bot per %s. Verranno provati in\n"
 "        ordine tornando al primo quando il ciclo è stato completato."
 
-#: src/conf.py:281
-msgid "Determines what channels the bot will join only on %s."
+#: src/conf.py:385
+#, fuzzy
+msgid "Space-separated list of channels the bot will join only on %s."
 msgstr "Determina in quali canali di %s entrerà il bot."
 
-#: src/conf.py:284
+#: src/conf.py:389
 msgid ""
 "Determines whether the bot will attempt to connect with SSL\n"
 "        sockets to %s."
 msgstr "Determina se il bot tenterà di connettersi a %s tramite un socket SSL."
 
-#: src/conf.py:287
+#: src/conf.py:392
+msgid ""
+"Space-separated list\n"
+"        of fingerprints of trusted certificates for this network.\n"
+"        Supported hash algorithms are: %L.\n"
+"        If non-empty, Certification Authority signatures will not be used "
+"to\n"
+"        verify certificates."
+msgstr ""
+
+#: src/conf.py:398
+msgid ""
+"A certificate that is trusted to verify\n"
+"        certificates of this network (aka. Certificate Authority)."
+msgstr ""
+
+#: src/conf.py:401
+msgid "Deprecated config value, keep it to False."
+msgstr ""
+
+#: src/conf.py:404
+#, fuzzy
+msgid ""
+"Determines what certificate file (if any) the bot will use to\n"
+"        connect with SSL sockets to %s."
+msgstr "Determina se il bot tenterà di connettersi a %s tramite un socket SSL."
+
+#: src/conf.py:407
 msgid ""
 "Determines what key (if any) will be used to join the\n"
 "        channel."
-msgstr "Determina quale password (eventuale) verrà usata per entrare in canale."
+msgstr ""
+"Determina quale password (eventuale) verrà usata per entrare in canale."
 
-#: src/conf.py:289
+#: src/conf.py:409
 msgid ""
 "Determines\n"
 "        what nick the bot will use on this network. If empty, defaults to\n"
 "        supybot.nick."
 msgstr ""
-"Determina che nick userà il bot su questa rete. Se lasciato vuoto assegna il valore di supybot.nick."
+"Determina che nick userà il bot su questa rete. Se lasciato vuoto assegna il "
+"valore di supybot.nick."
 
-#: src/conf.py:294
+#: src/conf.py:412
+#, fuzzy
+msgid ""
+"Determines\n"
+"        the bot's ident string, if the server doesn't provide one by "
+"default.\n"
+"        If empty, defaults to supybot.ident."
+msgstr ""
+"Determina l'ident (ciò che precede @ nella hostmask) nel caso in cui il "
+"server non ne fornisca una."
+
+#: src/conf.py:415
+#, fuzzy
+msgid ""
+"Determines\n"
+"        the real name which the bot sends to the server. If empty, defaults "
+"to\n"
+"        supybot.user"
+msgstr ""
+"Determina che nick userà il bot su questa rete. Se lasciato vuoto assegna il "
+"valore di supybot.nick."
+
+#: src/conf.py:419
+#, fuzzy
+msgid ""
+"Determines what user modes the bot will request\n"
+"        from the server when it first connects. If empty, defaults to\n"
+"        supybot.protocols.irc.umodes"
+msgstr ""
+"Determina che nick userà il bot su questa rete. Se lasciato vuoto assegna il "
+"valore di supybot.nick."
+
+#: src/conf.py:424
+#, fuzzy
 msgid ""
 "Determines what SASL username will be used on %s. This should\n"
-"        be the bot's account name. Due to the way SASL works, you can't use\n"
-"        any grouped nick."
+"        be the bot's account name."
 msgstr ""
-"Determina quale nome utente SASL utilizzare su %s; dovrebbe essere il nome usato per\n"
-"        l'account del bot. A causa del funzionamento di SASL, non è possibile usare\n"
+"Determina quale nome utente SASL utilizzare su %s; dovrebbe essere il nome "
+"usato per\n"
+"        l'account del bot. A causa del funzionamento di SASL, non è "
+"possibile usare\n"
 "        un nick raggruppato."
 
-#: src/conf.py:298
+#: src/conf.py:427
 msgid "Determines what SASL password will be used on %s."
 msgstr "Determina quale password per SASL sarà usata su %s."
 
-#: src/conf.py:318
+#: src/conf.py:430
+msgid ""
+"Determines what SASL ECDSA key (if any) will be used on %s.\n"
+"        The public key must be registered with NickServ for SASL\n"
+"        ECDSA-NIST256P-CHALLENGE to work."
+msgstr ""
+
+#: src/conf.py:435
+#, fuzzy
+msgid ""
+"Determines what SASL mechanisms will be tried and in which order.\n"
+"        "
+msgstr ""
+"Determina quale password (eventuale) verrà usata per entrare in canale."
+
+#: src/conf.py:438
+#, fuzzy
+msgid ""
+"Determines whether the bot will abort the connection if the\n"
+"        none of the enabled SASL mechanism succeeded."
+msgstr "Determina se il bot tenterà di connettersi a %s tramite un socket SSL."
+
+#: src/conf.py:441
+msgid ""
+"If not empty, determines the hostname:port of the socks proxy that\n"
+"        will be used to connect to this network."
+msgstr ""
+
+#: src/conf.py:461
+#, fuzzy
+msgid "Determines how urls should be formatted."
+msgstr "Determina quali plugin saranno caricati."
+
+#: src/conf.py:469
 msgid ""
 "Determines how timestamps\n"
 "    printed for human reading should be formatted. Refer to the Python\n"
-"    documentation for the time module to see valid formatting characters for\n"
+"    documentation for the time module to see valid formatting characters "
+"for\n"
 "    time formats."
 msgstr ""
 "Determina come formattare i timestamp affinché possano essere comprensibli.\n"
-"    Per sapere quali sono i formati validi fai riferimento alla documentazione\n"
+"    Per sapere quali sono i formati validi fai riferimento alla "
+"documentazione\n"
 "    di Python per il modulo time."
 
-#: src/conf.py:332
+#: src/conf.py:484
 msgid ""
 "Determines whether elapsed times will be given\n"
 "    as \"1 day, 2 hours, 3 minutes, and 15 seconds\" or as \"1d 2h 3m 15s\"."
 msgstr ""
-"Determina se il tempo trascorso sarà espresso nella forma \"1 giorno, 2 ore,\n"
+"Determina se il tempo trascorso sarà espresso nella forma \"1 giorno, 2 "
+"ore,\n"
 "    3 minuti e 15 secondi\" o \"1d 2h 3m 15s\"."
 
-#: src/conf.py:342
+#: src/conf.py:495
+msgid ""
+"Maximum number of items in a list\n"
+"    before the end is replaced with 'and others'. Set to 0 to always\n"
+"    show the entire list."
+msgstr ""
+
+#: src/conf.py:512
+msgid "other"
+msgstr ""
+
+#: src/conf.py:517
 msgid ""
 "Determines the absolute maximum length of\n"
-"    the bot's reply -- no reply will be passed through the bot with a length\n"
+"    the bot's reply -- no reply will be passed through the bot with a "
+"length\n"
 "    greater than this."
 msgstr ""
-"Determina la lunghezza massima delle risposte; il bot non invierà alcuna risposta che supera questo valore."
+"Determina la lunghezza massima delle risposte; il bot non invierà alcuna "
+"risposta che supera questo valore."
 
-#: src/conf.py:347
+#: src/conf.py:522
 msgid ""
 "Determines whether the bot will break up long\n"
-"    messages into chunks and allow users to use  the 'more' command to get the\n"
+"    messages into chunks and allow users to use  the 'more' command to get "
+"the\n"
 "    remaining chunks."
 msgstr ""
 "Determina se il bot separerà i messaggi lunghi in più parti permettendo\n"
 "    agli utenti di utilizzare il comando \"more\" per ottenere il resto."
 
-#: src/conf.py:352
+#: src/conf.py:527
 msgid ""
 "Determines what the maximum number of\n"
 "    chunks (for use with the 'more' command) will be."
-msgstr "Determina il numero massimo di parti (da utilizzare con il comando \"more\")."
+msgstr ""
+"Determina il numero massimo di parti (da utilizzare con il comando \"more\")."
 
-#: src/conf.py:356
+#: src/conf.py:531
 msgid ""
 "Determines how long individual chunks\n"
 "    will be.  If set to 0, uses our super-tweaked,\n"
 "    get-the-most-out-of-an-individual-message default."
 msgstr ""
 "Determina la lunghezza di ogni singolo pezzo. Se impostata a 0 permette\n"
-"    di usare il nostro super algoritmo per ottenere il più possibile da ogni messaggio."
+"    di usare il nostro super algoritmo per ottenere il più possibile da ogni "
+"messaggio."
 
-#: src/conf.py:361
+#: src/conf.py:536
 msgid ""
 "Determines how many mores will be sent\n"
 "    instantly (i.e., without the use of the more command, immediately when\n"
-"    they are formed).  Defaults to 1, which means that a more command will be\n"
+"    they are formed).  Defaults to 1, which means that a more command will "
+"be\n"
 "    required for all but the first chunk."
 msgstr ""
-"Determina quanti pezzi saranno inviati immediatamente (ovvero senza utilizzare il comando\n"
-"    \"more\"). Impostato a 1 in modo predefinito, per cui viene ne viene visualizzato uno solo."
+"Determina quanti pezzi saranno inviati immediatamente (ovvero senza "
+"utilizzare il comando\n"
+"    \"more\"). Impostato a 1 in modo predefinito, per cui viene ne viene "
+"visualizzato uno solo."
 
-#: src/conf.py:367
+#: src/conf.py:542
+#, fuzzy
 msgid ""
 "Determines whether the bot will send\n"
-"    multi-message replies in a single message or in multiple messages.  For\n"
-"    safety purposes (so the bot is less likely to flood) it will normally send\n"
-"    everything in a single message, using mores if necessary."
+"    multi-message replies in a single message. This defaults to True \n"
+"    in order to prevent the bot from flooding. If this is set to False\n"
+"    the bot will send multi-message replies on multiple lines."
 msgstr ""
 "Determina se il bot invierà le risposte multiple in uno o più messaggi. Per\n"
-"    ragioni di sicurezza (il bot è meno suscettibile a flood) mostrerà tutto\n"
+"    ragioni di sicurezza (il bot è meno suscettibile a flood) mostrerà "
+"tutto\n"
 "    in un singolo messaggio e utilizzando \"more\" se necessario."
 
-#: src/conf.py:373
+#: src/conf.py:548
 msgid ""
 "Determines whether the bot will reply with an\n"
-"    error message when it is addressed but not given a valid command.  If this\n"
+"    error message when it is addressed but not given a valid command.  If "
+"this\n"
 "    value is False, the bot will remain silent, as long as no other plugins\n"
 "    override the normal behavior."
 msgstr ""
-"Determines se il bot risponderà con un messaggio di errore quando è chiamato\n"
-"    ma non si fornisce un comando valido. Se impostato a False rimarrà silenzioso,\n"
+"Determines se il bot risponderà con un messaggio di errore quando è "
+"chiamato\n"
+"    ma non si fornisce un comando valido. Se impostato a False rimarrà "
+"silenzioso,\n"
 "    a meno che altri plugin modifichino questo comportamento."
 
-#: src/conf.py:380
+#: src/conf.py:555
 msgid ""
 "Determines whether error messages that result\n"
 "    from bugs in the bot will show a detailed error message (the uncaught\n"
 "    exception) or a generic error message."
 msgstr ""
 "Determina se i messaggi di errore causati da bug del bot saranno mostrati\n"
-"    in modo dettagliato (eccezione non gestita) o con un messaggio di errore generico."
+"    in modo dettagliato (eccezione non gestita) o con un messaggio di errore "
+"generico."
 
-#: src/conf.py:384
+#: src/conf.py:559
 msgid ""
 "Determines whether the bot will send error\n"
-"    messages to users in private.  You might want to do this in order to keep\n"
+"    messages to users in private.  You might want to do this in order to "
+"keep\n"
 "    channel traffic to minimum.  This can be used in combination with\n"
 "    supybot.reply.error.withNotice."
 msgstr ""
-"Determina se il bot invierà i messaggi di errore in privato; utile per ridurre il\n"
-"    traffico del canale. Può essere usato in combinazione con supybot.reply.error.withNotice."
+"Determina se il bot invierà i messaggi di errore in privato; utile per "
+"ridurre il\n"
+"    traffico del canale. Può essere usato in combinazione con supybot.reply."
+"error.withNotice."
 
-#: src/conf.py:389
+#: src/conf.py:564
+#, fuzzy
 msgid ""
 "Determines whether the bot will send error\n"
-"    messages to users via NOTICE instead of PRIVMSG.  You might want to do this\n"
+"    messages to users via NOTICE instead of PRIVMSG.  You might want to do "
+"this\n"
 "    so users can ignore NOTICEs from the bot and not have to see error\n"
 "    messages; or you might want to use it in combination with\n"
-"    supybot.reply.errorInPrivate so private errors don't open a query window\n"
+"    supybot.reply.error.inPrivate so private errors don't open a query "
+"window\n"
 "    in most IRC clients."
 msgstr ""
-"Determina se il bot invierà i messaggi di errore tramite NOTICE anziché PRIVMSG.\n"
-"    Si può volerlo impostare in modo che gli utenti possano ignorare i NOTICE\n"
-"    provenienti dal bot oppure usarlo in combinazione con supybot.reply.errorInPrivate\n"
-"    affinché gli errori non causino l'apertura di una finestra privata nel client IRC."
+"Determina se il bot invierà i messaggi di errore tramite NOTICE anziché "
+"PRIVMSG.\n"
+"    Si può volerlo impostare in modo che gli utenti possano ignorare i "
+"NOTICE\n"
+"    provenienti dal bot oppure usarlo in combinazione con supybot.reply."
+"errorInPrivate\n"
+"    affinché gli errori non causino l'apertura di una finestra privata nel "
+"client IRC."
 
-#: src/conf.py:396
+#: src/conf.py:571
+#, fuzzy
 msgid ""
-"Determines whether the bot will send an error\n"
-"    message to users who attempt to call a command for which they do not have\n"
-"    the necessary capability.  You may wish to make this True if you don't want\n"
+"Determines whether the bot will *not* provide\n"
+"    details in the error\n"
+"    message to users who attempt to call a command for which they do not "
+"have\n"
+"    the necessary capability.  You may wish to make this True if you don't "
+"want\n"
 "    users to understand the underlying security system preventing them from\n"
 "    running certain commands."
 msgstr ""
-"Determina se il bot invierà un messaggio di errore agli utenti che cercano di usare\n"
-"    un comando per cui non hanno le capacità necessarie. Si può volerlo impostare a\n"
-"    True per evitare che vengano a conoscenza del sistema di sicurezza sottostante\n"
+"Determina se il bot invierà un messaggio di errore agli utenti che cercano "
+"di usare\n"
+"    un comando per cui non hanno le capacità necessarie. Si può volerlo "
+"impostare a\n"
+"    True per evitare che vengano a conoscenza del sistema di sicurezza "
+"sottostante\n"
 "    che impedisce loro di eseguire certi comandi."
 
-#: src/conf.py:403
+#: src/conf.py:579
 msgid ""
 "Determines whether the bot will reply\n"
-"     privately when replying in a channel, rather than replying to the whole\n"
+"     privately when replying in a channel, rather than replying to the "
+"whole\n"
 "     channel."
 msgstr "Determina se il bot risponderà in privato piuttosto che in canale."
 
-#: src/conf.py:408
+#: src/conf.py:584
 msgid ""
 "Determines whether the bot will reply with a\n"
-"    notice when replying in a channel, rather than replying with a privmsg as\n"
+"    notice when replying in a channel, rather than replying with a privmsg "
+"as\n"
 "    normal."
 msgstr "Determina se il bot risponderà con un notice piuttosto che in privato."
 
-#: src/conf.py:414
+#: src/conf.py:590
+#, fuzzy
 msgid ""
 "Determines whether the bot will reply with a\n"
-"    notice when it is sending a private message, in order not to open a /query\n"
-"    window in clients.  This can be overridden by individual users via the user\n"
-"    configuration variable reply.withNoticeWhenPrivate."
+"    notice when it is sending a private message, in order not to open a /"
+"query\n"
+"    window in clients."
 msgstr ""
-"Determina se il bot risponderà con un notice quando gli si invia un messaggio privato\n"
-"    per evitare di aprire una finestra nel client (una /query). Può essere modificato\n"
-"    per singolo utente tramite la variabile di configurazione reply.withNoticeWhenPrivate."
+"Determina se il bot risponderà con un notice quando gli si invia un "
+"messaggio privato\n"
+"    per evitare di aprire una finestra nel client (una /query). Può essere "
+"modificato\n"
+"    per singolo utente tramite la variabile di configurazione reply."
+"withNoticeWhenPrivate."
 
-#: src/conf.py:420
+#: src/conf.py:595
+#, fuzzy
 msgid ""
 "Determines whether the bot will always prefix\n"
-"     theuser's nick to its reply to that user's command."
+"     the user's nick to its reply to that user's command."
 msgstr ""
-"Determina se il bot userà sempre il nick dell'utente come prefisso della risposta al comando richiesto."
+"Determina se il bot userà sempre il nick dell'utente come prefisso della "
+"risposta al comando richiesto."
 
-#: src/conf.py:424
+#: src/conf.py:599
 msgid ""
 "Determines whether the bot should attempt to\n"
-"    reply to all messages even if they don't address it (either via its nick\n"
-"    or a prefix character).  If you set this to True, you almost certainly want\n"
+"    reply to all messages even if they don't address it (either via its "
+"nick\n"
+"    or a prefix character).  If you set this to True, you almost certainly "
+"want\n"
 "    to set supybot.reply.whenNotCommand to False."
 msgstr ""
-"Determina se il bot tenterà di rispondere a tutti i messaggi anche se non richiamato\n"
-"    (tramite il nick o il prefisso). Se impostato a True, si vorrà certamente\n"
+"Determina se il bot tenterà di rispondere a tutti i messaggi anche se non "
+"richiamato\n"
+"    (tramite il nick o il prefisso). Se impostato a True, si vorrà "
+"certamente\n"
 "    impostare supybot.reply.whenNotCommand a False."
 
-#: src/conf.py:430
+#: src/conf.py:605
 msgid ""
 "Determines whether the bot will allow you to\n"
-"    send channel-related commands outside of that channel.  Sometimes people\n"
+"    send channel-related commands outside of that channel.  Sometimes "
+"people\n"
 "    find it confusing if a channel-related command (like Filter.outfilter)\n"
 "    changes the behavior of the channel but was sent outside the channel\n"
 "    itself."
@@ -491,7 +711,7 @@ msgstr ""
 "    comando (come Filter.outfilter) modifichi il comportamento del canale\n"
 "    ma è stato inviato fuori da questo."
 
-#: src/conf.py:437
+#: src/conf.py:612
 msgid ""
 "Determines whether the bot will unidentify\n"
 "    someone when that person changes their nick.  Setting this to True\n"
@@ -502,59 +722,75 @@ msgstr ""
 "    Impostandolo a True, il bot terrà traccia di questi cambiamenti; è\n"
 "    su False in modo predefinito per migliorare leggermente la sicurezza."
 
-#: src/conf.py:443
+#: src/conf.py:618
 msgid ""
 "Determines whether the bot will always join a\n"
-"    channel when it's invited.  If this value is False, the bot will only join\n"
-"    a channel if the user inviting it has the 'admin' capability (or if it's\n"
+"    channel when it's invited.  If this value is False, the bot will only "
+"join\n"
+"    a channel if the user inviting it has the 'admin' capability (or if "
+"it's\n"
 "    explicitly told to join the channel using the Admin.join command)."
 msgstr ""
 "Determina se il bot entrerà sempre in un canale in cui è stato invitato. Se\n"
-"    impostato a False entrerà solo se l'utente che lo invita ha la capacità \"admin\"\n"
-"    (o se gli è stato esplicitamente detto di farlo tramite il comando Admin.join)."
+"    impostato a False entrerà solo se l'utente che lo invita ha la capacità "
+"\"admin\"\n"
+"    (o se gli è stato esplicitamente detto di farlo tramite il comando Admin."
+"join)."
 
-#: src/conf.py:449
+#: src/conf.py:624
 msgid ""
 "Supybot normally replies with the full help\n"
-"    whenever a user misuses a command.  If this value is set to True, the bot\n"
+"    whenever a user misuses a command.  If this value is set to True, the "
+"bot\n"
 "    will only reply with the syntax of the command (the first line of the\n"
 "    help) rather than the full help."
 msgstr ""
 "Quando un utente commette un errore inviando un comando, Supybot risponde\n"
 "    solitamente con l'help completo. Se questo valore è impostato a True,\n"
-"    il bot risponderà solo con la sintassi del comando (la prima riga dell'help)."
+"    il bot risponderà solo con la sintassi del comando (la prima riga "
+"dell'help)."
 
-#: src/conf.py:463
+#: src/conf.py:639
 msgid ""
 "Determines what prefix characters the bot will\n"
-"    reply to.  A prefix character is a single character that the bot will use\n"
-"    to determine what messages are addressed to it; when there are no prefix\n"
-"    characters set, it just uses its nick.  Each character in this string is\n"
+"    reply to.  A prefix character is a single character that the bot will "
+"use\n"
+"    to determine what messages are addressed to it; when there are no "
+"prefix\n"
+"    characters set, it just uses its nick.  Each character in this string "
+"is\n"
 "    interpreted individually; you can have multiple prefix chars\n"
 "    simultaneously, and if any one of them is used as a prefix the bot will\n"
 "    assume it is being addressed."
 msgstr ""
-"Definisce il prefisso con il quale risponderà il bot. Un prefisso è un carattere\n"
-"    che serve a determinare quali messaggi siano indirizzati ad esso; quando non\n"
-"    c'è un prefisso viene utilizzato il suo nick. Ogni carattere è interpretato\n"
+"Definisce il prefisso con il quale risponderà il bot. Un prefisso è un "
+"carattere\n"
+"    che serve a determinare quali messaggi siano indirizzati ad esso; quando "
+"non\n"
+"    c'è un prefisso viene utilizzato il suo nick. Ogni carattere è "
+"interpretato\n"
 "    individualmente ed è possibile impostarne più di uno."
 
-#: src/conf.py:472
+#: src/conf.py:648
 msgid ""
 "Determines what strings the\n"
-"    bot will reply to when they are at the beginning of the message.  Whereas\n"
+"    bot will reply to when they are at the beginning of the message.  "
+"Whereas\n"
 "    prefix.chars can only be one character (although there can be many of\n"
 "    them), this variable is a space-separated list of strings, so you can\n"
 "    set something like '@@ ??' and the bot will reply when a message is\n"
 "    prefixed by either @@ or ??."
 msgstr ""
-"Determina a quali stringhe risponderà il bot quando queste sono all'inizio del\n"
-"    messaggio. Mentre con \"prefix.chars\" può essere solo un carattere (sebbene\n"
-"    possano essercene diversi) questa variabile è una lista separata da spazi,\n"
+"Determina a quali stringhe risponderà il bot quando queste sono all'inizio "
+"del\n"
+"    messaggio. Mentre con \"prefix.chars\" può essere solo un carattere "
+"(sebbene\n"
+"    possano essercene diversi) questa variabile è una lista separata da "
+"spazi,\n"
 "    per cui è possibile ad esempio impostare \"@@ ??\" e far sì che il bot\n"
 "    risponderà sia ad un messaggio prefissato da \"@@\" sia da \"??\"."
 
-#: src/conf.py:479
+#: src/conf.py:655
 msgid ""
 "Determines whether the bot will reply when\n"
 "    people address it by its nick, rather than with a prefix character."
@@ -562,7 +798,7 @@ msgstr ""
 "Determina se il bot risponderà quando gli utenti lo richiamano\n"
 "    tramite il nick piuttosto che con un prefisso."
 
-#: src/conf.py:482
+#: src/conf.py:658
 msgid ""
 "Determines whether the bot will reply when\n"
 "    people address it by its nick at the end of the message, rather than at\n"
@@ -571,28 +807,31 @@ msgstr ""
 "Determina se il bot risponderà quando gli utenti lo richiamano\n"
 "    tramite il nick alla fine del messaggio piuttosto che all'inizio."
 
-#: src/conf.py:486
+#: src/conf.py:662
 msgid ""
 "Determines what extra nicks\n"
-"    the bot will always respond to when addressed by, even if its current nick\n"
+"    the bot will always respond to when addressed by, even if its current "
+"nick\n"
 "    is something else."
 msgstr ""
-"Determina a quali ulteriori nick risponderà il bot, anche se quello attuale è diverso."
+"Determina a quali ulteriori nick risponderà il bot, anche se quello attuale "
+"è diverso."
 
-#: src/conf.py:496
+#: src/conf.py:672
 msgid "The operation succeeded."
 msgstr "L'operazione è riuscita."
 
-#: src/conf.py:497
+#: src/conf.py:673
 msgid ""
 "Determines what message the bot replies with when a command succeeded.\n"
 "    If this configuration variable is empty, no success message will be\n"
 "    sent."
 msgstr ""
 "Determina con quale messagggio risponderà il bot quando un comando è stato\n"
-"    effettuato con successo. Se questa variabile è vuota non verrà inviato alcun messaggio."
+"    effettuato con successo. Se questa variabile è vuota non verrà inviato "
+"alcun messaggio."
 
-#: src/conf.py:502
+#: src/conf.py:678
 msgid ""
 "An error has occurred and has been logged.\n"
 "    Please contact this bot's administrator for more information."
@@ -600,154 +839,187 @@ msgstr ""
 "Si è verificato un errore ed è stato registrato. Per ulteriori informazioni\n"
 "    contattare l'amministratore del bot."
 
-#: src/conf.py:503
+#: src/conf.py:679
 msgid ""
 "\n"
 "    Determines what error message the bot gives when it wants to be\n"
 "    ambiguous."
 msgstr ""
 "\n"
-"    Determina quale messagggio di errore riporterà il bot quando non vuole essere preciso."
+"    Determina quale messagggio di errore riporterà il bot quando non vuole "
+"essere preciso."
 
-#: src/conf.py:508
+#: src/conf.py:684
+#, fuzzy
 msgid ""
 "An error has occurred and has been logged.\n"
-"    Check the logs for more informations."
+"    Check the logs for more information."
 msgstr ""
-"Si è verificato un errore ed è stato registrato. Per ulteriori informazioni controllare i log."
+"Si è verificato un errore ed è stato registrato. Per ulteriori informazioni "
+"controllare i log."
 
-#: src/conf.py:509
+#: src/conf.py:685
 msgid ""
 "Determines what error\n"
 "    message the bot gives to the owner when it wants to be ambiguous."
-msgstr "Determina quale messagggio di errore riporterà il bot all'owner quando non vuole essere preciso."
+msgstr ""
+"Determina quale messagggio di errore riporterà il bot all'owner quando non "
+"vuole essere preciso."
 
-#: src/conf.py:513
+#: src/conf.py:689
 msgid ""
 "Your hostmask doesn't match or your password\n"
 "    is wrong."
 msgstr "La tua hostmask non corrisponde o la password è errata."
 
-#: src/conf.py:514
+#: src/conf.py:690
 msgid ""
 "Determines what message the bot replies with when\n"
-"     someone tries to use a command that requires being identified or having a\n"
+"     someone tries to use a command that requires being identified or having "
+"a\n"
 "    password and neither credential is correct."
 msgstr ""
-"Determina con quale messagggio risponderà il bot quando si prova a utilizzare un comando\n"
-"     per cui bisogna essere identificati, o ha una password, e le credenziali non sono corrette."
+"Determina con quale messagggio risponderà il bot quando si prova a "
+"utilizzare un comando\n"
+"     per cui bisogna essere identificati, o ha una password, e le "
+"credenziali non sono corrette."
 
-#: src/conf.py:520
+#: src/conf.py:696
 msgid ""
 "I can't find %s in my user\n"
-"    database.  If you didn't give a user name, then I might not know what your\n"
+"    database.  If you didn't give a user name, then I might not know what "
+"your\n"
 "    user is, and you'll need to identify before this command might work."
 msgstr ""
-"Non trovo %s nel database degli utenti. Se non fornisci un nome utente non posso\n"
-"    sapere quale sia e dovrai identificarti prima di utilizzare questo comando."
+"Non trovo %s nel database degli utenti. Se non fornisci un nome utente non "
+"posso\n"
+"    sapere quale sia e dovrai identificarti prima di utilizzare questo "
+"comando."
 
-#: src/conf.py:523
+#: src/conf.py:699
 msgid ""
 "Determines what error message the bot replies with when someone tries\n"
 "    to accessing some information on a user the bot doesn't know about."
 msgstr ""
 "Determina con quale messagggio di errore risponderà il bot quando qualcuno\n"
-"    prova ad accedere a informazioni riguardanti un utente di cui il bot non sa nulla."
+"    prova ad accedere a informazioni riguardanti un utente di cui il bot non "
+"sa nulla."
 
-#: src/conf.py:527
+#: src/conf.py:703
 msgid ""
 "You must be registered to use this command.\n"
-"    If you are already registered, you must either identify (using the identify\n"
+"    If you are already registered, you must either identify (using the "
+"identify\n"
 "    command) or add a hostmask matching your current hostmask (using the\n"
 "    \"hostmask add\" command)."
 msgstr ""
-"Per utilizzare questo comando devi essere registrato. Se lo sei già devi identificarti\n"
-"    (tramite il comando \"identify\") o aggiungere una hostmask che corrisponda a quella\n"
+"Per utilizzare questo comando devi essere registrato. Se lo sei già devi "
+"identificarti\n"
+"    (tramite il comando \"identify\") o aggiungere una hostmask che "
+"corrisponda a quella\n"
 "     attuale (tramite il comando \"hostmask add\")."
 
-#: src/conf.py:530
+#: src/conf.py:706
 msgid ""
 "Determines what error message the bot\n"
-"    replies with when someone tries to do something that requires them to be\n"
+"    replies with when someone tries to do something that requires them to "
+"be\n"
 "    registered but they're not currently recognized."
 msgstr ""
-"Determina con quale messagggio risponderà il bot quando si prova a fare qualcosa\n"
+"Determina con quale messagggio risponderà il bot quando si prova a fare "
+"qualcosa\n"
 "    per cui bisogna essere registrati ma non si è attualmente riconosciuti."
 
-#: src/conf.py:535
+#: src/conf.py:711
 msgid ""
 "You don't have the %s capability.  If you\n"
-"    think that you should have this capability, be sure that you are identified\n"
+"    think that you should have this capability, be sure that you are "
+"identified\n"
 "    before trying again.  The 'whoami' command can tell you if you're\n"
 "    identified."
 msgstr ""
-"Non hai la capacità %s; se pensi di averla assicurati di essere identificato prima\n"
+"Non hai la capacità %s; se pensi di averla assicurati di essere identificato "
+"prima\n"
 "    di riprovare. Il comando \"whoami\" ti dirà se lo sei."
 
-#: src/conf.py:538
+#: src/conf.py:714
 msgid ""
 "Determines what error message is given when the bot\n"
-"    is telling someone they aren't cool enough to use the command they tried to\n"
+"    is telling someone they aren't cool enough to use the command they tried "
+"to\n"
 "    use."
 msgstr ""
 "Determina quale messaggio di errore fornire quando il bot dice a qualcuno\n"
 "    di non avere accesso ad un certo comando."
 
-#: src/conf.py:543
+#: src/conf.py:719
 msgid ""
 "You're missing some capability you need.\n"
 "    This could be because you actually possess the anti-capability for the\n"
 "    capability that's required of you, or because the channel provides that\n"
 "    anti-capability by default, or because the global capabilities include\n"
 "    that anti-capability.  Or, it could be because the channel or\n"
-"    supybot.capabilities.default is set to False, meaning that no commands are\n"
-"    allowed unless explicitly in your capabilities.  Either way, you can't do\n"
+"    supybot.capabilities.default is set to False, meaning that no commands "
+"are\n"
+"    allowed unless explicitly in your capabilities.  Either way, you can't "
+"do\n"
 "    what you want to do."
 msgstr ""
-"Ti manca qualche capacità necessaria. Questo potrebbe essere dovuto al fatto che\n"
-"    possiedi una anti-capacità per quella richiesta o perché il canale fornisce\n"
-"    quella anti-capacità in modo predefinito o, ancora, perché le capacità globali\n"
-"    includono tale anti-capacità. Oppure supybot.capabilities.default è impostata a\n"
-"    False, per cui non è permesso l'uso di alcun comando a meno che espressamente\n"
-"    specificato nelle tue capacità (da un amministratore). In ogni caso non ti è\n"
+"Ti manca qualche capacità necessaria. Questo potrebbe essere dovuto al fatto "
+"che\n"
+"    possiedi una anti-capacità per quella richiesta o perché il canale "
+"fornisce\n"
+"    quella anti-capacità in modo predefinito o, ancora, perché le capacità "
+"globali\n"
+"    includono tale anti-capacità. Oppure supybot.capabilities.default è "
+"impostata a\n"
+"    False, per cui non è permesso l'uso di alcun comando a meno che "
+"espressamente\n"
+"    specificato nelle tue capacità (da un amministratore). In ogni caso non "
+"ti è\n"
 "    permesso fare ciò che intendevi."
 
-#: src/conf.py:551
+#: src/conf.py:727
 msgid ""
 "Determines what generic error message is given when the bot is telling\n"
-"    someone that they aren't cool enough to use the command they tried to use,\n"
+"    someone that they aren't cool enough to use the command they tried to "
+"use,\n"
 "    and the author of the code calling errorNoCapability didn't provide an\n"
 "    explicit capability for whatever reason."
 msgstr ""
-"Determina quale messaggio di errore generico fornire quando il bot dice a qualcuno\n"
-"    di non avere accesso ad un certo comando e l'autore del codice che richiama\n"
+"Determina quale messaggio di errore generico fornire quando il bot dice a "
+"qualcuno\n"
+"    di non avere accesso ad un certo comando e l'autore del codice che "
+"richiama\n"
 "    errorNoCapability non ha fornito un'informazione esplicita sul motivo."
 
-#: src/conf.py:557
+#: src/conf.py:733
 msgid ""
 "That operation cannot be done in a\n"
 "    channel."
 msgstr "L'operazione non può essere eseguita in un canale."
 
-#: src/conf.py:558
+#: src/conf.py:734
 msgid ""
 "Determines what error messages the bot sends to people\n"
 "    who try to do things in a channel that really should be done in\n"
 "    private."
 msgstr ""
-"Determina quale messaggio di errore invierà il bot a chi tenta di fare qualcosa\n"
+"Determina quale messaggio di errore invierà il bot a chi tenta di fare "
+"qualcosa\n"
 "    in canale e che dovrebbe invece fare in privato."
 
-#: src/conf.py:563
+#: src/conf.py:739
 msgid ""
 "This may be a bug.  If you think it is,\n"
 "    please file a bug report at\n"
 "    <https://github.com/progval/Limnoria/issues>."
 msgstr ""
-"Questo sembra essere un bug. Se pensi lo sia, invia una segnalazione all'indirizzo\n"
+"Questo sembra essere un bug. Se pensi lo sia, invia una segnalazione "
+"all'indirizzo\n"
 "    <https://github.com/progval/Limnoria/issues>."
 
-#: src/conf.py:566
+#: src/conf.py:742
 msgid ""
 "Determines what message the bot sends when it thinks you've\n"
 "    encountered a bug that the developers don't know about."
@@ -755,43 +1027,65 @@ msgstr ""
 "Determina quale messaggio invierà il bot quando pensa tu abbia trovato\n"
 "    un bug di cui gli sviluppatori non sono a conoscenza."
 
-#: src/conf.py:573
+#: src/conf.py:749
+msgid "$Type #$id: $text (added by $username at $at)"
+msgstr ""
+
+#: src/conf.py:750
+msgid ""
+"Format used by generic database plugins (Lart, Dunno, Prase, Success,\n"
+"    Quote, ...) to show an entry. You can use the following variables:\n"
+"    $type/$types/$Type/$Types (plugin name and variants), $id, $text,\n"
+"    $at (creation time), $userid/$username/$nick (author)."
+msgstr ""
+
+#: src/conf.py:760
 msgid ""
 "A floating point number of seconds to throttle\n"
-"    snarfed URLs, in order to prevent loops between two bots snarfing the same\n"
+"    snarfed URLs, in order to prevent loops between two bots snarfing the "
+"same\n"
 "    URLs and having the snarfed URL in the output of the snarf message."
 msgstr ""
 "Un numero in virgola mobile corrispondente ai secondi di attesa prima di\n"
 "    intercettare lo stesso URL, in modo da evitare che due bot entrino in\n"
 "    un loop infinito intercettandosi a vicenda."
 
-#: src/conf.py:578
+#: src/conf.py:765
 msgid ""
 "Determines the number of seconds\n"
-"    between running the upkeep function that flushes (commits) open databases,\n"
+"    between running the upkeep function that flushes (commits) open "
+"databases,\n"
 "    collects garbage, and records some useful statistics at the debugging\n"
 "     level."
 msgstr ""
-"Determina il numero di secondi tra ogni operazione di mantenimento (flush) che\n"
-"    aggiorna i database, svuota la cache e registra le statistiche utili per il debug."
+"Determina il numero di secondi tra ogni operazione di mantenimento (flush) "
+"che\n"
+"    aggiorna i database, svuota la cache e registra le statistiche utili per "
+"il debug."
 
-#: src/conf.py:584
+#: src/conf.py:771
 msgid ""
 "Determines whether the bot will periodically\n"
 "    flush data and configuration files to disk.  Generally, the only time\n"
 "    you'll want to set this to False is when you want to modify those\n"
 "    configuration files by hand and don't want the bot to flush its current\n"
-"    version over your modifications.  Do note that if you change this to False\n"
+"    version over your modifications.  Do note that if you change this to "
+"False\n"
 "    inside the bot, your changes won't be flushed.  To make this change\n"
 "    permanent, you must edit the registry yourself."
 msgstr ""
-"Determina se il bot salverà periodicamente su disco i dati e le configurazioni.\n"
-"    In genere l'unica occasione per impostarlo a False è quando si vuole modificare\n"
-"    i file manualmente ed evitare che il bot salvi invece i dati che ha in memoria;\n"
-"    se imposti il valore a False tramite il bot i cambiamenti non verranno salvati.\n"
-"    Se vuoi che questa modifica sia permanente devi modificare il registro a mano."
+"Determina se il bot salverà periodicamente su disco i dati e le "
+"configurazioni.\n"
+"    In genere l'unica occasione per impostarlo a False è quando si vuole "
+"modificare\n"
+"    i file manualmente ed evitare che il bot salvi invece i dati che ha in "
+"memoria;\n"
+"    se imposti il valore a False tramite il bot i cambiamenti non verranno "
+"salvati.\n"
+"    Se vuoi che questa modifica sia permanente devi modificare il registro a "
+"mano."
 
-#: src/conf.py:609
+#: src/conf.py:797
 msgid ""
 "Determines what characters are valid for quoting\n"
 "    arguments to commands in order to prevent them from being tokenized.\n"
@@ -801,7 +1095,7 @@ msgstr ""
 ",   ed evitare che vengano tokenizzati.\n"
 "    "
 
-#: src/conf.py:616
+#: src/conf.py:804
 msgid ""
 "Determines whether the bot will allow nested\n"
 "    commands, which rule.  You definitely should keep this on."
@@ -809,7 +1103,7 @@ msgstr ""
 "Determina se il bot permetterà comandi nidificati. È un'ottima\n"
 "    funzionalità, devi assolutamente tenerla attiva."
 
-#: src/conf.py:619
+#: src/conf.py:807
 msgid ""
 "Determines what the maximum number of\n"
 "    nested commands will be; users will receive an error if they attempt\n"
@@ -818,118 +1112,179 @@ msgstr ""
 "Determina il numero massimo di comandi nidificati. Se gli utenti tentano\n"
 "    di utilizzarne di più, riceveranno un errore."
 
-#: src/conf.py:627
+#: src/conf.py:816
+#, fuzzy
 msgid ""
-"Supybot allows you to specify what brackets are\n"
-"    used for your nested commands.  Valid sets of brackets include [], <>, and\n"
-"    {} ().  [] has strong historical motivation, as well as being the brackets\n"
-"    that don't require shift.  <> or () might be slightly superior because they\n"
-"    cannot occur in a nick.  If this string is empty, nested commands will\n"
-"    not be allowed in this channel."
+"Supybot allows you to specify what brackets\n"
+"    are used for your nested commands.  Valid sets of brackets include\n"
+"    [], <>, {}, and ().  [] has strong historical motivation, but <> or\n"
+"    () might be slightly superior because they cannot occur in a nick.\n"
+"    If this string is empty, nested commands will not be allowed in this\n"
+"    channel."
 msgstr ""
-"Supybot permette di specificare quale tipo di parentesi utilizzare per i comandi\n"
-"    nidificati; sono disponibili: [], <>, {} e (). [] hanno forti motivazioni storiche\n"
-"    in quanto non necessitano l'uso di shift. <> o () sono leggermente migliori perché\n"
-"    non utilizzabili in un nick. Se questa stringa è vuota i comandi nidificati non\n"
+"Supybot permette di specificare quale tipo di parentesi utilizzare per i "
+"comandi\n"
+"    nidificati; sono disponibili: [], <>, {} e (). [] hanno forti "
+"motivazioni storiche\n"
+"    in quanto non necessitano l'uso di shift. <> o () sono leggermente "
+"migliori perché\n"
+"    non utilizzabili in un nick. Se questa stringa è vuota i comandi "
+"nidificati non\n"
 "    saranno permessi."
 
-#: src/conf.py:634
+#: src/conf.py:823
 msgid ""
 "Supybot allows nested commands. Enabling this\n"
-"    option will allow nested commands with a syntax similar to UNIX pipes, for\n"
+"    option will allow nested commands with a syntax similar to UNIX pipes, "
+"for\n"
 "    example: 'bot: foo | bar'."
 msgstr ""
-"Supybot permette i comandi nidificati. Abilitare questa opzione ne permetterà l'uso\n"
+"Supybot permette i comandi nidificati. Abilitare questa opzione ne "
+"permetterà l'uso\n"
 "    con una sintassi simile alle pipe UNIX, ad esempio: 'bot: foo | bar'."
 
-#: src/conf.py:639
+#: src/conf.py:828
 msgid ""
 "Determines what commands have default\n"
-"    plugins set, and which plugins are set to be the default for each of those\n"
+"    plugins set, and which plugins are set to be the default for each of "
+"those\n"
 "    commands."
 msgstr ""
-"Determina, quando un comando è presente in più di un plugin, quale sarà utilizzato\n"
+"Determina, quando un comando è presente in più di un plugin, quale sarà "
+"utilizzato\n"
 "    in modo predefinito per ciascuno di questi comandi."
 
-#: src/conf.py:645
+#: src/conf.py:834
 msgid ""
 "Determines what plugins automatically get precedence over all\n"
 "        other plugins when selecting a default plugin for a command.  By\n"
 "        default, this includes the standard loaded plugins.  You probably\n"
-"        shouldn't change this if you don't know what you're doing; if you do\n"
+"        shouldn't change this if you don't know what you're doing; if you "
+"do\n"
 "        know what you're doing, then also know that this set is\n"
 "        case-sensitive."
 msgstr ""
-"Determina quali plugin abbiano la precedenza su tutti gli altri quando se ne\n"
-"        seleziona uno predefinito per un certo comando; di default questo include\n"
-"        i plugin standard caricati. A meno che tu non sappia cosa fare, è probabile\n"
-"        tu non voglia modificare questo comportamento; in caso contrario sappi anche\n"
+"Determina quali plugin abbiano la precedenza su tutti gli altri quando se "
+"ne\n"
+"        seleziona uno predefinito per un certo comando; di default questo "
+"include\n"
+"        i plugin standard caricati. A meno che tu non sappia cosa fare, è "
+"probabile\n"
+"        tu non voglia modificare questo comportamento; in caso contrario "
+"sappi anche\n"
 "        che i nomi sono case sensitive."
 
-#: src/conf.py:660
+#: src/conf.py:844
+msgid ""
+"Allows this bot's owner user to use commands\n"
+"    that grants them shell access. This config variable exists in case you "
+"want\n"
+"    to prevent MITM from the IRC network itself (vulnerable IRCd or IRCops)\n"
+"    from gaining shell access to the bot's server by impersonating the "
+"owner.\n"
+"    Setting this to False also disables plugins and commands that can be\n"
+"    used to indirectly gain shell access."
+msgstr ""
+
+#: src/conf.py:859
+msgid ""
+"Determines the interval used for\n"
+"    the history storage."
+msgstr ""
+
+#: src/conf.py:862
 msgid ""
 "Determines whether the bot will defend itself\n"
 "    against command-flooding."
-msgstr "Determina se il bot si difenderà dall'uso di troppi comandi alla volta (flood)."
+msgstr ""
+"Determina se il bot si difenderà dall'uso di troppi comandi alla volta "
+"(flood)."
 
-#: src/conf.py:663
+#: src/conf.py:865
 msgid ""
 "Determines how many commands users are\n"
-"    allowed per minute.  If a user sends more than this many commands in any\n"
+"    allowed per minute.  If a user sends more than this many commands in "
+"any\n"
 "    60 second period, they will be ignored for\n"
 "    supybot.abuse.flood.command.punishment seconds."
 msgstr ""
-"Determina quanti comandi al minuto permettere agli utenti. Se qualcuno supera\n"
-"    questo valore verrà ignorato per il numero di secondi definito nella variabile\n"
+"Determina quanti comandi al minuto permettere agli utenti. Se qualcuno "
+"supera\n"
+"    questo valore verrà ignorato per il numero di secondi definito nella "
+"variabile\n"
 "    supybot.abuse.flood.command.punishment."
 
-#: src/conf.py:668
+#: src/conf.py:870
 msgid ""
 "Determines how many seconds the bot\n"
 "    will ignore users who flood it with commands."
-msgstr "Determina per quanti secondi il bot ignorerà un utente che abusa dei comandi (flood)."
+msgstr ""
+"Determina per quanti secondi il bot ignorerà un utente che abusa dei comandi "
+"(flood)."
 
-#: src/conf.py:672
+#: src/conf.py:873
+#, fuzzy
+msgid ""
+"Determines whether the bot will notify people\n"
+"    that they're being ignored for command flooding."
+msgstr ""
+"Determina se il bot avvertirà l'utente che è stato ignorato per abuso di "
+"comandi non validi (flood)."
+
+#: src/conf.py:877
 msgid ""
 "Determines whether the bot will defend itself\n"
 "    against invalid command-flooding."
-msgstr "Determina se il bot si difenderà dall'uso di troppi comandi non validi alla volta (flood)."
+msgstr ""
+"Determina se il bot si difenderà dall'uso di troppi comandi non validi alla "
+"volta (flood)."
 
-#: src/conf.py:675
+#: src/conf.py:880
 msgid ""
 "Determines how many invalid commands users\n"
 "    are allowed per minute.  If a user sends more than this many invalid\n"
 "    commands in any 60 second period, they will be ignored for\n"
-"    supybot.abuse.flood.command.invalid.punishment seconds.  Typically, this\n"
+"    supybot.abuse.flood.command.invalid.punishment seconds.  Typically, "
+"this\n"
 "    value is lower than supybot.abuse.flood.command.maximum, since it's far\n"
 "    less likely (and far more annoying) for users to flood with invalid\n"
 "    commands than for them to flood with valid commands."
 msgstr ""
-"Determina quanti comandi non validi al minuto permettere agli utenti. Se qualcuno supera\n"
-"    questo valore verrà ignorato per il numero di secondi definito nella variabile\n"
-"    supybot.abuse.flood.command.invalid.punishment. Solitamente questo valore è inferiore\n"
-"    a quello di supybot.abuse.flood.command.maximum, in quanto è meno probabile che un utente\n"
+"Determina quanti comandi non validi al minuto permettere agli utenti. Se "
+"qualcuno supera\n"
+"    questo valore verrà ignorato per il numero di secondi definito nella "
+"variabile\n"
+"    supybot.abuse.flood.command.invalid.punishment. Solitamente questo "
+"valore è inferiore\n"
+"    a quello di supybot.abuse.flood.command.maximum, in quanto è meno "
+"probabile che un utente\n"
 "    abusi di comandi non validi piuttosto che di quelli validi."
 
-#: src/conf.py:683
+#: src/conf.py:888
 msgid ""
 "Determines how many seconds the bot\n"
 "    will ignore users who flood it with invalid commands.  Typically, this\n"
-"    value is higher than supybot.abuse.flood.command.punishment, since it's far\n"
+"    value is higher than supybot.abuse.flood.command.punishment, since it's "
+"far\n"
 "    less likely (and far more annoying) for users to flood with invalid\n"
 "    commands than for them to flood with valid commands."
 msgstr ""
-"Determina per quanti secondi il bot ignorerà un utente che abusa di comandi non validi (flood).\n"
-"    Solitamente questo valore è superiore a quello di supybot.abuse.flood.command.punishment,\n"
-"    in quanto è meno probabile che un utente abusi di comandi non validi piuttosto che di quelli validi."
+"Determina per quanti secondi il bot ignorerà un utente che abusa di comandi "
+"non validi (flood).\n"
+"    Solitamente questo valore è superiore a quello di supybot.abuse.flood."
+"command.punishment,\n"
+"    in quanto è meno probabile che un utente abusi di comandi non validi "
+"piuttosto che di quelli validi."
 
-#: src/conf.py:689
+#: src/conf.py:894
 msgid ""
 "Determines whether the bot will notify people\n"
 "    that they're being ignored for invalid command flooding."
-msgstr "Determina se il bot avvertirà l'utente che è stato ignorato per abuso di comandi non validi (flood)."
+msgstr ""
+"Determina se il bot avvertirà l'utente che è stato ignorato per abuso di "
+"comandi non validi (flood)."
 
-#: src/conf.py:698
+#: src/conf.py:903
 msgid ""
 "Determines the default length of time a\n"
 "    driver should block waiting for input."
@@ -937,336 +1292,510 @@ msgstr ""
 "Determina la quantità di tempo predefinita durante il quale un driver\n"
 "       di rete debba bloccarsi in attesa dei dati in entrata."
 
-#: src/conf.py:705
+#: src/conf.py:911
 msgid ""
-"Determines what driver module the bot\n"
-"    will use.  Socket, a simple driver based on timeout sockets, is used by\n"
-"    default because it's simple and stable.  Twisted is very stable and simple,\n"
-"    and if you've got Twisted installed, is probably your best bet."
+"Determines what driver module the \n"
+"    bot will use. Current, the only (and default) driver is Socket."
 msgstr ""
-"Determina quale modulo per il driver di rete utilizzerà il bot. Socket, un driver\n"
-"    semplice basato su timeout del socket e usato in modo predefinito per la sua\n"
-"    stabilità. Twisted è molto stabile e semplice, se lo hai installato è\n"
-"    probabilmente la scelta migliore."
 
-#: src/conf.py:711
+#: src/conf.py:915
 msgid ""
 "Determines the maximum time the bot will\n"
 "    wait before attempting to reconnect to an IRC server.  The bot may, of\n"
 "    course, reconnect earlier if possible."
 msgstr ""
-"Determina il tempo massimo che il bot attenderà prima di riconnettersi al server\n"
+"Determina il tempo massimo che il bot attenderà prima di riconnettersi al "
+"server\n"
 "    IRC. Se ne avrà la possibilità potrà comunque connettersi prima."
 
-#: src/conf.py:760
+#: src/conf.py:967
 msgid ""
 "Determines what directory configuration data is\n"
 "    put into."
 msgstr "Determina in quale directory collocare i dati di configurazione."
 
-#: src/conf.py:763
+#: src/conf.py:970
 msgid "Determines what directory data is put into."
 msgstr "Determina in quale directory collocare i dati."
 
-#: src/conf.py:765
+#: src/conf.py:972
 msgid ""
 "Determines what directory backup data is put\n"
 "    into. Set it to /dev/null to disable backup (it is a special value,\n"
 "    so it also works on Windows and systems without /dev/null)."
 msgstr ""
-"Determina in quale directory collocare i dati di backup. Impostare il valore\n"
-"    a /dev/null per disabilitarlo (è un valore speciale che funziona anche su\n"
+"Determina in quale directory collocare i dati di backup. Impostare il "
+"valore\n"
+"    a /dev/null per disabilitarlo (è un valore speciale che funziona anche "
+"su\n"
 "    Windows e sistemi privi di questo device)."
 
-#: src/conf.py:769
+#: src/conf.py:979
 msgid ""
 "Determines what directory temporary files\n"
 "    are put into."
 msgstr "Determina in quale directory collocare i file temporanei."
 
-#: src/conf.py:776
+#: src/conf.py:982
+#, fuzzy
+msgid ""
+"Determines what directory files of the\n"
+"    web server (templates, custom images, ...) are put into."
+msgstr "Determina in quale directory collocare i file temporanei."
+
+#: src/conf.py:995
 msgid ""
 "Determines what directories\n"
 "    the bot will look for plugins in.  Accepts a comma-separated list of\n"
 "    strings.\n"
-"    This means that to add another directory, you can nest the former value and\n"
-"    add a new one.  E.g. you can say: bot: 'config supybot.directories.plugins\n"
+"    This means that to add another directory, you can nest the former value "
+"and\n"
+"    add a new one.  E.g. you can say: bot: 'config supybot.directories."
+"plugins\n"
 "    [config supybot.directories.plugins], newPluginDirectory'."
 msgstr ""
-"Determina in quali directory il bot cercherà i plugin. Accetta un elenco di valori\n"
-"    separati da virgola; ciò significa che se si vuole aggiungere un'altra directory\n"
-"    è possibile nidificare il valore precedente e inserirne uno nuovo. Esempio:\n"
-"    \"config supybot.directories.plugins [config supybot.directories.plugins], nuovaDirectory\"."
+"Determina in quali directory il bot cercherà i plugin. Accetta un elenco di "
+"valori\n"
+"    separati da virgola; ciò significa che se si vuole aggiungere un'altra "
+"directory\n"
+"    è possibile nidificare il valore precedente e inserirne uno nuovo. "
+"Esempio:\n"
+"    \"config supybot.directories.plugins [config supybot.directories."
+"plugins], nuovaDirectory\"."
 
-#: src/conf.py:784
+#: src/conf.py:1003
 msgid ""
-"Determines what plugins will\n"
-"    be loaded."
-msgstr "Determina quali plugin saranno caricati."
+"List of all plugins that were\n"
+"    ever loaded. Currently has no effect whatsoever. You probably want to "
+"use\n"
+"    the 'load' or 'unload' commands, or edit supybot.plugins.<pluginname>\n"
+"    instead of this."
+msgstr ""
 
-#: src/conf.py:787
+#: src/conf.py:1008
 msgid ""
 "Determines whether the bot will always load\n"
 "    important plugins (Admin, Channel, Config, Misc, Owner, and User)\n"
-"    regardless of what their configured state is.  Generally, if these plugins\n"
+"    regardless of what their configured state is.  Generally, if these "
+"plugins\n"
 "    are configured not to load, you didn't do it on purpose, and you still\n"
-"    want them to load.  Users who don't want to load these plugins are smart\n"
+"    want them to load.  Users who don't want to load these plugins are "
+"smart\n"
 "    enough to change the value of this variable appropriately :)"
 msgstr ""
-"Determina se il bot caricherà sempre i plugin importanti (Admin, Channel, Config,\n"
-"    Misc, Owner e User) a prescindere da come siano configurati. In genere se questi\n"
-"    sono impostati per non essere caricati non è stato fatto di proposito e vorrai\n" 
-"    comunque caricarli. Chi non vuole che questo avvenga sarà sufficientemente abile\n"
+"Determina se il bot caricherà sempre i plugin importanti (Admin, Channel, "
+"Config,\n"
+"    Misc, Owner e User) a prescindere da come siano configurati. In genere "
+"se questi\n"
+"    sono impostati per non essere caricati non è stato fatto di proposito e "
+"vorrai\n"
+"    comunque caricarli. Chi non vuole che questo avvenga sarà "
+"sufficientemente abile\n"
 "    nel modificare il valore di questa variabile in modo appropriato :)"
 
-#: src/conf.py:814
+#: src/conf.py:1036
 msgid ""
 "Determines what databases are available for use. If this\n"
-"    value is not configured (that is, if its value is empty) then sane defaults\n"
+"    value is not configured (that is, if its value is empty) then sane "
+"defaults\n"
 "    will be provided."
 msgstr ""
 "Determina quali database rendere disponibili. Se non configurato (ovvero il\n"
 "    valore è vuoto) verrà utilizzato uno predefinito."
 
-#: src/conf.py:820
+#: src/conf.py:1042
 msgid ""
 "Determines what filename will be used\n"
-"    for the users database.  This file will go into the directory specified by\n"
+"    for the users database.  This file will go into the directory specified "
+"by\n"
 "    the supybot.directories.conf variable."
 msgstr ""
-"Determina il nome del file utilizzato per il database degli utenti che finirà\n"
+"Determina il nome del file utilizzato per il database degli utenti che "
+"finirà\n"
 "    nella directory specificata dalla variabile supybot.directories.conf."
 
-#: src/conf.py:824
+#: src/conf.py:1046
 msgid ""
 "Determines how long it takes identification to\n"
-"    time out.  If the value is less than or equal to zero, identification never\n"
+"    time out.  If the value is less than or equal to zero, identification "
+"never\n"
 "    times out."
 msgstr ""
 "Determina per quanto tempo rimarrà identificato un utente. Se il valore è\n"
 "    inferiore o uguale a zero l'identificazione non scadrà mai."
 
-#: src/conf.py:828
+#: src/conf.py:1050
 msgid ""
 "Determines whether the bot will allow users to\n"
 "    unregister their users.  This can wreak havoc with already-existing\n"
-"    databases, so by default we don't allow it.  Enable this at your own risk.\n"
-"    (Do also note that this does not prevent the owner of the bot from using\n"
+"    databases, so by default we don't allow it.  Enable this at your own "
+"risk.\n"
+"    (Do also note that this does not prevent the owner of the bot from "
+"using\n"
 "    the unregister command.)\n"
 "    "
 msgstr ""
-"Determina se il bot permetterà agli utenti di de-registrarsi. Ciò può causare\n"
+"Determina se il bot permetterà agli utenti di de-registrarsi. Ciò può "
+"causare\n"
 "    danni ai database esistenti per cui non è permesso in modo predefinito;\n"
-"    abilitalo a tuo rischio. Nota che questo non impedisce al proprietario del\n"
+"    abilitalo a tuo rischio. Nota che questo non impedisce al proprietario "
+"del\n"
 "    bot (owner) di utilizzare il comando \"unregister\".\n"
 "    "
 
-#: src/conf.py:837
+#: src/conf.py:1059
 msgid ""
 "Determines what filename will be used\n"
-"    for the ignores database.  This file will go into the directory specified\n"
+"    for the ignores database.  This file will go into the directory "
+"specified\n"
 "    by the supybot.directories.conf variable."
 msgstr ""
-"Determina il nome del file utilizzato per il database degli ignore che finirà\n"
+"Determina il nome del file utilizzato per il database degli ignore che "
+"finirà\n"
 "    nella directory specificata dalla variabile supybot.directories.conf."
 
-#: src/conf.py:843
+#: src/conf.py:1065
 msgid ""
 "Determines what filename will be used\n"
-"    for the channels database.  This file will go into the directory specified\n"
+"    for the channels database.  This file will go into the directory "
+"specified\n"
 "    by the supybot.directories.conf variable."
-msgstr "Determina il nome del file utilizzato per il database dei canali che finirà\n"
+msgstr ""
+"Determina il nome del file utilizzato per il database dei canali che finirà\n"
 "    nella directory specificata dalla variabile supybot.directories.conf."
 
-#: src/conf.py:873
+#: src/conf.py:1071
+#, fuzzy
+msgid ""
+"Determines what filename will be used\n"
+"    for the networks database.  This file will go into the directory "
+"specified\n"
+"    by the supybot.directories.conf variable."
+msgstr ""
+"Determina il nome del file utilizzato per il database degli ignore che "
+"finirà\n"
+"    nella directory specificata dalla variabile supybot.directories.conf."
+
+#: src/conf.py:1103
+#, fuzzy
+msgid ""
+"Determines whether the bot will require user\n"
+"    registration to use 'add' commands in database-based Supybot\n"
+"    plugins."
+msgstr ""
+"Determina se il bot si difenderà dall'uso di troppi comandi non validi alla "
+"volta (flood)."
+
+#: src/conf.py:1107
 msgid ""
 "Determines whether database-based plugins that\n"
-"    can be channel-specific will be so.  This can be overridden by individual\n"
+"    can be channel-specific will be so.  This can be overridden by "
+"individual\n"
 "    channels.  Do note that the bot needs to be restarted immediately after\n"
-"    changing this variable or your db plugins may not work for your channel;\n"
+"    changing this variable or your db plugins may not work for your "
+"channel;\n"
 "    also note that you may wish to set\n"
-"    supybot.databases.plugins.channelSpecific.link appropriately if you wish\n"
+"    supybot.databases.plugins.channelSpecific.link appropriately if you "
+"wish\n"
 "    to share a certain channel's databases globally."
 msgstr ""
-"Determina se i plugin che utilizzano un database possano essere specifici per\n"
+"Determina se i plugin che utilizzano un database possano essere specifici "
+"per\n"
 "    un certo canale; ciò è sostituibile per ogni canale. Nota che il bot va\n"
-"    riavviato subito dopo la modifica di questa variabile altrimenti tali plugin\n"
-"    potrebbero non funzionare; se desideri condividere il database di un certo\n"
+"    riavviato subito dopo la modifica di questa variabile altrimenti tali "
+"plugin\n"
+"    potrebbero non funzionare; se desideri condividere il database di un "
+"certo\n"
 "    canale a livello globale è inoltre possibile impostare la variabile\n"
 "    supybot.databases.plugins.channelSpecific.link in modo appropriato."
 
-#: src/conf.py:881
+#: src/conf.py:1115
 msgid ""
 "Determines what channel global\n"
 "    (non-channel-specific) databases will be considered a part of.  This is\n"
-"    helpful if you've been running channel-specific for awhile and want to turn\n"
+"    helpful if you've been running channel-specific for awhile and want to "
+"turn\n"
 "    the databases for your primary channel into global databases.  If\n"
-"    supybot.databases.plugins.channelSpecific.link.allow prevents linking, the\n"
-"    current channel will be used.  Do note that the bot needs to be restarted\n"
-"    immediately after changing this variable or your db plugins may not work\n"
+"    supybot.databases.plugins.channelSpecific.link.allow prevents linking, "
+"the\n"
+"    current channel will be used.  Do note that the bot needs to be "
+"restarted\n"
+"    immediately after changing this variable or your db plugins may not "
+"work\n"
 "    for your channel."
 msgstr ""
-"Determina quali database specifici per un certo canale saranno considerati parte\n"
-"    di uno globale. Utile se ne sono stati utilizzati di specifici per un certo\n"
-"    periodo e li si vuole convertire. Se la variabile supybot.databases.plugins.channelSpecific.link.allow\n"
-"    impedisce il collegamento verrà utilizzato il canale attuale. Nota che il bot va\n"
-"    riavviato subito dopo la modifica di questa variabile altrimenti tali plugin\n"
+"Determina quali database specifici per un certo canale saranno considerati "
+"parte\n"
+"    di uno globale. Utile se ne sono stati utilizzati di specifici per un "
+"certo\n"
+"    periodo e li si vuole convertire. Se la variabile supybot.databases."
+"plugins.channelSpecific.link.allow\n"
+"    impedisce il collegamento verrà utilizzato il canale attuale. Nota che "
+"il bot va\n"
+"    riavviato subito dopo la modifica di questa variabile altrimenti tali "
+"plugin\n"
 "    potrebbero non funzionare."
 
-#: src/conf.py:890
+#: src/conf.py:1124
 msgid ""
 "Determines whether another channel's global\n"
-"    (non-channel-specific) databases will be allowed to link to this channel's\n"
-"    databases.  Do note that the bot needs to be restarted immediately after\n"
-"    changing this variable or your db plugins may not work for your channel.\n"
+"    (non-channel-specific) databases will be allowed to link to this "
+"channel's\n"
+"    databases.  Do note that the bot needs to be restarted immediately "
+"after\n"
+"    changing this variable or your db plugins may not work for your "
+"channel.\n"
 "    "
 msgstr ""
-"Determina se i database globali di un altro canale possano essere collegati a\n"
-"    quelli di questo canale. Nota che il bot va riavviato subito dopo la modifica\n"
+"Determina se i database globali di un altro canale possano essere collegati "
+"a\n"
+"    quelli di questo canale. Nota che il bot va riavviato subito dopo la "
+"modifica\n"
 "    di questa variabile altrimenti tali plugin potrebbero non funzionare.\n"
 "    "
 
-#: src/conf.py:907
+#: src/conf.py:1142
 msgid ""
 "Determines\n"
 "    whether CDB databases will be allowed as a database implementation."
-msgstr "Determina se i database CDB sono permessi come implementazione di un database."
+msgstr ""
+"Determina se i database CDB sono permessi come implementazione di un "
+"database."
 
-#: src/conf.py:910
+#: src/conf.py:1145
 msgid ""
 "Determines how often CDB databases will have\n"
-"    their modifications flushed to disk.  When the number of modified records\n"
-"    is greater than this fraction of the total number of records, the database\n"
+"    their modifications flushed to disk.  When the number of modified "
+"records\n"
+"    is greater than this fraction of the total number of records, the "
+"database\n"
 "    will be entirely flushed to disk."
 msgstr ""
-"Determina la frequenza di salvataggio su disco delle modifiche dei databases CDB.\n"
-"    Quando il numero di dati modificati è più grande di quelli non modificati il\n"
+"Determina la frequenza di salvataggio su disco delle modifiche dei databases "
+"CDB.\n"
+"    Quando il numero di dati modificati è più grande di quelli non "
+"modificati il\n"
 "    database verrà interamente scritto sul disco."
 
-#: src/conf.py:998
+#: src/conf.py:1237
 msgid ""
 "Determines what will be used as the\n"
 "    default banmask style."
 msgstr "Determina il tipo di banmask utilizzata in modo predefinito."
 
-#: src/conf.py:1002
+#: src/conf.py:1241
+#, fuzzy
 msgid ""
-"Determines whether the bot will strictly follow\n"
-"    the RFC; currently this only affects what strings are considered to be\n"
-"    nicks. If you're using a server or a network that requires you to message\n"
-"    a nick such as services@this.network.server then you you should set this to\n"
-"    False."
+"Determines whether the bot will strictly\n"
+"    follow the RFC; currently this only affects what strings are\n"
+"    considered to be nicks. If you're using a server or a network that\n"
+"    requires you to message a nick such as services@this.network.server\n"
+"    then you you should set this to False."
 msgstr ""
-"Determina se il bot seguirà rigorosamente la RFC; attualmente riguarda solo quali\n"
-"    stringhe siano considerate dei nick. Se utilizzi un server o una rete che richiede\n"
-"    di inviare un messaggio a un nick nella forma \"services@this.network.server\", è\n"
+"Determina se il bot seguirà rigorosamente la RFC; attualmente riguarda solo "
+"quali\n"
+"    stringhe siano considerate dei nick. Se utilizzi un server o una rete "
+"che richiede\n"
+"    di inviare un messaggio a un nick nella forma \"services@this.network."
+"server\", è\n"
 "    necessario impostare questo valore a False."
 
-#: src/conf.py:1009
+#: src/conf.py:1248
+msgid ""
+"Determines whether the bot will enable\n"
+"    draft/experimental extensions of the IRC protocol. Setting this to True\n"
+"    may break your bot at any time without warning and/or break your\n"
+"    configuration irreversibly. So keep it False unless you know what you "
+"are\n"
+"    doing."
+msgstr ""
+
+#: src/conf.py:1255
+#, fuzzy
+msgid ""
+"Determines what certificate file (if any) the bot\n"
+"    will use connect with SSL sockets by default."
+msgstr "Determina se il bot tenterà di connettersi a %s tramite un socket SSL."
+
+#: src/conf.py:1259
 msgid ""
 "Determines what user modes the bot will request\n"
-"    from the server when it first connects.  Many people might choose +i; some\n"
-"    networks allow +x, which indicates to the auth services on those networks\n"
+"    from the server when it first connects.  Many people might choose +i; "
+"some\n"
+"    networks allow +x, which indicates to the auth services on those "
+"networks\n"
 "    that you should be given a fake host."
 msgstr ""
-"Determina quali modalità utente (mode) il bot chiederà al server quando si connette.\n"
-"    Molti utenti vorranno +i mentre per altre reti è +x, indica ai servizi che si\n"
+"Determina quali modalità utente (mode) il bot chiederà al server quando si "
+"connette.\n"
+"    Molti utenti vorranno +i mentre per altre reti è +x, indica ai servizi "
+"che si\n"
 "    desidera avere l'hostmask camuffata (vhost) o parzialmente crittata."
 
-#: src/conf.py:1015
+#: src/conf.py:1265
+#, fuzzy
 msgid ""
 "Determines what vhost the bot will bind to before\n"
-"    connecting to the IRC server."
+"    connecting a server (IRC, HTTP, ...) via IPv4."
 msgstr ""
 "Determina quale vhost associare al bot prima di connettersi al server IRC."
 
-#: src/conf.py:1019
+#: src/conf.py:1269
+#, fuzzy
+msgid ""
+"Determines what vhost the bot will bind to before\n"
+"    connecting a server (IRC, HTTP, ...) via IPv6."
+msgstr ""
+"Determina quale vhost associare al bot prima di connettersi al server IRC."
+
+#: src/conf.py:1273
+#, fuzzy
 msgid ""
 "Determines how many old messages the bot will\n"
-"    keep around in its history.  Changing this variable will not take effect\n"
-"    until the bot is restarted."
+"    keep around in its history.  Changing this variable will not take "
+"effect\n"
+"    on a network until it is reconnected."
 msgstr ""
 "Determina quanti messaggi vecchi terrà il bot nella cronologia. La modifica\n"
 "    di questa variabile non avrà effetto finché non si riavvia il bot."
 
-#: src/conf.py:1024
+#: src/conf.py:1278
 msgid ""
 "A floating point number of seconds to throttle\n"
-"    queued messages -- that is, messages will not be sent faster than once per\n"
+"    queued messages -- that is, messages will not be sent faster than once "
+"per\n"
 "    throttleTime seconds."
 msgstr ""
 "Un numero in virgola mobile corrispondente ai secondi di attesa prima di\n"
 "    inviare i messaggi in coda; vale a dire che verranno inviati una volta\n"
 "    ogni numero di secondi specificati."
 
-#: src/conf.py:1029
+#: src/conf.py:1283
 msgid ""
 "Determines whether the bot will send PINGs to\n"
 "    the server it's connected to in order to keep the connection alive and\n"
 "    discover earlier when it breaks.  Really, this option only exists for\n"
-"    debugging purposes: you always should make it True unless you're testing\n"
+"    debugging purposes: you always should make it True unless you're "
+"testing\n"
 "    some strange server issues."
 msgstr ""
-"Determina se il bot invierà PING al server sul quale è connesso per mantenere\n"
+"Determina se il bot invierà PING al server sul quale è connesso per "
+"mantenere\n"
 "    attiva la connessione e diagnosticare in tempo se c'è un'interruzione.\n"
 "    In realtà questa opzione esiste solo per scopi di debug, a meno che non\n"
-"    si incontrino problemi strani con il server, andrebbe sempre tenuta a True."
+"    si incontrino problemi strani con il server, andrebbe sempre tenuta a "
+"True."
 
-#: src/conf.py:1036
+#: src/conf.py:1290
 msgid ""
 "Determines the number of seconds between sending\n"
 "    pings to the server, if pings are being sent to the server."
-msgstr "Determina il numero di secondi tra ogni invio di PING al server, se questo avviene."
+msgstr ""
+"Determina il numero di secondi tra ogni invio di PING al server, se questo "
+"avviene."
 
-#: src/conf.py:1041
+#: src/conf.py:1295
 msgid ""
 "Determines whether the bot will refuse\n"
 "    duplicated messages to be queued for delivery to the server.  This is a\n"
 "    safety mechanism put in place to prevent plugins from sending the same\n"
-"    message multiple times; most of the time it doesn't matter, unless you're\n"
+"    message multiple times; most of the time it doesn't matter, unless "
+"you're\n"
 "    doing certain kinds of plugin hacking."
 msgstr ""
-"Determina se il bot rifiuterà di accodare messaggi doppi da spedire al server.\n"
-"    Questo è un meccanismo di sicurezza per evitare che i plugin inviino più volte\n"
-"    lo stesso messaggio; il più delle volte non ha importanza, tranne che non si\n"
+"Determina se il bot rifiuterà di accodare messaggi doppi da spedire al "
+"server.\n"
+"    Questo è un meccanismo di sicurezza per evitare che i plugin inviino più "
+"volte\n"
+"    lo stesso messaggio; il più delle volte non ha importanza, tranne che "
+"non si\n"
 "    facciano delle modifiche ai plugin."
 
-#: src/conf.py:1049
+#: src/conf.py:1303
 msgid ""
 "Determines how many seconds must elapse between\n"
 "    JOINs sent to the server."
-msgstr "Determina quanti secondi debbano trascorrere tra un invio di JOIN e l'altro."
+msgstr ""
+"Determina quanti secondi debbano trascorrere tra un invio di JOIN e l'altro."
 
-#: src/conf.py:1057
+#: src/conf.py:1311
 msgid ""
 "Determines how many bytes the bot will\n"
-"    'peek' at when looking through a URL for a doctype or title or something\n"
-"    similar.  It'll give up after it reads this many bytes, even if it hasn't\n"
+"    'peek' at when looking through a URL for a doctype or title or "
+"something\n"
+"    similar.  It'll give up after it reads this many bytes, even if it "
+"hasn't\n"
 "    found what it was looking for."
 msgstr ""
-"Determina il numero di byte entro i quali il bot \"sbircierà\" cercando il doctype,\n"
-"    il title o altri tag HTML simili in un URL. Abbandonerà la ricerca dopo aver\n"
-"    letto questa quantità di byte, anche se non trova quel che stava cercando."
+"Determina il numero di byte entro i quali il bot \"sbircierà\" cercando il "
+"doctype,\n"
+"    il title o altri tag HTML simili in un URL. Abbandonerà la ricerca dopo "
+"aver\n"
+"    letto questa quantità di byte, anche se non trova quel che stava "
+"cercando."
 
-#: src/conf.py:1063
+#: src/conf.py:1335
+#, fuzzy
 msgid ""
-"Determines what proxy all HTTP requests should go\n"
+"Determines what HTTP proxy all HTTP requests should go\n"
 "    through.  The value should be of the form 'host:port'."
 msgstr ""
 "Determina tramite quale proxy debbano passare le richieste HTTP.\n"
 "    Il valore deve essere nella forma \"host:porta\"."
 
-#: src/conf.py:1083
-msgid "Determines what host the HTTP server will bind."
+#: src/conf.py:1375
+msgid ""
+"If set, the Accept-Language HTTP header will be set to this\n"
+"    value for requests. Useful for overriding the auto-detected language "
+"based on\n"
+"    the server's location."
+msgstr ""
+
+#: src/conf.py:1381
+msgid ""
+"If set, the User-Agent HTTP header will be set to a randomly\n"
+"    selected value from this comma-separated list of strings for requests."
+msgstr ""
+
+#: src/conf.py:1389
+msgid ""
+"Determines whether server certificates\n"
+"    will be verified, which checks whether the server certificate is signed\n"
+"    by a known certificate authority, and aborts the connection if it is "
+"not.\n"
+"    This is assumed to be True of serverFingerprints or "
+"authorityCertificate\n"
+"    is set."
+msgstr ""
+
+#: src/conf.py:1416
+msgid ""
+"If true, uses IPV6_V6ONLY to disable\n"
+"    forwaring of IPv4 traffic to IPv6 sockets. On *nix, has the same\n"
+"    effect as setting kernel variable net.ipv6.bindv6only to 1."
+msgstr ""
+
+#: src/conf.py:1420
+#, fuzzy
+msgid ""
+"Space-separated list of IPv4 hosts the HTTP server\n"
+"    will bind."
 msgstr "Determina a quale host si collegherà il server HTTP."
 
-#: src/conf.py:1085
+#: src/conf.py:1423
+#, fuzzy
+msgid ""
+"Space-separated list of IPv6 hosts the HTTP server will\n"
+"    bind."
+msgstr "Determina a quale porta si collegherà il server HTTP."
+
+#: src/conf.py:1426
 msgid ""
 "Determines what port the HTTP server will\n"
 "    bind."
 msgstr "Determina a quale porta si collegherà il server HTTP."
 
-#: src/conf.py:1088
+#: src/conf.py:1429
 msgid ""
 "Determines whether the server will stay\n"
 "    alive if no plugin is using it. This also means that the server will\n"
@@ -1275,71 +1804,105 @@ msgstr ""
 "Definisce se il server rimarrà in esecuzione se nessun plugin lo utilizza.\n"
 "    Ciò significa che verrà avviato anche se non utilizzato."
 
-#: src/conf.py:1092
+#: src/conf.py:1433
+#, fuzzy
 msgid ""
-"Determines the content of the robots.txt file,\n"
-"    served on the server to search engine."
-msgstr ""
-"Determina il contenuto del file robots.txt, fornito dal server al motore di ricerca."
+"Determines the path of the file served as\n"
+"    favicon to browsers."
+msgstr "Determina a quale porta si collegherà il server HTTP."
 
-#: src/conf.py:1100
+#: src/conf.py:1436
+msgid ""
+"Determines the public URL of the server.\n"
+"    By default it is http://<hostname>:<port>/, but you will want to change\n"
+"    this if there is a reverse proxy (nginx, apache, ...) in front of\n"
+"    the bot."
+msgstr ""
+
+#: src/conf.py:1446
+#, fuzzy
 msgid ""
 "Determines whether the bot will ignore\n"
-"    unregistered users by default.  Of course, that'll make it particularly\n"
-"    hard for those users to register or identify with the bot, but that's your\n"
-"    problem to solve."
+"    unidentified users by default.  Of course, that'll make it\n"
+"    particularly hard for those users to register or identify with the bot\n"
+"    without adding their hostmasks, but that's your problem to solve."
 msgstr ""
 "Determina se il bot ignorerà gli utenti non registrati in modo predefinito.\n"
-"    Naturalmente renderà difficoltoso registrarsi o identificarsi, ma questo è un tuo problema."
+"    Naturalmente renderà difficoltoso registrarsi o identificarsi, ma questo "
+"è un tuo problema."
 
-#: src/conf.py:1107
+#: src/conf.py:1453
 msgid ""
 "A string that is the external IP of the bot.  If this is the\n"
-"   empty string, the bot will attempt to find out its IP dynamically (though\n"
-"   sometimes that doesn't work, hence this variable)."
+"   empty string, the bot will attempt to find out its IP dynamically "
+"(though\n"
+"   sometimes that doesn't work, hence this variable). This variable is not "
+"used\n"
+"   by Limnoria and its built-in plugins: see supybot.protocols.irc.vhost /\n"
+"   supybot.protocols.irc.vhost6 to set the IRC bind host, and\n"
+"   supybot.servers.http.hosts4 / supybot.servers.http.hosts6 to set the "
+"HTTP\n"
+"   server bind host."
 msgstr ""
-"Una stringa equivalente all'IP esterno del bot. Se lasciata vuota, il bot tenterà\n"
-"   di risolvere il suo IP dinamicamente (sebbene a volte non funzioni, ecco quindi\n"
-"   lo scopo di questa variabile)."
 
-#: src/conf.py:1121
+#: src/conf.py:1472
 msgid ""
 "Determines what the default timeout for socket\n"
-"    objects will be.  This means that *all* sockets will timeout when this many\n"
-"    seconds has gone by (unless otherwise modified by the author of the code\n"
+"    objects will be.  This means that *all* sockets will timeout when this "
+"many\n"
+"    seconds has gone by (unless otherwise modified by the author of the "
+"code\n"
 "    that uses the sockets)."
 msgstr ""
-"Determina il timeout predefinito per i socket. Ciò significa che *tutti* i socket\n"
-"    scadranno dopo questo periodo (a meno che l'utore del codice ne abbia modificato il valore)."
+"Determina il timeout predefinito per i socket. Ciò significa che *tutti* i "
+"socket\n"
+"    scadranno dopo questo periodo (a meno che l'utore del codice ne abbia "
+"modificato il valore)."
 
-#: src/conf.py:1127
+#: src/conf.py:1478
 msgid ""
 "Determines what file the bot should write its PID\n"
-"    (Process ID) to, so you can kill it more easily.  If it's left unset (as is\n"
-"    the default) then no PID file will be written.  A restart is required for\n"
+"    (Process ID) to, so you can kill it more easily.  If it's left unset (as "
+"is\n"
+"    the default) then no PID file will be written.  A restart is required "
+"for\n"
 "    changes to this variable to take effect."
 msgstr ""
-"Determina in quale file il bot salverà il suo PID (Process ID) in modo che si possa\n"
-"    terminare più facilmente. Se non impostata, il PID non verrà scritto in nessun\n"
-"    file. Perché le modifiche a questa variabile abbiano effetto è necessario un riavvio."
+"Determina in quale file il bot salverà il suo PID (Process ID) in modo che "
+"si possa\n"
+"    terminare più facilmente. Se non impostata, il PID non verrà scritto in "
+"nessun\n"
+"    file. Perché le modifiche a questa variabile abbiano effetto è "
+"necessario un riavvio."
 
-#: src/conf.py:1137
+#: src/conf.py:1488
 msgid ""
 "Determines whether the bot will automatically\n"
 "    thread all commands."
 msgstr "Determina se il bot userà i thread per tutti i comandi."
 
-#: src/conf.py:1140
+#: src/conf.py:1491
 msgid ""
 "Determines whether the bot will automatically\n"
-"    flush all flushers *very* often.  Useful for debugging when you don't know\n"
+"    flush all flushers *very* often.  Useful for debugging when you don't "
+"know\n"
 "    what's breaking or when, but think that it might be logged."
 msgstr ""
-"Determina se il bot eseguirà tutte le operazioni di mantenimento (flush) *molto*\n"
-"    spesso. Utile per fare il debug quando non si sa cosa non funziona o quando\n"
+"Determina se il bot eseguirà tutte le operazioni di mantenimento (flush) "
+"*molto*\n"
+"    spesso. Utile per fare il debug quando non si sa cosa non funziona o "
+"quando\n"
 "    si ritiene necessario tenerlo sotto controllo."
 
-#: src/httpserver.py:131
+#: src/httpserver.py:62
+msgid "Supybot Web server index"
+msgstr "Indice del server web di Supybot"
+
+#: src/httpserver.py:67
+msgid "Here is a list of the plugins that have a Web interface:"
+msgstr "Ecco un elenco dei plugin che hanno un'interfaccia web:"
+
+#: src/httpserver.py:245
 msgid ""
 "\n"
 "    This is a default response of the Supybot HTTP server. If you see this\n"
@@ -1347,59 +1910,223 @@ msgid ""
 "    neither overriden this message or defined an handler for this query."
 msgstr ""
 "\n"
-"    Questa è la risposta predefinita del server HTTP di Supybot. Se stai leggendo\n"
-"    questo messaggio significa probabilmente che stai sviluppando un plugin e non\n"
+"    Questa è la risposta predefinita del server HTTP di Supybot. Se stai "
+"leggendo\n"
+"    questo messaggio significa probabilmente che stai sviluppando un plugin "
+"e non\n"
 "    hai sovrascritto questo messaggio o definito un gestore per questa query."
 
-#: src/httpserver.py:152
+#: src/httpserver.py:291
 msgid ""
 "\n"
-"    I am a pretty clever IRC bot, but I suck at serving Web pages, particulary\n"
+"    I am a pretty clever IRC bot, but I suck at serving Web pages, "
+"particulary\n"
 "    if I don't know what to serve.\n"
 "    What I'm saying is you just triggered a 404 Not Found, and I am not\n"
 "    trained to help you in such a case."
 msgstr ""
 "\n"
-"    Sono un bot IRC piuttosto intelligente ma terribile quando è ora di servire pagine\n"
-"    web, in particolare se non cosa servire. Quel che sto cercando di dirti è che hai\n"
-"    appena causato un \"404 Not Found\" e non sono addestrato per aiutarti in questa circostanza."
+"    Sono un bot IRC piuttosto intelligente ma terribile quando è ora di "
+"servire pagine\n"
+"    web, in particolare se non cosa servire. Quel che sto cercando di dirti "
+"è che hai\n"
+"    appena causato un \"404 Not Found\" e non sono addestrato per aiutarti "
+"in questa circostanza."
 
-#: src/httpserver.py:169
+#: src/httpserver.py:310
 msgid "Request not handled."
 msgstr "Richiesta non gestita."
 
-#: src/httpserver.py:173
-msgid "Supybot Web server index"
-msgstr "Indice del server web di Supybot"
-
-#: src/httpserver.py:176
-msgid "Here is a list of the plugins that have a Web interface:"
-msgstr "Ecco un elenco dei plugin che hanno un'interfaccia web:"
-
-#: src/httpserver.py:185
+#: src/httpserver.py:317
 msgid "No plugins available."
 msgstr "Nessun plugin disponibile."
 
-#: src/httpserver.py:199
+#: src/httpserver.py:335 src/httpserver.py:353 src/httpserver.py:391
 msgid "Request not handled"
 msgstr "Richiesta non gestita"
 
-#: src/questions.py:60
+#: src/httpserver.py:378
+msgid "No favicon set."
+msgstr ""
+
+#: src/ircutils.py:573
+msgid "is an op on %L"
+msgstr ""
+
+#: src/ircutils.py:575
+msgid "is a halfop on %L"
+msgstr ""
+
+#: src/ircutils.py:577
+msgid "is voiced on %L"
+msgstr ""
+
+#: src/ircutils.py:580
+msgid "is also on %L"
+msgstr ""
+
+#: src/ircutils.py:582
+msgid "is on %L"
+msgstr ""
+
+#: src/ircutils.py:585
+msgid "isn't on any publicly visible channels"
+msgstr ""
+
+#: src/ircutils.py:593 src/ircutils.py:594 src/ircutils.py:600
+msgid "<unknown>"
+msgstr ""
+
+#: src/ircutils.py:602
+#, fuzzy
+msgid " %s is away: %s."
+msgstr "%s non è un %s valido."
+
+#: src/ircutils.py:607
+msgid " identified"
+msgstr ""
+
+#: src/ircutils.py:613
+msgid "%s (%s) has been%s on server %s since %s (idle for %s). %s %s.%s"
+msgstr ""
+
+#: src/ircutils.py:617
+msgid "%s (%s) has been%s on server %s and disconnected on %s."
+msgstr ""
+
+#: src/questions.py:61
 msgid "Sorry, that response was not an option."
 msgstr "Spiacente, questa risposta non è un'opzione."
 
-#: src/questions.py:106
+#: src/questions.py:110
 msgid "Sorry, you must enter a value."
 msgstr "Spiacente, devi inserire un valore."
 
-#: src/questions.py:126
+#: src/questions.py:130
 msgid "Enter password: "
 msgstr "Inserire la password: "
 
-#: src/questions.py:128
+#: src/questions.py:132
 msgid "Re-enter password: "
 msgstr "Inserire nuovamente la password: "
 
-#: src/questions.py:141
+#: src/questions.py:145
 msgid "Passwords don't match."
 msgstr "Le password non corrispondono."
+
+#: src/registry.py:219
+#, fuzzy
+msgid "%r is not a valid entry in %r"
+msgstr "%s non è un %s valido."
+
+#: src/registry.py:568
+msgid "Value must be either True or False (or On or Off), not %r."
+msgstr ""
+
+#: src/registry.py:585
+msgid "Value must be an integer, not %r."
+msgstr ""
+
+#: src/registry.py:595
+#, fuzzy
+msgid "Value must be a non-negative integer, not %r."
+msgstr "intero non negativo"
+
+#: src/registry.py:604
+msgid "Value must be positive (non-zero) integer, not %r."
+msgstr ""
+
+#: src/registry.py:613
+msgid "Value must be a floating-point number, not %r."
+msgstr ""
+
+#: src/registry.py:629
+msgid "Value must be a floating-point number greater than zero, not %r."
+msgstr ""
+
+#: src/registry.py:640
+msgid "Value must be a floating point number in the range [0, 1], not %r."
+msgstr ""
+
+#: src/registry.py:655
+msgid "Value should be a valid Python string, not %r."
+msgstr ""
+
+#: src/registry.py:693
+msgid "Valid values include %L."
+msgstr ""
+
+#: src/registry.py:695
+msgid "Valid values include %L, not %%r."
+msgstr ""
+
+#: src/registry.py:769
+msgid "Value must be a valid regular expression, not %r."
+msgstr ""
+
+#: src/utils/gen.py:113
+msgid "year"
+msgstr ""
+
+#: src/utils/gen.py:116
+msgid "week"
+msgstr ""
+
+#: src/utils/gen.py:119
+msgid "day"
+msgstr ""
+
+#: src/utils/gen.py:122
+msgid "hour"
+msgstr ""
+
+#: src/utils/gen.py:126
+msgid "minute"
+msgstr ""
+
+#: src/utils/gen.py:129
+msgid "second"
+msgstr ""
+
+#: src/utils/gen.py:138
+msgid "%s ago"
+msgstr ""
+
+#: src/utils/str.py:349
+msgid "and"
+msgstr ""
+
+#~ msgid ""
+#~ "Determines what driver module the bot\n"
+#~ "    will use.  Socket, a simple driver based on timeout sockets, is used "
+#~ "by\n"
+#~ "    default because it's simple and stable.  Twisted is very stable and "
+#~ "simple,\n"
+#~ "    and if you've got Twisted installed, is probably your best bet."
+#~ msgstr ""
+#~ "Determina quale modulo per il driver di rete utilizzerà il bot. Socket, "
+#~ "un driver\n"
+#~ "    semplice basato su timeout del socket e usato in modo predefinito per "
+#~ "la sua\n"
+#~ "    stabilità. Twisted è molto stabile e semplice, se lo hai installato "
+#~ "è\n"
+#~ "    probabilmente la scelta migliore."
+
+#~ msgid ""
+#~ "Determines the content of the robots.txt file,\n"
+#~ "    served on the server to search engine."
+#~ msgstr ""
+#~ "Determina il contenuto del file robots.txt, fornito dal server al motore "
+#~ "di ricerca."
+
+#~ msgid ""
+#~ "A string that is the external IP of the bot.  If this is the\n"
+#~ "   empty string, the bot will attempt to find out its IP dynamically "
+#~ "(though\n"
+#~ "   sometimes that doesn't work, hence this variable)."
+#~ msgstr ""
+#~ "Una stringa equivalente all'IP esterno del bot. Se lasciata vuota, il bot "
+#~ "tenterà\n"
+#~ "   di risolvere il suo IP dinamicamente (sebbene a volte non funzioni, "
+#~ "ecco quindi\n"
+#~ "   lo scopo di questa variabile)."

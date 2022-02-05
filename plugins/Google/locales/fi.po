@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Google plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 14:10+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: config.py:39
+#: config.py:40
 msgid ""
 "The Google plugin has the functionality to watch for URLs\n"
 "              that match a specific pattern. (We call this a snarfer)\n"
@@ -29,15 +29,15 @@ msgstr ""
 " Kun supybot näkee sellaisen URL-osoitteen, se jäsentää verkkosivun\n"
 " tiedot ja vastaa tuloksilla."
 
-#: config.py:43
+#: config.py:44
 msgid "Do you want the Google search snarfer enabled by default?"
 msgstr "Tahdotko Google haku kaappaajan olevan oletuksenä käytössä?"
 
-#: config.py:89
+#: config.py:90
 msgid "Value must be 1 <= n <= 8"
 msgstr "Arvon täytyy olla 1 <= n <= 8"
 
-#: config.py:100
+#: config.py:101
 msgid ""
 "Determines the URL that will be sent to Google for\n"
 "    the Referer field of the search requests.  If this value is empty, a\n"
@@ -49,7 +49,7 @@ msgstr ""
 "    Referer luodaan seuraavassa muodossa:\n"
 "    http://$palvelin/$botinNimi"
 
-#: config.py:105
+#: config.py:106
 msgid ""
 "Determines the base URL used for\n"
 "    requests."
@@ -57,7 +57,7 @@ msgstr ""
 "Märittää perus URL-osoitteen, jota käytetään\n"
 " hakupyynnöille."
 
-#: config.py:108
+#: config.py:109
 msgid ""
 "Determines whether the search snarfer is\n"
 "    enabled.  If so, messages (even unaddressed ones) beginning with the "
@@ -71,7 +71,7 @@ msgstr ""
 "    'google' tuovat ensinmäisen URLin jonka Google haku palauttaa\n"
 "    kanavalle."
 
-#: config.py:113
+#: config.py:114
 msgid ""
 "Determines whether the word 'google' in the\n"
 "    bot's output will be made colorful (like Google's logo)."
@@ -79,17 +79,17 @@ msgstr ""
 "Määrittää tehdäänkö sana 'google'\n"
 "    botin ulostulossa värikkääksi (kuten Googlen logo)."
 
-#: config.py:116
+#: config.py:117
 msgid "Determines whether results are bolded."
 msgstr "Määrittää korostetaanko viestit."
 
-#: config.py:118
+#: config.py:119
 msgid ""
 "Determines whether results are sent in\n"
 "    different lines or all in the same one."
 msgstr "Määrittää lähetetäänkö tulokset eri vai samoilla riveillä."
 
-#: config.py:121
+#: config.py:122
 msgid ""
 "Determines the maximum number of results returned\n"
 "    from the google command."
@@ -97,7 +97,7 @@ msgstr ""
 "Määrittää maksimi numeron tuloksia, jotka palaavat\n"
 "    Google komennolla."
 
-#: config.py:124
+#: config.py:125
 msgid ""
 "Determines what default language is used in\n"
 "    searches.  If left empty, no specific language will be requested."
@@ -105,11 +105,11 @@ msgstr ""
 "Määrittää mitä oletuskieltä käytetään hauissa.\n"
 "     jos jätetty tyhjäksi, yhtään tiettyä kieltä ei pyydetä."
 
-#: config.py:124
+#: config.py:125
 msgid "en"
 msgstr "en"
 
-#: config.py:127
+#: config.py:128
 msgid ""
 "Determines what level of search filtering to use\n"
 "    by default.  'active' - most filtering, 'moderate' - default filtering,\n"
@@ -120,19 +120,43 @@ msgstr ""
 "suodatus,\n"
 "    'off' - ei suodatusta."
 
-#: plugin.py:52
+#: plugin.py:50
 msgid ""
-"This is a simple plugin to provide access to the Google services we\n"
-"    all know and love from our favorite IRC bot."
+"\n"
+"    This is a simple plugin to provide access to the Google services we\n"
+"    all know and love from our favorite IRC bot.\n"
+"\n"
+"    1. google\n"
+"\n"
+"       Searches for a string and gives you 3 results from Google search\n"
+"       ``!google something``\n"
+"\n"
+"    2. lucky\n"
+"\n"
+"       Return the first result (Google's \"I'm Feeling Lucky\" search)\n"
+"       ``!lucky something``\n"
+"\n"
+"    3. calc\n"
+"\n"
+"       Does mathematic calculations\n"
+"       ``!calc 5+4``\n"
+"\n"
+"    4. translate\n"
+"\n"
+"       Translates a string\n"
+"       ``!translate en ar test``\n"
+"\n"
+"    Check: `Supported language codes`_\n"
+"\n"
+"    .. _Supported language codes: <https://cloud.google.com/translate/v2/"
+"using_rest#language-params>`\n"
+"    "
 msgstr ""
-"Tämä on yksinkertainen plugini tarjoamaan pääsyn Googlen palveluihin, jotka "
-"me kaikki tunnemme, ja joita me kaikki\n"
-" rakastamme suosikki IRC-botistamme."
 
-#: plugin.py:86
+#: plugin.py:116
+#, fuzzy
 msgid ""
-"Perform a search using Google's AJAX API.\n"
-"        search(\"search phrase\", options={})\n"
+"search(\"search phrase\", options={})\n"
 "\n"
 "        Valid options are:\n"
 "            smallsearch - True/False (Default: False)\n"
@@ -151,15 +175,11 @@ msgstr ""
 "                       (Oletus: \"lang_en\")\n"
 "        "
 
-#: plugin.py:125 plugin.py:191
-msgid "We broke The Google!"
-msgstr "Me hajotimme Googlen!"
-
-#: plugin.py:150
+#: plugin.py:179
 msgid "No matches found."
 msgstr "Osumia ei löytynyt."
 
-#: plugin.py:158
+#: plugin.py:187
 msgid ""
 "[--snippet] <search>\n"
 "\n"
@@ -173,11 +193,11 @@ msgstr ""
 "        Jos --snippet on annettu, palauttaa myös pätkän sivun tekstistä.\n"
 "        "
 
-#: plugin.py:175
+#: plugin.py:206
 msgid "Google found nothing."
 msgstr "Google ei löytänyt mitään."
 
-#: plugin.py:180
+#: plugin.py:211
 msgid ""
 "<search> [--{filter,language} <value>]\n"
 "\n"
@@ -195,7 +215,7 @@ msgstr ""
 "        hyväksyy suodatus tason ('active', 'moderate', 'off').\n"
 "        "
 
-#: plugin.py:208
+#: plugin.py:236
 msgid ""
 "<url>\n"
 "\n"
@@ -208,11 +228,11 @@ msgstr ""
 "saatavilla.\n"
 "        "
 
-#: plugin.py:219
+#: plugin.py:247
 msgid "Google seems to have no cache for that site."
 msgstr "Googlella ei näytä olevan välimuistia tuolle sivulle."
 
-#: plugin.py:224
+#: plugin.py:253
 msgid ""
 "<search string> <search string> [<search string> ...]\n"
 "\n"
@@ -227,12 +247,20 @@ msgstr ""
 "        pienimpään.\n"
 "        "
 
-#: plugin.py:247
+#: plugin.py:309
+#, fuzzy
+msgid "No translations found."
+msgstr "Osumia ei löytynyt."
+
+#: plugin.py:313
+#, fuzzy
 msgid ""
 "<source language> [to] <target language> <text>\n"
 "\n"
 "        Returns <text> translated from <source language> into <target\n"
-"        language>.\n"
+"        language>. <source language> and <target language> take language\n"
+"        codes (not language names), which are listed here:\n"
+"        https://cloud.google.com/translate/docs/languages\n"
 "        "
 msgstr ""
 "<lähdekieli> [to] <kohdekieli> <teksti>\n"
@@ -240,11 +268,11 @@ msgstr ""
 " Kääntää <tekstin> <lähdekielestä> <kohdekieleksi>.\n"
 "        "
 
-#: plugin.py:285
+#: plugin.py:325
 msgid "^google\\s+(.*)$"
 msgstr "^google\\s+(.*)$"
 
-#: plugin.py:306
+#: plugin.py:347
 msgid ""
 "<expression>\n"
 "\n"
@@ -256,7 +284,7 @@ msgstr ""
 "        Käyttää Googlen laskinta laskeakseen <lausekkeen> arvon.\n"
 "        "
 
-#: plugin.py:341
+#: plugin.py:378
 msgid ""
 "<phone number>\n"
 "\n"
@@ -268,9 +296,20 @@ msgstr ""
 "        Etsii <puhelinnumeroa> Googlesta.\n"
 "        "
 
-#: plugin.py:358
+#: plugin.py:392
 msgid "Google's phonebook didn't come up with anything."
 msgstr "Googlen puhelinluettelo ei keksinyt mitään."
+
+#~ msgid ""
+#~ "This is a simple plugin to provide access to the Google services we\n"
+#~ "    all know and love from our favorite IRC bot."
+#~ msgstr ""
+#~ "Tämä on yksinkertainen plugini tarjoamaan pääsyn Googlen palveluihin, "
+#~ "jotka me kaikki tunnemme, ja joita me kaikki\n"
+#~ " rakastamme suosikki IRC-botistamme."
+
+#~ msgid "We broke The Google!"
+#~ msgstr "Me hajotimme Googlen!"
 
 #~ msgid "Google says: Error: %s."
 #~ msgstr "Google sanoo: Virhe: %s."

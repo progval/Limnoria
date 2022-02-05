@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-05-11 16:57+EEST\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -12,19 +12,19 @@ msgstr ""
 "X-Poedit-SourceCharset: ASCII\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: config.py:39
+#: config.py:40
 msgid "Would you like to relay between any channels?"
 msgstr "Voulez-vous relayer entre des canaux ?"
 
-#: config.py:40
+#: config.py:41
 msgid "What channels?  Separate them by spaces."
 msgstr "Quels canaux ? Séparez-les par des espaces."
 
-#: config.py:42
+#: config.py:43
 msgid "Would you like to use color to distinguish between nicks?"
 msgstr "Voulez-vous utiliser de la couleur pour distinguer les nicks ?"
 
-#: config.py:59
+#: config.py:60
 msgid ""
 "Determines whether the bot will color relayed\n"
 "    PRIVMSGs so as to make the messages easier to read."
@@ -32,7 +32,7 @@ msgstr ""
 "Détermine si le bot colorera les PRIVMSGs relayez, pour rendre les messages "
 "plus faciles à lire."
 
-#: config.py:62
+#: config.py:63
 msgid ""
 "Determines whether the bot will synchronize\n"
 "    topics between networks in the channels it relays."
@@ -40,7 +40,7 @@ msgstr ""
 "Détermine si le bot synchronisera les topics entre les réseaux sur les "
 "canaux qu'il relaye."
 
-#: config.py:65
+#: config.py:66
 #, fuzzy
 msgid ""
 "Determines whether the bot will relay the\n"
@@ -50,7 +50,7 @@ msgstr ""
 "Détermine si le bot relayera le masque d'hôte d'une personne joignant ou "
 "partant d'un canal."
 
-#: config.py:69
+#: config.py:70
 msgid ""
 "Determines whether the bot will include the\n"
 "    network in relayed PRIVMSGs; if you're only relaying between two "
@@ -61,7 +61,7 @@ msgstr ""
 "ne relayez qu'entre deux réseaux, ce sera quelque chose de redondant que "
 "vous pouvez supprimer pour gagner de la place."
 
-#: config.py:73
+#: config.py:74
 msgid ""
 "Determines whether the bot will detect other\n"
 "    bots relaying and respond by kickbanning them."
@@ -69,29 +69,30 @@ msgstr ""
 "Détermine si le bot détectera d'autres bots relayant et y répondra en les "
 "kickbannissant."
 
-#: config.py:76
+#: config.py:77
 msgid ""
 "Determines which channels the bot\n"
 "    will relay in."
 msgstr "Détermine sur quels canaux le bot relayera."
 
-#: config.py:79
+#: config.py:80
+#, fuzzy
 msgid ""
 "Determines whether the bot\n"
-"    will always join the channel(s) it relays for on all networks the bot "
-"is\n"
-"    connected to."
+"    will always join the channel(s) it relays when connecting to any "
+"network.\n"
+"    "
 msgstr ""
 "Détermine si le bot rejoindra toujours le(s) canal(aux) qu'il relaye sur "
 "tous les réseaux auxquels il est connecté."
 
-#: config.py:83
+#: config.py:84
 msgid ""
 "Determines what hostmasks will not be relayed on a\n"
 "    channel."
 msgstr "Détermine quels masques d'hôte ne seront pas relayés sur un canal."
 
-#: config.py:86
+#: config.py:87
 msgid ""
 "Determines whether the bot will used NOTICEs\n"
 "    rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, "
@@ -102,7 +103,25 @@ msgstr ""
 "messages relayés qui ne concernent pas un PRIVMSG (arrivée, départ, "
 "changement de nick, quits, modes, etc.)"
 
-#: plugin.py:99
+#: plugin.py:48
+msgid ""
+"\n"
+"    This plugin allows you to setup a relay between networks.\n"
+"\n"
+"    Note that you must tell the bot to join the channel you wish to relay "
+"on\n"
+"    all networks with the ``join`` command or\n"
+"    ``network command <network> join <channel>``\n"
+"    or to join the channel on all networks ``network cmdall join "
+"<channel>``.\n"
+"\n"
+"    There are several advanced alternatives to this plugin, available as\n"
+"    third-party plugins. You can check them out at\n"
+"    https://limnoria.net/plugins.xhtml#messaging\n"
+"    "
+msgstr ""
+
+#: plugin.py:88
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -126,7 +145,7 @@ msgstr ""
 "les réseaux. Si <canal> n'est pas donné, il commencera à relayer sur le "
 "canal où a été envoyé le message."
 
-#: plugin.py:118
+#: plugin.py:107
 msgid ""
 "<channel>\n"
 "\n"
@@ -141,7 +160,7 @@ msgstr ""
 "Cesse de relayer entre les canaux <canal> sur tous les réseaux. Le bot "
 "partira de ces canaux sur tous les réseaux si il y est."
 
-#: plugin.py:133
+#: plugin.py:122
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -158,95 +177,85 @@ msgstr ""
 "lesquels est connecté le bot. <canal> n'est nécessaire que si l'on n'est pas "
 "sur le canal lui-même."
 
-#: plugin.py:223
-msgid "is an op on %L"
-msgstr "est op sur %L"
-
-#: plugin.py:225
-msgid "is a halfop on %L"
-msgstr "est halfop sur %L"
-
-#: plugin.py:227
-msgid "is voiced on %L"
-msgstr "est voice sur %L"
-
-#: plugin.py:230
-msgid "is also on %L"
-msgstr "est aussi sur %L"
-
-#: plugin.py:232
-msgid "is on %L"
-msgstr "est sur %L"
-
-#: plugin.py:234
-msgid "isn't on any non-secret channels"
-msgstr "n'est sur aucun canal non-secret"
-
-#: plugin.py:241 plugin.py:242 plugin.py:246
-msgid "<unknown>"
-msgstr "<inconnu>"
-
-#: plugin.py:248
-msgid "  %s is away: %s."
-msgstr "%s est away : %s"
-
-#: plugin.py:253
-msgid " identified"
-msgstr "identifié"
-
-#: plugin.py:258
-msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
-msgstr ""
-"%s (%s) a été vu%s sur le serveur %s depuis %s (idle depuis %s) et %s.%s"
-
-#: plugin.py:273
+#: plugin.py:207
 msgid "There is no %s on %s."
 msgstr "Il n'y a pas de %s sur %s."
 
-#: plugin.py:342
+#: plugin.py:292
 msgid "You seem to be relaying, punk."
 msgstr "Tu sembles relayer, enfoiré"
 
-#: plugin.py:395
+#: plugin.py:349
 msgid "%s%s has joined on %s"
 msgstr "%s%s est arrivé sur %s"
 
-#: plugin.py:410
+#: plugin.py:364
 msgid "%s%s has left on %s (%s)"
 msgstr "%s%s est parti de %s (%s)"
 
-#: plugin.py:413
+#: plugin.py:367
 msgid "%s%s has left on %s"
 msgstr "%s%s est parti de %s"
 
-#: plugin.py:423
+#: plugin.py:377
 msgid "mode change by %s on %s: %s"
 msgstr "changement de mode par %s sur %s : %s"
 
-#: plugin.py:435
+#: plugin.py:389
 msgid "%s was kicked by %s on %s (%s)"
 msgstr "%s a été kické par %s sur %s (%s)"
 
-#: plugin.py:438
+#: plugin.py:392
 msgid "%s was kicked by %s on %s"
 msgstr "%s a été kické par %s sur %s"
 
-#: plugin.py:447
+#: plugin.py:401
 msgid "nick change by %s to %s on %s"
 msgstr "changement de nick : %s -> %s sur %s"
 
-#: plugin.py:477
+#: plugin.py:431
 msgid "topic change by %s on %s: %s"
 msgstr "changement de topic par %s sur %s : %s"
 
-#: plugin.py:486
+#: plugin.py:440
 msgid "%s has quit %s (%s)"
 msgstr "%s a quitté %s (%s)"
 
-#: plugin.py:488
+#: plugin.py:442
 msgid "%s has quit %s."
 msgstr "%s a quitté %s."
 
-#: plugin.py:498
+#: plugin.py:452
 msgid "disconnected from %s: %s"
 msgstr "déconnecté de %s : %s"
+
+#~ msgid "is an op on %L"
+#~ msgstr "est op sur %L"
+
+#~ msgid "is a halfop on %L"
+#~ msgstr "est halfop sur %L"
+
+#~ msgid "is voiced on %L"
+#~ msgstr "est voice sur %L"
+
+#~ msgid "is also on %L"
+#~ msgstr "est aussi sur %L"
+
+#~ msgid "is on %L"
+#~ msgstr "est sur %L"
+
+#~ msgid "isn't on any non-secret channels"
+#~ msgstr "n'est sur aucun canal non-secret"
+
+#~ msgid "<unknown>"
+#~ msgstr "<inconnu>"
+
+#~ msgid "  %s is away: %s."
+#~ msgstr "%s est away : %s"
+
+#~ msgid " identified"
+#~ msgstr "identifié"
+
+#~ msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
+#~ msgstr ""
+#~ "%s (%s) a été vu%s sur le serveur %s depuis %s (idle depuis %s) et %s.%s"

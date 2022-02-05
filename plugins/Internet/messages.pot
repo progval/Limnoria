@@ -5,24 +5,24 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 13:19+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: plugin.py:43
+#: plugin.py:45
 #, docstring
 msgid ""
 "Provides commands to query DNS, search WHOIS databases,\n"
 "    and convert IPs to hex."
 msgstr ""
 
-#: plugin.py:48
+#: plugin.py:50
 #, docstring
 msgid ""
 "<host|ip>\n"
@@ -31,11 +31,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:55 plugin.py:70
+#: plugin.py:57 plugin.py:72
 msgid "Host not found."
 msgstr ""
 
-#: plugin.py:82
+#: plugin.py:87
 #, docstring
 msgid ""
 "<domain>\n"
@@ -44,39 +44,35 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:88
-msgid "domain"
-msgstr ""
-
-#: plugin.py:128
+#: plugin.py:149
 msgid "updated %s"
 msgstr ""
 
-#: plugin.py:131
+#: plugin.py:152
 msgid "registered %s"
 msgstr ""
 
-#: plugin.py:134
+#: plugin.py:155
 msgid "expires %s"
 msgstr ""
 
-#: plugin.py:154
+#: plugin.py:175
 msgid " <registered at %s>"
 msgstr ""
 
-#: plugin.py:156
+#: plugin.py:177
 msgid " <registered by %s>"
 msgstr ""
 
-#: plugin.py:161
+#: plugin.py:184
 msgid "%s%s is %L."
 msgstr ""
 
-#: plugin.py:164
+#: plugin.py:187
 msgid "I couldn't find such a domain."
 msgstr ""
 
-#: plugin.py:169
+#: plugin.py:192
 #, docstring
 msgid ""
 "<ip>\n"

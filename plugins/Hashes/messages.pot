@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: plugin.py:45
+#, docstring
+msgid "Provides hash or encryption related commands"
+msgstr ""
+
+#: plugin.py:49
+#, docstring
+msgid ""
+"<text>\n"
+"\n"
+"        Returns the md5 hash of a given string.\n"
+"        "
+msgstr ""
+
+#: plugin.py:58
+#, docstring
+msgid ""
+"<text>\n"
+"\n"
+"        Returns the SHA1 hash of a given string.\n"
+"        "
+msgstr ""
+
+#: plugin.py:67
+#, docstring
+msgid ""
+"<text>\n"
+"\n"
+"        Returns a SHA256 hash of the given string.\n"
+"        "
+msgstr ""
+
+#: plugin.py:76
+#, docstring
+msgid ""
+"<text>\n"
+"\n"
+"        Returns a SHA512 hash of the given string.\n"
+"        "
+msgstr ""
+
+#: plugin.py:85
+#, docstring
+msgid ""
+"<takes no arguments>\n"
+"\n"
+"        Returns the list of available algorithms."
+msgstr ""
+
+#: plugin.py:95
+#, docstring
+msgid ""
+"<algorithm> <text>\n"
+"\n"
+"        Returns TEXT after it has been hashed with ALGORITHM. See the 'algorithms' command in this plugin to return the algorithms available on this system."
+msgstr ""
+

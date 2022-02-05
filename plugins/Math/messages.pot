@@ -5,13 +5,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-12-20 11:59+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: ENCODING\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -48,7 +48,7 @@ msgid ""
 "        base, 2 through 36. Returns a string."
 msgstr ""
 
-#: plugin.py:169
+#: plugin.py:134
 #, docstring
 msgid ""
 "<math expression>\n"
@@ -61,31 +61,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:180
-msgid "There's no reason you should have fancy non-ASCII characters in your mathematical expression. Please remove them."
-msgstr ""
-
-#: plugin.py:185 plugin.py:239
-msgid "There's really no reason why you should have underscores or brackets in your mathematical expression.  Please remove them."
-msgstr ""
-
-#: plugin.py:191 plugin.py:247
-msgid "You can't use lambda in this command."
-msgstr ""
-
-#: plugin.py:221 plugin.py:255
+#: plugin.py:148 plugin.py:173
 msgid "The answer exceeded %s or so."
 msgstr ""
 
-#: plugin.py:223 plugin.py:257
-msgid "Something in there wasn't a valid number."
+#: plugin.py:150 plugin.py:175
+msgid "Invalid syntax: %s"
 msgstr ""
 
-#: plugin.py:225 plugin.py:259
+#: plugin.py:152 plugin.py:177
 msgid "%s is not a defined function."
 msgstr ""
 
-#: plugin.py:232
+#: plugin.py:154
+msgid "Memory error (too much recursion?)"
+msgstr ""
+
+#: plugin.py:161
 #, docstring
 msgid ""
 "<math expression>\n"
@@ -96,7 +88,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:269
+#: plugin.py:187
 #, docstring
 msgid ""
 "<rpn math expression>\n"
@@ -105,19 +97,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:294
+#: plugin.py:212
 msgid "Not enough arguments for %s"
 msgstr ""
 
-#: plugin.py:307
+#: plugin.py:225
 msgid "%q is not a defined function."
 msgstr ""
 
-#: plugin.py:314
+#: plugin.py:232
 msgid "Stack: [%s]"
 msgstr ""
 
-#: plugin.py:318
+#: plugin.py:236
 #, docstring
 msgid ""
 "[<number>] <unit> to <other unit>\n"
@@ -127,7 +119,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:348
+#: plugin.py:266
 #, docstring
 msgid ""
 " [<type>]\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2010-10-17 18:33+CEST\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -13,47 +13,66 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
 
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether the bot will show the ids of\n"
 "    a praise when the praise is given."
-msgstr "Détermine si le bot affichera les ids des louanges lorsqu'une louange est donnée."
+msgstr ""
+"Détermine si le bot affichera les ids des louanges lorsqu'une louange est "
+"donnée."
 
 #: plugin.py:40
+#, fuzzy
 msgid ""
-"Praise is a plugin for ... well, praising things.  Feel free to add\n"
-"    your own flavor to it by customizing what praises it gives.  Use \"praise\n"
-"    add <text>\" to add new ones, making sure to include \"$who\" in <text> where\n"
+"\n"
+"    Praise is a plugin for ... well, praising things.  Feel free to add\n"
+"    your own flavor to it by customizing what praises it gives.  Use "
+"\"praise\n"
+"    add <text>\" to add new ones, making sure to include \"$who\" in <text> "
+"where\n"
 "    you want to insert the thing being praised.\n"
+"\n"
+"    Example:\n"
+"\n"
+"    * If you add ``hugs $who``\n"
+"    * Someone says ``@praise ChanServ``.\n"
+"    * ``* bot hugs ChanServ``\n"
 "    "
-msgstr "Praise est un plugin pour... mmh... louer des gens et des choses. Sentez-vous libre de personnaliser à votre goût pourquoi vous louez ceci. Utilisez \"praise add\" pour ajouter les vôtres, et assurez-vous d'ajouter \"$who\" dans le <texte> là où vous voulez insérer le nom de la chose à louer."
+msgstr ""
+"Praise est un plugin pour... mmh... louer des gens et des choses. Sentez-"
+"vous libre de personnaliser à votre goût pourquoi vous louez ceci. Utilisez "
+"\"praise add\" pour ajouter les vôtres, et assurez-vous d'ajouter \"$who\" "
+"dans le <texte> là où vous voulez insérer le nom de la chose à louer."
 
-#: plugin.py:54
+#: plugin.py:61
 msgid "Praises must contain $who."
 msgstr "Les louanges doivent contenir $who"
 
-#: plugin.py:58
+#: plugin.py:65
 msgid ""
 "[<channel>] [<id>] <who|what> [for <reason>]\n"
 "\n"
-"        Praises <who|what> (for <reason>, if given).  If <id> is given, uses\n"
-"        that specific praise.  <channel> is only necessary if the message isn't\n"
+"        Praises <who|what> (for <reason>, if given).  If <id> is given, "
+"uses\n"
+"        that specific praise.  <channel> is only necessary if the message "
+"isn't\n"
 "        sent in the channel itself.\n"
 "        "
 msgstr ""
 "[<canal>] [<id>] <qui|quoi> [for <raison>]\n"
 "\n"
-"Loue <qui|quoi> (pour la <raison>, si elle est donnée). Si l'<id> est donné, utilise une louange spécifique.  <canal> n'est nécessaire que si le message n'est pas envoyé sur  le canal lui-même."
+"Loue <qui|quoi> (pour la <raison>, si elle est donnée). Si l'<id> est donné, "
+"utilise une louange spécifique.  <canal> n'est nécessaire que si le message "
+"n'est pas envoyé sur  le canal lui-même."
 
-#: plugin.py:74
+#: plugin.py:81
 msgid "There is no praise with id #%i."
 msgstr "Il n'y a pas de louange d'id #%i"
 
-#: plugin.py:79
+#: plugin.py:86
 msgid "There are no praises in my database for %s."
 msgstr "Il n'y a pas de louange dans ma base de données pour %s."
 
-#: plugin.py:87
+#: plugin.py:94
 msgid " for "
 msgstr " pour "
-

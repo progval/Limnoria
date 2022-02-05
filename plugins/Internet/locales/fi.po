@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Internet plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 13:19+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 13:25+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: plugin.py:43
+#: plugin.py:45
 #, fuzzy
 msgid ""
 "Provides commands to query DNS, search WHOIS databases,\n"
@@ -27,7 +27,7 @@ msgstr ""
 "muuttamaan\n"
 " IP-osoitteet hexoiksi."
 
-#: plugin.py:48
+#: plugin.py:50
 msgid ""
 "<host|ip>\n"
 "\n"
@@ -39,11 +39,11 @@ msgstr ""
 "        Palauttaa <isännän> ip:een tai <ip:een> käänteisen isäntänimen.\n"
 "        "
 
-#: plugin.py:55 plugin.py:70
+#: plugin.py:57 plugin.py:72
 msgid "Host not found."
 msgstr "Isäntää ei löytynyt."
 
-#: plugin.py:82
+#: plugin.py:87
 msgid ""
 "<domain>\n"
 "\n"
@@ -55,39 +55,35 @@ msgstr ""
 "        Palauttaa WHOIS tiedot <verkkotunnusten> rekisteröimisestä.\n"
 "        "
 
-#: plugin.py:88
-msgid "domain"
-msgstr "verkkotunnus"
-
-#: plugin.py:128
+#: plugin.py:149
 msgid "updated %s"
 msgstr "päivitetty %s"
 
-#: plugin.py:131
+#: plugin.py:152
 msgid "registered %s"
 msgstr "rekisteröity %s"
 
-#: plugin.py:134
+#: plugin.py:155
 msgid "expires %s"
 msgstr "vanhenee %s"
 
-#: plugin.py:154
+#: plugin.py:175
 msgid " <registered at %s>"
 msgstr " <rekisteröity aikaan %s>"
 
-#: plugin.py:156
+#: plugin.py:177
 msgid " <registered by %s>"
 msgstr " <rekisteröinyt %s>"
 
-#: plugin.py:161
+#: plugin.py:184
 msgid "%s%s is %L."
 msgstr "%s%s on %L."
 
-#: plugin.py:164
+#: plugin.py:187
 msgid "I couldn't find such a domain."
 msgstr "En voi löytää sellaista verkkotunnusta."
 
-#: plugin.py:169
+#: plugin.py:192
 msgid ""
 "<ip>\n"
 "\n"
@@ -98,6 +94,9 @@ msgstr ""
 "\n"
 "        Palauttaa IP:een heksadesimaalisen IP:een IP:lle.\n"
 "        "
+
+#~ msgid "domain"
+#~ msgstr "verkkotunnus"
 
 #~ msgid "Add the help for \"help Internet\" here."
 #~ msgstr "Lisää ohje \"help Internet:ille\" tähän."

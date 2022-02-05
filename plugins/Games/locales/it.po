@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-11-20 21:27+0100\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -11,7 +11,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: plugin.py:46
-#, docstring
+msgid ""
+"This plugin provides some small games like (Russian) roulette,\n"
+"    eightball, monologue, coin and dice."
+msgstr ""
+
+#: plugin.py:50
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -23,16 +28,15 @@ msgstr ""
 "        Lancia una moneta e restituisce il risultato.\n"
 "        "
 
-#: plugin.py:51
+#: plugin.py:55
 msgid "heads"
 msgstr "testa"
 
-#: plugin.py:53
+#: plugin.py:57
 msgid "tails"
 msgstr "croce"
 
-#: plugin.py:58
-#, docstring
+#: plugin.py:62
 msgid ""
 "<dice>d<sides>\n"
 "\n"
@@ -44,39 +48,57 @@ msgstr ""
 "<dadi>d<facce>\n"
 "\n"
 "        Tira un certo numero di dadi con un certo numero di facce.\n"
-"        Ad esempio, 2d6 tirerà due dadi da sei facce; 10d10 dieci dadi da dieci facce.\n"
+"        Ad esempio, 2d6 tirerà due dadi da sei facce; 10d10 dieci dadi da "
+"dieci facce.\n"
 "        "
 
-#: plugin.py:66
+#: plugin.py:70
 msgid "You can't roll more than 1000 dice."
 msgstr "Non è possibile tirare più di 1000 dadi."
 
-#: plugin.py:68
+#: plugin.py:72
 msgid "Dice can't have more than 100 sides."
 msgstr "I dadi non possono avere più di 100 facce."
 
-#: plugin.py:70
+#: plugin.py:74
 msgid "Dice can't have fewer than 3 sides."
 msgstr "I dadi non possono avere meno di tre facce."
 
-#: plugin.py:78
+#: plugin.py:82
 msgid "Dice must be of the form <dice>d<sides>"
 msgstr "I dadi vanno espressi nella forma <dadi>d<facce>"
 
-#: plugin.py:82
-msgid "It is possible.|Yes!|Of course.|Naturally.|Obviously.|It shall be.|The outlook is good.|It is so.|One would be wise to think so.|The answer is certainly yes."
-msgstr "È possibile.|Sì!|Certamente.|Naturalmente.|Ovviamente.|Deve essere così.|La prospettiva è promettente.|È così.|Sarebbe saggio pensarlo.|La risposta è certamente sì."
-
 #: plugin.py:86
-msgid "In your dreams.|I doubt it very much.|No chance.|The outlook is poor.|Unlikely.|About as likely as pigs flying.|You're kidding, right?|NO!|NO.|No.|The answer is a resounding no."
-msgstr "Nei tuoi sogni.|Ne dubito fortemente.|Nessuna possibilità.|La prospettiva è scarsa.|Improbabile.|Quando gli asini voleranno.|Stai scherzando, vero?|NO!|NO.|No.|La risposta è un clamoroso no."
+msgid ""
+"It is possible.|Yes!|Of course.|Naturally.|Obviously.|It shall be.|The "
+"outlook is good.|It is so.|One would be wise to think so.|The answer is "
+"certainly yes."
+msgstr ""
+"È possibile.|Sì!|Certamente.|Naturalmente.|Ovviamente.|Deve essere così.|La "
+"prospettiva è promettente.|È così.|Sarebbe saggio pensarlo.|La risposta è "
+"certamente sì."
 
 #: plugin.py:90
-msgid "Maybe...|No clue.|_I_ don't know.|The outlook is hazy, please ask again later.|What are you asking me for?|Come again?|You know the answer better than I.|The answer is def-- oooh! shiny thing!"
-msgstr "Forse...|Non ne ho idea.|Non lo so.|La prospettiva è confusa, riprova più tardi.|Cosa mi stai chiedendo?|Torna più tardi.|Conosci la risposta meglio di me.|La risposta è... oooh! brillante!"
+msgid ""
+"In your dreams.|I doubt it very much.|No chance.|The outlook is poor.|"
+"Unlikely.|About as likely as pigs flying.|You're kidding, right?|NO!|NO.|No.|"
+"The answer is a resounding no."
+msgstr ""
+"Nei tuoi sogni.|Ne dubito fortemente.|Nessuna possibilità.|La prospettiva è "
+"scarsa.|Improbabile.|Quando gli asini voleranno.|Stai scherzando, vero?|NO!|"
+"NO.|No.|La risposta è un clamoroso no."
 
-#: plugin.py:107
-#, docstring
+#: plugin.py:94
+msgid ""
+"Maybe...|No clue.|_I_ don't know.|The outlook is hazy, please ask again "
+"later.|What are you asking me for?|Come again?|You know the answer better "
+"than I.|The answer is def-- oooh! shiny thing!"
+msgstr ""
+"Forse...|Non ne ho idea.|Non lo so.|La prospettiva è confusa, riprova più "
+"tardi.|Cosa mi stai chiedendo?|Torna più tardi.|Conosci la risposta meglio "
+"di me.|La risposta è... oooh! brillante!"
+
+#: plugin.py:111
 msgid ""
 "[<question>]\n"
 "\n"
@@ -88,8 +110,7 @@ msgstr ""
 "        Poni una domanda e otterrai una risposta.\n"
 "        "
 
-#: plugin.py:121
-#, docstring
+#: plugin.py:125
 msgid ""
 "[spin]\n"
 "\n"
@@ -103,45 +124,47 @@ msgstr ""
 "        Dimmi di girare il tamburo (aggiungendo \"spin\") e lo farò.\n"
 "        "
 
-#: plugin.py:128
+#: plugin.py:132
 msgid "*SPIN* Are you feeling lucky?"
 msgstr "*GIRA* Pronto a mettere alla prova la fortuna?"
 
-#: plugin.py:137
+#: plugin.py:142
 msgid "*BANG* Hey, who put a blank in here?!"
 msgstr "*BANG* Hei, chi ha messo una cartuccia a salve qui?!"
 
-#: plugin.py:139
+#: plugin.py:144
 msgid "reloads and spins the chambers."
 msgstr "ricarica e gira il tamburo."
 
-#: plugin.py:141
+#: plugin.py:146
 msgid "*click*"
 msgstr "*clic*"
 
-#: plugin.py:148
-#, docstring
+#: plugin.py:153
 msgid ""
 "[<channel>]\n"
 "\n"
 "        Returns the number of consecutive lines you've sent in <channel>\n"
-"        without being interrupted by someone else (i.e. how long your current\n"
-"        'monologue' is).  <channel> is only necessary if the message isn't sent\n"
+"        without being interrupted by someone else (i.e. how long your "
+"current\n"
+"        'monologue' is).  <channel> is only necessary if the message isn't "
+"sent\n"
 "        in the channel itself.\n"
 "        "
 msgstr ""
 "[<canale>]\n"
 "\n"
-"        Restituisce il numero di righe consecutive inviate in <canale> senza essere\n"
-"        stati interrotti da qualcun altro. <canale> è necessario solo se il messaggio\n"
+"        Restituisce il numero di righe consecutive inviate in <canale> senza "
+"essere\n"
+"        stati interrotti da qualcun altro. <canale> è necessario solo se il "
+"messaggio\n"
 "        non viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:167
+#: plugin.py:172
 msgid "Your current monologue is at least %n long."
 msgstr "Il tuo attuale monologo è lungo almeno %n."
 
-#: plugin.py:168
+#: plugin.py:173
 msgid "line"
 msgstr "riga"
-

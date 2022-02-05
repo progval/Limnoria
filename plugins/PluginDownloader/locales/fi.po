@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2014-03-22 16:35+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-03-22 16:38+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: plugin.py:171
+#: plugin.py:167
 msgid ""
 "Plugin is probably not compatible with your Python version (3.x) and could "
 "not be converted because 2to3 is not installed."
@@ -25,7 +25,7 @@ msgstr ""
 "Lisä-osa ei luultavasti ole yhteensopiva Python-versiosi (3.x) kanssa, eikä "
 "sitä voitu muuntaa, koska 2to3 ei ole asennettu."
 
-#: plugin.py:178
+#: plugin.py:174
 msgid ""
 "Plugin was designed for Python 2, but an attempt to convert it to Python 3 "
 "has been made. There is no guarantee it will work, though."
@@ -33,31 +33,68 @@ msgstr ""
 "Lisä-osa suunniteltiin Python 2:lle, mutta yritys muuntaa se Python 3:lle on "
 "tehty. Ei kuitenkaan ole takuuta, että se toimisi."
 
-#: plugin.py:182
+#: plugin.py:178
 msgid "Plugin successfully installed."
 msgstr "Lisä-osa asennettiin onnistuneesti."
 
-#: plugin.py:307
+#: plugin.py:323
 msgid ""
-"This plugin allows you to install unofficial plugins from\n"
+"\n"
+"    This plugin allows you to install unofficial plugins from\n"
 "    multiple repositories easily. Use the \"repolist\" command to see list "
 "of\n"
-"    available repositories and \"repolist <repository>\" to list plugins, \n"
-"    which are available in that repository. When you want to install "
+"    available repositories and \"repolist <repository>\" to list plugins,\n"
+"    which are available in that repository. When you want to install a "
 "plugin,\n"
-"    just run command \"install <repository> <plugin>\"."
+"    just run command \"install <repository> <plugin>\".\n"
+"\n"
+"    First start by using the `plugindownloader repolist` command to see the\n"
+"    available repositories.\n"
+"\n"
+"    To see the plugins inside repository, use command\n"
+"    `plugindownloader repolist <repository>`\n"
+"\n"
+"    When you see anything interesting, you can use\n"
+"    `plugindownloader info <repository> <plugin>` to see what the plugin is\n"
+"    for.\n"
+"\n"
+"    And finally to install the plugin,\n"
+"    `plugindownloader install <repository> <plugin>`.\n"
+"\n"
+"    Examples\n"
+"    ^^^^^^^^\n"
+"\n"
+"    ::\n"
+"\n"
+"        < Mikaela> @load PluginDownloader\n"
+"        < Limnoria> Ok.\n"
+"        < Mikaela> @plugindownloader repolist\n"
+"        < Limnoria> Antibody, jlu5, Hoaas, Iota, progval, SpiderDave, "
+"boombot, code4lib, code4lib-edsu, code4lib-snapshot, doorbot, frumious, "
+"jonimoose, mailed-notifier, mtughan-weather, nanotube-bitcoin, nyuszika7h, "
+"nyuszika7h-old, pingdom, quantumlemur, resistivecorpse, scrum, skgsergio, "
+"stepnem\n"
+"        < Mikaela> @plugindownloader repolist progval\n"
+"        < Limnoria> AttackProtector, AutoTrans, Biography, Brainfuck, "
+"ChannelStatus, Cleverbot, Coffee, Coinpan, Debian, ERepublik, Eureka, "
+"Fortune, GUI, GitHub, Glob2Chan, GoodFrench, I18nPlaceholder, IMDb, "
+"IgnoreNonVoice, Iwant, Kickme, LimnoriaChan, LinkRelay, ListEmpty, Listener, "
+"Markovgen, MegaHAL, MilleBornes, NoLatin1, NoisyKarma, OEIS, PPP, PingTime, "
+"Pinglist, RateLimit, Rbls, Redmine, Scheme, Seeks, (1 more message)\n"
+"        < Mikaela> more\n"
+"        < Limnoria> SilencePlugin, StdoutCapture, Sudo, SupyML, SupySandbox, "
+"TWSS, Trigger, Trivia, Twitter, TwitterStream, Untiny, Variables, WebDoc, "
+"WebLogs, WebStats, Website, WikiTrans, Wikipedia, WunderWeather\n"
+"        < Mikaela> @plugindownloader info progval Wikipedia\n"
+"        < Limnoria> Grabs data from Wikipedia.\n"
+"        < Mikaela> @plugindownloader install progval Wikipedia\n"
+"        < Limnoria> Ok.\n"
+"        < Mikaela> @load Wikipedia\n"
+"        < Limnoria> Ok.\n"
+"    "
 msgstr ""
-"Tämä lisäosa sallii epävirallisten lisäosien asentamisen monista "
-"ohjelmistolähteistä\n"
-" helposti. Käytä \"repolist\" komentoa nähdäksesi listan saatavilla "
-"olevista\n"
-" ohjelmistolähteistä ja \"repolist <ohjelmistolähde>\" saadaksesi listan "
-"lisäosista,\n"
-" jotka ovat saatavilla kyseisessä ohjelmistolähteessä. Kun tahdot asentaa "
-"lisäosan,\n"
-" suorita vain komento \"install <ohjelmistolähde> <lisäosa>\"."
 
-#: plugin.py:317
+#: plugin.py:368
 msgid ""
 "[<repository>]\n"
 "\n"
@@ -72,20 +109,20 @@ msgstr ""
 "olevista\n"
 " ohjelmistolähteistä."
 
-#: plugin.py:325 plugin.py:336
+#: plugin.py:376 plugin.py:387
 msgid ", "
 msgstr ", "
 
-#: plugin.py:327 plugin.py:346 plugin.py:371
+#: plugin.py:378 plugin.py:400 plugin.py:425
 msgid "This repository does not exist or is not known by this bot."
 msgstr ""
 "Tämä ohjelmistolähde ei ole olemassakaan tai tämä botti ei tiedä siitä."
 
-#: plugin.py:334
+#: plugin.py:385
 msgid "No plugin found in this repository."
 msgstr "Lisäosaa ei löytynyt tästä ohjelmistolähteestä."
 
-#: plugin.py:341
+#: plugin.py:392
 msgid ""
 "<repository> <plugin>\n"
 "\n"
@@ -95,11 +132,16 @@ msgstr ""
 "\n"
 "  Lataa ja asentaa <lisäosan> <ohjelmistolähteestä>."
 
-#: plugin.py:351 plugin.py:376
+#: plugin.py:396
+msgid ""
+"This command is not available, because supybot.commands.allowShell is False."
+msgstr ""
+
+#: plugin.py:405 plugin.py:430
 msgid "This plugin does not exist in this repository."
 msgstr "Tämä lisäosa ei ole tässä ohjelmistolähteessä."
 
-#: plugin.py:366
+#: plugin.py:420
 msgid ""
 "<repository> <plugin>\n"
 "\n"
@@ -109,13 +151,33 @@ msgstr ""
 "\n"
 " Näyttää tietoja <lisäosasta> <ohjelmistolähteessä>."
 
-#: plugin.py:380
+#: plugin.py:434
 msgid "No README found for this plugin."
 msgstr "Tämän lisäosan README-tiedostoa ei löydy."
 
-#: plugin.py:383
+#: plugin.py:437
 msgid "This plugin has no description."
 msgstr "Tällä lisäosalla ei ole kuvausta."
+
+#~ msgid ""
+#~ "This plugin allows you to install unofficial plugins from\n"
+#~ "    multiple repositories easily. Use the \"repolist\" command to see "
+#~ "list of\n"
+#~ "    available repositories and \"repolist <repository>\" to list "
+#~ "plugins, \n"
+#~ "    which are available in that repository. When you want to install "
+#~ "plugin,\n"
+#~ "    just run command \"install <repository> <plugin>\"."
+#~ msgstr ""
+#~ "Tämä lisäosa sallii epävirallisten lisäosien asentamisen monista "
+#~ "ohjelmistolähteistä\n"
+#~ " helposti. Käytä \"repolist\" komentoa nähdäksesi listan saatavilla "
+#~ "olevista\n"
+#~ " ohjelmistolähteistä ja \"repolist <ohjelmistolähde>\" saadaksesi listan "
+#~ "lisäosista,\n"
+#~ " jotka ovat saatavilla kyseisessä ohjelmistolähteessä. Kun tahdot asentaa "
+#~ "lisäosan,\n"
+#~ " suorita vain komento \"install <ohjelmistolähde> <lisäosa>\"."
 
 #~ msgid ""
 #~ "Add the help for 'plugin help PluginDownloader' here\n"

@@ -1,0 +1,75 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: config.py:56
+msgid ""
+"Determines the maximum number of\n"
+"    results the bot will respond with."
+msgstr ""
+
+#: config.py:59
+msgid ""
+"Determines whether the bot will show a\n"
+"    snippet of each resulting link. If False, it will show the title\n"
+"    of the link instead."
+msgstr ""
+
+#: config.py:63
+msgid ""
+"Set the DDG search region to return results\n"
+"    for the language/country of your choice. E.g. 'us-en' for United States.\n"
+"    https://duckduckgo.com/params"
+msgstr ""
+
+#: config.py:67
+msgid ""
+"Determines what level of search filtering to use\n"
+"    by default.  'active' - most filtering, 'moderate' - default filtering,\n"
+"    'off' - no filtering"
+msgstr ""
+
+#: plugin.py:54
+#, docstring
+msgid ""
+"\n"
+"    Searches for results on DuckDuckGo.\n"
+"\n"
+"    Example::\n"
+"\n"
+"        <+jlu5> %ddg search eiffel tower\n"
+"        <@Atlas> The Eiffel Tower is an iron lattice tower located on the Champ de Mars in Paris. It was named after the engineer Gustave Eiffel, whose company designed and built the tower. - <https://en.wikipedia.org/wiki/Eiffel_Tower>\n"
+"\n"
+"    "
+msgstr ""
+
+#: plugin.py:93
+#, docstring
+msgid ""
+"\n"
+"        Core results fetcher for the DDG plugin. Other plugins can call this as well via\n"
+"        irc.getCallback('DDG').search_core(...)\n"
+"        "
+msgstr ""
+
+#: plugin.py:150
+#, docstring
+msgid ""
+"<text>\n"
+"\n"
+"        Searches for <text> on DuckDuckGo's web search."
+msgstr ""
+

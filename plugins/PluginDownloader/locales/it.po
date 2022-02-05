@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2012-03-11 20:58+UTC\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2012-05-04 01:17+020\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,23 +10,80 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: plugin.py:260
-#, docstring
+#: plugin.py:167
 msgid ""
-"This plugin allows you to install unofficial plugins from\n"
-"    multiple repositories easily. Use the \"repolist\" command to see list of\n"
-"    available repositories and \"repolist <repository>\" to list plugins, \n"
-"    which are available in that repository. When you want to install plugin,\n"
-"    just run command \"install <repository> <plugin>\"."
+"Plugin is probably not compatible with your Python version (3.x) and could "
+"not be converted because 2to3 is not installed."
 msgstr ""
-"Questo plugin permette di installare facilmente plugin non ufficiali da vari\n"
-"    repository. Usare il comando \"repolist\" per ottenere l'elenco dei repository\n"
-"    disponibili e \"repolist <repository>\" per elencare i plugin disponibili nel\n"
-"    dato repository. Per installare il plugin basta eseguire il comando\n"
-"    \"install <repository> <plugin>\"."
 
-#: plugin.py:268
-#, docstring
+#: plugin.py:174
+msgid ""
+"Plugin was designed for Python 2, but an attempt to convert it to Python 3 "
+"has been made. There is no guarantee it will work, though."
+msgstr ""
+
+#: plugin.py:178
+msgid "Plugin successfully installed."
+msgstr ""
+
+#: plugin.py:323
+msgid ""
+"\n"
+"    This plugin allows you to install unofficial plugins from\n"
+"    multiple repositories easily. Use the \"repolist\" command to see list "
+"of\n"
+"    available repositories and \"repolist <repository>\" to list plugins,\n"
+"    which are available in that repository. When you want to install a "
+"plugin,\n"
+"    just run command \"install <repository> <plugin>\".\n"
+"\n"
+"    First start by using the `plugindownloader repolist` command to see the\n"
+"    available repositories.\n"
+"\n"
+"    To see the plugins inside repository, use command\n"
+"    `plugindownloader repolist <repository>`\n"
+"\n"
+"    When you see anything interesting, you can use\n"
+"    `plugindownloader info <repository> <plugin>` to see what the plugin is\n"
+"    for.\n"
+"\n"
+"    And finally to install the plugin,\n"
+"    `plugindownloader install <repository> <plugin>`.\n"
+"\n"
+"    Examples\n"
+"    ^^^^^^^^\n"
+"\n"
+"    ::\n"
+"\n"
+"        < Mikaela> @load PluginDownloader\n"
+"        < Limnoria> Ok.\n"
+"        < Mikaela> @plugindownloader repolist\n"
+"        < Limnoria> Antibody, jlu5, Hoaas, Iota, progval, SpiderDave, "
+"boombot, code4lib, code4lib-edsu, code4lib-snapshot, doorbot, frumious, "
+"jonimoose, mailed-notifier, mtughan-weather, nanotube-bitcoin, nyuszika7h, "
+"nyuszika7h-old, pingdom, quantumlemur, resistivecorpse, scrum, skgsergio, "
+"stepnem\n"
+"        < Mikaela> @plugindownloader repolist progval\n"
+"        < Limnoria> AttackProtector, AutoTrans, Biography, Brainfuck, "
+"ChannelStatus, Cleverbot, Coffee, Coinpan, Debian, ERepublik, Eureka, "
+"Fortune, GUI, GitHub, Glob2Chan, GoodFrench, I18nPlaceholder, IMDb, "
+"IgnoreNonVoice, Iwant, Kickme, LimnoriaChan, LinkRelay, ListEmpty, Listener, "
+"Markovgen, MegaHAL, MilleBornes, NoLatin1, NoisyKarma, OEIS, PPP, PingTime, "
+"Pinglist, RateLimit, Rbls, Redmine, Scheme, Seeks, (1 more message)\n"
+"        < Mikaela> more\n"
+"        < Limnoria> SilencePlugin, StdoutCapture, Sudo, SupyML, SupySandbox, "
+"TWSS, Trigger, Trivia, Twitter, TwitterStream, Untiny, Variables, WebDoc, "
+"WebLogs, WebStats, Website, WikiTrans, Wikipedia, WunderWeather\n"
+"        < Mikaela> @plugindownloader info progval Wikipedia\n"
+"        < Limnoria> Grabs data from Wikipedia.\n"
+"        < Mikaela> @plugindownloader install progval Wikipedia\n"
+"        < Limnoria> Ok.\n"
+"        < Mikaela> @load Wikipedia\n"
+"        < Limnoria> Ok.\n"
+"    "
+msgstr ""
+
+#: plugin.py:368
 msgid ""
 "[<repository>]\n"
 "\n"
@@ -37,22 +94,22 @@ msgstr ""
 "[<repository>]\n"
 "\n"
 "        Mostra l'elenco dei plugin presenti in <repository>.\n"
-"        Se <repository> non è specificato riporta una lista di quelli disponibili."
+"        Se <repository> non è specificato riporta una lista di quelli "
+"disponibili."
 
-#: plugin.py:276 plugin.py:287
+#: plugin.py:376 plugin.py:387
 msgid ", "
 msgstr ", "
 
-#: plugin.py:278 plugin.py:297 plugin.py:322
+#: plugin.py:378 plugin.py:400 plugin.py:425
 msgid "This repository does not exist or is not known by this bot."
 msgstr "Questo repository non esiste o non è riconosciuto."
 
-#: plugin.py:285
+#: plugin.py:385
 msgid "No plugin found in this repository."
 msgstr "Nessun plugin trovato in questo repository."
 
-#: plugin.py:292
-#, docstring
+#: plugin.py:392
 msgid ""
 "<repository> <plugin>\n"
 "\n"
@@ -62,12 +119,16 @@ msgstr ""
 "\n"
 "        Scarica e installa <plugin> da <repository>."
 
-#: plugin.py:302 plugin.py:327
+#: plugin.py:396
+msgid ""
+"This command is not available, because supybot.commands.allowShell is False."
+msgstr ""
+
+#: plugin.py:405 plugin.py:430
 msgid "This plugin does not exist in this repository."
 msgstr "Il plugin non esiste in questo repository."
 
-#: plugin.py:317
-#, docstring
+#: plugin.py:420
 msgid ""
 "<repository> <plugin>\n"
 "\n"
@@ -77,11 +138,30 @@ msgstr ""
 "\n"
 "        Visualizza informazioni riguardo <plugin> in <repository>."
 
-#: plugin.py:331
-msgid "No README found for this plugin"
+#: plugin.py:434
+#, fuzzy
+msgid "No README found for this plugin."
 msgstr "Non è stato trovato nessun file README per questo plugin."
 
-#: plugin.py:334
+#: plugin.py:437
 msgid "This plugin has no description."
 msgstr "Questo plugin non ha una descrizione."
 
+#~ msgid ""
+#~ "This plugin allows you to install unofficial plugins from\n"
+#~ "    multiple repositories easily. Use the \"repolist\" command to see "
+#~ "list of\n"
+#~ "    available repositories and \"repolist <repository>\" to list "
+#~ "plugins, \n"
+#~ "    which are available in that repository. When you want to install "
+#~ "plugin,\n"
+#~ "    just run command \"install <repository> <plugin>\"."
+#~ msgstr ""
+#~ "Questo plugin permette di installare facilmente plugin non ufficiali da "
+#~ "vari\n"
+#~ "    repository. Usare il comando \"repolist\" per ottenere l'elenco dei "
+#~ "repository\n"
+#~ "    disponibili e \"repolist <repository>\" per elencare i plugin "
+#~ "disponibili nel\n"
+#~ "    dato repository. Per installare il plugin basta eseguire il comando\n"
+#~ "    \"install <repository> <plugin>\"."

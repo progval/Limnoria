@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
-"POT-Creation-Date: 2012-04-19 21:37+CEST\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2012-04-27 15:38+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
@@ -13,63 +13,116 @@ msgstr ""
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
 
-#: config.py:46
+#: config.py:47
 msgid ""
 "Determines whether this plugin is enabled.\n"
 "    "
 msgstr "Legt fest ob das Plugin aktiv ist."
 
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether this plugin will automode\n"
 "    owners even if they don't have op/halfop/voice/whatever capability."
-msgstr "Legt fest ob das Plugin Besitzern automatisch den Modus zuweist, obwohl sie nicht die op/halfop/voice/wasauchimmer Fähigkeit besitzen."
+msgstr ""
+"Legt fest ob das Plugin Besitzern automatisch den Modus zuweist, obwohl sie "
+"nicht die op/halfop/voice/wasauchimmer Fähigkeit besitzen."
 
-#: config.py:52
+#: config.py:53
+msgid ""
+"Determines whether the bot will\n"
+"    check for 'alternative capabilities' (ie. autoop, autohalfop,\n"
+"    autovoice) in addition to/instead of classic ones."
+msgstr ""
+
+#: config.py:57
 #, fuzzy
 msgid ""
 "Determines whether the bot will \"fall\n"
 "    through\" to halfop/voicing when auto-opping is turned off but\n"
 "    auto-halfopping/voicing are turned on."
-msgstr "Legt fest ob der Bot \"zurückfällt\" auf Halboperator/Sprechrechte wenn automatischer Operator abgeschaltet ist, aber automatische Halboperator/Sprecherechte angeschaltet sind."
+msgstr ""
+"Legt fest ob der Bot \"zurückfällt\" auf Halboperator/Sprechrechte wenn "
+"automatischer Operator abgeschaltet ist, aber automatische Halboperator/"
+"Sprecherechte angeschaltet sind."
 
-#: config.py:56
+#: config.py:61
 msgid ""
 "Determines whether the bot will automatically\n"
 "    op people with the <channel>,op capability when they join the channel.\n"
 "    "
-msgstr "Legt fest ob der Bot Personen, mit der <Kanal>,op Fähigkeit, automatisch Operatorrechte zuweisen soll, wenn sie den Kanal betreten."
+msgstr ""
+"Legt fest ob der Bot Personen, mit der <Kanal>,op Fähigkeit, automatisch "
+"Operatorrechte zuweisen soll, wenn sie den Kanal betreten."
 
-#: config.py:60
+#: config.py:65
 msgid ""
 "Determines whether the bot will automatically\n"
 "    halfop people with the <channel>,halfop capability when they join the\n"
 "    channel."
-msgstr "Legt fest ob der Bot Personen, mit der <Kanal>,halfop Fähigkeit, automatisch Halboperatorrechte zuweisen soll, wenn sie den Kanal betreten."
+msgstr ""
+"Legt fest ob der Bot Personen, mit der <Kanal>,halfop Fähigkeit, automatisch "
+"Halboperatorrechte zuweisen soll, wenn sie den Kanal betreten."
 
-#: config.py:64
+#: config.py:69
 msgid ""
 "Determines whether the bot will automatically\n"
 "    voice people with the <channel>,voice capability when they join the\n"
 "    channel."
-msgstr "Legt fest ob der Bot Personen, mit der <Kanal>,voice Fähigkeit, automatisch Sprechrechte zuweisen soll, wenn sie den Kanal betreten."
+msgstr ""
+"Legt fest ob der Bot Personen, mit der <Kanal>,voice Fähigkeit, automatisch "
+"Sprechrechte zuweisen soll, wenn sie den Kanal betreten."
 
-#: config.py:68
+#: config.py:73
 msgid ""
 "Determines whether the bot will automatically\n"
 "    ban people who join the channel and are on the banlist."
-msgstr "Legt fest ob der Bot automatisch Personen bannen soll die auf der Banliste stehen."
+msgstr ""
+"Legt fest ob der Bot automatisch Personen bannen soll die auf der Banliste "
+"stehen."
 
-#: config.py:71
+#: config.py:76
 msgid ""
 "Determines how many seconds the bot\n"
 "    will automatically ban a person when banning."
 msgstr "Legt fest wieviele Sekunden der Bot Personen automatisch bannt."
 
-#: config.py:75
+#: config.py:80
 #, fuzzy
 msgid ""
 "Determines how many seconds the bot will wait\n"
 "    before applying a mode. Has no effect on bans."
 msgstr "Legt fest wieviele Sekunden der Bot Personen automatisch bannt."
 
+#: config.py:84
+msgid ""
+"Extra modes that will be\n"
+"    applied to a user. Example syntax: user1+o-v user2+v user3-v"
+msgstr ""
+
+#: plugin.py:49
+msgid ""
+"\n"
+"    This plugin, when configured, allows the bot to automatically set modes\n"
+"    on users when they join.\n"
+"\n"
+"    * if ``plugins.automode.op`` is set to ``True``, users with the\n"
+"      ``#channel,op`` capability are opped when they join.\n"
+"    * if ``plugins.automode.halfop`` is set to ``True``, users with the\n"
+"      ``#channel,halfop`` are halfopped when they join.\n"
+"    * if ``plugins.automode.voice`` is set to ``True``, users with the\n"
+"      ``#channel,voice`` are voiced when they join.\n"
+"\n"
+"    This plugin also kbans people on ``@channel ban list``\n"
+"    (``config plugins.automode.ban``) when they join and if moding users "
+"with\n"
+"    lower capability is enabled, that is also applied to users with higher\n"
+"    capability (``config plugins.automode.fallthrough``).\n"
+"\n"
+"    "
+msgstr ""
+
+#: plugin.py:97
+msgid ""
+"Determines whether or not a mode has already\n"
+"                        been applied."
+msgstr ""

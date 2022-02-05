@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2010-10-17 15:20+CEST\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -13,11 +13,13 @@ msgstr ""
 "X-Poedit-Country: France\n"
 "X-Poedit-SourceCharset: ASCII\n"
 
-#: plugin.py:43
-msgid "Add the help for \"help Internet\" here."
+#: plugin.py:45
+msgid ""
+"Provides commands to query DNS, search WHOIS databases,\n"
+"    and convert IPs to hex."
 msgstr ""
 
-#: plugin.py:47
+#: plugin.py:50
 msgid ""
 "<host|ip>\n"
 "\n"
@@ -28,13 +30,11 @@ msgstr ""
 "\n"
 "Retourne l'ip de l'<hôte>, ou le reverse DNS de l'<ip>"
 
-#: plugin.py:54
-#: plugin.py:61
-#: plugin.py:65
+#: plugin.py:57 plugin.py:72
 msgid "Host not found."
 msgstr "Hôte non trouvé."
 
-#: plugin.py:77
+#: plugin.py:87
 msgid ""
 "<domain>\n"
 "\n"
@@ -45,39 +45,35 @@ msgstr ""
 "\n"
 "Retourne les informations du WHOIS sur le <domaine>."
 
-#: plugin.py:83
-msgid "domain"
-msgstr "domaine"
-
-#: plugin.py:112
+#: plugin.py:149
 msgid "updated %s"
 msgstr "mis à jour le %s"
 
-#: plugin.py:115
+#: plugin.py:152
 msgid "registered %s"
 msgstr "enregistré le %s"
 
-#: plugin.py:118
+#: plugin.py:155
 msgid "expires %s"
 msgstr "expire le %s"
 
-#: plugin.py:138
+#: plugin.py:175
 msgid " <registered at %s>"
 msgstr " <enregistré le %s>"
 
-#: plugin.py:140
+#: plugin.py:177
 msgid " <registered by %s>"
 msgstr " <enregistré par %s>"
 
-#: plugin.py:145
+#: plugin.py:184
 msgid "%s%s is %L."
 msgstr "%s%s est %L"
 
-#: plugin.py:148
+#: plugin.py:187
 msgid "I couldn't find such a domain."
 msgstr "Je ne peux trouver ce domaine."
 
-#: plugin.py:153
+#: plugin.py:192
 msgid ""
 "<ip>\n"
 "\n"
@@ -88,3 +84,5 @@ msgstr ""
 "\n"
 "Retourne l'IP hexadécimale pour cette IP."
 
+#~ msgid "domain"
+#~ msgstr "domaine"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2011-02-26 09:49+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2011-06-12 18:43+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: config.py:49
+#: config.py:50
 msgid ""
 "Determines whether the bot will prefix the nick\n"
 "    of the user giving an invalid command to the success response."
@@ -18,17 +18,18 @@ msgstr ""
 "Determina se il bot userà il nick dell'utente che dà un comando non\n"
 "    valido come prefisso per la risposta di successo."
 
-#: plugin.py:38
-#, docstring
+#: plugin.py:39
 msgid ""
 "This plugin was written initially to work with MoobotFactoids, the two\n"
-"    of them to provide a similar-to-moobot-and-blootbot interface for factoids.\n"
+"    of them to provide a similar-to-moobot-and-blootbot interface for "
+"factoids.\n"
 "    Basically, it replaces the standard 'The operation succeeded.' messages\n"
 "    with messages kept in a database, able to give more personable\n"
 "    responses."
 msgstr ""
-"Questo plugin fu inizialmente scritto per funzionare con MoobotFactoids, per\n"
+"Questo plugin fu inizialmente scritto per funzionare con MoobotFactoids, "
+"per\n"
 "    fornire un'interfaccia simile ai factoid di moobot e blootbot.\n"
 "    Sostituisce i messaggi standard \"L'operazione è riuscita.\"\n"
-"    con quelli contenuti in un database, in modo da rendere le risposte più piacevoli."
-
+"    con quelli contenuti in un database, in modo da rendere le risposte più "
+"piacevoli."

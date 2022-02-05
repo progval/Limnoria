@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Utilities plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 13:30+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 13:58+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,14 +17,14 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: plugin.py:41
+#: plugin.py:43
 #, fuzzy
 msgid "Provides useful commands for bot scripting / command nesting."
 msgstr ""
 "Tarjoaa hyödyllisiä komentoja botin skriptaukseen / komentoja laittamiseen "
 "sisäkkäisiksi."
 
-#: plugin.py:46
+#: plugin.py:48
 msgid ""
 "requires no arguments\n"
 "\n"
@@ -40,7 +40,7 @@ msgstr ""
 "        välitä niiden ei-virhe arvoista.\n"
 "        "
 
-#: plugin.py:60
+#: plugin.py:59
 msgid ""
 "[<text>]\n"
 "\n"
@@ -65,7 +65,7 @@ msgstr ""
 "        onnistumisviestin perään.\n"
 "        "
 
-#: plugin.py:73
+#: plugin.py:72
 msgid ""
 "<text> [<text> ...]\n"
 "\n"
@@ -82,7 +82,7 @@ msgstr ""
 "        ulostulon.\n"
 "        "
 
-#: plugin.py:87
+#: plugin.py:86
 msgid ""
 "<text>\n"
 "\n"
@@ -105,7 +105,7 @@ msgstr ""
 "        oikealla tavalla.\n"
 "        "
 
-#: plugin.py:100
+#: plugin.py:99
 msgid ""
 "<arg> [<arg> ...]\n"
 "\n"
@@ -117,7 +117,7 @@ msgstr ""
 "        Sekoittaa annetut parametrit keskenään.\n"
 "        "
 
-#: plugin.py:110
+#: plugin.py:109
 msgid ""
 "<arg> [<arg> ...]\n"
 "\n"
@@ -129,7 +129,7 @@ msgstr ""
 " Lajittelee annetut parametrit.\n"
 "        "
 
-#: plugin.py:121
+#: plugin.py:120
 msgid ""
 "<num> <arg> [<arg> ...]\n"
 "\n"
@@ -142,7 +142,7 @@ msgstr ""
 "parametreistä.\n"
 "        "
 
-#: plugin.py:134
+#: plugin.py:133
 msgid ""
 "<arg> [<arg> ...]\n"
 "\n"
@@ -154,7 +154,7 @@ msgstr ""
 "        Laskee annetut parametrit.\n"
 "        "
 
-#: plugin.py:143
+#: plugin.py:142
 msgid ""
 "<command> <text>\n"
 "\n"
@@ -166,3 +166,16 @@ msgstr ""
 "        Tokenizoi <tekstin> ja kutsuu <komennon> tuloksena olevilla "
 "parametreillä.\n"
 "        "
+
+#: plugin.py:157
+msgid ""
+"<variable> = <value> in <command>\n"
+"\n"
+"        Defines <variable> to be equal to <value> in the <command>\n"
+"        and runs the <command>.\n"
+"        '=' and 'in' can be omitted."
+msgstr ""
+
+#: plugin.py:165
+msgid "Cannot set a variable that already exists."
+msgstr ""

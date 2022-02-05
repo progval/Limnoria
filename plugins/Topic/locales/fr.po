@@ -1,25 +1,24 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2014-01-21 22:32+CET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-07-05 00:09+0200\n"
 "Last-Translator: \n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
-"Language: fr_FR\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: ASCII\n"
 "X-Generator: Poedit 1.5.4\n"
-"Language: fr\n"
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Value must include $topic, otherwise the actual topic would be left out."
 msgstr ""
 "La valeur doit inclure $topic, sinon, le topic actuel serait laissé tel quel."
 
-#: config.py:50
+#: config.py:51
 msgid ""
 "Determines what separator is\n"
 "    used between individually added topics in the channel topic."
@@ -27,7 +26,7 @@ msgstr ""
 "Détermine quel séparateur est utilisé entre les différents topics dans le "
 "topic du canal."
 
-#: config.py:53
+#: config.py:54
 msgid ""
 "Determines what format is used to add\n"
 "    topics in the topic.  All the standard substitutes apply, in addition "
@@ -38,7 +37,7 @@ msgstr ""
 "Tous les substituts standard s'appliquent, en plus de \"$topic\" pour le "
 "topic lui-même."
 
-#: config.py:57
+#: config.py:58
 msgid ""
 "Determines whether the bot will recognize the\n"
 "    TOPICLEN value sent to it by the server and thus refuse to send TOPICs\n"
@@ -51,7 +50,7 @@ msgstr ""
 "les topics trop longs seront tronqués par le serveur, don cç vaut par défaut "
 "True."
 
-#: config.py:62
+#: config.py:63
 msgid ""
 "Determines what the default topic for the channel\n"
 "    is.  This is used by the default command to set this topic."
@@ -59,15 +58,26 @@ msgstr ""
 "Détermine quel est le topic par défaut du canal. C'est utilisé par la "
 "commande 'default'."
 
-#: config.py:65
+#: config.py:66
+#, fuzzy
 msgid ""
-"Determines whether the bot will set the topic\n"
-"    every time it joins, or only if the topic is empty."
+"Determines whether the bot will automatically\n"
+"    set the topic on join if it is empty."
 msgstr ""
 "Détermine si le bot définira le topic à chaque fois qu’il rejoint le salon, "
 "ou seulement si le topic est vide."
 
 #: config.py:69
+#, fuzzy
+msgid ""
+"Determines whether the bot will set the topic\n"
+"    every time it joins, or only if the topic is empty. Requires 'config\n"
+"    plugins.topic.setOnJoin' to be set to True."
+msgstr ""
+"Détermine si le bot définira le topic à chaque fois qu’il rejoint le salon, "
+"ou seulement si le topic est vide."
+
+#: config.py:74
 msgid ""
 "Determines the number of previous\n"
 "    topics to keep around in case the undo command is called."
@@ -75,7 +85,7 @@ msgstr ""
 "Détermine le nombre de topics précédents à garder pour le cas où la commande "
 "'undo' est appelée."
 
-#: config.py:72
+#: config.py:77
 msgid ""
 "Determines the\n"
 "    capabilities required (if any) to make any topic changes,\n"
@@ -89,34 +99,49 @@ msgstr ""
 "#canal,capacité pour les capacités de canaux. Notez qu'en l'absence d'une "
 "anticapacité explicite, l'utilisateur a cette capacité."
 
-#: plugin.py:57
+#: config.py:84
+msgid ""
+"Determines whether the bot will allow\n"
+"    topics containing the defined separator to be used. You may want\n"
+"    to disable this if you are signing all topics by nick (see the 'format'\n"
+"    option for ways to adjust this)."
+msgstr ""
+
+#: plugin.py:59
 msgid "I'm not currently in %s."
 msgstr "Je ne suis pas actuellement sur %s."
 
-#: plugin.py:61
+#: plugin.py:63
 msgid "I can't change the topic, I'm not (half)opped and %s is +t."
-msgstr "Je ne peux changer le topic, je ne suis pas halfopé, et %s a le mode +t."
+msgstr ""
+"Je ne peux changer le topic, je ne suis pas halfopé, et %s a le mode +t."
 
-#: plugin.py:68
+#: plugin.py:73
 msgid "The topic must not include %q."
 msgstr "Le topic ne doit pas inclure %q."
 
-#: plugin.py:79
+#: plugin.py:85
 msgid "topic number"
 msgstr "numéro de topic"
 
-#: plugin.py:92
+#: plugin.py:98
 msgid "There are no topics in %s."
 msgstr "Il n'y a pas de topic sur %s."
 
-#: plugin.py:200
+#: plugin.py:122
+msgid ""
+"This plugin allows you to use many topic-related functions,\n"
+"    such as Add, Undo, and Remove."
+msgstr ""
+
+#: plugin.py:212
 msgid ""
 "That topic is too long for this server (maximum length: %i; this topic: %i)."
 msgstr ""
 "Ce topic est trop long pour ce serveur (longueur maximum : %i ; ce topic : "
 "%i)."
 
-#: plugin.py:219
+#: plugin.py:231
 msgid ""
 "Check if the user has any of the required capabilities to manage\n"
 "        the channel topic.\n"
@@ -129,7 +154,7 @@ msgid ""
 "        "
 msgstr "."
 
-#: plugin.py:276
+#: plugin.py:292
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -143,7 +168,7 @@ msgstr ""
 "Retourne le topic du <canal>. <canal> n'est nécessaire que si le message "
 "n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:287
+#: plugin.py:302
 msgid ""
 "[<channel>] <topic>\n"
 "\n"
@@ -157,7 +182,7 @@ msgstr ""
 "Ajoute le <topic> aux topics du <canal>. <canal> n'est nécessaire que si le "
 "message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:302
+#: plugin.py:314
 msgid ""
 "[<channel>] <topic>\n"
 "\n"
@@ -175,7 +200,7 @@ msgstr ""
 "y ai assez de place. <canal> n'est nécessaire que si le message n'est pas "
 "envoyé sur le canal lui-même."
 
-#: plugin.py:319
+#: plugin.py:328
 msgid ""
 "[<channel>] <number> <topic>\n"
 "\n"
@@ -186,7 +211,7 @@ msgstr ""
 "\n"
 "Remplace le topic <nombre> par le <topic>."
 
-#: plugin.py:333
+#: plugin.py:339
 msgid ""
 "[<channel>] <topic>\n"
 "\n"
@@ -202,7 +227,7 @@ msgstr ""
 "sur le <canal>. <canal> n'est nécessaire que si le message n'est pas envoyé "
 "sur le canal lui-même."
 
-#: plugin.py:349
+#: plugin.py:352
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -216,7 +241,7 @@ msgstr ""
 "Mélance les topics sur le <canal>. <canal> n'est nécessaire que si le "
 "message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:359
+#: plugin.py:360
 msgid "I can't shuffle 1 or fewer topics."
 msgstr "Je ne peux mélanger les topics que si il y en a au moins deux."
 
@@ -237,19 +262,19 @@ msgstr ""
 "<nombre>. <nombre> est un index dans les topics. <canal> n'est nécessaire "
 "que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:384
+#: plugin.py:382
 msgid "I cannot reorder 1 or fewer topics."
 msgstr "Je ne peux réordonner les topics s'il y en a moins de deux."
 
-#: plugin.py:386
+#: plugin.py:384
 msgid "All topic numbers must be specified."
 msgstr "Tous les nombres de topics doivent être spécifiés."
 
-#: plugin.py:388
+#: plugin.py:386
 msgid "Duplicate topic numbers cannot be specified."
 msgstr "Les numéros de topics ne peuvent être en double."
 
-#: plugin.py:396
+#: plugin.py:393
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -266,11 +291,11 @@ msgstr ""
 "Généralement utile pour réordonner les topics. <canal> n'est nécessaire que "
 "si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:405
+#: plugin.py:402
 msgid "%i: %s"
 msgstr "%i : %s"
 
-#: plugin.py:412
+#: plugin.py:408
 msgid ""
 "[<channel>] <number>\n"
 "\n"
@@ -286,7 +311,7 @@ msgstr ""
 "topics. <canal> n'est nécessaire que si le message n'est pas envoyé sur le "
 "canal lui-même."
 
-#: plugin.py:424
+#: plugin.py:419
 msgid ""
 "[<channel>] <number> <regexp>\n"
 "\n"
@@ -307,7 +332,7 @@ msgstr ""
 "une expression régulière de la forme s/regexp/replacement/flags. <canal> "
 "n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:442
+#: plugin.py:434
 msgid ""
 "[<channel>] [<number>] <topic>\n"
 "\n"
@@ -323,11 +348,12 @@ msgstr ""
 "topic entier. <canal> n'est nécessaire que si le message n'est pas envoyé "
 "sur le canal lui-même."
 
-#: plugin.py:463
+#: plugin.py:452
+#, fuzzy
 msgid ""
-"[<channel>] <number>\n"
+"[<channel>] <number1> [<number2> <number3>...]\n"
 "\n"
-"        Removes topic <number> from the topic for <channel>  Topics are\n"
+"        Removes topics <numbers> from the topic for <channel>  Topics are\n"
 "        numbered starting from 1; you can also use negative indexes to "
 "refer\n"
 "        to topics starting the from the end of the topic.  <channel> is "
@@ -342,7 +368,7 @@ msgstr ""
 "compter à partir de la fin. <canal> n'est nécessaire que si le message n'est "
 "pas envoyé sur le canal lui-même."
 
-#: plugin.py:480
+#: plugin.py:472
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -355,11 +381,11 @@ msgstr ""
 "Verrouille le topic (défini le mode +t) sur le <canal>. <canal> n'est "
 "nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:490
+#: plugin.py:480
 msgid "lock the topic"
 msgstr "verrouiller le topic"
 
-#: plugin.py:494
+#: plugin.py:483
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -373,11 +399,11 @@ msgstr ""
 "Déverrouille le topic (défini le mode -t) sur le <canal>. <canal> n'est "
 "nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:504
+#: plugin.py:491
 msgid "unlock the topic"
 msgstr "déverrouiller le topic"
 
-#: plugin.py:508
+#: plugin.py:494
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -392,11 +418,27 @@ msgstr ""
 "<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-"
 "même."
 
-#: plugin.py:519
+#: plugin.py:505 plugin.py:527
 msgid "I haven't yet set the topic in %s."
 msgstr "Je n'ai encore jamais définit le topic sur %s."
 
-#: plugin.py:527
+#: plugin.py:512
+#, fuzzy
+msgid ""
+"[<channel>]\n"
+"        Refreshes current topic set by anyone. Restores topic if empty.\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<canal>]\n"
+"\n"
+"Restaure le topic tel qu'il était la dernière fois que le bot l'a défini. "
+"<canal> n'est nécessaire que si le message n'est pas envoyé sur le canal lui-"
+"même."
+
+#: plugin.py:534
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -413,11 +455,11 @@ msgstr ""
 "utilisation de la commande 'topic. <canal> n'est nécessaire que si le "
 "message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:541
+#: plugin.py:546
 msgid "There are no more undos for %s."
 msgstr "Il n'y a plus rien à défaire sur %s"
 
-#: plugin.py:546
+#: plugin.py:550
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -431,11 +473,11 @@ msgstr ""
 "Défait le dernier 'undo'. <canal> n'est nécessaire que si le message n'est "
 "pas envoyé sur le canal lui-même."
 
-#: plugin.py:558
+#: plugin.py:560
 msgid "There are no redos for %s."
 msgstr "Il n'y a plus rien à refaire sur %s"
 
-#: plugin.py:563
+#: plugin.py:564
 msgid ""
 "[<channel>] <first topic number> <second topic number>\n"
 "\n"
@@ -452,11 +494,11 @@ msgstr ""
 "donnés. <canal> n'est nécessaire que si le message n'est pas envoyé sur le "
 "canal lui-même."
 
-#: plugin.py:574
+#: plugin.py:573
 msgid "I refuse to swap the same topic with itself."
 msgstr "Je refuse d'échanger un topic avec lui-même."
 
-#: plugin.py:584
+#: plugin.py:582
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -467,11 +509,11 @@ msgid ""
 msgstr ""
 "[<canal>]\n"
 "\n"
-"Enregistre le topic du <canal> pour être restauré avec 'topic default' par la "
-"suite. <canal> n'est nécessaire que si vous n'exécutez pas la commande dans "
-"le canal lui-même."
+"Enregistre le topic du <canal> pour être restauré avec 'topic default' par "
+"la suite. <canal> n'est nécessaire que si vous n'exécutez pas la commande "
+"dans le canal lui-même."
 
-#: plugin.py:603
+#: plugin.py:598
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -488,11 +530,11 @@ msgstr ""
 "variable supybot.plugins.Topic.default. <canal> n'est nécessaire que si le "
 "message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:616
+#: plugin.py:609
 msgid "There is no default topic configured for %s."
 msgstr "Il n'y a pas de topic par défaut configuré pour %s."
 
-#: plugin.py:622
+#: plugin.py:614
 msgid ""
 "[<channel>] <separator>\n"
 "\n"

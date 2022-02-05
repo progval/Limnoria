@@ -1,0 +1,64 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: plugin.py:49
+msgid "Could not understand timezone: %s"
+msgstr ""
+
+#: plugin.py:54
+msgid "Timezone-related commands are not available. Your administrator need to either upgrade Python to version 3.9 or greater, or install pytz."
+msgstr ""
+
+#: plugin.py:66
+#, docstring
+msgid ""
+"Provides geography facts, such as timezones.\n"
+"\n"
+"    This plugin uses data from `Wikidata <https://wikidata.org/>`_\n"
+"    and `OSM/Nominatim <https://nominatim.openstreetmap.org/>`.\n"
+"    "
+msgstr ""
+
+#: plugin.py:76
+#, docstring
+msgid ""
+"<location name to search>\n"
+"\n"
+"        Returns the current used in the given location. For example,\n"
+"        the name could be \"Paris\" or \"Paris, France\". The response is\n"
+"        formatted according to supybot.reply.format.time\n"
+"        This uses data from Wikidata and Nominatim."
+msgstr ""
+
+#: plugin.py:84 plugin.py:122
+msgid "Could not find the location"
+msgstr ""
+
+#: plugin.py:110 plugin.py:167
+msgid "Could not find the timezone of this location."
+msgstr ""
+
+#: plugin.py:115
+#, docstring
+msgid ""
+"<location name to search>\n"
+"\n"
+"        Returns the timezone used in the given location. For example,\n"
+"        the name could be \"Paris\" or \"Paris, France\".\n"
+"        This uses data from Wikidata and Nominatim."
+msgstr ""
+

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Time plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 13:29+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 13:43+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Generator: Poedit 1.6.10\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: config.py:45
+#: config.py:46
 msgid ""
 "Determines the\n"
 "    format string for timestamps.  Refer to the Python documentation for "
@@ -32,11 +32,11 @@ msgstr ""
 "tämän tyhjäksi\n"
 "    merkkiketjuksi, aikaleimaa ei näytetä."
 
-#: plugin.py:67
+#: plugin.py:75
 msgid "This plugin allows you to use different time-related functions."
 msgstr "Tämä plugini sallii erilaisten aikaan liittyvien funktioiden käytön."
 
-#: plugin.py:70
+#: plugin.py:78
 msgid ""
 "[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]\n"
 "\n"
@@ -60,7 +60,7 @@ msgstr ""
 "        tulevaisuudessa.\n"
 "        "
 
-#: plugin.py:105
+#: plugin.py:113
 #, fuzzy
 msgid ""
 "[<time string>]\n"
@@ -81,7 +81,7 @@ msgstr ""
 "        ja katso toimiiko se.\n"
 "        "
 
-#: plugin.py:116 plugin.py:133
+#: plugin.py:124 plugin.py:141
 msgid ""
 "This command is not available on this bot, ask the owner to install the "
 "python-dateutil library."
@@ -89,11 +89,11 @@ msgstr ""
 "Tämä komento ei ole saatavilla tällä botilla. Pyydä omistajaa asentamaan "
 "python-dateutil sovelluskirjasto."
 
-#: plugin.py:123 plugin.py:142
+#: plugin.py:131 plugin.py:150
 msgid "That's right now!"
 msgstr "Se on juuri nyt!"
 
-#: plugin.py:128
+#: plugin.py:136
 msgid ""
 "<time string>\n"
 "\n"
@@ -105,7 +105,7 @@ msgstr ""
 "        Palauttaa sekuntien määrän <aika merkkiketjuun>.\n"
 "        "
 
-#: plugin.py:147
+#: plugin.py:155
 msgid ""
 "[<seconds since epoch>]\n"
 "\n"
@@ -121,17 +121,19 @@ msgstr ""
 "        <sekunteja ajanlaskun alkamisen jälkeen> on annettu.\n"
 "        "
 
-#: plugin.py:153
+#: plugin.py:161
 msgid "number of seconds since epoch"
 msgstr "sekuntien määrä ajanlaskun alkamisen jälkeen"
 
-#: plugin.py:158
+#: plugin.py:166
+#, fuzzy
 msgid ""
-"[<format>] [<seconds since epoch>]\n"
+"[<channel>] [<format>] [<seconds since epoch>]\n"
 "\n"
 "        Returns the current time in <format> format, or, if <format> is not\n"
 "        given, uses the configurable format for the current channel.  If no\n"
-"        <seconds since epoch> time is given, the current time is used.\n"
+"        <seconds since epoch> time is given, the current time is used. If\n"
+"        <channel> is given without <format>, uses the format for <channel>.\n"
 "        "
 msgstr ""
 "[<muoto>] [<sekunteja ajanlaskun alkamisen jälkeen>]\n"
@@ -143,7 +145,7 @@ msgstr ""
 "nykyistä aikaa.\n"
 "        "
 
-#: plugin.py:181
+#: plugin.py:188
 msgid ""
 "<seconds>\n"
 "\n"
@@ -157,11 +159,12 @@ msgstr ""
 "        esitetty.\n"
 "        "
 
-#: plugin.py:191
+#: plugin.py:198
+#, fuzzy
 msgid ""
-"<region>/<city>\n"
+"<region>/<city> (or <region>/<state>/<city>)\n"
 "\n"
-"        Takes a city and its region, and returns the locale time. This \n"
+"        Takes a city and its region, and returns its local time. This\n"
 "        command uses the IANA Time Zone Database."
 msgstr ""
 "<alue>/<kaupunki>\n"
@@ -169,16 +172,34 @@ msgstr ""
 " Näyttää kaupungin ja sen osan paikallisen ajan. Tämä komento käyttää\n"
 " IANAn aikavyöhyketietokantaa."
 
-#: plugin.py:198
-msgid ""
-"Python-tz is required by the command, but is not installed on this computer."
-msgstr ""
-"Python-tz on vaadittu tämän komennon käyttämiseen, mutta se ei ole "
-"asennettuna tälle tietokoneelle."
-
-#: plugin.py:204
+#: plugin.py:205
 msgid "Unknown timezone"
 msgstr "Tuntematon aikavyöhyke"
+
+#: plugin.py:207
+msgid ""
+"Timezone-related commands are not available. Your administrator need to "
+"either upgrade Python to version 3.9 or greater, or install pytz."
+msgstr ""
+
+#: plugin.py:219
+msgid ""
+"[<year> <month> <day>]\n"
+"        Returns a the Discordian date today, or an optional different date."
+msgstr ""
+
+#: plugin.py:230
+msgid ""
+"The 'ddate' module is not installed. Use '%s -m pip install --user ddate' or "
+"see %u for more information."
+msgstr ""
+
+#~ msgid ""
+#~ "Python-tz is required by the command, but is not installed on this "
+#~ "computer."
+#~ msgstr ""
+#~ "Python-tz on vaadittu tämän komennon käyttämiseen, mutta se ei ole "
+#~ "asennettuna tälle tietokoneelle."
 
 #~ msgid "A timezone must be in the format region/city."
 #~ msgstr "Aikavyöhykkeen täytyy olla muodossa alue/kaupunki."

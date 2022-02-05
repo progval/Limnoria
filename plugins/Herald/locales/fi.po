@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Herald plugin for Limnoria\n"
-"POT-Creation-Date: 2014-12-20 14:04+EET\n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
 "PO-Revision-Date: 2014-12-20 14:07+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: config.py:46
+#: config.py:47
 msgid ""
 "Determines whether messages will be sent to the\n"
 "    channel when a recognized user joins; basically enables or disables the\n"
@@ -28,7 +28,7 @@ msgstr ""
 "käytöstä\n"
 "    tämän lisäosan."
 
-#: config.py:50
+#: config.py:51
 msgid ""
 "Determines what capability (if any) is required to\n"
 "    add/change/remove the herald of another user."
@@ -36,7 +36,7 @@ msgstr ""
 "Määrittää mikä valtuus (jos mikään) on vaadittu\n"
 "    toisen käyttäjän airueen lisäämisessä/muuttamisessa/poistamisessa."
 
-#: config.py:53
+#: config.py:54
 msgid ""
 "Determines the minimum number of seconds\n"
 "    between heralds."
@@ -44,7 +44,7 @@ msgstr ""
 "Määrittää minimi määrän sekunteja\n"
 "    airueiden välillä."
 
-#: config.py:56
+#: config.py:57
 msgid ""
 "Determines the minimum number of seconds\n"
 "    after parting that the bot will not herald the person when they\n"
@@ -54,7 +54,7 @@ msgstr ""
 "    henkilön poistumisen jälkeen botti ei toimi airueena, kun hän\n"
 "    palaa."
 
-#: config.py:60
+#: config.py:61
 msgid ""
 "Determines the minimum number of seconds\n"
 "    after a netsplit that the bot will not herald the users that split."
@@ -62,7 +62,7 @@ msgstr ""
 "Määritt'' minimi määrän sekunteja netsplitin jälkeen\n"
 "    jolloin botti ei toimi airueena käyttäjille, jotka splittaantuivat."
 
-#: config.py:63
+#: config.py:64
 msgid ""
 "Sets the default herald to use.  If a user has a\n"
 "    personal herald specified, that will be used instead.  If set to the "
@@ -74,7 +74,7 @@ msgstr ""
 "asetettu tyhjäksi\n"
 "    merkkiketjuksi, oletus airue poistetaan käytöstä."
 
-#: config.py:67
+#: config.py:68
 msgid ""
 "Determines whether the default herald will be\n"
 "    sent as a NOTICE instead of a PRIVMSG."
@@ -82,7 +82,7 @@ msgstr ""
 "Määrittää lähetetäänkö oletus airue NOTICEna\n"
 "    PRIVMSG:gen sijaan."
 
-#: config.py:70
+#: config.py:71
 msgid ""
 "Determines whether the default herald will be\n"
 "    sent publicly."
@@ -90,7 +90,7 @@ msgstr ""
 "Määrittää lähetetäänkö oletus airut \n"
 "    julkisesti."
 
-#: plugin.py:58
+#: plugin.py:59
 msgid ""
 "This plugin allows you to set welcome messages (heralds) to people who\n"
 "    are recognized by the bot when they join a channel."
@@ -98,7 +98,7 @@ msgstr ""
 "Tämä plugini sallii tervetuloviestien (airueiden) asettamisen käyttäjille, "
 "jotka botti tunnistaa heidän liittyessään kanavalle."
 
-#: plugin.py:145
+#: plugin.py:152
 #, fuzzy
 msgid ""
 "[<channel>] [--remove|<msg>]\n"
@@ -118,11 +118,11 @@ msgstr ""
 "        nykyisen oletusairueen.  <Kanava> on vaadittu vain jos viestiä ei "
 "lähetetä kanavalla itsellään."
 
-#: plugin.py:164
+#: plugin.py:171
 msgid "I do not have a default herald set for %s."
 msgstr "Minulla ei ole oletus airuetta asetettuna %s:lle."
 
-#: plugin.py:172
+#: plugin.py:179
 msgid ""
 "[<channel>] [<user|nick>]\n"
 "\n"
@@ -142,11 +142,11 @@ msgstr ""
 "        on vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:183
+#: plugin.py:190
 msgid "I have no herald for %s."
 msgstr "Minulla ei ole airuetta %s:lle."
 
-#: plugin.py:203
+#: plugin.py:210
 msgid ""
 "[<channel>] <user|nick> <msg>\n"
 "\n"
@@ -164,7 +164,7 @@ msgstr ""
 "        vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:216
+#: plugin.py:223
 msgid ""
 "[<channel>] [<user|nick>]\n"
 "\n"
@@ -187,11 +187,11 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:229
+#: plugin.py:236
 msgid "I have no herald for that user."
 msgstr "Minulla ei ole airuetta tuolle käyttäjälle."
 
-#: plugin.py:234
+#: plugin.py:241
 msgid ""
 "[<channel>] [<user|nick>] <regexp>\n"
 "\n"
