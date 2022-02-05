@@ -1,14 +1,11 @@
-import os
-import pbs
+import pathlib
+import subprocess
 
-pbs.cd('Admin')
-for plugin in os.listdir('..'):
-    path = os.path.join('..', plugin)
-    print(repr(path))
-    assert os.path.exists(path)
-    if not os.path.isdir(path):
-        print 1
+for plugin_path in pathlib.Path("plugins/").iterdir():
+    assert plugin_path.exists()
+    if not plugin_path.is_dir():
         continue
-    print 2
-    pbs.cd(path)
-    pbs.pygettext('-D', 'config.py', 'plugin.py')
+    plugin_name = plugin_path.name
+    if plugin_name[0] == plugin_name[0].lower():
+        continue
+    subprocess.run(["pygettext3", "-D", "config.py", "plugin.py"], cwd=plugin_path)
