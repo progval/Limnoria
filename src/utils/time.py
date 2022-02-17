@@ -71,7 +71,7 @@ def iana_timezone(name):
             raise UnknownTimeZone(e.args[0]) from None
     elif pytz:
         try:
-            timezone = pytz.timezone(name)
+            return pytz.timezone(name)
         except pytz.UnknownTimeZoneError as e:
             raise UnknownTimeZone(e.args[0]) from None
     else:
