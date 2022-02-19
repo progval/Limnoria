@@ -348,7 +348,7 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
             self.assertResponse(
                 "status https://example.org/users/someuser/statuses/1234",
                 "\x02someuser\x02 (@someuser@example.org): "
-                + "@ FirstAuthor I am replying to you",
+                + "@FirstAuthor I am replying to you",
             )
 
     def testStatusAttachment(self):
@@ -381,7 +381,7 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
         with self.mockRequests(expected_requests):
             self.assertResponse(
                 "status https://example.org/users/someuser/statuses/1234",
-                "<error: blah>: " + "@ FirstAuthor I am replying to you",
+                "<error: blah>: " + "@FirstAuthor I am replying to you",
             )
 
     def testStatuses(self):
@@ -399,7 +399,7 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
             self.assertResponse(
                 "statuses @someuser@example.org",
                 "\x02someuser\x02 (@someuser@example.org): "
-                + "@ FirstAuthor I am replying to you, "
+                + "@FirstAuthor I am replying to you, "
                 + "\x02someuser\x02 (@someuser@example.org): "
                 + "\x02[CW This is a content warning]\x02 "
                 + "This is a status with a content warning, and "
@@ -422,7 +422,7 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 self.assertResponse(
                     "statuses @someuser@example.org",
                     "\x02someuser\x02 (@someuser@example.org): "
-                    + "@ FirstAuthor I am replying to you, "
+                    + "@FirstAuthor I am replying to you, "
                     + "\x02someuser\x02 (@someuser@example.org): "
                     + "CW This is a content warning, and "
                     + "\x02Boosted User\x02 (@BoostedUser@example.net): "
@@ -449,7 +449,7 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 self.assertSnarfResponse(
                     "aaa https://example.org/users/someuser/statuses/1234 bbb",
                     "\x02someuser\x02 (@someuser@example.org): "
-                    + "@ FirstAuthor I am replying to you",
+                    + "@FirstAuthor I am replying to you",
                 )
 
     def testStatusUrlSnarferMore(self):
@@ -474,7 +474,7 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 self.assertSnarfResponse(
                     "aaa https://example.org/users/someuser/statuses/1234 bbb",
                     "\x02someuser\x02 (@someuser@example.org): "
-                    + "@ FirstAuthor I am replying to you with a "
+                    + "@FirstAuthor I am replying to you with a "
                     + " \x02(2 more messages)\x02",
                 )
 
@@ -503,7 +503,7 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
             ):
                 self.assertSnarfResponse(
                     "aaa https://example.org/users/someuser/statuses/1234 bbb",
-                    "<error: blah>: @ FirstAuthor I am replying to you",
+                    "<error: blah>: @FirstAuthor I am replying to you",
                 )
 
     def testSnarferType(self):
