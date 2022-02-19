@@ -541,6 +541,11 @@ class NetTest(SupyTestCase):
         self.assertTrue(f('2001:888:0:1::666'))
 
 class WebTest(SupyTestCase):
+    def testHtmlToText(self):
+        self.assertEqual(
+            utils.web.htmlToText('foo<p>bar<span>baz</span>qux</p>quux'),
+            'foo barbazqux quux')
+
     def testGetDomain(self):
         url = 'http://slashdot.org/foo/bar.exe'
         self.assertEqual(utils.web.getDomain(url), 'slashdot.org')

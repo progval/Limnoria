@@ -222,12 +222,16 @@ def getEncoding(s):
     except:
         return None
 
+
+# From beautifulsoup (version 4.10.0, bs4/builder/__init__.py, line 391)
+_block_elements = set(["address", "article", "aside", "blockquote", "canvas", "dd", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "noscript", "ol", "output", "p", "pre", "section", "table", "tfoot", "ul", "video"])
+
 class HtmlToText(HTMLParser, object):
     """Taken from some eff-bot code on c.l.p."""
     entitydefs = entitydefs.copy()
     entitydefs['nbsp'] = ' '
     entitydefs['apos'] = '\''
-    def __init__(self, tagReplace=' '):
+    def __init__(self, tagReplace=None):
         self.data = []
         self.tagReplace = tagReplace
         super(HtmlToText, self).__init__()
@@ -235,11 +239,20 @@ class HtmlToText(HTMLParser, object):
     def append(self, data):
         self.data.append(data)
 
+    def getTagReplace(self, tag):
+        if self.tagReplace is None:
+            if tag in _block_elements:
+                return ' '
+            else:
+                return ''
+        else:
+            return self.tagReplace
+
     def handle_starttag(self, tag, attr):
-        self.append(self.tagReplace)
+        self.append(self.getTagReplace(tag))
 
     def handle_endtag(self, tag):
-        self.append(self.tagReplace)
+        self.append(self.getTagReplace(tag))
 
     def handle_data(self, data):
         self.append(data)
@@ -267,7 +280,7 @@ class HtmlToText(HTMLParser, object):
     def handle_charref(self, name):
         self.append(self.unescape('&#%s;' % name))
 
-def htmlToText(s, tagReplace=' '):
+def htmlToText(s, tagReplace=None):
     """Turns HTML into text.  tagReplace is a string to replace HTML tags with.
     """
     encoding = getEncoding(s)
