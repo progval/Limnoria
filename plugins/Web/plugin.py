@@ -149,6 +149,17 @@ class Web(callbacks.PluginRegexp):
 
     def getTitle(self, irc, url, raiseErrors, msg):
         size = conf.supybot.protocols.http.peekSize()
+
+        parsed_url = utils.web.urlparse(url)
+        if parsed_url.netloc.endswith(('youtube.com', '.youtube.com')):
+            # there is a lot of Javascript before the <title>
+            size = 409600
+        if parsed_url.netloc in ('reddit.com', 'www.reddit.com', 'new.reddit.com'):
+            # Since 2022-03, New Reddit has 'Reddit - Dive into anything' as
+            # <title> on every page.
+            parsed_url = parsed_url._replace(netloc='old.reddit.com')
+            url = utils.web.urlunparse(parsed_url)
+
         timeout = self.registryValue('timeout')
         headers = conf.defaultHttpHeaders(irc.network, msg.channel)
         try:

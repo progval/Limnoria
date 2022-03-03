@@ -71,17 +71,19 @@ class WebTestCase(ChannelPluginTestCase):
             # part of it.
             self.assertRegexp('title http://www.n-e-r-d.com/', 'N.*E.*R.*D')
             # Checks that the parser doesn't hang on invalid tags
-            self.assertNotError(
-                        'title http://www.youtube.com/watch?v=x4BtiqPN4u8')
             self.assertResponse(
                     'title http://www.thefreedictionary.com/don%27t',
                     "Don't - definition of don't by The Free Dictionary")
+
+        def testtitleYoutube(self):
             self.assertRegexp(
-                    'title '
-                    'https://twitter.com/rlbarnes/status/656554266744586240',
-                    '"PSA: In Firefox 44 Nightly, "http:" pages with '
-                    '<input type="password"> are now marked insecure. '
-                    'https://t.co/qS9LxuRPdm"$')
+                'title https://www.youtube.com/watch?v=GHMjD0Lp5DY',
+                'Pianoforte')
+
+        def testtitleReddit(self):
+            self.assertRegexp(
+                'title https://www.reddit.com/r/irc/',
+                'Internet Relay Chat')
 
         def testTitleSnarfer(self):
             try:

@@ -46,7 +46,7 @@ if minisix.PY2:
     import urllib
     import urllib2
     from httplib import InvalidURL
-    from urlparse import urlsplit, urlunsplit, urlparse
+    from urlparse import urlsplit, urlunsplit, urlparse, urlunparse
     from htmlentitydefs import entitydefs, name2codepoint
     from HTMLParser import HTMLParser
     from cgi import escape as html_escape
@@ -61,7 +61,7 @@ if minisix.PY2:
     from urllib import splithost, splituser
 else:
     from http.client import InvalidURL
-    from urllib.parse import urlsplit, urlunsplit, urlparse
+    from urllib.parse import urlsplit, urlunsplit, urlparse, urlunparse
     from html.entities import entitydefs, name2codepoint
     from html.parser import HTMLParser
     from html import escape as html_escape
