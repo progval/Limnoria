@@ -1021,9 +1021,17 @@ class Databases(registry.SpaceSeparatedListOfStrings):
         v = super(Databases, self).__call__()
         if not v:
             v = ['anydbm', 'dbm', 'cdb', 'flat', 'pickle']
-            if 'sqlalchemy' in sys.modules:
+            try:
+                import sqlalchemy
+            except ImportError:
+                pass
+            else:
                 v.insert(0, 'sqlalchemy')
-            if 'sqlite3' in sys.modules:
+            try:
+                import sqlite3
+            except ImportError:
+                pass
+            else:
                 v.insert(0, 'sqlite3')
         return v
 
