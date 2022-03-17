@@ -1527,7 +1527,11 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 msg._len = msg._str = None
             for callback in reversed(self.callbacks):
                 self._setMsgChannel(msg)
-                msg = callback.outFilter(self, msg)
+                try:
+                    msg = callback.outFilter(self, msg)
+                except:
+                    log.exception('Uncaught exception in outFilter:')
+                    continue
                 if msg is None:
                     log.debug('%s.outFilter returned None.', callback.name())
                     return self.takeMsg()

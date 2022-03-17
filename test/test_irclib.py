@@ -1023,6 +1023,46 @@ class IrcTestCase(SupyTestCase):
         self.irc.feedMsg(ircmsgs.IrcMsg('MODE @#linux3 +v foo'))
         self.assertEqual(self.irc.state.history[-1].channel, None)
 
+    def testFilterErrors(self):
+        self.irc.reset()
+        while self.irc.takeMsg() is not None:
+            pass
+        class BuggyCallback(irclib.IrcCallback):
+            infilter_called = False
+            outfilter_called = False
+            def name(self):
+                return 'buggycallback'
+            def inFilter(self, irc, msg):
+                self.infilter_called = True
+                raise Exception('test exception')
+            def outFilter(self, irc, msg):
+                self.outfilter_called = True
+                raise Exception('test exception')
+        class Callback(irclib.IrcCallback):
+            channels_set = None
+            def name(self):
+                return 'testcallback'
+            def doCommand(self, irc, msg):
+                irc.sendMsg(ircmsgs.privmsg('#foo', 'bar'))
+            def inFilter(self, irc, msg):
+                self.infilter_called = True
+                raise Exception('test exception')
+            def outFilter(self, irc, msg):
+                self.outfilter_called = True
+                raise Exception('test exception')
+
+        bc = BuggyCallback()
+        self.irc.addCallback(bc)
+        c = Callback()
+        self.irc.addCallback(c)
+        self.irc.feedMsg(ircmsgs.IrcMsg('COMMAND blah'))
+        m = self.irc.takeMsg()
+        self.assertEqual(m, ircmsgs.privmsg('#foo', 'bar'))
+        self.assertTrue(bc.infilter_called)
+        self.assertTrue(bc.outfilter_called)
+        self.assertTrue(c.infilter_called)
+        self.assertTrue(c.outfilter_called)
+
     def testQuit(self):
         self.irc.reset()
         self.irc.feedMsg(ircmsgs.IrcMsg(':someuser JOIN #foo'))
