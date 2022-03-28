@@ -154,6 +154,10 @@ class Web(callbacks.PluginRegexp):
         if parsed_url.netloc.endswith(('youtube.com', '.youtube.com')):
             # there is a lot of Javascript before the <title>
             size = 409600
+        if parsed_url.netloc.endswith(('twitter.com','.twitter.com')):
+            # JavaScript is not available.
+            parsed_url = parsed_url._replace(netloc='nitter.net')
+            url = utils.web.urlunparse(parsed_url)
         if parsed_url.netloc in ('reddit.com', 'www.reddit.com', 'new.reddit.com'):
             # Since 2022-03, New Reddit has 'Reddit - Dive into anything' as
             # <title> on every page.
