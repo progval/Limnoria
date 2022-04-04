@@ -28,10 +28,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import re
 import sys
 import time
 TIME = time # For later use.
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 import supybot.conf as conf
 import supybot.log as log
@@ -194,25 +195,35 @@ class Time(callbacks.Plugin):
     elapsed = wrap(elapsed, ['int'])
 
     @internationalizeDocstring
-    def tztime(self, irc, msg, args, timezone):
+    def tztime(self, irc, msg, args, tz):
         """<region>/<city> (or <region>/<state>/<city>)
 
         Takes a city and its region, and returns its local time. This
         command uses the IANA Time Zone Database."""
-        try:
-            timezone = utils.time.iana_timezone(timezone)
-        except utils.time.UnknownTimeZone:
-            irc.error(_('Unknown timezone'))
-        except utils.time.MissingTimezoneLibrary:
-            irc.error(_(
-                'Timezone-related commands are not available. '
-                'Your administrator need to either upgrade Python to '
-                'version 3.9 or greater, or install pytz.'))
-        except utils.time.TimezoneException as e:
-            irc.error(e.args[0])
+        parsed_utc_tz = re.match(
+                "UTC(?P<hours>[-+][0-9]+)(:(?P<minutes>[0-6][0-9]))?", tz)
+        if parsed_utc_tz:
+            groups = parsed_utc_tz.groupdict()
+            tz = timezone(timedelta(
+                hours=int(groups["hours"]),
+                minutes=int(groups["minutes"] or "00")
+            ))
         else:
-            format = self.registryValue("format", msg.channel, irc.network)
-            irc.reply(datetime.now(timezone).strftime(format))
+            try:
+                tz = utils.time.iana_timezone(tz)
+            except utils.time.UnknownTimeZone:
+                irc.error(_('Unknown timezone'), Raise=True)
+            except utils.time.MissingTimezoneLibrary:
+                irc.error(_(
+                    'Timezone-related commands are not available. '
+                    'Your administrator need to either upgrade Python to '
+                    'version 3.9 or greater, or install pytz.'),
+                    Raise=True)
+            except utils.time.TimezoneException as e:
+                irc.error(e.args[0], Raise=True)
+
+        format = self.registryValue("format", msg.channel, irc.network)
+        irc.reply(datetime.now(tz).strftime(format))
     tztime = wrap(tztime, ['text'])
 
     def ddate(self, irc, msg, args, year=None, month=None, day=None):
