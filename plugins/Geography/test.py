@@ -68,41 +68,85 @@ class GeographyTimezoneTestCase(PluginTestCase):
     @mock
     def testTimezonePytz(self):
         tz = pytz.timezone("Europe/Paris")
-
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
             self.assertRegexp(
                 "timezone Foo Bar", r"Europe/Paris \(currently UTC\+[12]\)"
+            )
+
+        tz = pytz.timezone("America/New_York")
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertRegexp(
+                "timezone New York", r"America/New_York \(currently UTC-[45]\)"
+            )
+
+        tz = pytz.timezone("Canada/Newfoundland")
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertRegexp(
+                "timezone Newfoundland",
+                r"Canada/Newfoundland \(currently UTC-[23]:30\)"
+            )
+
+        tz = pytz.timezone("Asia/Kolkata")
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertRegexp(
+                "timezone Delhi", r"Asia/Kolkata \(currently UTC\+5:30\)"
             )
 
     @skipIf(not zoneinfo, "Python is older than 3.9")
     @mock
     def testTimezoneZoneinfo(self):
         tz = zoneinfo.ZoneInfo("Europe/Paris")
-
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
             self.assertRegexp(
                 "timezone Foo Bar", r"Europe/Paris \(currently UTC\+[12]\)"
+            )
+
+        tz = zoneinfo.ZoneInfo("America/New_York")
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertRegexp(
+                "timezone New York", r"America/New_York \(currently UTC-[45]\)"
+            )
+
+        tz = zoneinfo.ZoneInfo("Canada/Newfoundland")
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertRegexp(
+                "timezone Newfoundland",
+                r"Canada/Newfoundland \(currently UTC-[23]:30\)"
+            )
+
+        tz = zoneinfo.ZoneInfo("Asia/Kolkata")
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertRegexp(
+                "timezone Delhi", r"Asia/Kolkata \(currently UTC\+5:30\)"
             )
 
     @skipIf(not zoneinfo, "Python is older than 3.9")
     @mock
     def testTimezoneAbsolute(self):
         tz = datetime.timezone(datetime.timedelta(hours=4))
-
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
-            self.assertResponse("timezone Foo Bar", "UTC+04:00")
+            self.assertResponse("timezone Foo Bar", "UTC+4")
 
         tz = datetime.timezone(datetime.timedelta(hours=4, minutes=30))
-
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
-            self.assertResponse("timezone Foo Bar", "UTC+04:30")
+            self.assertResponse("timezone Foo Bar", "UTC+4:30")
+
+        tz = datetime.timezone(datetime.timedelta(hours=-4, minutes=30))
+        with patch.object(wikidata, "timezone_from_uri", return_value=tz):
+            self.assertResponse("timezone Foo Bar", "UTC-3:30")
 
     @skipIf(not network, "Network test")
     def testTimezoneIntegration(self):
         self.assertRegexp(
             "timezone Metz, France", r"Europe/Paris \(currently UTC\+[12]\)"
         )
-        self.assertResponse("timezone Saint-Denis, La Réunion", "UTC+04:00")
+        self.assertResponse("timezone Saint-Denis, La Réunion", "UTC+4")
+        self.assertRegexp(
+            "timezone Delhi", r"Asia/Kolkata \(currently UTC\+5:30\)"
+        )
+        self.assertRegexp(
+            "timezone Newfoundland", r"UTC-[23]:30"
+        )
 
 
 class GeographyLocaltimeTestCase(PluginTestCase):

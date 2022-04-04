@@ -110,6 +110,21 @@ class Geography(callbacks.Plugin):
             _("Could not find the timezone of this location."), Raise=True
         )
 
+    def _format_utc_offset(self, offset_seconds):
+        sign = "+" if offset_seconds >= 0 else "-"
+
+        # Make modulos work as expected
+        offset_seconds = abs(offset_seconds)
+
+        (offset_minutes, offset_seconds) = divmod(offset_seconds, 60)
+        (offset_hours, offset_minutes) = divmod(offset_minutes, 60)
+        offset = f"{offset_hours}:{offset_minutes:02}:{offset_seconds:02}"
+
+        # hide seconds and minutes if they are zero
+        offset = re.sub("(:00)+$", "", offset)
+
+        return f"UTC{sign}{offset}"
+
     @wrap(["text"])
     def timezone(self, irc, msg, args, query):
         """<location name to search>
@@ -134,33 +149,28 @@ class Geography(callbacks.Plugin):
             if timezone is None:
                 continue
 
-            offset = str(datetime.datetime.now(tz=timezone).utcoffset())
-            if not offset.startswith("-"):
-                offset = "+" + offset
-
-            # hide seconds and minutes if they are zero
-            offset = re.sub("(:00)+$", "", offset)
+            offset_seconds = int(
+                datetime.datetime.now(tz=timezone).utcoffset().total_seconds())
+            offset = self._format_utc_offset(offset_seconds)
 
             # Extract a human-friendly name, depending on the type of
             # the timezone object:
             if hasattr(timezone, "key"):
                 # instance of zoneinfo.ZoneInfo
-                irc.reply(format("%s (currently UTC%s)", timezone.key, offset))
+                irc.reply(format("%s (currently %s)", timezone.key, offset))
                 return
             elif hasattr(timezone, "zone"):
                 # instance of pytz.timezone
-                irc.reply(format("%s (currently UTC%s)", timezone.zone, offset))
+                irc.reply(format("%s (currently %s)", timezone.zone, offset))
                 return
             else:
                 # probably datetime.timezone built from a constant offset
                 try:
-                    offset = timezone.utcoffset(now).seconds
+                    offset = int(timezone.utcoffset(now).total_seconds())
                 except NotImplementedError:
                     continue
 
-                hours = int(offset / 3600)
-                minutes = int(offset / 60 % 60)
-                irc.reply("UTC+%0.2i:%0.2i" % (hours, minutes))
+                irc.reply(self._format_utc_offset(offset))
                 return
 
         irc.error(
