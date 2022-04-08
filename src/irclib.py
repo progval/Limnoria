@@ -1809,9 +1809,13 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
         `msg` is the message that triggered this call."""
         self.state.fsm.expect_state([
-            # Normal CAP ACK / CAP NAK during cap negotiation
+            # Normal CAP ACK / CAP NAK during cap negotiation:
             IrcStateFsm.States.INIT_CAP_NEGOTIATION,
-            # CAP ACK / CAP NAK after a CAP NEW (probably)
+            # Sigyn sends CAP REQ when it sees RPL_SASLSUCCESS, so we get the
+            # CAP ACK while waiting for MOTD on some IRCds (eg. InspIRCd):
+            IrcStateFsm.States.INIT_WAITING_MOTD,
+            IrcStateFsm.States.INIT_MOTD,
+            # CAP ACK / CAP NAK after a CAP NEW (probably):
             IrcStateFsm.States.CONNECTED,
         ])
 
