@@ -144,7 +144,7 @@ class AutoMode(callbacks.Plugin):
                     break
         try:
             do('op')
-            if 'h' in irc.state.supported['prefix']:
+            if 'h' in irc.state.supported.get('prefix', ''):
                 do('halfop')
         except Continue:
             return
