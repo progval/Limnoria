@@ -256,6 +256,10 @@ def _makeReply(irc, msg, s,
         # no harm in doing this extra check, in case a plugin is replying
         # across network (as it may happen with '@network command').
         ret.server_tags['+draft/reply'] = msg.server_tags['msgid']
+        if msg.channel and not irc.isChannel(ret.args[0]):
+            # If replying in non-channel to a channel message, use the tag
+            # defined in https://github.com/ircv3/ircv3-specifications/pull/498
+            ret.server_tags["+draft/channel-context"] = msg.channel
     return ret
 
 def error(*args, **kwargs):

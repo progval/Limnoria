@@ -634,6 +634,51 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             finally:
                 self.irc.state.capabilities_ack.remove('message-tags')
 
+    def testClientTagReplyChannel(self):
+        self.irc.addCallback(self.First(self.irc))
+
+        try:
+            conf.supybot.protocols.irc.experimentalExtensions.setValue(True)
+            self.irc.state.capabilities_ack.add('message-tags')
+
+            # Reply in channel to channel message -> +draft/channel-context
+            # is absent
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                command='PRIVMSG', prefix=self.prefix,
+                args=('#foo', '%s: firstcmd' % self.nick),
+                server_tags={'msgid': 'foobar'}))
+            msg = self.irc.takeMsg()
+            self.assertEqual(msg, ircmsgs.IrcMsg(
+                command='PRIVMSG', args=('#foo', '%s: foo' % self.nick),
+                server_tags={'+draft/reply': 'foobar'}))
+
+            # Reply in private to channel message -> +draft/channel-context
+            # is present
+            with conf.supybot.reply.inPrivate.context(True):
+                self.irc.feedMsg(ircmsgs.IrcMsg(
+                    command='PRIVMSG', prefix=self.prefix,
+                    args=('#foo', '%s: firstcmd' % self.nick),
+                    server_tags={'msgid': 'foobar'}))
+                msg = self.irc.takeMsg()
+                self.assertEqual(msg, ircmsgs.IrcMsg(
+                    command='NOTICE', args=(self.nick, 'foo'),
+                    server_tags={'+draft/reply': 'foobar',
+                                 '+draft/channel-context': '#foo'}))
+
+            # Reply in private to private message -> +draft/channel-context
+            # is absent
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                command='PRIVMSG', prefix=self.prefix,
+                args=(self.nick, 'firstcmd'),
+                server_tags={'msgid': 'foobar'}))
+            msg = self.irc.takeMsg()
+            self.assertEqual(msg, ircmsgs.IrcMsg(
+                command='NOTICE', args=(self.nick, 'foo'),
+                server_tags={'+draft/reply': 'foobar'}))
+        finally:
+            conf.supybot.protocols.irc.experimentalExtensions.setValue(False)
+            self.irc.state.capabilities_ack.remove('message-tags')
+
     class TwoRepliesFirstAction(callbacks.Plugin):
         def testactionreply(self, irc, msg, args):
             irc.reply('foo', action=True)
