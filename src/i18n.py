@@ -43,9 +43,11 @@ WAITING_FOR_MSGID = 1
 IN_MSGID = 2
 WAITING_FOR_MSGSTR = 3
 IN_MSGSTR = 4
+NEXT_IS_FUZZY = 5
 
 MSGID = 'msgid "'
 MSGSTR = 'msgstr "'
+FUZZY = '#, fuzzy'
 
 currentLocale = 'en'
 
@@ -148,7 +150,13 @@ def parse(translationFile):
         line = line[0:-1] # Remove the ending \n
         line = line
 
-        if line.startswith(MSGID):
+        if step == WAITING_FOR_MSGID and line.startswith(FUZZY):
+            step = NEXT_IS_FUZZY
+        elif step == NEXT_IS_FUZZY and line.startswith(MSGID):
+            # Don't use fuzzy strings; they may have a mismatched number of %s or be
+            # outright wrong; use English instead.
+            step = WAITING_FOR_MSGID
+        elif line.startswith(MSGID):
             # Don't check if step is WAITING_FOR_MSGID
             untranslated = ''
             translated = ''
