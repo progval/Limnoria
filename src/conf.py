@@ -911,6 +911,10 @@ registerGlobalValue(supybot.drivers, 'module',
     ValidDriverModule('default', _("""Determines what driver module the 
     bot will use. Current, the only (and default) driver is Socket.""")))
 
+registerGlobalValue(supybot.drivers, 'minReconnectWait',
+    registry.PositiveFloat(10.0, _("""Determines the minimum time the bot will
+    wait before attempting to reconnect to an IRC server.""")))
+
 registerGlobalValue(supybot.drivers, 'maxReconnectWait',
     registry.PositiveFloat(300.0, _("""Determines the maximum time the bot will
     wait before attempting to reconnect to an IRC server.  The bot may, of
