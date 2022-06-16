@@ -92,7 +92,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         return ret
 
     def resetDelay(self):
-        self.currentDelay = conf.supybot.drivers.maxReconnectWait()
+        self.currentDelay = conf.supybot.drivers.minReconnectWait()
 
     def _getNextServer(self):
         oldServer = getattr(self, 'currentServer', None)
