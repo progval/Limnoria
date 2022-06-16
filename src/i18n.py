@@ -113,7 +113,6 @@ def getLocalePath(name, localeName, extension):
 
 i18nClasses = weakref.WeakValueDictionary()
 internationalizedCommands = weakref.WeakValueDictionary()
-internationalizedFunctions = [] # No need to know their name
 
 def reloadLocalesIfRequired():
     global currentLocale
@@ -124,12 +123,13 @@ def reloadLocalesIfRequired():
         reloadLocales()
 
 def reloadLocales():
+    import supybot.utils as utils
+
     for pluginClass in i18nClasses.values():
         pluginClass.loadLocale()
     for command in list(internationalizedCommands.values()):
         internationalizeDocstring(command)
-    for function in internationalizedFunctions:
-        function.loadLocale()
+    utils.str._relocalizeFunctions(PluginInternationalization())
 
 def normalize(string, removeNewline=False):
     import supybot.utils as utils
@@ -201,7 +201,6 @@ def parse(translationFile):
     return translations
 
 
-i18nSupybot = None
 def PluginInternationalization(name='supybot'):
     # This is a proxy that prevents having several objects for the same plugin
     if name in i18nClasses:
@@ -326,40 +325,6 @@ class _PluginInternationalization:
                 name in self._l10nFunctions:
             return self._l10nFunctions[name]
 
-    def internationalizeFunction(self, name):
-        """Decorates functions and internationalize their code.
-
-        Only useful for Supybot core functions"""
-        if self.name != 'supybot':
-            return
-        class FunctionInternationalizer:
-            def __init__(self, parent, name):
-                self._parent = parent
-                self._name = name
-            def __call__(self, obj):
-                obj = InternationalizedFunction(self._parent, self._name, obj)
-                obj.loadLocale()
-                return obj
-        return FunctionInternationalizer(self, name)
-
-class InternationalizedFunction:
-    """Proxy for functions that need to be fully localized.
-
-    The localization code is in locales/LOCALE.py"""
-    def __init__(self, internationalizer, name, function):
-        self._internationalizer = internationalizer
-        self._name = name
-        self._origin = function
-        internationalizedFunctions.append(self)
-    def loadLocale(self):
-        self.__call__ = self._internationalizer.localizeFunction(self._name)
-        if self.__call__ == None:
-            self.restore()
-    def restore(self):
-        self.__call__ = self._origin
-
-    def __call__(self, *args, **kwargs):
-        return self._origin(*args, **kwargs)
 
 try:
     class InternationalizedString(str):
@@ -374,6 +339,7 @@ except TypeError:
         """Simple subclass to str, that allow to add attributes. Also used to
         know if a string is already localized"""
         pass
+
 
 def internationalizeDocstring(obj):
     """Decorates functions and internationalize their docstring.
@@ -391,3 +357,13 @@ def internationalizeDocstring(obj):
             # attribute '__doc__' of 'type' objects is not writable
             pass
     return obj
+
+
+def _install():
+    from . import utils
+    _ = PluginInternationalization()
+    utils.gen._ = _
+    utils.str._ = _
+    utils.str._relocalizeFunctions(_)
+
+_install()

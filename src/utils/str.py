@@ -38,19 +38,45 @@ import sys
 import time
 import string
 import textwrap
+import functools
 
 from . import minisix
 from .iter import any
 from .structures import TwoWayDictionary
-
-from . import internationalization as _
-internationalizeFunction = _.internationalizeFunction
 
 try:
     from charade.universaldetector import UniversalDetector
     charadeLoaded = True
 except ImportError:
     charadeLoaded = False
+
+# will be replaced by supybot.i18n.install()
+_ = lambda x: x
+
+# used by supybot.i18n.reloadLocales() to (re)load the localized function of
+# these functions
+_localizedFunctions = {}
+_defaultFunctions = {}
+
+
+def internationalizeFunction(f):
+    f_name = f.__name__
+    _localizedFunctions[f_name] = f
+    _defaultFunctions[f_name] = f
+
+    @functools.wraps(f)
+    def newf(*args, **kwargs):
+        f = _localizedFunctions[f_name]
+        assert f is not None, "_localizedFunctions[%s] is None" % f_name
+        return f(*args, **kwargs)
+
+    return newf
+
+
+def _relocalizeFunctions(localizer):
+    for f_name in list(_localizedFunctions):
+        f = localizer.localizeFunction(f_name) or _defaultFunctions[f_name]
+        _localizedFunctions[f_name] = f
 
 if minisix.PY3:
     def decode_raw_line(line):
@@ -390,7 +416,7 @@ def matchCase(s1, s2):
                 L[i] = L[i].upper()
         return ''.join(L)
 
-@internationalizeFunction('pluralize')
+@internationalizeFunction
 def pluralize(s):
     """Returns the plural of s.  Put any exceptions to the general English
     rule of appending 's' in the plurals dictionary.
@@ -413,7 +439,7 @@ def pluralize(s):
     else:
         return matchCase(s, s+'s')
 
-@internationalizeFunction('depluralize')
+@internationalizeFunction
 def depluralize(s):
     """Returns the singular of s."""
     consonants = 'bcdfghjklmnpqrstvwxz'
@@ -467,7 +493,7 @@ def nItems(n, item, between=None):
         else:
             return format('%s %s %s', n, between, item)
 
-@internationalizeFunction('ordinal')
+@internationalizeFunction
 def ordinal(i):
     """Returns i + the ordinal indicator for the number.
 
@@ -486,7 +512,7 @@ def ordinal(i):
         ord = 'rd'
     return '%s%s' % (i, ord)
 
-@internationalizeFunction('be')
+@internationalizeFunction
 def be(i):
     """Returns the form of the verb 'to be' based on the number i."""
     if i == 1:
@@ -494,7 +520,7 @@ def be(i):
     else:
         return 'are'
 
-@internationalizeFunction('has')
+@internationalizeFunction
 def has(i):
     """Returns the form of the verb 'to have' based on the number i."""
     if i == 1:
