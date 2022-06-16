@@ -45,7 +45,9 @@ from . import crypt
 from .str import format
 from .file import mktemp
 from . import minisix
-from . import internationalization as _
+
+# will be replaced by supybot.i18n.install()
+_ = lambda x: x
 
 def warn_non_constant_time(f):
     @functools.wraps(f)

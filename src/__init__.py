@@ -33,10 +33,7 @@ from . import dynamicScope
 
 from . import i18n
 
-builtins = (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)
-builtins['supybotInternationalization'] = i18n.PluginInternationalization()
 from . import utils
-del builtins['supybotInternationalization']
 
 (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['format'] = utils.str.format
 
