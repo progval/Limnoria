@@ -70,10 +70,12 @@ def import_conf():
     """Imports the conf into this module"""
     global conf
     conf = __import__('supybot.conf').conf
+    class Languages(conf.registry.OnlySomeStrings):
+        validStrings = ['de', 'en', 'es', 'fi', 'fr', 'it']
     conf.registerGlobalValue(conf.supybot, 'language',
-        conf.registry.String(currentLocale, """Determines the bot's default
-        language if translations exist. Currently supported are 'de', 'en',
-        'es', 'fi', 'fr' and 'it'."""))
+        Languages(currentLocale, """Determines the bot's default
+        language if translations exist. Currently supported are: %s"""
+        % ', '.join(Languages.validStrings)))
     conf.supybot.language.addCallback(reloadLocalesIfRequired)
 
 def getPluginDir(plugin_name):
