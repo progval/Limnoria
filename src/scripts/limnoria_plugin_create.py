@@ -211,7 +211,7 @@ readmeTemplate = '''
 %s
 '''.lstrip()
 
-def main():
+def _main():
     global copyright
     global license
     parser = optparse.OptionParser(usage='Usage: %prog [options]',
@@ -307,13 +307,16 @@ def main():
 
     print('Your new plugin template is in the %s directory.' % name)
 
-if __name__ == '__main__':
+def main():
     try:
-        main()
+        _main()
     except KeyboardInterrupt:
         print()
         output("""It looks like you cancelled out of this script before it was
         finished.  Obviously, nothing was written, but just run this script
         again whenever you want to generate a template for a plugin.""")
+
+if __name__ == '__main__':
+    main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

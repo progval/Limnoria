@@ -40,7 +40,7 @@ import os
 import sys
 import optparse
 
-def main():
+def _main():
     import supybot.log as log
     import supybot.conf as conf
     conf.supybot.log.stdout.setValue(False)
@@ -102,10 +102,13 @@ def main():
     ircdb.users.close()
     print('User %s\'s password reset!' % name)
 
-if __name__ == '__main__':
+def main():
     try:
         main()
     except KeyboardInterrupt:
         pass
+
+if __name__ == '__main__':
+    main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

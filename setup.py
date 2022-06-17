@@ -117,7 +117,9 @@ packages = ['supybot',
             'supybot.locales',
             'supybot.utils',
             'supybot.drivers',
-            'supybot.plugins',] + \
+            'supybot.plugins',
+            'supybot.scripts',
+            ] + \
             ['supybot.plugins.'+s for s in plugins] + \
             [
              'supybot.plugins.Dict.local',
@@ -213,7 +215,13 @@ setup(
 
     package_data=package_data,
 
-    scripts=['scripts/supybot%s' % name for name in scripts],
+    entry_points={
+        'console_scripts': [
+            'supybot%s = supybot.scripts.limnoria%s:main'
+            % (name, name.replace('-', '_'))
+            for name in scripts
+        ]
+    },
 
     data_files=(
         [('share/man/man1', ['man/supybot%s.1' % name]) for name in scripts]

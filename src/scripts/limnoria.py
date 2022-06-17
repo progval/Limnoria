@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 ###
 # Copyright (c) 2003-2004, Jeremiah Fincher
 # Copyright (c) 2009, James McCoy
@@ -34,8 +32,6 @@
 """
 This is the main program to run Supybot.
 """
-
-import supybot
 
 import re
 import os
@@ -78,11 +74,14 @@ except ImportError:
 
 from supybot.version import version
 
-def main():
+def run():
+    import supybot.log as log
     import supybot.conf as conf
     import supybot.world as world
     import supybot.drivers as drivers
+    import supybot.ircmsgs as ircmsgs
     import supybot.schedule as schedule
+    import supybot.httpserver as httpserver
     # We schedule this event rather than have it actually run because if there
     # is a failure between now and the time it takes the Owner plugin to load
     # all the various plugins, our registry file might be wiped.  That's bad.
@@ -147,7 +146,7 @@ def main():
     log.info('Total CPU time taken: %.2f seconds.', user+system)
     log.info('No more Irc objects, exiting.')
 
-if __name__ == '__main__':
+def main():
     parser = optparse.OptionParser(usage='Usage: %prog [options] configFile',
                                    version='Limnoria %s running on Python %s' %
                                    (version, sys.version))
@@ -355,7 +354,7 @@ if __name__ == '__main__':
     import supybot.callbacks as callbacks
     import supybot.plugins.Owner as Owner
 
-    # These may take some resources, and it does not need to be run while boot, so
+    # This may take some resources, and it does not need to run while booting, so
     # we import it as late as possible (but before plugins are loaded).
     import supybot.httpserver as httpserver
 
@@ -364,9 +363,9 @@ if __name__ == '__main__':
     if options.profile:
         import profile
         world.profiling = True
-        profile.run('main()', '%s-%i.prof' % (nick, time.time()))
+        profile.run('run()', '%s-%i.prof' % (nick, time.time()))
     else:
-        main()
+        run()
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
