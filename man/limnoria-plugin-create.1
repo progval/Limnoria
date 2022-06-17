@@ -1,0 +1,43 @@
+.\" Process this file with
+.\" groff -man -Tascii limnoria-plugin-create.1
+.\"
+.TH LIMNORIA-PLUGIN-CREATE 1 "APRIL 2005"
+.SH NAME
+limnoria-plugin-create \- A wizard for creating Limnoria plugins
+.SH SYNOPSIS
+.B limnoria-plugin-create
+.RI [ options ]
+.SH DESCRIPTION
+.B limnoria-plugin-create
+is a wizard that creates a template python source file for a new
+.IR limnoria (1)
+plugin.
+.SH OPTIONS
+.TP
+.B \-\^\-version
+Show version of program.
+.TP
+.BR \-h ", " \-\^\-help
+Show summary of options.
+.TP
+.BI \-n " NAME" "\fR,\fP \-\^\-name=" NAME
+Sets the name for the plugin.
+.TP
+.BR \-t ", " \-\^\-thread
+Makes the plugin threaded.
+.TP
+.BI \-\^\-real\-name= REALNAME
+Specify what real name the copyright is assigned to.
+.SH "SEE ALSO"
+.IR python (1),
+.IR limnoria (1),
+.IR limnoria-test (1),
+.IR limnoria-botchk (1),
+.IR limnoria-wizard (1),
+.IR limnoria-adduser (1),
+.IR limnoria-plugin-doc (1)
+.SH AUTHOR
+This manual page was originally written by James McCoy
+<vega dot james at gmail dot com>.  Permission is granted to copy,
+distribute and/or modify this document under the terms of the Limnoria
+license, a BSD-style license.

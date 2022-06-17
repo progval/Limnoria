@@ -1,0 +1,42 @@
+.\" Process this file with
+.\" groff -man -Tascii limnoria-wizard.1
+.\"
+.TH LIMNORIA-WIZARD 1 "SEPTEMBER 2004"
+.SH NAME
+limnoria-wizard \- A wizard for creating Limnoria configuration files
+.SH SYNOPSIS
+.B limnoria-wizard
+.RI [ options ]
+.SH DESCRIPTION
+.B limnoria-wizard
+is an in-depth wizard that provides a nice user interface for creating
+configuration files for
+.IR limnoria (1).
+.SH OPTIONS
+.TP
+.B \-\^\-version
+Show version of program.
+.TP
+.BR \-h ", " \-\^\-help
+Show summary of options.
+.TP
+.B \-\^\-allow\-root
+Determines whether the wizard will be allowed to run as root.  You do not
+want this.  Do not do it.  Even if you think you want it, you do not.
+.TP
+.B \-\^\-no\-network
+Determines whether the wizard will be allowed to run without a network
+connection.
+.SH "SEE ALSO"
+.IR python (1),
+.IR limnoria (1),
+.IR limnoria-test (1),
+.IR limnoria-botchk (1),
+.IR limnoria-adduser (1),
+.IR limnoria-plugin-doc (1),
+.IR limnoria-plugin-create (1)
+.SH AUTHOR
+This manual page was originally written by James McCoy
+<vega dot james at gmail dot com>.  Permission is granted to copy,
+distribute and/or modify this document under the terms of the Limnoria
+license, a BSD-style license.

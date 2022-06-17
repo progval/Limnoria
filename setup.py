@@ -217,15 +217,20 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'supybot%s = supybot.scripts.limnoria%s:main'
-            % (name, name.replace('-', '_'))
+            '%s%s = supybot.scripts.limnoria%s:main'
+            % (prefix, name, name.replace('-', '_'))
             for name in scripts
+            for prefix in ('supybot', 'limnoria')
         ]
     },
 
-    data_files=(
-        [('share/man/man1', ['man/supybot%s.1' % name]) for name in scripts]
-    ),
+    data_files=[
+        ('share/man/man1', [
+            'man/%s%s.1' % (prefix, name)
+            for name in scripts
+            for prefix in ('supybot', 'limnoria')
+        ]),
+    ],
 )
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
