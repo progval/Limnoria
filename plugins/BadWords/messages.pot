@@ -81,18 +81,24 @@ msgstr ""
 
 #: config.py:117
 msgid ""
+"Determines whether the bot will filter itself in\n"
+"    this channel."
+msgstr ""
+
+#: config.py:120
+msgid ""
 "Determines whether the bot will kick people with\n"
 "    a warning when they use bad words."
 msgstr ""
 
-#: config.py:120
+#: config.py:123
 msgid ""
 "You have been kicked for using a word\n"
 "    prohibited in the presence of this bot.  Please use more appropriate\n"
 "    language in the future."
 msgstr ""
 
-#: config.py:122
+#: config.py:125
 msgid ""
 "Determines the kick message used by the\n"
 "    bot when kicking users for saying bad words."
