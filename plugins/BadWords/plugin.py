@@ -104,9 +104,10 @@ class BadWords(callbacks.Privmsg):
             self.lastModified = time.time()
 
     def outFilter(self, irc, msg):
+        channel = msg.channel
         if self.filtering and msg.command == 'PRIVMSG' \
-                and (self.words() or self.phrases()):
-            channel = msg.channel
+                and (self.words() or self.phrases()) \
+                and self.registryValue('selfCensor', channel, irc.network):
             self.updateRegexp(channel, irc.network)
             s = msg.args[1]
             if self.registryValue('stripFormatting'):
