@@ -216,6 +216,7 @@ setup(
                 ('share/man/man1', ['man/supybot-botchk.1']),
                 ('share/man/man1', ['man/supybot-wizard.1']),
                 ('share/man/man1', ['man/supybot-adduser.1']),
+                ('share/man/man1', ['man/supybot-reset-password.1']),
                 ('share/man/man1', ['man/supybot-plugin-doc.1']),
                 ('share/man/man1', ['man/supybot-plugin-create.1']),
         ],
