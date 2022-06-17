@@ -114,8 +114,8 @@ conf.registerGlobalValue(BadWords, 'stripFormatting',
     plugins that do coloring or bolding of text.""")))
 
 conf.registerChannelValue(BadWords, 'selfCensor',
-    registry.Boolean(True, _("""Determines whether the bot will filter itself in
-    this channel.""")))
+    registry.Boolean(True, _("""Determines whether the bot will filter its own
+    messages.""")))
 conf.registerChannelValue(BadWords, 'kick',
     registry.Boolean(False, _("""Determines whether the bot will kick people with
     a warning when they use bad words.""")))

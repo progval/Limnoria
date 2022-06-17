@@ -81,8 +81,8 @@ msgstr ""
 
 #: config.py:117
 msgid ""
-"Determines whether the bot will filter itself in\n"
-"    this channel."
+"Determines whether the bot will filter its own\n"
+"    messages."
 msgstr ""
 
 #: config.py:120
