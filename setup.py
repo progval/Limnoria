@@ -152,6 +152,17 @@ for plugin in plugins:
     if files:
         package_data.update({plugin_name: files})
 
+scripts = [
+    '',
+    '-test',
+    '-botchk',
+    '-wizard',
+    '-adduser',
+    '-reset-password',
+    '-plugin-doc',
+    '-plugin-create',
+]
+
 setup(
     # Metadata
     name='limnoria',
@@ -202,25 +213,11 @@ setup(
 
     package_data=package_data,
 
-    scripts=['scripts/supybot',
-             'scripts/supybot-test',
-             'scripts/supybot-botchk',
-             'scripts/supybot-wizard',
-             'scripts/supybot-adduser',
-             'scripts/supybot-reset-password',
-             'scripts/supybot-plugin-doc',
-             'scripts/supybot-plugin-create',
-             ],
-    data_files=[('share/man/man1', ['man/supybot.1']),
-                ('share/man/man1', ['man/supybot-test.1']),
-                ('share/man/man1', ['man/supybot-botchk.1']),
-                ('share/man/man1', ['man/supybot-wizard.1']),
-                ('share/man/man1', ['man/supybot-adduser.1']),
-                ('share/man/man1', ['man/supybot-reset-password.1']),
-                ('share/man/man1', ['man/supybot-plugin-doc.1']),
-                ('share/man/man1', ['man/supybot-plugin-create.1']),
-        ],
+    scripts=['scripts/supybot%s' % name for name in scripts],
 
-    )
+    data_files=(
+        [('share/man/man1', ['man/supybot%s.1' % name]) for name in scripts]
+    ),
+)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
