@@ -79,7 +79,14 @@ if setuptools:
                     break
 
         module_name = kwargs['name'].replace('-', '_')
-        kwargs.setdefault('packages', [module_name])
+
+        if 'packages' not in kwargs:
+            kwargs["packages"] = [module_name] + [
+                "%s.%s" % (module_name, package_name.replace('-', '_'))
+                for package_name
+                in setuptools.find_packages(where=".")
+            ]
+
         kwargs.setdefault('package_dir', {module_name: '.'})
         kwargs.setdefault('entry_points', {
             'limnoria.plugins': '%s = %s' % (capitalized_name, module_name)})
