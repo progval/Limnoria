@@ -29,11 +29,9 @@
 ###
 
 import os
-import sys
 import shutil
 
 from supybot.test import *
-import supybot.utils.minisix as minisix
 
 pluginsPath = '%s/test-plugins' % os.getcwd()
 
@@ -80,16 +78,14 @@ class PluginDownloaderTestCase(PluginTestCase):
         self.assertNotError('plugindownloader install Hoaas DuckDuckGo')
         self._testPluginInstalled('DuckDuckGo')
 
+    def testInstallLegacyWarning(self):
+        self.assertRegexp('plugindownloader install frumious Codepoints',
+                          'may be incompatible')
+
     def testInfo(self):
         self.assertResponse('plugindownloader info progval Twitter',
                 'Advanced Twitter plugin for Supybot, with capabilities '
                 'handling, and per-channel user account.')
-
-    if minisix.PY3:
-        def test_2to3(self):
-            self.assertRegexp('plugindownloader install SpiderDave Pastebin',
-                    'convert')
-            self.assertNotError('load Pastebin')
 
 if not network:
     class PluginDownloaderTestCase(PluginTestCase):
