@@ -62,7 +62,7 @@ class PluginDownloaderTestCase(PluginTestCase):
 
     def testRepolist(self):
         self.assertRegexp('repolist', '(.*, )?progval(, .*)?')
-        self.assertRegexp('repolist', '(.*, )?quantumlemur(, .*)?')
+        self.assertRegexp('repolist', '(.*, )?jlu5(, .*)?')
         self.assertRegexp('repolist progval', '(.*, )?AttackProtector(, .*)?')
 
     def testInstallprogval(self):
@@ -75,29 +75,6 @@ class PluginDownloaderTestCase(PluginTestCase):
         with conf.supybot.commands.allowShell.context(False):
             self.assertRegexp('plugindownloader install progval Darcs',
                     'Error:.*not available.*supybot.commands.allowShell')
-
-    def testInstallQuantumlemur(self):
-        self.assertError('plugindownloader install quantumlemur AttackProtector')
-        self.assertNotError('plugindownloader install quantumlemur Listener')
-        self.assertError('plugindownloader install quantumlemur AttackProtector')
-        self._testPluginInstalled('Listener')
-
-    def testInstallStepnem(self):
-        self.assertNotError('plugindownloader install stepnem Freenode')
-        self._testPluginInstalled('Freenode')
-
-    def testInstallNanotubeBitcoin(self):
-        self.assertNotError('plugindownloader install nanotube-bitcoin GPG')
-        self._testPluginInstalled('GPG')
-
-    def testInstallMtughanWeather(self):
-        self.assertNotError('plugindownloader install mtughan-weather '
-                            'WunderWeather')
-        self._testPluginInstalled('WunderWeather')
-
-    def testInstallSpiderDave(self):
-        self.assertNotError('plugindownloader install SpiderDave Pastebin')
-        self._testPluginInstalled('Pastebin')
 
     def testInstallNonAsciiInit(self):
         self.assertNotError('plugindownloader install Hoaas DuckDuckGo')

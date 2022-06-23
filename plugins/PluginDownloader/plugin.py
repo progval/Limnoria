@@ -201,64 +201,10 @@ repositories = utils.InsensitivePreservingDict({
                                                    'progval',
                                                    'Supybot-plugins'
                                                    ),
-               'quantumlemur':     GithubRepository(
-                                                   'quantumlemur',
-                                                   'Supybot-plugins',
-                                                   ),
-               'stepnem':          GithubRepository(
-                                                   'stepnem',
-                                                   'supybot-plugins',
-                                                   ),
-               'code4lib-snapshot':GithubRepository(
-                                                   'code4lib',
-                                                   'supybot-plugins',
-                                                   'Supybot-plugins-20060723',
-                                                   ),
-               'code4lib-edsu':    GithubRepository(
-                                                   'code4lib',
-                                                   'supybot-plugins',
-                                                   'edsu-plugins',
-                                                   ),
-               'code4lib':         GithubRepository(
-                                                   'code4lib',
-                                                   'supybot-plugins',
-                                                   'plugins',
-                                                   ),
-               'nanotube-bitcoin': GithubRepository(
-                                                   'nanotube',
-                                                   'supybot-bitcoin-'
-                                                             'marketmonitor',
-                                                   ),
-               'mtughan-weather':  GithubRepository(
-                                                   'mtughan',
-                                                   'Supybot-Weather',
-                                                   ),
                'SpiderDave':       GithubRepository(
                                                    'SpiderDave',
                                                    'spidey-supybot-plugins',
                                                    'Plugins',
-                                                   ),
-               'doorbot':          GithubRepository(
-                                                   'hacklab',
-                                                   'doorbot',
-                                                   ),
-               'boombot':          GithubRepository(
-                                                   'nod',
-                                                   'boombot',
-                                                   'plugins',
-                                                   ),
-               'mailed-notifier':  GithubRepository(
-                                                   'tbielawa',
-                                                   'supybot-mailed-notifier',
-                                                   ),
-               'pingdom':          GithubRepository(
-                                                   'rynop',
-                                                   'supyPingdom',
-                                                   'plugins',
-                                                   ),
-               'scrum':            GithubRepository(
-                                                   'amscanne',
-                                                   'supybot-scrum',
                                                    ),
                'Hoaas':            GithubRepository(
                                                    'Hoaas',
@@ -268,22 +214,10 @@ repositories = utils.InsensitivePreservingDict({
                                                    'nyuszika7h',
                                                    'limnoria-plugins'
                                                    ),
-               'nyuszika7h-old':   GithubRepository(
-                                                   'nyuszika7h',
-                                                   'Supybot-plugins'
-                                                   ),
-               'resistivecorpse':  GithubRepository(
-                                                   'resistivecorpse',
-                                                   'supybot-plugins'
-                                                   ),
                'frumious':         GithubRepository(
                                                    'frumiousbandersnatch',
                                                    'sobrieti-plugins',
                                                    'plugins',
-                                                   ),
-               'jonimoose':        GithubRepository(
-                                                   'Jonimoose',
-                                                   'Supybot-plugins',
                                                    ),
                'skgsergio':        GithubRepository(
                                                    'skgsergio',
