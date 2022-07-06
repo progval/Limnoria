@@ -978,9 +978,12 @@ class MultilinePrivmsgTestCase(ChannelPluginTestCase):
 class PluginRegexpTestCase(PluginTestCase):
     plugins = ()
     class PCAR(callbacks.PluginRegexp):
+        regexps = ("test",)
+
         def test(self, irc, msg, args):
             "<foo>"
             raise callbacks.ArgumentError
+
     def testNoEscapingArgumentError(self):
         self.irc.addCallback(self.PCAR(self.irc))
         self.assertResponse('test', 'test <foo>')
