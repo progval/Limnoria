@@ -1002,6 +1002,23 @@ class PluginRegexpTestCase(ChannelPluginTestCase):
             args=(self.channel, 'foo <bar> baz')))
         self.assertResponse(' ', 'hello')
 
+    def testIgnoreChathistory(self):
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            command='BATCH',
+            args=('+123', 'chathistory', self.channel)))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'batch': '123'},
+            prefix=self.prefix,
+            command='PRIVMSG',
+            args=(self.channel, 'foo <bar> baz')))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            command='BATCH',
+            args=('-123',)))
+
+        self.assertNoResponse(' ')
+
 class RichReplyMethodsTestCase(PluginTestCase):
     plugins = ('Config',)
     class NoCapability(callbacks.Plugin):

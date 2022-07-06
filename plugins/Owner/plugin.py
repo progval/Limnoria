@@ -309,8 +309,9 @@ class Owner(callbacks.Plugin):
                 # Either sent automatically by the server upon join,
                 # or triggered by a plugin (why?!)
                 # Either way, replying to commands from the history would
-                # look weird, because it may have been sent a while ago,
-                # and we may have already answered to it.
+                # look weird, because they may have been sent a while ago,
+                # and we may have already answered to them.
+                # (this is the same behavior as in PluginRegexp.doPrivmsg)
                 return
 
         self._doPrivmsgs(irc, msg)

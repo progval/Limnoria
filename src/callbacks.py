@@ -1804,6 +1804,19 @@ class PluginRegexp(Plugin):
     def doPrivmsg(self, irc, msg):
         if msg.isError:
             return
+
+        if 'batch' in msg.server_tags:
+            parent_batches = irc.state.getParentBatches(msg)
+            parent_batch_types = [batch.type for batch in parent_batches]
+            if 'chathistory' in parent_batch_types:
+                # Either sent automatically by the server upon join,
+                # or triggered by a plugin (why?!)
+                # Either way, replying to messages from the history would
+                # look weird, because they may have been sent a while ago,
+                # and we may have already answered them.
+                # (this is the same behavior as in Owner.doPrivmsg)
+                return
+
         proxy = self.Proxy(irc, msg)
         if not msg.addressed:
             for (r, name) in self.unaddressedRes:
