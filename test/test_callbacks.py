@@ -975,18 +975,32 @@ class MultilinePrivmsgTestCase(ChannelPluginTestCase):
                 '-' + batch_name,)))
 
 
-class PluginRegexpTestCase(PluginTestCase):
+class PluginRegexpTestCase(ChannelPluginTestCase):
     plugins = ()
     class PCAR(callbacks.PluginRegexp):
-        regexps = ("test",)
+        regexps = ("test", "test2")
 
         def test(self, irc, msg, args):
             "<foo>"
             raise callbacks.ArgumentError
 
-    def testNoEscapingArgumentError(self):
+        def test2(self, irc, msg, args):
+            "<bar>"
+            irc.reply("hello")
+
+    def setUp(self):
+        super().setUp()
         self.irc.addCallback(self.PCAR(self.irc))
+
+    def testNoEscapingArgumentError(self):
         self.assertResponse('test', 'test <foo>')
+
+    def testReply(self):
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            prefix=self.prefix,
+            command='PRIVMSG',
+            args=(self.channel, 'foo <bar> baz')))
+        self.assertResponse(' ', 'hello')
 
 class RichReplyMethodsTestCase(PluginTestCase):
     plugins = ('Config',)
