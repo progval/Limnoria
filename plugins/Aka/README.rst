@@ -46,7 +46,7 @@ Now you can use Aka as you used Alias before.
 Trout
 ^^^^^
 
-Add an aka, trout, which expects a word as an argument::
+Add an aka, ``trout``, which expects a word as an argument::
 
     <jamessan> @aka add trout "reply action slaps $1 with a large trout"
     <bot> jamessan: The operation succeeded.
@@ -56,23 +56,19 @@ Add an aka, trout, which expects a word as an argument::
 This ``trout`` aka requires the plugin ``Reply`` to be loaded since it
 provides the ``action`` command.
 
-LastFM
-^^^^^^
+Random percentage
+^^^^^^^^^^^^^^^^^
 
-Add an aka, ``lastfm``, which expects a last.fm username and replies with
-their most recently played item::
+Add an aka, ``randpercent``, which returns a random percentage value::
 
-    @aka add lastfm "rss [format concat http://ws.audioscrobbler.com/1.0/user/ [format concat [web urlquote $1] /recenttracks.rss]]"
+    @aka add randpercent "squish [dice 1d100]%"
 
-This ``lastfm`` aka requires the following plugins to be loaded: ``RSS``,
-``Format`` and ``Web``.
+This requires the ``Filter`` and ``Games`` plugins to be loaded.
 
-``RSS`` provides ``rss``, ``Format`` provides ``concat`` and ``Web`` provides
-``urlquote``.
-
-Note that if the nested commands being aliased hadn't been quoted, then
-those commands would have been run immediately, and ``@lastfm`` would always
-reply with the same information, the result of those commands.
+Note that nested commands in an alias should be quoted, or they will only
+run once when you create the alias, and not each time the alias is
+called. (In this case, not quoting the nested command would mean that
+``@randpercent`` always responds with the same value!)
 
 .. _commands-Aka:
 
