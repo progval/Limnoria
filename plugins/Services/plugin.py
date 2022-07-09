@@ -162,7 +162,8 @@ class Services(callbacks.Plugin):
         else:
             self.log.info('Sending ghost (current nick: %s; ghosting: %s)',
                           irc.nick, nick)
-            ghost = 'GHOST %s %s' % (nick, password)
+            ghostCommand = self.registryValue('ghostCommand', network=irc.network)
+            ghost = '%s %s %s' % (ghostCommand, nick, password)
             # Ditto about the sendMsg (see _doIdentify).
             irc.sendMsg(ircmsgs.privmsg(nickserv, ghost))
             state.sentGhost = time.time()
@@ -297,7 +298,7 @@ class Services(callbacks.Plugin):
         elif irc.isChannel(msg.args[0]):
             # Atheme uses channel-wide notices for alerting channel access
             # changes if the FANTASY or VERBOSE setting is on; we can suppress
-            # these 'unexpected notice' warnings since they're not really 
+            # these 'unexpected notice' warnings since they're not really
             # important.
             pass
         else:

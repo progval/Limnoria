@@ -85,6 +85,10 @@ conf.registerNetworkValue(Services, 'noJoinsUntilIdentified',
 conf.registerNetworkValue(Services, 'ghostDelay',
     registry.NonNegativeInteger(60, _("""Determines how many seconds the bot will
     wait between successive GHOST attempts. Set this to 0 to disable GHOST.""")))
+conf.registerNetworkValue(Services, 'ghostCommand',
+    registry.String("GHOST", _("""Determines the NickServ command to use for GHOST. If the network
+    you're using runs Anope, set this to "RECOVER". If the network you're using runs Atheme,
+    set this to "GHOST" or "REGAIN".""")))
 conf.registerNetworkValue(Services, 'NickServ',
     ValidNickOrEmptyString('NickServ', _("""Determines what nick the 'NickServ' service
     has.""")))
