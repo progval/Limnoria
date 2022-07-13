@@ -381,8 +381,12 @@ class Channel(callbacks.Plugin):
                              msg.prefix, bannedNick)
             raise callbacks.ArgumentError
         elif bannedNick == irc.nick:
-            self.log.warning('%q tried to make me kban myself.', msg.prefix)
-            irc.error(_('I cowardly refuse to kickban myself.'))
+            if kick:
+                self.log.warning('%q tried to make me kban myself.', msg.prefix)
+                irc.error(_('I cowardly refuse to kickban myself.'))
+            else:
+                self.log.warning('%q tried to make me ban myself.', msg.prefix)
+                irc.error(_('I cowardly refuse to ban myself.'))
             return
         if not reason:
             reason = msg.nick
