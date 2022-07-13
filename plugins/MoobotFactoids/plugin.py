@@ -293,12 +293,23 @@ class MoobotFactoids(callbacks.Plugin):
     ``@something is something`` And when you call ``@something`` the bot says
     ``something is something``.
 
-    If you want factoid to be in different format say (for example):
+    If you want the factoid to be in different format say (for example):
     ``@Hi is <reply> Hello`` And when you call ``@hi`` the bot says ``Hello.``
 
     If you want the bot to use /mes with Factoids, that is possible too.
     ``@test is <action> tests.`` and everytime when someone calls for
     ``test`` the bot answers ``* bot tests.``
+
+    If you want the factoid to have random answers say (for example):
+    ``@fruit is <reply> (orange|apple|banana)``. So when ``@fruit`` is called
+    the bot will reply with one of the listed fruits (random): ``orange``.
+    
+    If you want to replace the value of the factoid, for example:
+    ``@no Hi is <reply> Hey`` when you call ``@hi`` the bot says ``Hey``.
+
+    If you want to append to the current value of a factoid say:
+    ``@Hi is also Hello``, so that when you call ``@hi`` the
+    bot says ``Hey, or Hello.`` 
     """
     callBefore = ['Dunno']
     def __init__(self, irc):
