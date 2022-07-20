@@ -5,6 +5,5 @@ python-dateutil
 python-gnupg
 feedparser
 PySocks
-mock
 cryptography
 pyxmpp2-scram
