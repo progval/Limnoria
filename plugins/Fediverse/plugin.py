@@ -38,6 +38,7 @@ from supybot.commands import urlSnarfer, wrap
 from supybot.i18n import PluginInternationalization
 
 from . import activitypub as ap
+from .utils import parse_xsd_duration
 
 
 importlib.reload(ap)
@@ -222,18 +223,29 @@ class Fediverse(callbacks.PluginRegexp):
         name = actor.get("name", username)
         return "\x02%s\x02 (@%s@%s)" % (name, username, hostname)
 
+    def _format_author(self, irc, author):
+        if isinstance(author, str):
+            # it's an URL
+            try:
+                author = self._get_actor(irc, author)
+            except ap.ActivityPubError as e:
+                return _("<error: %s>") % str(e)
+            else:
+                return self._format_actor_fullname(author)
+        elif isinstance(author, dict):
+            if author.get("id"):
+                return self._format_author(irc, author["id"])
+        elif isinstance(author, list):
+            return format("%L", [self._format_author(irc, item) for item in author])
+        else:
+            return "<unknown>"
+
     def _format_status(self, irc, msg, status):
         if status["type"] == "Create":
             return self._format_status(irc, msg, status["object"])
         elif status["type"] == "Note":
-            author_url = status["attributedTo"]
-            try:
-                author = self._get_actor(irc, author_url)
-            except ap.ActivityPubError as e:
-                author_fullname = _("<error: %s>") % str(e)
-            else:
-                author_fullname = self._format_actor_fullname(author)
             cw = status.get("summary")
+            author_fullname = self._format_author(irc, status.get("attributedTo"))
             if cw:
                 if self.registryValue(
                     "format.statuses.showContentWithCW",
@@ -275,6 +287,15 @@ class Fediverse(callbacks.PluginRegexp):
                 return self._format_status(irc, msg, status)
             except ap.ActivityPubProtocolError as e:
                 return "<Could not fetch status: %s>" % e.args[0]
+        elif status["type"] == "Video":
+            author_fullname = self._format_author(irc, status.get("attributedTo"))
+            return format(
+                _("\x02%s\x02 (%T) by %s: %s"),
+                status["name"],
+                abs(parse_xsd_duration(status["duration"]).total_seconds()),
+                author_fullname,
+                status["content"],
+            )
         else:
             assert False, "Unknown status type %s: %r" % (
                 status["type"],

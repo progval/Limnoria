@@ -60,6 +60,10 @@ from .test_data import (
     BOOSTED_DATA,
     BOOSTED_ACTOR_URL,
     BOOSTED_ACTOR_DATA,
+    PEERTUBE_VIDEO_URL,
+    PEERTUBE_VIDEO_DATA,
+    PEERTUBE_ACTOR_URL,
+    PEERTUBE_ACTOR_DATA,
 )
 
 
@@ -429,6 +433,21 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                     + "Status Content "
                     + "<https://example.net/system/media_attachments/image.png>",
                 )
+
+    def testVideo(self):
+        expected_requests = [
+            (PEERTUBE_VIDEO_URL, PEERTUBE_VIDEO_DATA),
+            (PEERTUBE_ACTOR_URL, PEERTUBE_ACTOR_DATA),
+            (ACTOR_URL, ACTOR_DATA),
+        ]
+
+        with self.mockRequests(expected_requests):
+            self.assertResponse(
+                "status https://example.org/w/gABde9e210FGHre",
+                "\x02name of video\x02 (1 hour, 26 minutes, and 0 seconds) "
+                "by \x02chocobozzz\x02 (@chocobozzz@peertube.cpy.re) "
+                "and \x02someuser\x02 (@someuser@example.org): description of video"
+            )
 
     def testStatusUrlSnarferDisabled(self):
         with self.mockWebfingerSupport("not called"), self.mockRequests([]):
