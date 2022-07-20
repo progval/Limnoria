@@ -237,11 +237,15 @@ class Fediverse(callbacks.PluginRegexp):
             else:
                 return self._format_actor_fullname(author)
         elif isinstance(author, dict):
+            if author.get("type") == "Group":
+                # Typically, there is an actor named "Default <username> channel"
+                # on PeerTube, which we do not want to show.
+                return None
             if author.get("id"):
                 return self._format_author(irc, author["id"])
         elif isinstance(author, list):
             return format(
-                "%L", [self._format_author(irc, item) for item in author]
+                "%L", filter(bool, [self._format_author(irc, item) for item in author])
             )
         else:
             return "<unknown>"

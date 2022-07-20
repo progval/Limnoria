@@ -438,15 +438,13 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
         expected_requests = [
             (PEERTUBE_VIDEO_URL, PEERTUBE_VIDEO_DATA),
             (PEERTUBE_ACTOR_URL, PEERTUBE_ACTOR_DATA),
-            (ACTOR_URL, ACTOR_DATA),
         ]
 
         with self.mockRequests(expected_requests):
             self.assertResponse(
                 "status https://example.org/w/gABde9e210FGHre",
                 "\x02name of video\x02 (1 hour, 26 minutes, and 0 seconds) "
-                "by \x02chocobozzz\x02 (@chocobozzz@peertube.cpy.re) "
-                "and \x02someuser\x02 (@someuser@example.org): "
+                "by \x02chocobozzz\x02 (@chocobozzz@peertube.cpy.re): "
                 "description of the video with a second line",
             )
 
