@@ -83,7 +83,7 @@ class GeographyTimezoneTestCase(PluginTestCase):
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
             self.assertRegexp(
                 "timezone Newfoundland",
-                r"Canada/Newfoundland \(currently UTC-[23]:30\)"
+                r"Canada/Newfoundland \(currently UTC-[23]:30\)",
             )
 
         tz = pytz.timezone("Asia/Kolkata")
@@ -111,7 +111,7 @@ class GeographyTimezoneTestCase(PluginTestCase):
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
             self.assertRegexp(
                 "timezone Newfoundland",
-                r"Canada/Newfoundland \(currently UTC-[23]:30\)"
+                r"Canada/Newfoundland \(currently UTC-[23]:30\)",
             )
 
         tz = zoneinfo.ZoneInfo("Asia/Kolkata")
@@ -144,9 +144,7 @@ class GeographyTimezoneTestCase(PluginTestCase):
         self.assertRegexp(
             "timezone Delhi", r"Asia/Kolkata \(currently UTC\+5:30\)"
         )
-        self.assertRegexp(
-            "timezone Newfoundland", r"UTC-[23]:30"
-        )
+        self.assertRegexp("timezone Newfoundland", r"UTC-[23]:30")
 
 
 class GeographyLocaltimeTestCase(PluginTestCase):

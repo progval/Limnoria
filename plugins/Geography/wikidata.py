@@ -134,10 +134,12 @@ def timezone_from_uri(location_uri):
     """Returns a :class:datetime.tzinfo object, given a Wikidata Q-ID.
     eg. ``"Q60"`` for New York City."""
     for tztype in [
-        "http://www.wikidata.org/entity/Q17272692", # IANA timezones first
-        "http://www.wikidata.org/entity/Q12143", # any timezone as a fallback
+        "http://www.wikidata.org/entity/Q17272692",  # IANA timezones first
+        "http://www.wikidata.org/entity/Q12143",  # any timezone as a fallback
     ]:
-        data = _query_sparql(TIMEZONE_QUERY.substitute(subject=location_uri, tztype=tztype))
+        data = _query_sparql(
+            TIMEZONE_QUERY.substitute(subject=location_uri, tztype=tztype)
+        )
         results = data["results"]["bindings"]
         for result in results:
             if "tzid" in result:
