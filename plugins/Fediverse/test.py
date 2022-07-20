@@ -446,7 +446,8 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 "status https://example.org/w/gABde9e210FGHre",
                 "\x02name of video\x02 (1 hour, 26 minutes, and 0 seconds) "
                 "by \x02chocobozzz\x02 (@chocobozzz@peertube.cpy.re) "
-                "and \x02someuser\x02 (@someuser@example.org): description of video"
+                "and \x02someuser\x02 (@someuser@example.org): "
+                "description of the video with a second line",
             )
 
     def testStatusUrlSnarferDisabled(self):

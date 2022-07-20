@@ -535,7 +535,7 @@ PEERTUBE_VIDEO_VALUE = {
   "originallyPublishedAt": None,
   "updated": "2022-07-13T07:03:12.373Z",
   "mediaType": "text/markdown",
-  "content": "description of video",
+  "content": "description of <strong>the</strong> video\r\nwith a second line",
   "support": None,
   "subtitleLanguage": [],
   "icon": [

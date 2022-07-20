@@ -50,6 +50,10 @@ _ = PluginInternationalization("Fediverse")
 _username_regexp = re.compile("@(?P<localuser>[^@ ]+)@(?P<hostname>[^@ ]+)")
 
 
+def html_to_text(html):
+    return utils.web.htmlToText(html).split("\n", 1)[0].strip()
+
+
 class FediverseHttp(httpserver.SupyHTTPServerCallback):
     name = "minimal ActivityPub server"
     defaultResponse = _(
@@ -236,7 +240,9 @@ class Fediverse(callbacks.PluginRegexp):
             if author.get("id"):
                 return self._format_author(irc, author["id"])
         elif isinstance(author, list):
-            return format("%L", [self._format_author(irc, item) for item in author])
+            return format(
+                "%L", [self._format_author(irc, item) for item in author]
+            )
         else:
             return "<unknown>"
 
@@ -245,7 +251,9 @@ class Fediverse(callbacks.PluginRegexp):
             return self._format_status(irc, msg, status["object"])
         elif status["type"] == "Note":
             cw = status.get("summary")
-            author_fullname = self._format_author(irc, status.get("attributedTo"))
+            author_fullname = self._format_author(
+                irc, status.get("attributedTo")
+            )
             if cw:
                 if self.registryValue(
                     "format.statuses.showContentWithCW",
@@ -258,7 +266,7 @@ class Fediverse(callbacks.PluginRegexp):
                         % (
                             author_fullname,
                             cw,
-                            utils.web.htmlToText(status["content"]),
+                            html_to_text(status["content"]),
                         )
                     ]
                 else:
@@ -270,7 +278,7 @@ class Fediverse(callbacks.PluginRegexp):
                     _("%s: %s")
                     % (
                         author_fullname,
-                        utils.web.htmlToText(status["content"]),
+                        html_to_text(status["content"]),
                     )
                 ]
 
@@ -288,13 +296,15 @@ class Fediverse(callbacks.PluginRegexp):
             except ap.ActivityPubProtocolError as e:
                 return "<Could not fetch status: %s>" % e.args[0]
         elif status["type"] == "Video":
-            author_fullname = self._format_author(irc, status.get("attributedTo"))
+            author_fullname = self._format_author(
+                irc, status.get("attributedTo")
+            )
             return format(
                 _("\x02%s\x02 (%T) by %s: %s"),
                 status["name"],
                 abs(parse_xsd_duration(status["duration"]).total_seconds()),
                 author_fullname,
-                status["content"],
+                html_to_text(status["content"]),
             )
         else:
             assert False, "Unknown status type %s: %r" % (
@@ -313,14 +323,14 @@ class Fediverse(callbacks.PluginRegexp):
             _("%s: %s")
             % (
                 self._format_actor_fullname(actor),
-                utils.web.htmlToText(actor["summary"]),
+                html_to_text(actor["summary"]),
             )
         )
 
     def _format_profile(self, irc, msg, actor):
         return _("%s: %s") % (
             self._format_actor_fullname(actor),
-            utils.web.htmlToText(actor["summary"]),
+            html_to_text(actor["summary"]),
         )
 
     def usernameSnarfer(self, irc, msg, match):
