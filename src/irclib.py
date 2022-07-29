@@ -1731,20 +1731,41 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.sasl_current_mechanism = None
 
         for mechanism in network_config.sasl.mechanisms():
-            if mechanism == 'ecdsa-nist256p-challenge' and \
-                    crypto and self.sasl_username and \
-                    self.sasl_ecdsa_key:
-                self.sasl_next_mechanisms.append(mechanism)
-            elif mechanism == 'external' and (
-                    network_config.certfile() or
-                    conf.supybot.protocols.irc.certfile()):
-                self.sasl_next_mechanisms.append(mechanism)
-            elif mechanism.startswith('scram-') and scram and \
-                    self.sasl_username and self.sasl_password:
-                self.sasl_next_mechanisms.append(mechanism)
-            elif mechanism == 'plain' and \
-                    self.sasl_username and self.sasl_password:
-                self.sasl_next_mechanisms.append(mechanism)
+            if mechanism == 'ecdsa-nist256p-challenge':
+                if not crypto:
+                    log.debug('Skipping SASL %s, crypto module '
+                              'is not available',
+                              mechanism)
+                elif not self.sasl_username or not self.sasl_ecdsa_key:
+                    log.debug('Skipping SASL %s, missing username and/or key',
+                              mechanism)
+                else:
+                    self.sasl_next_mechanisms.append(mechanism)
+            elif mechanism == 'external':
+                if not network_config.certfile() and \
+                        not conf.supybot.protocols.irc.certfile():
+                    log.debug('Skipping SASL %s, missing cert file',
+                              mechanism)
+                else:
+                    self.sasl_next_mechanisms.append(mechanism)
+            elif mechanism.startswith('scram-'):
+                if not scram:
+                    log.debug('Skipping SASL %s, scram module '
+                              'is not available',
+                              mechanism)
+                elif not self.sasl_username or not self.sasl_password:
+                    log.debug('Skipping SASL %s, missing username and/or '
+                              'password',
+                              mechanism)
+                else:
+                    self.sasl_next_mechanisms.append(mechanism)
+            elif mechanism == 'plain':
+                if not self.sasl_username or not self.sasl_password:
+                    log.debug('Skipping SASL %s, missing username and/or '
+                              'password',
+                              mechanism)
+                else:
+                    self.sasl_next_mechanisms.append(mechanism)
 
         if self.sasl_next_mechanisms:
             self.REQUEST_CAPABILITIES.add('sasl')
