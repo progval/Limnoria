@@ -1862,6 +1862,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             IrcStateFsm.States.INIT_SASL,
             IrcStateFsm.States.CONNECTED_SASL,
         ])
+        log.debug('Next SASL mechanisms: %s', self.sasl_next_mechanisms)
         if self.sasl_next_mechanisms:
             self.sasl_current_mechanism = self.sasl_next_mechanisms.pop(0)
             self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
