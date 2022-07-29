@@ -50,6 +50,13 @@ from .utils import minisix
 from .i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()
 
+LOG_CONVERTERS = world.testing
+"""Defines whether converters and contexts should log the argument stack
+while parsing it.
+Disabled by default (unless running via supybot-test) as it is very noisy
+and rarely needs to be debugged.
+"""
+
 ###
 # Non-arg wrappers -- these just change the behavior of a command without
 # changing the arguments given to it.
@@ -509,7 +516,8 @@ def getChannel(irc, msg, args, state):
     elif msg.channel:
         channel = msg.channel
     else:
-        state.log.debug('Raising ArgumentError because there is no channel.')
+        if LOG_CONVERTERS:
+            state.log.debug('Raising ArgumentError because there is no channel.')
         raise callbacks.ArgumentError
     state.channel = channel
     state.args.append(channel)
@@ -520,7 +528,8 @@ def getChannels(irc, msg, args, state):
     elif msg.channel:
         channels = [msg.channel]
     else:
-        state.log.debug('Raising ArgumentError because there is no channel.')
+        if LOG_CONVERTERS:
+            state.log.debug('Raising ArgumentError because there is no channel.')
         raise callbacks.ArgumentError
     state.args.append(channels)
 
@@ -898,9 +907,11 @@ class context(object):
             self.converter = spec
 
     def __call__(self, irc, msg, args, state):
-        log.debug('args before %r: %r', self, args)
+        if LOG_CONVERTERS:
+            log.debug('args before %r: %r', self, args)
         self.converter(irc, msg, args, state, *self.args)
-        log.debug('args after %r: %r', self, args)
+        if LOG_CONVERTERS:
+            log.debug('args after %r: %r', self, args)
 
     def __repr__(self):
         return '<%s for %s>' % (self.__class__.__name__, self.spec)
@@ -929,7 +940,8 @@ class additional(context):
         try:
             self.__parent.__call__(irc, msg, args, state)
         except IndexError:
-            log.debug('Got IndexError, returning default.')
+            if LOG_CONVERTERS:
+                log.debug('Got IndexError, returning default.')
             setDefault(state, self.default)
 
 # optional means: Look for this, but if it's not the type I'm expecting or
@@ -939,7 +951,8 @@ class optional(additional):
         try:
             super(optional, self).__call__(irc, msg, args, state)
         except (callbacks.ArgumentError, callbacks.Error) as e:
-            log.debug('Got %s, returning default.', utils.exnToString(e))
+            if LOG_CONVERTERS:
+                log.debug('Got %s, returning default.', utils.exnToString(e))
             state.errored = False
             setDefault(state, self.default)
 
@@ -960,7 +973,8 @@ class any(context):
             if not self.continueOnError:
                 raise
             else:
-                log.debug('Got %s, returning default.', utils.exnToString(e))
+                if LOG_CONVERTERS:
+                    log.debug('Got %s, returning default.', utils.exnToString(e))
                 pass
         state.args.append(st.args)
 
@@ -1041,11 +1055,13 @@ class getopts(context):
                     self.getopts[name] = contextify(spec)
                 self.getoptL.append(name + '=')
                 self.getopts[name] = contextify(spec)
-        log.debug('getopts: %r', self.getopts)
-        log.debug('getoptL: %r', self.getoptL)
+        if LOG_CONVERTERS:
+            log.debug('getopts: %r', self.getopts)
+            log.debug('getoptL: %r', self.getoptL)
 
     def __call__(self, irc, msg, args, state):
-        log.debug('args before %r: %r', self, args)
+        if LOG_CONVERTERS:
+            log.debug('args before %r: %r', self, args)
         (optlist, rest) = getopt.getopt(args, self.getoptLs, self.getoptL)
         getopts = []
         for (opt, arg) in optlist:
@@ -1053,7 +1069,8 @@ class getopts(context):
                 opt = opt[2:] # Strip --
             else:
                 opt = opt[1:]
-            log.debug('opt: %r, arg: %r', opt, arg)
+            if LOG_CONVERTERS:
+                log.debug('opt: %r, arg: %r', opt, arg)
             context = self.getopts[opt]
             if context is not None:
                 st = state.essence()
@@ -1064,7 +1081,8 @@ class getopts(context):
                 getopts.append((opt, True))
         state.args.append(getopts)
         args[:] = rest
-        log.debug('args after %r: %r', self, args)
+        if LOG_CONVERTERS:
+            log.debug('args after %r: %r', self, args)
 
 ###
 # This is our state object, passed to converters along with irc, msg, and args.
@@ -1123,7 +1141,8 @@ class Spec(object):
             except IndexError:
                 raise callbacks.ArgumentError
         if args and not state.allowExtra:
-            log.debug('args and not self.allowExtra: %r', args)
+            if LOG_CONVERTERS:
+                log.debug('args and not self.allowExtra: %r', args)
             raise callbacks.ArgumentError
         return state
 
@@ -1134,9 +1153,11 @@ def _wrap(f, specList=[], name=None, checkDoc=True, **kw):
     spec = Spec(specList, **kw)
     def newf(self, irc, msg, args, **kwargs):
         state = spec(irc, msg, args, stateAttrs={'cb': self, 'log': self.log})
-        self.log.debug('State before call: %s', state)
+        if LOG_CONVERTERS:
+            self.log.debug('State before call: %s', state)
         if state.errored:
-            self.log.debug('Refusing to call %s due to state.errored.', f)
+            if LOG_CONVERTERS:
+                self.log.debug('Refusing to call %s due to state.errored.', f)
         else:
             try:
                 f(self, irc, msg, args, *state.args, **state.kwargs)
