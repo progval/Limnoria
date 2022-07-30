@@ -49,6 +49,17 @@ class PollTestCase(ChannelPluginTestCase):
             "2 votes for No, 1 vote for Yes, and 0 votes for Maybe",
         )
 
+    def testNoResults(self):
+        self.assertResponse(
+            'poll add "Is this a test?" "Yes" "No" "Maybe"',
+            "The operation succeeded.  Poll # 1 created.",
+        )
+
+        self.assertResponse(
+            "results 1",
+            "0 votes for Yes, 0 votes for No, and 0 votes for Maybe",
+        )
+
     def testDoubleVoting(self):
         self.assertResponse(
             'poll add "Is this a test?" "Yes" "No" "Maybe"',
@@ -122,3 +133,36 @@ class PollTestCase(ChannelPluginTestCase):
             'poll add "Is this a test?" "Yes totally" "Yes and no" "Maybe"',
             "Error: Duplicate answer identifier(s): Yes",
         )
+
+    def testList(self):
+        self.assertResponse("poll list", "There are no open polls.")
+
+        self.assertResponse(
+            'poll add "Is this a test?" "Yes" "No" "Maybe"',
+            "The operation succeeded.  Poll # 1 created.",
+        )
+        self.assertResponse("poll list", "1: Is this a test? (0 votes)")
+
+        self.assertNotError("vote 1 Yes", frm="voter1!foo@bar")
+        self.assertResponse("poll list", "1: Is this a test? (1 vote)")
+
+        self.assertNotError("vote 1 No", frm="voter2!foo@bar")
+        self.assertResponse("poll list", "1: Is this a test? (2 votes)")
+
+        self.assertResponse(
+            'poll add "Is this another test?" "Yes" "No" "Maybe"',
+            "The operation succeeded.  Poll # 2 created.",
+        )
+        self.assertResponse(
+            "poll list",
+            "1: Is this a test? (2 votes) and 2: Is this another test? (0 votes)",
+        )
+
+        self.assertNotError("poll close 1")
+        self.assertResponse(
+            "poll list",
+            "2: Is this another test? (0 votes)",
+        )
+
+        self.assertNotError("poll close 2")
+        self.assertResponse("poll list", "There are no open polls.")

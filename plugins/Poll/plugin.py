@@ -218,11 +218,32 @@ class Poll_(callbacks.Plugin):
         counts.update({answer_id: 0 for answer_id in poll.answers})
 
         results = [
-            format(_("%n for %s"), (v, "vote"), k)
+            format(_("%n for %s"), (v, _("vote")), k)
             for (k, v) in counts.most_common()
         ]
 
         irc.replies(results)
+
+    @wrap(["channel"])
+    def list(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Lists open polls in the <channel>."""
+        results = [
+            format(
+                _("%i: %s (%n)"),
+                poll_id,
+                poll.question,
+                (len(poll.votes), _("vote")),
+            )
+            for (poll_id, poll) in self._polls[(irc.network, channel)].items()
+            if poll.open
+        ]
+
+        if results:
+            irc.replies(results)
+        else:
+            irc.reply(_("There are no open polls."))
 
 
 Class = Poll_
