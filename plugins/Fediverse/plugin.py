@@ -245,7 +245,10 @@ class Fediverse(callbacks.PluginRegexp):
                 return self._format_author(irc, author["id"])
         elif isinstance(author, list):
             return format(
-                "%L", filter(bool, [self._format_author(irc, item) for item in author])
+                "%L",
+                filter(
+                    bool, [self._format_author(irc, item) for item in author]
+                ),
             )
         else:
             return "<unknown>"

@@ -386,178 +386,122 @@ BOOSTED_ACTOR_VALUE = {
 BOOSTED_ACTOR_DATA = json.dumps(BOOSTED_ACTOR_VALUE).encode()
 
 PEERTUBE_ACTOR_VALUE = {
-  "@context": [
-    "https://www.w3.org/ns/activitystreams",
-    "https://w3id.org/security/v1",
-    {
-      "RsaSignature2017": "https://w3id.org/security#RsaSignature2017"
-    },
-    {
-      "pt": "https://joinpeertube.org/ns#",
-      "sc": "http://schema.org/",
-      "playlists": {
-        "@id": "pt:playlists",
-        "@type": "@id"
-      }
-    }
-  ],
-  "type": "Person",
-  "id": "https://peertube.cpy.re/accounts/chocobozzz",
-  "following": "https://peertube.cpy.re/accounts/chocobozzz/following",
-  "followers": "https://peertube.cpy.re/accounts/chocobozzz/followers",
-  "playlists": "https://peertube.cpy.re/accounts/chocobozzz/playlists",
-  "inbox": "https://peertube.cpy.re/accounts/chocobozzz/inbox",
-  "outbox": "https://peertube.cpy.re/accounts/chocobozzz/outbox",
-  "preferredUsername": "chocobozzz",
-  "url": "https://peertube.cpy.re/accounts/chocobozzz",
-  "name": "chocobozzz",
-  "published": "2017-11-28T08:48:24.271Z",
-  "summary": None
+    "@context": [
+        "https://www.w3.org/ns/activitystreams",
+        "https://w3id.org/security/v1",
+        {"RsaSignature2017": "https://w3id.org/security#RsaSignature2017"},
+        {
+            "pt": "https://joinpeertube.org/ns#",
+            "sc": "http://schema.org/",
+            "playlists": {"@id": "pt:playlists", "@type": "@id"},
+        },
+    ],
+    "type": "Person",
+    "id": "https://peertube.cpy.re/accounts/chocobozzz",
+    "following": "https://peertube.cpy.re/accounts/chocobozzz/following",
+    "followers": "https://peertube.cpy.re/accounts/chocobozzz/followers",
+    "playlists": "https://peertube.cpy.re/accounts/chocobozzz/playlists",
+    "inbox": "https://peertube.cpy.re/accounts/chocobozzz/inbox",
+    "outbox": "https://peertube.cpy.re/accounts/chocobozzz/outbox",
+    "preferredUsername": "chocobozzz",
+    "url": "https://peertube.cpy.re/accounts/chocobozzz",
+    "name": "chocobozzz",
+    "published": "2017-11-28T08:48:24.271Z",
+    "summary": None,
 }
 PEERTUBE_ACTOR_DATA = json.dumps(PEERTUBE_ACTOR_VALUE).encode()
 PEERTUBE_ACTOR_URL = "https://peertube.cpy.re/accounts/chocobozzz"
 
 
 PEERTUBE_VIDEO_VALUE = {
-  "@context": [
-    "https://www.w3.org/ns/activitystreams",
-    "https://w3id.org/security/v1",
-    {
-      "RsaSignature2017": "https://w3id.org/security#RsaSignature2017"
-    },
-    {
-      "pt": "https://joinpeertube.org/ns#",
-      "sc": "http://schema.org/",
-      "Hashtag": "as:Hashtag",
-      "uuid": "sc:identifier",
-      "category": "sc:category",
-      "licence": "sc:license",
-      "subtitleLanguage": "sc:subtitleLanguage",
-      "sensitive": "as:sensitive",
-      "language": "sc:inLanguage",
-      "icons": "as:icon",
-      "isLiveBroadcast": "sc:isLiveBroadcast",
-      "liveSaveReplay": {
-        "@type": "sc:Boolean",
-        "@id": "pt:liveSaveReplay"
-      },
-      "permanentLive": {
-        "@type": "sc:Boolean",
-        "@id": "pt:permanentLive"
-      },
-      "latencyMode": {
-        "@type": "sc:Number",
-        "@id": "pt:latencyMode"
-      },
-      "Infohash": "pt:Infohash",
-      "originallyPublishedAt": "sc:datePublished",
-      "views": {
-        "@type": "sc:Number",
-        "@id": "pt:views"
-      },
-      "state": {
-        "@type": "sc:Number",
-        "@id": "pt:state"
-      },
-      "size": {
-        "@type": "sc:Number",
-        "@id": "pt:size"
-      },
-      "fps": {
-        "@type": "sc:Number",
-        "@id": "pt:fps"
-      },
-      "commentsEnabled": {
-        "@type": "sc:Boolean",
-        "@id": "pt:commentsEnabled"
-      },
-      "downloadEnabled": {
-        "@type": "sc:Boolean",
-        "@id": "pt:downloadEnabled"
-      },
-      "waitTranscoding": {
-        "@type": "sc:Boolean",
-        "@id": "pt:waitTranscoding"
-      },
-      "support": {
-        "@type": "sc:Text",
-        "@id": "pt:support"
-      },
-      "likes": {
-        "@id": "as:likes",
-        "@type": "@id"
-      },
-      "dislikes": {
-        "@id": "as:dislikes",
-        "@type": "@id"
-      },
-      "shares": {
-        "@id": "as:shares",
-        "@type": "@id"
-      },
-      "comments": {
-        "@id": "as:comments",
-        "@type": "@id"
-      }
-    }
-  ],
-  "to": [
-    "https://www.w3.org/ns/activitystreams#Public"
-  ],
-  "type": "Video",
-  "name": "name of video",
-  "duration": "PT5160S",
-  "tag": [
-    {
-      "type": "Hashtag",
-      "name": "vostfr"
-    }
-  ],
-  "category": {
-    "identifier": "2",
-    "name": "Films"
-  },
-  "licence": {
-    "identifier": "4",
-    "name": "Attribution - Non Commercial"
-  },
-  "language": {
-    "identifier": "en",
-    "name": "English"
-  },
-  "views": 13718,
-  "sensitive": False,
-  "waitTranscoding": False,
-  "state": 1,
-  "commentsEnabled": True,
-  "downloadEnabled": True,
-  "published": "2017-10-23T07:54:38.155Z",
-  "originallyPublishedAt": None,
-  "updated": "2022-07-13T07:03:12.373Z",
-  "mediaType": "text/markdown",
-  "content": "description of <strong>the</strong> video\r\nwith a second line",
-  "support": None,
-  "subtitleLanguage": [],
-  "icon": [
-    # redacted
-  ],
-  "url": [
-    # redacted
-  ],
-  "attributedTo": [
-    {
-      "type": "Person",
-      "id": PEERTUBE_ACTOR_URL
-    },
-    {
-      "type": "Group",
-      "id": ACTOR_URL,
-    }
-  ],
-  "isLiveBroadcast": False,
-  "liveSaveReplay": None,
-  "permanentLive": None,
-  "latencyMode": None,
+    "@context": [
+        "https://www.w3.org/ns/activitystreams",
+        "https://w3id.org/security/v1",
+        {"RsaSignature2017": "https://w3id.org/security#RsaSignature2017"},
+        {
+            "pt": "https://joinpeertube.org/ns#",
+            "sc": "http://schema.org/",
+            "Hashtag": "as:Hashtag",
+            "uuid": "sc:identifier",
+            "category": "sc:category",
+            "licence": "sc:license",
+            "subtitleLanguage": "sc:subtitleLanguage",
+            "sensitive": "as:sensitive",
+            "language": "sc:inLanguage",
+            "icons": "as:icon",
+            "isLiveBroadcast": "sc:isLiveBroadcast",
+            "liveSaveReplay": {
+                "@type": "sc:Boolean",
+                "@id": "pt:liveSaveReplay",
+            },
+            "permanentLive": {
+                "@type": "sc:Boolean",
+                "@id": "pt:permanentLive",
+            },
+            "latencyMode": {"@type": "sc:Number", "@id": "pt:latencyMode"},
+            "Infohash": "pt:Infohash",
+            "originallyPublishedAt": "sc:datePublished",
+            "views": {"@type": "sc:Number", "@id": "pt:views"},
+            "state": {"@type": "sc:Number", "@id": "pt:state"},
+            "size": {"@type": "sc:Number", "@id": "pt:size"},
+            "fps": {"@type": "sc:Number", "@id": "pt:fps"},
+            "commentsEnabled": {
+                "@type": "sc:Boolean",
+                "@id": "pt:commentsEnabled",
+            },
+            "downloadEnabled": {
+                "@type": "sc:Boolean",
+                "@id": "pt:downloadEnabled",
+            },
+            "waitTranscoding": {
+                "@type": "sc:Boolean",
+                "@id": "pt:waitTranscoding",
+            },
+            "support": {"@type": "sc:Text", "@id": "pt:support"},
+            "likes": {"@id": "as:likes", "@type": "@id"},
+            "dislikes": {"@id": "as:dislikes", "@type": "@id"},
+            "shares": {"@id": "as:shares", "@type": "@id"},
+            "comments": {"@id": "as:comments", "@type": "@id"},
+        },
+    ],
+    "to": ["https://www.w3.org/ns/activitystreams#Public"],
+    "type": "Video",
+    "name": "name of video",
+    "duration": "PT5160S",
+    "tag": [{"type": "Hashtag", "name": "vostfr"}],
+    "category": {"identifier": "2", "name": "Films"},
+    "licence": {"identifier": "4", "name": "Attribution - Non Commercial"},
+    "language": {"identifier": "en", "name": "English"},
+    "views": 13718,
+    "sensitive": False,
+    "waitTranscoding": False,
+    "state": 1,
+    "commentsEnabled": True,
+    "downloadEnabled": True,
+    "published": "2017-10-23T07:54:38.155Z",
+    "originallyPublishedAt": None,
+    "updated": "2022-07-13T07:03:12.373Z",
+    "mediaType": "text/markdown",
+    "content": "description of <strong>the</strong> video\r\nwith a second line",
+    "support": None,
+    "subtitleLanguage": [],
+    "icon": [
+        # redacted
+    ],
+    "url": [
+        # redacted
+    ],
+    "attributedTo": [
+        {"type": "Person", "id": PEERTUBE_ACTOR_URL},
+        {
+            "type": "Group",
+            "id": ACTOR_URL,
+        },
+    ],
+    "isLiveBroadcast": False,
+    "liveSaveReplay": None,
+    "permanentLive": None,
+    "latencyMode": None,
 }
 PEERTUBE_VIDEO_DATA = json.dumps(PEERTUBE_VIDEO_VALUE).encode()
 PEERTUBE_VIDEO_URL = "https://example.org/w/gABde9e210FGHre"
