@@ -149,7 +149,10 @@ class Poll_(callbacks.Plugin):
             )
 
         self._polls[(irc.network, channel)][poll_id] = Poll(
-            question=question, answers=dict(answers), votes={}, open=True
+            question=question,
+            answers=dict(answers),
+            votes=ircutils.IrcDict(),
+            open=True,
         )
 
         irc.replySuccess(_("Poll # %d created.") % poll_id)

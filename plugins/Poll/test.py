@@ -73,6 +73,11 @@ class PollTestCase(ChannelPluginTestCase):
             "voter1: Error: You already voted on this poll.",
             frm="voter1!foo@bar",
         )
+        self.assertResponse(
+            "vote 1 Yes",
+            "VOTER1: Error: You already voted on this poll.",
+            frm="VOTER1!foo@bar",
+        )
 
         self.assertRegexp(
             "results 1",
