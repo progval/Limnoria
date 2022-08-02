@@ -73,7 +73,10 @@ except ImportError:
     tzlocal = None
 
 
+# Note: Python 3.6 does not support empty pattern matches, see:
+# https://docs.python.org/3/library/re.html#re.split
 _SECONDS_SPLIT_RE = re.compile('(?<=[a-z]) ?')
+
 
 class Time(callbacks.Plugin):
     """This plugin allows you to use different time-related functions."""
