@@ -89,7 +89,7 @@ class TimeTestCase(PluginTestCase):
         self.assertResponse('seconds 1w 1s', '604801')
 
     @skipIf(sys.version_info < (3, 7, 0),
-            "Python 3.6 does not support emptypattern matches, see: "
+            "Python 3.6 does not support empty pattern matches, see: "
             "https://docs.python.org/3/library/re.html#re.split")
     def testSecondsNoSpace(self):
         self.assertResponse('seconds 1m1s', '61')
