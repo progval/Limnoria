@@ -356,8 +356,17 @@ class RSS(callbacks.Plugin):
             handlers.append(ProxyHandler(
                 {'https': utils.force(utils.web.proxy())}))
         with feed.lock:
-            d = feedparser.parse(feed.url, etag=feed.etag,
-                    modified=feed.modified, handlers=handlers)
+            try:
+                d = feedparser.parse(feed.url, etag=feed.etag,
+                        modified=feed.modified, handlers=handlers)
+            except socket.error as e:
+                self.log.warning("Network error while fetching <%s>: %s",
+                               feed.url, e)
+                feed.last_exception = e
+                return
+            except Exception as e:
+                self.log.error("Failed to fetch <%s>: %s", feed.url, e)
+                raise  # reraise so @log.firewall prints the traceback
             if 'status' not in d or d.status != 304: # Not modified
                 if 'etag' in d:
                     feed.etag = d.etag
