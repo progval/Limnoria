@@ -116,9 +116,30 @@ class MessageParserTestCase(ChannelPluginTestCase):
 
     def testTrigger(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
-        self.feedMsg('this message has some stuff in it')
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            prefix=self.prefix,
+            command='PRIVMSG',
+            args=(self.channel, 'this message has some stuff in it')))
         m = self.getMsg(' ')
         self.assertTrue(str(m).startswith('PRIVMSG #test :i saw some stuff'))
+
+    def testIgnoreChathistory(self):
+        self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            command='BATCH',
+            args=('+123', 'chathistory', self.channel)))
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'batch': '123'},
+            prefix=self.prefix,
+            command='PRIVMSG',
+            args=(self.channel, 'this message has some stuff in it')))
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            command='BATCH',
+            args=('-123',)))
+
+        m = self.getMsg(' ')
+        self.assertFalse(m)
 
     def testMaxTriggers(self):
         self.assertNotError('messageparser add "stuff" "echo i saw some stuff"')

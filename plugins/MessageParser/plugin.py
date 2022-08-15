@@ -163,6 +163,20 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         channel = msg.channel
         if not channel:
             return
+
+        if 'batch' in msg.server_tags:
+            parent_batches = irc.state.getParentBatches(msg)
+            parent_batch_types = [batch.type for batch in parent_batches]
+            if 'chathistory' in parent_batch_types:
+                # Either sent automatically by the server upon join,
+                # or triggered by a plugin (why?!)
+                # Either way, replying to messages from the history would
+                # look weird, because they may have been sent a while ago,
+                # and we may have already answered them.
+                # (this is the same behavior as in Owner.doPrivmsg and
+                # PluginRegexp.doPrivmsg)
+                return
+
         if self.registryValue('enable', channel, irc.network):
             actions = []
             results = []
