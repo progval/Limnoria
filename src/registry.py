@@ -710,7 +710,7 @@ class OnlySomeStrings(String):
 
     def setValue(self, s):
         v = self.normalize(s)
-        if s in self.validStrings:
+        if v in self.validStrings:
             self.__parent.setValue(v)
         else:
             self.error(v)
