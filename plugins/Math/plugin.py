@@ -166,8 +166,8 @@ class Math(callbacks.Plugin):
         """
         try:
             self.log.info('evaluating %q from %s', text, msg.prefix)
-            x = safe_eval(text, allow_ints=True)
-            irc.reply(str(x))
+            result = safe_eval(text, allow_ints=True)
+            float(result)  # fail early if it is too large to be displayed
         except OverflowError:
             maxFloat = math.ldexp(0.9999999999999999, 1024)
             irc.error(_('The answer exceeded %s or so.') % maxFloat)
@@ -177,6 +177,17 @@ class Math(callbacks.Plugin):
             irc.error(_('%s is not a defined function.') % str(e).split()[1])
         except Exception as e:
             irc.error(utils.exnToString(e))
+        else:
+            try:
+                result_str = str(result)
+            except ValueError as e:
+                # Probably too large to be converted to string; go through
+                # floats instead.
+                # https://docs.python.org/3/library/stdtypes.html#int-max-str-digits
+                # (Depending on configuration, this may be dead code because it
+                # is caught by the float() check above.
+                result_str = str(float(result))
+            irc.reply(result_str)
     icalc = wrap(icalc, [('checkCapability', 'trusted'), 'text'])
 
     _rpnEnv = {
