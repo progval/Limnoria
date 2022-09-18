@@ -131,12 +131,27 @@ class PollTestCase(ChannelPluginTestCase):
     def testDuplicateId(self):
         self.assertResponse(
             'poll add "Is this a test?" "Yes" "Yes" "Maybe"',
-            "Error: Duplicate answer identifier(s): Yes",
+            "Error: Duplicate answer identifier(s): yes",
         )
 
         self.assertResponse(
             'poll add "Is this a test?" "Yes totally" "Yes and no" "Maybe"',
-            "Error: Duplicate answer identifier(s): Yes",
+            "Error: Duplicate answer identifier(s): yes",
+        )
+
+    def testCaseInsensitive(self):
+        self.assertResponse(
+            'poll add "Is this a test?" "Yeß" "No" "Maybe"',
+            "The operation succeeded.  Poll # 1 created.",
+        )
+
+        self.assertNotError("vote 1 Yeß", frm="voter1!foo@bar")
+        self.assertNotError("vote 1 yESS", frm="voter2!foo@bar")
+        self.assertNotError("vote 1 no", frm="voter3!foo@bar")
+
+        self.assertResponse(
+            "results 1",
+            "2 votes for Yeß, 1 vote for No, and 0 votes for Maybe",
         )
 
     def testList(self):

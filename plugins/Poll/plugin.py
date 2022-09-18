@@ -131,7 +131,7 @@ class Poll_(callbacks.Plugin):
 
         poll_id = max(self._polls[(irc.network, channel)], default=0) + 1
 
-        answers = [(answer.split()[0], answer) for answer in answers]
+        answers = [(answer.split()[0].casefold(), answer) for answer in answers]
 
         answer_id_counts = collections.Counter(
             id_ for (id_, _) in answers
@@ -194,6 +194,8 @@ class Poll_(callbacks.Plugin):
         if msg.nick in poll.votes:
             irc.error(_("You already voted on this poll."), Raise=True)
 
+        answer_id = answer_id.casefold()
+
         if answer_id not in poll.answers:
             irc.error(
                 format(
@@ -221,7 +223,7 @@ class Poll_(callbacks.Plugin):
         counts.update({answer_id: 0 for answer_id in poll.answers})
 
         results = [
-            format(_("%n for %s"), (v, _("vote")), k)
+            format(_("%n for %s"), (v, _("vote")), poll.answers[k].split()[0])
             for (k, v) in counts.most_common()
         ]
 
