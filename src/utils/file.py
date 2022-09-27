@@ -130,7 +130,9 @@ def chunks(fd, size):
 
 class AtomicFile(object):
     """Used for files that need to be atomically written -- i.e., if there's a
-    failure, the original file remains, unmodified.  mode must be 'w' or 'wb'"""
+    failure, the original file remains, unmodified.  mode must be 'w' or 'wb'.
+    If ``encoding`` is None (or not provided), files are open in `utf8` regardless
+    of the system locale."""
     class default(object): # Holder for values.
         # Callables?
         tmpDir = None

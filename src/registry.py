@@ -84,7 +84,7 @@ def open_registry(filename, clear=False):
     global _lastModified
     if clear:
         _cache.clear()
-    _fd = open(filename)
+    _fd = open(filename, encoding='utf8')
     fd = utils.file.nonCommentNonEmptyLines(_fd)
     acc = ''
     slashEnd = re.compile(r'\\*$')

@@ -150,7 +150,7 @@ class FlatfileMapping(MappingInterface):
     def __init__(self, filename, maxSize=10**6):
         self.filename = filename
         try:
-            fd = open(self.filename)
+            fd = open(self.filename, encoding='utf8')
             strId = fd.readline().rstrip()
             self.maxSize = len(strId)
             try:
@@ -175,7 +175,7 @@ class FlatfileMapping(MappingInterface):
     def _incrementCurrentId(self, fd=None):
         fdWasNone = fd is None
         if fdWasNone:
-            fd = open(self.filename, 'a')
+            fd = open(self.filename, 'a', encoding='utf8')
         fd.seek(0)
         self.currentId += 1
         fd.write(self._canonicalId(self.currentId))
@@ -193,7 +193,7 @@ class FlatfileMapping(MappingInterface):
 
     def add(self, s):
         line = self._joinLine(self.currentId, s)
-        fd = open(self.filename, 'r+')
+        fd = open(self.filename, 'r+', encoding='utf8')
         try:
             fd.seek(0, 2) # End.
             fd.write(line)
@@ -205,7 +205,7 @@ class FlatfileMapping(MappingInterface):
     def get(self, id):
         strId = self._canonicalId(id)
         try:
-            fd = open(self.filename)
+            fd = open(self.filename, encoding='utf8')
             fd.readline() # First line, nextId.
             for line in fd:
                 (lineId, s) = self._splitLine(line)
@@ -221,7 +221,7 @@ class FlatfileMapping(MappingInterface):
     def set(self, id, s):
         strLine = self._joinLine(id, s)
         try:
-            fd = open(self.filename, 'r+')
+            fd = open(self.filename, 'r+', encoding='utf8')
             self.remove(id, fd)
             fd.seek(0, 2) # End.
             fd.write(strLine)
@@ -233,7 +233,7 @@ class FlatfileMapping(MappingInterface):
         strId = self._canonicalId(id)
         try:
             if fdWasNone:
-                fd = open(self.filename, 'r+')
+                fd = open(self.filename, 'r+', encoding='utf8')
             fd.seek(0)
             fd.readline() # First line, nextId
             pos = fd.tell()
@@ -262,7 +262,7 @@ class FlatfileMapping(MappingInterface):
         fd.close()
 
     def vacuum(self):
-        infd = open(self.filename)
+        infd = open(self.filename, encoding='utf8')
         outfd = utils.file.AtomicFile(self.filename,makeBackupIfSmaller=False)
         outfd.write(infd.readline()) # First line, nextId.
         for line in infd:

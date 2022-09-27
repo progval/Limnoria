@@ -70,7 +70,7 @@ class Reader(object):
         return s.lower()
 
     def readFile(self, filename):
-        self.read(open(filename))
+        self.read(open(filename, encoding='utf8'))
 
     def read(self, fd):
         lineno = 0
