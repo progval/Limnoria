@@ -51,13 +51,13 @@ import multiprocessing
 
 class String(callbacks.Plugin):
     """Provides useful commands for manipulating characters and strings."""
-    def ord(self, irc, msg, args, letter):
-        """<letter>
+    def ord(self, irc, msg, args, s):
+        """<string>
 
-        Returns the unicode codepoint of <letter>.
+        Returns the unicode codepoint of characters in <string>.
         """
-        irc.reply(str(ord(letter)))
-    ord = wrap(ord, ['letter'])
+        irc.replies([str(ord(char)) for char in s])
+    ord = wrap(ord, ['text'])
 
     def chr(self, irc, msg, args, i):
         """<number>
@@ -70,17 +70,20 @@ class String(callbacks.Plugin):
             irc.error(_('That number doesn\'t map to a unicode character.'))
     chr = wrap(chr, ['int'])
 
-    def unicodename(self, irc, msg, args, character):
-        """<character>
+    def unicodename(self, irc, msg, args, s):
+        """<string>
 
-        Returns the name of the given unicode <character>."""
-        if len(character) != 1:
-            irc.errorInvalid('character', character)
-        try:
-            irc.reply(unicodedata.name(character))
-        except ValueError:
-            irc.error(_('No name found for this character.'))
-    unicodename = wrap(unicodename, ['something'])
+        Returns the name of characters in <string>.
+        This will error if any character is not a valid Unicode character."""
+        replies = []
+        for idx, char in enumerate(s):
+            try:
+                replies.append(unicodedata.name(char))
+            except ValueError:
+                irc.error(_('No name found for character %r at position %d.') %
+                          (char, idx), Raise=True)
+        irc.replies(replies)
+    unicodename = wrap(unicodename, ['text'])
 
     def unicodesearch(self, irc, msg, args, name):
         """<name>
