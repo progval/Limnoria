@@ -103,13 +103,21 @@ class StringTestCase(PluginTestCase):
         for c in map(chr, range(256)):
             i = ord(c)
             self.assertResponse('ord %s' % utils.str.dqrepr(c), str(i))
-
+        self.assertResponse('ord é', '233')
+        self.assertResponse('ord 🆒', '127378')
+        self.assertResponse('ord 🇦🇶', '127462 and 127478')
 
     def testUnicode(self):
         self.assertResponse('unicodename ☃', 'SNOWMAN')
         self.assertResponse('unicodesearch SNOWMAN', '☃')
-        #self.assertResponse('unicodename ?',
-        #    'No name found for this character.')
+        self.assertResponse('unicodename ?', 'QUESTION MARK')
+
+        # multi-char strings and ZWJ sequences
+        self.assertResponse('unicodename :O', 'COLON and LATIN CAPITAL LETTER O')
+        self.assertResponse('unicodename 🤷‍♂️', 'SHRUG, ZERO WIDTH JOINER, MALE SIGN, and VARIATION SELECTOR-16')
+
+        self.assertError('unicodename "\\uFFFF"')
+        self.assertError('unicodename "!@#\\uFFFF$"')
         self.assertResponse('unicodesearch FOO',
             'Error: No character found with this name.')
 
