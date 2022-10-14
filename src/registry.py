@@ -875,6 +875,7 @@ class SpaceSeparatedListOfStrings(SpaceSeparatedListOf):
 class SpaceSeparatedSetOfStrings(SpaceSeparatedListOfStrings):
     __slots__ = ()
     List = set
+    sorted = True
 
 class CommaSeparatedListOfStrings(SeparatedListOf):
     __slots__ = ()
@@ -887,6 +888,7 @@ class CommaSeparatedSetOfStrings(SeparatedListOf):
     __slots__ = ()
     List = set
     Value = String
+    sorted = True
     def splitter(self, s):
         return re.split(r'\s*,\s*', s)
     joiner = ', '.join
