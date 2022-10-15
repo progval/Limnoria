@@ -111,6 +111,14 @@ def _addressed(irc, msg, prefixChars=None, nicks=None,
     nicks.insert(0, ircutils.toLower(nick))
     # Ok, let's see if it's a private message.
     if ircutils.nickEqual(target, nick):
+        if get(conf.supybot.reply.unregistered) is False:
+            try:
+                user = ircdb.users.getUser(msg.prefix)
+            except KeyError:
+                log.info("ignoring %s from unregistered user %s (%s) on %s"
+                         " network: '%s'", msg.command, msg.nick, msg.prefix,
+                         network, msg.args[1])
+                return ''
         payload = stripPrefixStrings(payload)
         while payload and payload[0] in prefixChars:
             payload = payload[1:].lstrip()

@@ -608,6 +608,10 @@ registerChannelValue(supybot.reply, 'requireChannelCommandsToBeSentInChannel',
     changes the behavior of the channel but was sent outside the channel
     itself.""")))
 
+registerNetworkValue(supybot.reply, 'unregistered',
+    registry.Boolean(True, _("""Determines whether we respond via private
+    messages to unregistered users.""")))
+
 registerGlobalValue(supybot, 'followIdentificationThroughNickChanges',
     registry.Boolean(False, _("""Determines whether the bot will unidentify
     someone when that person changes their nick.  Setting this to True
