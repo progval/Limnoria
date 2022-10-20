@@ -1314,7 +1314,7 @@ def checkCapabilities(hostmask, capabilities, requireAll=False):
 # supybot.capabilities
 ###
 
-class SpaceSeparatedListOfCapabilities(registry.SpaceSeparatedListOfStrings):
+class SpaceSeparatedListOfCapabilities(registry.SpaceSeparatedSetOfStrings):
     __slots__ = ()
     List = CapabilitySet
 

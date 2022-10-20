@@ -50,6 +50,7 @@ conf.registerChannelValue(Protector, 'enable',
 
 class ImmuneNicks(conf.ValidNicks):
     List = ircutils.IrcSet
+    sorted = True
 
 conf.registerChannelValue(Protector, 'immune',
     ImmuneNicks([], _("""Determines what nicks the bot will consider to

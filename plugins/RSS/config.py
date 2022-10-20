@@ -43,7 +43,7 @@ def configure(advanced):
     conf.registerPlugin('RSS', True)
 
 
-class FeedNames(registry.SpaceSeparatedListOfStrings):
+class FeedNames(registry.SpaceSeparatedSetOfStrings):
     List = callbacks.CanonicalNameSet
 
 class FeedItemSortOrder(registry.OnlySomeStrings):

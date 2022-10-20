@@ -64,6 +64,7 @@ class ValidNickOrEmptyString(registry.String):
 
 class ValidNickSet(conf.ValidNicks):
     List = ircutils.IrcSet
+    sorted = True
 
 Services = conf.registerPlugin('Services')
 conf.registerNetworkValue(Services, 'nicks',
