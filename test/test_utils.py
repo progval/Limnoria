@@ -1152,6 +1152,29 @@ class TestTimeoutQueue(SupyTestCase):
         timeFastForward(1.1)
         self.assertFalse(1 in q)
 
+    def testIter(self):
+        q = TimeoutQueue(1)
+        q.enqueue(1)
+        it1 = iter(q)
+        timeFastForward(0.5)
+        q.enqueue(2)
+        it2 = iter(q)
+        self.assertEqual(next(it1), 1)
+        self.assertEqual(next(it2), 1)
+        self.assertEqual(next(it2), 2)
+        with self.assertRaises(StopIteration):
+            next(it2)
+
+        timeFastForward(0.6)
+        self.assertEqual(next(it1), 2)
+        with self.assertRaises(StopIteration):
+            next(it1)
+
+        it3 = iter(q)
+        self.assertEqual(next(it3), 2)
+        with self.assertRaises(StopIteration):
+            next(it3)
+
     def testReset(self):
         q = TimeoutQueue(10)
         q.enqueue(1)
