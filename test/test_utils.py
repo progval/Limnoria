@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2009,2011, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2022, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -1181,6 +1181,31 @@ class TestTimeoutQueue(SupyTestCase):
         self.assertTrue(1 in q)
         q.reset()
         self.assertFalse(1 in q)
+
+    def testClean(self):
+        def iter_and_next(q):
+            next(iter(q))
+
+        def contains(q):
+            42 in q
+
+        for f in (len, repr, list, iter_and_next, contains):
+            print(f)
+            with self.subTest(f=f.__name__):
+                q = TimeoutQueue(1)
+                q.enqueue(1)
+                timeFastForward(0.5)
+                q.enqueue(2)
+
+                self.assertEqual([x for (_, x) in q.queue], [1, 2])
+                f(q)
+                self.assertEqual([x for (_, x) in q.queue], [1, 2])
+
+                timeFastForward(0.6)
+
+                self.assertEqual([x for (_, x) in q.queue], [1, 2])  # not cleaned yet
+                f(q)
+                self.assertEqual([x for (_, x) in q.queue], [2])  # now it is
 
 class TestCacheDict(SupyTestCase):
     def testMaxNeverExceeded(self):
