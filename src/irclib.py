@@ -1927,7 +1927,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
 
         mechanism = self.sasl_current_mechanism
         if mechanism == 'ecdsa-nist256p-challenge':
-            self._doAuthenticateEcdsa(string)
+            self._doAuthenticateEcdsa(msg, string)
         elif mechanism == 'external':
             self.sendSaslString(b'')
         elif mechanism.startswith('scram-'):
@@ -1936,7 +1936,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 if step == 'uninitialized':
                     log.debug('%s: starting SCRAM.',
                             self.network)
-                    self._doAuthenticateScramFirst(mechanism)
+                    self._doAuthenticateScramFirst(msg, mechanism)
                 elif step == 'first-sent':
                     log.debug('%s: received SCRAM challenge.',
                             self.network)
@@ -1944,13 +1944,13 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 elif step == 'final-sent':
                     log.debug('%s: finishing SCRAM.',
                             self.network)
-                    self._doAuthenticateScramFinish(string)
+                    self._doAuthenticateScramFinish(msg, string)
                 else:
                     assert False
             except scram.ScramException:
                 self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
                     args=('*',)))
-                self.tryNextSaslMechanism()
+                self.tryNextSaslMechanism(msg)
         elif mechanism == 'plain':
             authstring = b'\0'.join([
                 self.sasl_username.encode('utf-8'),
@@ -1959,7 +1959,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             ])
             self.sendSaslString(authstring)
 
-    def _doAuthenticateEcdsa(self, string):
+    def _doAuthenticateEcdsa(self, msg, string):
         if string == b'':
             self.sendSaslString(self.sasl_username.encode('utf-8'))
             return
@@ -1974,9 +1974,9 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         except (OSError, ValueError):
             self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
                 args=('*',)))
-            self.tryNextSaslMechanism()
+            self.tryNextSaslMechanism(msg)
 
-    def _doAuthenticateScramFirst(self, mechanism):
+    def _doAuthenticateScramFirst(self, msg, mechanism):
         """Handle sending the client-first message of SCRAM auth."""
         hash_name = mechanism[len('scram-'):]
         if hash_name.endswith('-plus'):
@@ -1985,7 +1985,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         if hash_name not in scram.HASH_FACTORIES:
             log.debug('%s: SCRAM hash %r not supported, aborting.',
                     self.network, hash_name)
-            self.tryNextSaslMechanism()
+            self.tryNextSaslMechanism(msg)
             return
         authenticator = scram.SCRAMClientAuthenticator(hash_name,
                 channel_binding=False)
@@ -2003,14 +2003,14 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.sendSaslString(client_final)
         self.sasl_scram_state['step'] = 'final-sent'
 
-    def _doAuthenticateScramFinish(self, data):
+    def _doAuthenticateScramFinish(self, msg, data):
         try:
             res = self.sasl_scram_state['authenticator'] \
                     .finish(data)
         except scram.BadSuccessException as e:
             log.warning('%s: SASL authentication failed with SCRAM error: %e',
                     self.network, e)
-            self.tryNextSaslMechanism()
+            self.tryNextSaslMechanism(msg)
         else:
             self.sendSaslString(b'')
             self.sasl_scram_state['step'] = 'authenticated'
