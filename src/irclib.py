@@ -2010,6 +2010,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         except scram.BadSuccessException as e:
             log.warning('%s: SASL authentication failed with SCRAM error: %e',
                     self.network, e)
+            self.sendMsg(ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('*',)))
             self.tryNextSaslMechanism(msg)
         else:
             self.sendSaslString(b'')
