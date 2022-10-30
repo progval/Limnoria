@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2022, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -358,12 +358,30 @@ class DB(object):
         self.map.remove(id)
 
     def __iter__(self):
-        for (id, s) in self.map:
+        yield from self._iter()
+
+    def _iter(self, *, reverse=False):
+        if reverse:
+            if hasattr(self.map, "__reversed__"):
+                # neither FlatfileMapping nor CdbMapping support __reversed__
+                # and DirMapping does not support iteration at all, but
+                # there is no harm in allowing this short-path in case
+                # plugins use their own mapping.
+                it = reversed(self.map)
+            else:
+                # This does load the whole database in memory instead of
+                # iterating lazily, but plugins requesting a reverse list
+                # would probably need do it themselves otherwise, so it does
+                # not make matters worse to do it here.
+                it = reversed(list(self.map))
+        else:
+            it = self.map
+        for (id, s) in it:
             # We don't need to yield the id because it's in the record.
             yield self._newRecord(id, s)
 
-    def select(self, p):
-        for record in self:
+    def select(self, p, reverse=False):
+        for record in self._iter(reverse=reverse):
             if p(record):
                 yield record
 
