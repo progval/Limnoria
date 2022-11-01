@@ -188,8 +188,6 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
             # WSGI-based callback
             environ = WSGIRequestHandler.get_environ(self)
             environ.update({
-                'SERVER_NAME': '0.0.0.0',  # TODO
-                'SERVER_PORT': '80',  # TODO
                 'PATH_INFO': '/' + environ['PATH_INFO'].split('/', 2)[2]
             })
             SimpleHandler(
@@ -440,9 +438,6 @@ class RealSupyHTTPServer(HTTPServer):
     timeout = 0.5
     running = False
 
-
-    base_environ = {}
-
     def __init__(self, address, protocol, callback):
         self.protocol = protocol
         if protocol == 4:
@@ -451,7 +446,15 @@ class RealSupyHTTPServer(HTTPServer):
             self.address_family = socket.AF_INET6
         else:
             raise AssertionError(protocol)
+
         HTTPServer.__init__(self, address, callback)
+
+        host, port = self.server_address[:2]
+        self.base_environ = {
+            'SERVER_NAME': socket.getfqdn(host),
+            'SERVER_PORT': str(port),
+        }
+
         self.callbacks = DEFAULT_CALLBACKS.copy()
 
     def server_bind(self):
