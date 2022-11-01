@@ -188,7 +188,7 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
             # WSGI-based callback
             environ = WSGIRequestHandler.get_environ(self)
             environ.update({
-                'PATH_INFO': '/' + environ['PATH_INFO'].split('/', 2)[2]
+                'PATH_INFO': '/' + (environ['PATH_INFO'].split('/', 2) + [''])[2]
             })
             SimpleHandler(
                 stdin=self.rfile, stdout=self.wfile, stderr=sys.stderr, environ=environ,
