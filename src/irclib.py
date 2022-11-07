@@ -624,7 +624,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
 
         :type: Set[str]
 
-    .. attribute:: capabilities_acq
+    .. attribute:: capabilities_ack
 
         Set of all capabilities requested from and acknowledged by the
         server. See <https://ircv3.net/specs/core/capability-negotiation>
