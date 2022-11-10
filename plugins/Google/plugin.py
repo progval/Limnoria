@@ -231,52 +231,6 @@ class Google(callbacks.PluginRegexp):
                                     'filter':''}),
                            'text'])
 
-    @internationalizeDocstring
-    def cache(self, irc, msg, args, url):
-        """<url>
-
-        Returns a link to the cached version of <url> if it is available.
-        """
-        data = self.search(url, msg.channel, irc.network, {'smallsearch': True})
-        if data:
-            m = data[0]
-            if m['cacheUrl']:
-                url = m['cacheUrl'].encode('utf-8')
-                irc.reply(url)
-                return
-        irc.error(_('Google seems to have no cache for that site.'))
-    cache = wrap(cache, ['url'])
-
-    _fight_re = re.compile(r'id="resultStats"[^>]*>(?P<stats>[^<]*)')
-    @internationalizeDocstring
-    def fight(self, irc, msg, args):
-        """<search string> <search string> [<search string> ...]
-
-        Returns the results of each search, in order, from greatest number
-        of results to least.
-        """
-        channel = msg.channel
-        network = irc.network
-        results = []
-        for arg in args:
-            text = self.search(arg, channel, network, {'smallsearch': True})
-            i = text.find('id="resultStats"')
-            stats = utils.web.htmlToText(self._fight_re.search(text).group('stats'))
-            if stats == '':
-                results.append((0, args))
-                continue
-            count = ''.join(filter('0123456789'.__contains__, stats))
-            results.append((int(count), arg))
-        results.sort()
-        results.reverse()
-        if self.registryValue('bold', channel, network):
-            bold = ircutils.bold
-        else:
-            bold = repr
-        s = ', '.join([format('%s: %i', bold(s), i) for (i, s) in results])
-        irc.reply(s)
-
-
     def _translate(self, sourceLang, targetLang, text):
         headers = dict(utils.web.defaultHeaders)
         headers['User-agent'] = ('Mozilla/5.0 (X11; U; Linux i686) '
@@ -338,59 +292,6 @@ class Google(callbacks.PluginRegexp):
         url = r'http://%s/search?q=%s' % \
                 (self.registryValue('baseUrl', channel, network), s)
         return url
-
-    _calcRe1 = re.compile(r'<span class="cwcot".*?>(.*?)</span>', re.I)
-    _calcRe2 = re.compile(r'<div class="vk_ans.*?>(.*?)</div>', re.I | re.S)
-    _calcRe3 = re.compile(r'<div class="side_div" id="rhs_div">.*?<input class="ucw_data".*?value="(.*?)"', re.I)
-    @internationalizeDocstring
-    def calc(self, irc, msg, args, expr):
-        """<expression>
-
-        Uses Google's calculator to calculate the value of <expression>.
-        """
-        url = self._googleUrl(expr, msg.channel, irc.network)
-        h = {"User-Agent":"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36"}
-        html = utils.web.getUrl(url, headers=h).decode('utf8')
-        match = self._calcRe1.search(html)
-        if not match:
-            match = self._calcRe2.search(html)
-            if not match:
-                match = self._calcRe3.search(html)
-                if not match:
-                    irc.reply("I could not find an output from Google Calc for: %s" % expr)
-                    return
-                else:
-                    s = match.group(1)
-            else:
-                s = match.group(1)
-        else:
-            s = match.group(1)
-        # do some cleanup of text
-        s = re.sub(r'<sup>(.*)</sup>&#8260;<sub>(.*)</sub>', r' \1/\2', s)
-        s = re.sub(r'<sup>(.*)</sup>', r'^\1', s)
-        s = utils.web.htmlToText(s)
-        irc.reply("%s = %s" % (expr, s))
-    calc = wrap(calc, ['text'])
-
-    _phoneRe = re.compile(r'Phonebook.*?<font size=-1>(.*?)<a href')
-    @internationalizeDocstring
-    def phonebook(self, irc, msg, args, phonenumber):
-        """<phone number>
-
-        Looks <phone number> up on Google.
-        """
-        url = self._googleUrl(phonenumber, msg.channel, irc.network)
-        html = utils.web.getUrl(url).decode('utf8')
-        m = self._phoneRe.search(html)
-        if m is not None:
-            s = m.group(1)
-            s = s.replace('<b>', '')
-            s = s.replace('</b>', '')
-            s = utils.web.htmlToText(s)
-            irc.reply(s)
-        else:
-            irc.reply(_('Google\'s phonebook didn\'t come up with anything.'))
-    phonebook = wrap(phonebook, ['text'])
 
 
 Class = Google
