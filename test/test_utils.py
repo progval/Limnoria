@@ -74,7 +74,7 @@ class GenTest(SupyTestCase):
     def testInsensitivePreservingDict(self):
         ipd = utils.InsensitivePreservingDict
         d = ipd(dict(Foo=10))
-        self.assertTrue(d['foo'] == 10)
+        self.assertEqual(d['foo'], 10)
         self.assertEqual(d.keys(), ['Foo'])
         self.assertEqual(d.get('foo'), 10)
         self.assertEqual(d.get('Foo'), 10)
@@ -399,7 +399,7 @@ class StrTest(SupyTestCase):
     def testEllipsisify(self):
         f = utils.str.ellipsisify
         self.assertEqual(f('x'*30, 30), 'x'*30)
-        self.assertTrue(len(f('x'*35, 30)) <= 30)
+        self.assertLessEqual(len(f('x'*35, 30)), 30)
         self.assertTrue(f(' '.join(['xxxx']*10), 30)[:-3].endswith('xxxx'))
 
 
@@ -553,7 +553,7 @@ class WebTest(SupyTestCase):
     if network:
         def testGetUrlWithSize(self):
             url = 'http://slashdot.org/'
-            self.assertTrue(len(utils.web.getUrl(url, 1024)) == 1024)
+            self.assertEqual(len(utils.web.getUrl(url, 1024)), 1024)
 
 class FormatTestCase(SupyTestCase):
     def testNormal(self):
@@ -619,10 +619,10 @@ class RingBufferTestCase(SupyTestCase):
 
     def testContains(self):
         b = RingBuffer(3, range(3))
-        self.assertTrue(0 in b)
-        self.assertTrue(1 in b)
-        self.assertTrue(2 in b)
-        self.assertFalse(3 in b)
+        self.assertIn(0, b)
+        self.assertIn(1, b)
+        self.assertIn(2, b)
+        self.assertNotIn(3, b)
 
     def testGetitem(self):
         L = range(10)
@@ -711,18 +711,18 @@ class RingBufferTestCase(SupyTestCase):
 
     def testEq(self):
         b = RingBuffer(3, range(3))
-        self.assertFalse(b == list(range(3)))
+        self.assertNotEqual(b, list(range(3)))
         b1 = RingBuffer(3)
-        self.assertFalse(b == b1)
+        self.assertNotEqual(b, b1)
         b1.append(0)
-        self.assertFalse(b == b1)
+        self.assertNotEqual(b, b1)
         b1.append(1)
-        self.assertFalse(b == b1)
+        self.assertNotEqual(b, b1)
         b1.append(2)
-        self.assertTrue(b == b1)
+        self.assertEqual(b, b1)
         b = RingBuffer(100, range(10))
         b1 = RingBuffer(10, range(10))
-        self.assertFalse(b == b1)
+        self.assertNotEqual(b, b1)
 
     def testIter(self):
         b = RingBuffer(3, range(3))
@@ -799,24 +799,24 @@ class QueueTest(SupyTestCase):
     def testEq(self):
         q1 = queue()
         q2 = queue()
-        self.assertTrue(q1 == q1, 'queue not equal to itself')
-        self.assertTrue(q2 == q2, 'queue not equal to itself')
-        self.assertTrue(q1 == q2, 'initialized queues not equal')
+        self.assertEqual(q1, q1, 'queue not equal to itself')
+        self.assertEqual(q2, q2, 'queue not equal to itself')
+        self.assertEqual(q1, q2, 'initialized queues not equal')
         q1.enqueue(1)
-        self.assertTrue(q1 == q1, 'queue not equal to itself')
-        self.assertTrue(q2 == q2, 'queue not equal to itself')
+        self.assertEqual(q1, q1, 'queue not equal to itself')
+        self.assertEqual(q2, q2, 'queue not equal to itself')
         q2.enqueue(1)
-        self.assertTrue(q1 == q1, 'queue not equal to itself')
-        self.assertTrue(q2 == q2, 'queue not equal to itself')
-        self.assertTrue(q1 == q2, 'queues not equal after identical enqueue')
+        self.assertEqual(q1, q1, 'queue not equal to itself')
+        self.assertEqual(q2, q2, 'queue not equal to itself')
+        self.assertEqual(q1, q2, 'queues not equal after identical enqueue')
         q1.dequeue()
-        self.assertTrue(q1 == q1, 'queue not equal to itself')
-        self.assertTrue(q2 == q2, 'queue not equal to itself')
-        self.assertFalse(q1 == q2, 'queues equal after one dequeue')
+        self.assertEqual(q1, q1, 'queue not equal to itself')
+        self.assertEqual(q2, q2, 'queue not equal to itself')
+        self.assertNotEqual(q1, q2, 'queues equal after one dequeue')
         q2.dequeue()
-        self.assertTrue(q1 == q2, 'queues not equal after both are dequeued')
-        self.assertTrue(q1 == q1, 'queue not equal to itself')
-        self.assertTrue(q2 == q2, 'queue not equal to itself')
+        self.assertEqual(q1, q2, 'queues not equal after both are dequeued')
+        self.assertEqual(q1, q1, 'queue not equal to itself')
+        self.assertEqual(q2, q2, 'queue not equal to itself')
 
     def testInit(self):
         self.assertEqual(len(queue()), 0, 'queue len not 0 after init')
@@ -876,17 +876,17 @@ class QueueTest(SupyTestCase):
 
     def testContains(self):
         q = queue()
-        self.assertFalse(1 in q, 'empty queue cannot have elements')
+        self.assertNotIn(1, q, 'empty queue cannot have elements')
         q.enqueue(1)
-        self.assertTrue(1 in q, 'recent enqueued element not in q')
+        self.assertIn(1, q, 'recent enqueued element not in q')
         q.enqueue(2)
-        self.assertTrue(1 in q, 'original enqueued element not in q')
-        self.assertTrue(2 in q, 'second enqueued element not in q')
+        self.assertIn(1, q, 'original enqueued element not in q')
+        self.assertIn(2, q, 'second enqueued element not in q')
         q.dequeue()
-        self.assertFalse(1 in q, 'dequeued element in q')
-        self.assertTrue(2 in q, 'not dequeued element not in q')
+        self.assertNotIn(1, q, 'dequeued element in q')
+        self.assertIn(2, q, 'not dequeued element not in q')
         q.dequeue()
-        self.assertFalse(2 in q, 'dequeued element in q')
+        self.assertNotIn(2, q, 'dequeued element in q')
 
     def testIter(self):
         q1 = queue((1, 2, 3))
@@ -964,24 +964,24 @@ class SmallQueueTest(SupyTestCase):
     def testEq(self):
         q1 = queue()
         q2 = queue()
-        self.assertTrue(q1 == q1, 'queue not equal to itself')
-        self.assertTrue(q2 == q2, 'queue not equal to itself')
-        self.assertTrue(q1 == q2, 'initialized queues not equal')
+        self.assertEqual(q1, q1, 'queue not equal to itself')
+        self.assertEqual(q2, q2, 'queue not equal to itself')
+        self.assertEqual(q1, q2, 'initialized queues not equal')
         q1.enqueue(1)
-        self.assertTrue(q1 == q1, 'queue not equal to itself')
-        self.assertTrue(q2 == q2, 'queue not equal to itself')
+        self.assertEqual(q1, q1, 'queue not equal to itself')
+        self.assertEqual(q2, q2, 'queue not equal to itself')
         q2.enqueue(1)
-        self.assertTrue(q1 == q1, 'queue not equal to itself')
-        self.assertTrue(q2 == q2, 'queue not equal to itself')
-        self.assertTrue(q1 == q2, 'queues not equal after identical enqueue')
+        self.assertEqual(q1, q1, 'queue not equal to itself')
+        self.assertEqual(q2, q2, 'queue not equal to itself')
+        self.assertEqual(q1, q2, 'queues not equal after identical enqueue')
         q1.dequeue()
-        self.assertTrue(q1 == q1, 'queue not equal to itself')
-        self.assertTrue(q2 == q2, 'queue not equal to itself')
-        self.assertFalse(q1 == q2, 'queues equal after one dequeue')
+        self.assertEqual(q1, q1, 'queue not equal to itself')
+        self.assertEqual(q2, q2, 'queue not equal to itself')
+        self.assertNotEqual(q1, q2, 'queues equal after one dequeue')
         q2.dequeue()
-        self.assertTrue(q1 == q2, 'queues not equal after both are dequeued')
-        self.assertTrue(q1 == q1, 'queue not equal to itself')
-        self.assertTrue(q2 == q2, 'queue not equal to itself')
+        self.assertEqual(q1, q2, 'queues not equal after both are dequeued')
+        self.assertEqual(q1, q1, 'queue not equal to itself')
+        self.assertEqual(q2, q2, 'queue not equal to itself')
 
     def testInit(self):
         self.assertEqual(len(queue()), 0, 'queue len not 0 after init')
@@ -1041,17 +1041,17 @@ class SmallQueueTest(SupyTestCase):
 
     def testContains(self):
         q = queue()
-        self.assertFalse(1 in q, 'empty queue cannot have elements')
+        self.assertNotIn(1, q, 'empty queue cannot have elements')
         q.enqueue(1)
-        self.assertTrue(1 in q, 'recent enqueued element not in q')
+        self.assertIn(1, q, 'recent enqueued element not in q')
         q.enqueue(2)
-        self.assertTrue(1 in q, 'original enqueued element not in q')
-        self.assertTrue(2 in q, 'second enqueued element not in q')
+        self.assertIn(1, q, 'original enqueued element not in q')
+        self.assertIn(2, q, 'second enqueued element not in q')
         q.dequeue()
-        self.assertFalse(1 in q, 'dequeued element in q')
-        self.assertTrue(2 in q, 'not dequeued element not in q')
+        self.assertNotIn(1, q, 'dequeued element in q')
+        self.assertIn(2, q, 'not dequeued element not in q')
         q.dequeue()
-        self.assertFalse(2 in q, 'dequeued element in q')
+        self.assertNotIn(2, q, 'dequeued element in q')
 
     def testIter(self):
         q1 = queue((1, 2, 3))
@@ -1092,28 +1092,28 @@ class MaxLengthQueueTestCase(SupyTestCase):
 class TwoWayDictionaryTestCase(SupyTestCase):
     def testInit(self):
         d = TwoWayDictionary(foo='bar')
-        self.assertTrue('foo' in d)
-        self.assertTrue('bar' in d)
+        self.assertIn('foo', d)
+        self.assertIn('bar', d)
 
         d = TwoWayDictionary({1: 2})
-        self.assertTrue(1 in d)
-        self.assertTrue(2 in d)
+        self.assertIn(1, d)
+        self.assertIn(2, d)
 
     def testSetitem(self):
         d = TwoWayDictionary()
         d['foo'] = 'bar'
-        self.assertTrue('foo' in d)
-        self.assertTrue('bar' in d)
+        self.assertIn('foo', d)
+        self.assertIn('bar', d)
 
     def testDelitem(self):
         d = TwoWayDictionary(foo='bar')
         del d['foo']
-        self.assertFalse('foo' in d)
-        self.assertFalse('bar' in d)
+        self.assertNotIn('foo', d)
+        self.assertNotIn('bar', d)
         d = TwoWayDictionary(foo='bar')
         del d['bar']
-        self.assertFalse('bar' in d)
-        self.assertFalse('foo' in d)
+        self.assertNotIn('bar', d)
+        self.assertNotIn('foo', d)
 
 
 class TestTimeoutQueue(SupyTestCase):
@@ -1146,11 +1146,11 @@ class TestTimeoutQueue(SupyTestCase):
     def testContains(self):
         q = TimeoutQueue(1)
         q.enqueue(1)
-        self.assertTrue(1 in q)
-        self.assertTrue(1 in q) # For some reason, the second one might fail.
-        self.assertFalse(2 in q)
+        self.assertIn(1, q)
+        self.assertIn(1, q) # For some reason, the second one might fail.
+        self.assertNotIn(2, q)
         timeFastForward(1.1)
-        self.assertFalse(1 in q)
+        self.assertNotIn(1, q)
 
     def testIter(self):
         q = TimeoutQueue(1)
@@ -1178,9 +1178,9 @@ class TestTimeoutQueue(SupyTestCase):
     def testReset(self):
         q = TimeoutQueue(10)
         q.enqueue(1)
-        self.assertTrue(1 in q)
+        self.assertIn(1, q)
         q.reset()
-        self.assertFalse(1 in q)
+        self.assertNotIn(1, q)
 
     def testClean(self):
         def iter_and_next(q):
@@ -1213,9 +1213,9 @@ class TestCacheDict(SupyTestCase):
         d = CacheDict(10)
         for i in range(max**2):
             d[i] = i
-            self.assertTrue(len(d) <= max)
-            self.assertTrue(i in d)
-            self.assertTrue(d[i] == i)
+            self.assertLessEqual(len(d), max)
+            self.assertIn(i, d)
+            self.assertEqual(d[i], i)
 
 class TestExpiringDict(SupyTestCase):
     def testInit(self):
@@ -1313,14 +1313,14 @@ class TestTruncatableSet(SupyTestCase):
     def testBasics(self):
         s = TruncatableSet(['foo', 'bar', 'baz', 'qux'])
         self.assertEqual(s, set(['foo', 'bar', 'baz', 'qux']))
-        self.assertTrue('foo' in s)
-        self.assertTrue('bar' in s)
-        self.assertFalse('quux' in s)
+        self.assertIn('foo', s)
+        self.assertIn('bar', s)
+        self.assertNotIn('quux', s)
         s.discard('baz')
-        self.assertTrue('foo' in s)
-        self.assertFalse('baz' in s)
+        self.assertIn('foo', s)
+        self.assertNotIn('baz', s)
         s.add('quux')
-        self.assertTrue('quux' in s)
+        self.assertIn('quux', s)
 
     def testTruncate(self):
         s = TruncatableSet(['foo', 'bar'])

@@ -70,7 +70,7 @@ class IrcMsgTestCase(SupyTestCase):
 
     def testNe(self):
         for msg in msgs:
-            self.assertFalse(msg != msg)
+            self.assertEqual(msg, msg)
 
 ##     def testImmutability(self):
 ##         s = 'something else'
@@ -99,7 +99,7 @@ class IrcMsgTestCase(SupyTestCase):
                           prefix='foo!bar@baz')
         m = ircmsgs.IrcMsg(prefix='foo!bar@baz', args=('foo', 'bar'),
                             command='CMD')
-        self.assertIs(m.time, None)
+        self.assertIsNone(m.time)
         m.time = 24
         self.assertEqual(ircmsgs.IrcMsg(msg=m).time, 24)
 

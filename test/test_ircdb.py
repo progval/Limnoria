@@ -122,17 +122,17 @@ class CapabilitySetTestCase(SupyTestCase):
 
     def testContains(self):
         s = ircdb.CapabilitySet()
-        self.assertFalse('foo' in s)
-        self.assertFalse('-foo' in s)
+        self.assertNotIn('foo', s)
+        self.assertNotIn('-foo', s)
         s.add('foo')
-        self.assertTrue('foo' in s)
-        self.assertTrue('-foo' in s)
+        self.assertIn('foo', s)
+        self.assertIn('-foo', s)
         s.remove('foo')
-        self.assertFalse('foo' in s)
-        self.assertFalse('-foo' in s)
+        self.assertNotIn('foo', s)
+        self.assertNotIn('-foo', s)
         s.add('-foo')
-        self.assertTrue('foo' in s)
-        self.assertTrue('-foo' in s)
+        self.assertIn('foo', s)
+        self.assertIn('-foo', s)
 
     def testCheck(self):
         s = ircdb.CapabilitySet()
@@ -170,8 +170,8 @@ class UserCapabilitySetTestCase(SupyTestCase):
 
     def testOwnerIsAlwaysPresent(self):
         d = ircdb.UserCapabilitySet()
-        self.assertTrue('owner' in d)
-        self.assertTrue('-owner' in d)
+        self.assertIn('owner', d)
+        self.assertIn('-owner', d)
         self.assertFalse(d.check('owner'))
         d.add('owner')
         self.assertTrue(d.check('owner'))
@@ -187,8 +187,8 @@ class UserCapabilitySetTestCase(SupyTestCase):
     def testOwner(self):
         s = ircdb.UserCapabilitySet()
         s.add('owner')
-        self.assertTrue('foo' in s)
-        self.assertTrue('-foo' in s)
+        self.assertIn('foo', s)
+        self.assertIn('-foo', s)
         self.assertTrue(s.check('owner'))
         self.assertFalse(s.check('-owner'))
         self.assertFalse(s.check('-foo'))
@@ -265,7 +265,7 @@ class IrcUserTestCase(IrcdbTestCase):
             self.assertTrue(u.checkHostmask('foo!bar@baz'))
             u.addAuth('foo!bar@baz')
             self.assertTrue(u.checkHostmask('foo!bar@baz'))
-            self.assertTrue(len(u.auth) == 1)
+            self.assertEqual(len(u.auth), 1)
             u.addAuth('boo!far@fizz')
             self.assertTrue(u.checkHostmask('boo!far@fizz'))
             timeFastForward(2.1)

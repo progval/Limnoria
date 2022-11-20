@@ -111,7 +111,7 @@ class AliasTestCase(ChannelPluginTestCase):
         self.assertResponse('foobar', 'sbbone')
         self.assertRaises(Alias.AliasError, cb.removeAlias, 'foobar')
         cb.removeAlias('foobar', evenIfLocked=True)
-        self.assertFalse('foobar' in cb.aliases)
+        self.assertNotIn('foobar', cb.aliases)
         self.assertError('foobar')
 
         self.assertRegexp('alias add abc\x07 ignore', 'Error.*Invalid')

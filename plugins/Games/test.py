@@ -43,8 +43,11 @@ class GamesTestCase(ChannelPluginTestCase):
                                 'Got a msg without bang|click|spin: %r' % m)
             elif m.command == 'KICK':
                 sawKick = True
-                self.assertTrue('bang' in m.args[2].lower(),
-                                'Got a KICK without bang in it.')
+                self.assertIn(
+                    'bang',
+                    m.args[2].lower(),
+                    'Got a KICK without bang in it.'
+                )
             else:
                 self.fail('Got something other than a kick or a privmsg.')
         self.assertTrue(sawKick, 'Didn\'t get a kick in %s iterations!' % i)

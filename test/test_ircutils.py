@@ -236,53 +236,53 @@ class FunctionsTestCase(SupyTestCase):
         s = ('foo bar baz qux ' * 100)[0:-1]
 
         r = ircutils.wrap(s, 10)
-        self.assertTrue(max(map(pred, r)) <= 10)
+        self.assertLessEqual(max(map(pred, r)), 10)
         self.assertEqual(''.join(r), s)
 
         r = ircutils.wrap(s, 100)
-        self.assertTrue(max(map(pred, r)) <= 100)
+        self.assertLessEqual(max(map(pred, r)), 100)
         self.assertEqual(''.join(r), s)
 
         s = (''.join([chr(0x1f527), chr(0x1f527), chr(0x1f527), ' ']) * 100)\
                 [0:-1]
 
         r = ircutils.wrap(s, 20)
-        self.assertTrue(max(map(pred, r)) <= 20, (max(map(pred, r)), repr(r)))
+        self.assertLessEqual(max(map(pred, r)), 20, (max(map(pred, r)), repr(r)))
         self.assertEqual(''.join(r), s)
 
         r = ircutils.wrap(s, 100)
-        self.assertTrue(max(map(pred, r)) <= 100)
+        self.assertLessEqual(max(map(pred, r)), 100)
         self.assertEqual(''.join(r), s)
 
         s = ('foobarbazqux ' * 100)[0:-1]
 
         r = ircutils.wrap(s, 10)
-        self.assertTrue(max(map(pred, r)) <= 10)
+        self.assertLessEqual(max(map(pred, r)), 10)
         self.assertEqual(''.join(r), s)
 
         r = ircutils.wrap(s, 100)
-        self.assertTrue(max(map(pred, r)) <= 100)
+        self.assertLessEqual(max(map(pred, r)), 100)
         self.assertEqual(''.join(r), s)
 
         s = ('foobarbazqux' * 100)[0:-1]
 
         r = ircutils.wrap(s, 10)
-        self.assertTrue(max(map(pred, r)) <= 10)
+        self.assertLessEqual(max(map(pred, r)), 10)
         self.assertEqual(''.join(r), s)
 
         r = ircutils.wrap(s, 100)
-        self.assertTrue(max(map(pred, r)) <= 100)
+        self.assertLessEqual(max(map(pred, r)), 100)
         self.assertEqual(''.join(r), s)
 
         s = chr(233)*500
         r = ircutils.wrap(s, 500)
-        self.assertTrue(max(map(pred, r)) <= 500)
+        self.assertLessEqual(max(map(pred, r)), 500)
         r = ircutils.wrap(s, 139)
-        self.assertTrue(max(map(pred, r)) <= 139)
+        self.assertLessEqual(max(map(pred, r)), 139)
 
         s = '\x02\x16 barbazqux' + ('foobarbazqux ' * 20)[0:-1]
         r = ircutils.wrap(s, 91)
-        self.assertTrue(max(map(pred, r)) <= 91)
+        self.assertLessEqual(max(map(pred, r)), 91)
 
     def testSafeArgument(self):
         s = 'I have been running for 9 seconds'
@@ -453,9 +453,9 @@ class IrcDictTestCase(SupyTestCase):
     def testContains(self):
         d = ircutils.IrcDict()
         d['#FOO'] = None
-        self.assertTrue('#foo' in d)
+        self.assertIn('#foo', d)
         d['#fOOBAR[]'] = None
-        self.assertTrue('#foobar{}' in d)
+        self.assertIn('#foobar{}', d)
 
     def testGetSetItem(self):
         d = ircutils.IrcDict()
@@ -467,8 +467,8 @@ class IrcDictTestCase(SupyTestCase):
     def testCopyable(self):
         d = ircutils.IrcDict()
         d['foo'] = 'bar'
-        self.assertTrue(d == copy.copy(d))
-        self.assertTrue(d == copy.deepcopy(d))
+        self.assertEqual(d, copy.copy(d))
+        self.assertEqual(d, copy.deepcopy(d))
 
 
 class IrcSetTestCase(SupyTestCase):
@@ -476,30 +476,30 @@ class IrcSetTestCase(SupyTestCase):
         s = ircutils.IrcSet()
         s.add('foo')
         s.add('bar')
-        self.assertTrue('foo' in s)
-        self.assertTrue('FOO' in s)
+        self.assertIn('foo', s)
+        self.assertIn('FOO', s)
         s.discard('alfkj')
         s.remove('FOo')
-        self.assertFalse('foo' in s)
-        self.assertFalse('FOo' in s)
+        self.assertNotIn('foo', s)
+        self.assertNotIn('FOo', s)
 
     def testCopy(self):
         s = ircutils.IrcSet()
         s.add('foo')
         s.add('bar')
         s1 = copy.deepcopy(s)
-        self.assertTrue('foo' in s)
-        self.assertTrue('FOO' in s)
+        self.assertIn('foo', s)
+        self.assertIn('FOO', s)
         s.discard('alfkj')
         s.remove('FOo')
-        self.assertFalse('foo' in s)
-        self.assertFalse('FOo' in s)
-        self.assertTrue('foo' in s1)
-        self.assertTrue('FOO' in s1)
+        self.assertNotIn('foo', s)
+        self.assertNotIn('FOo', s)
+        self.assertIn('foo', s1)
+        self.assertIn('FOO', s1)
         s1.discard('alfkj')
         s1.remove('FOo')
-        self.assertFalse('foo' in s1)
-        self.assertFalse('FOo' in s1)
+        self.assertNotIn('foo', s1)
+        self.assertNotIn('FOo', s1)
 
 
 class IrcStringTestCase(SupyTestCase):
@@ -514,8 +514,8 @@ class IrcStringTestCase(SupyTestCase):
     def testInequality(self):
         s1 = 'supybot'
         s2 = ircutils.IrcString('Supybot')
-        self.assertTrue(s1 == s2)
-        self.assertFalse(s1 != s2)
+        self.assertEqual(s1, s2)
+        self.assertEqual(s1, s2)
 
 class AuthenticateTestCase(SupyTestCase):
     PAIRS = [

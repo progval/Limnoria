@@ -130,7 +130,7 @@ class MiscTestCase(ChannelPluginTestCase):
     def testHelpIncludeFullCommandName(self):
         self.assertHelp('help channel capability add')
         m = self.getMsg('help channel capability add')
-        self.assertTrue('channel capability add' in m.args[1])
+        self.assertIn('channel capability add', m.args[1])
 
     def testHelpDoesAmbiguityWithDefaultPlugins(self):
         m = self.getMsg('help list') # Misc.list and User.list.
@@ -189,12 +189,12 @@ class MiscTestCase(ChannelPluginTestCase):
         oldprefix, self.prefix = self.prefix, 'tester!foo@bar__no_testcap__baz'
         self.nick = 'tester'
         m = self.getMsg('tell aljsdkfh [plugin tell]')
-        self.assertTrue('let you do' in m.args[1])
+        self.assertIn('let you do', m.args[1])
         m = self.getMsg('tell #foo [plugin tell]')
-        self.assertTrue('No need for' in m.args[1])
+        self.assertIn('No need for', m.args[1])
         m = self.getMsg('tell me you love me')
         m = self.irc.takeMsg()
-        self.assertTrue(m.args[0] == self.nick)
+        self.assertEqual(m.args[0], self.nick)
 
     def testNoNestedTell(self):
         self.assertRegexp('echo [tell %s foo]' % self.nick, 'nested')
@@ -271,7 +271,7 @@ class MiscTestCase(ChannelPluginTestCase):
             self.assertResponse('more',
                                 'abc '*112 + ' \x02(2 more messages)\x02')
             m = self.irc.takeMsg()
-            self.assertIsNot(m, None)
+            self.assertIsNotNone(m)
             self.assertEqual(
                 m.args[1],
                 'abc '*112 + ' \x02(1 more message)\x02')

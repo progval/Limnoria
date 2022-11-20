@@ -417,14 +417,14 @@ class PrivmsgTestCase(ChannelPluginTestCase):
     def testReplyWithNickPrefix(self):
         self.feedMsg('@len foo')
         m = self.irc.takeMsg()
-        self.assertTrue(m is not None, 'm: %r' % m)
+        self.assertIsNotNone(m, 'm: %r' % m)
         self.assertTrue(m.args[1].startswith(self.nick))
         try:
             original = conf.supybot.reply.withNickPrefix()
             conf.supybot.reply.withNickPrefix.setValue(False)
             self.feedMsg('@len foobar')
             m = self.irc.takeMsg()
-            self.assertTrue(m is not None)
+            self.assertIsNotNone(m)
             self.assertFalse(m.args[1].startswith(self.nick))
         finally:
             conf.supybot.reply.withNickPrefix.setValue(original)
@@ -448,7 +448,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             conf.supybot.reply.error.withNotice.setValue(True)
             m = self.getMsg("eval irc.error('foo')")
             self.assertTrue(m, 'No message returned.')
-            self.assertTrue(m.command == 'NOTICE')
+            self.assertEqual(m.command, 'NOTICE')
         finally:
             conf.supybot.reply.error.withNotice.setValue(original)
 
@@ -1112,10 +1112,10 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
         self.irc.addCallback(self.WithPrivateNotice(self.irc))
         # Check normal behavior.
         m = self.assertNotError('normal')
-        self.assertFalse(m.command == 'NOTICE')
+        self.assertNotEqual(m.command, 'NOTICE')
         self.assertTrue(ircutils.isChannel(m.args[0]))
         m = self.assertNotError('explicit')
-        self.assertFalse(m.command == 'NOTICE')
+        self.assertNotEqual(m.command, 'NOTICE')
         self.assertTrue(ircutils.isChannel(m.args[0]))
         # Check abnormal behavior.
         originalInPrivate = conf.supybot.reply.inPrivate()
@@ -1124,10 +1124,10 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
             conf.supybot.reply.inPrivate.setValue(True)
             conf.supybot.reply.withNotice.setValue(True)
             m = self.assertNotError('normal')
-            self.assertTrue(m.command == 'NOTICE')
+            self.assertEqual(m.command, 'NOTICE')
             self.assertFalse(ircutils.isChannel(m.args[0]))
             m = self.assertNotError('explicit')
-            self.assertFalse(m.command == 'NOTICE')
+            self.assertNotEqual(m.command, 'NOTICE')
             self.assertTrue(ircutils.isChannel(m.args[0]))
         finally:
             conf.supybot.reply.inPrivate.setValue(originalInPrivate)
@@ -1136,10 +1136,10 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
         try:
             conf.supybot.reply.withNoticeWhenPrivate.setValue(True)
             m = self.assertNotError('implicit')
-            self.assertTrue(m.command == 'NOTICE')
+            self.assertEqual(m.command, 'NOTICE')
             self.assertFalse(ircutils.isChannel(m.args[0]))
             m = self.assertNotError('normal')
-            self.assertFalse(m.command == 'NOTICE')
+            self.assertNotEqual(m.command, 'NOTICE')
             self.assertTrue(ircutils.isChannel(m.args[0]))
         finally:
             conf.supybot.reply.withNoticeWhenPrivate.setValue(orig)
@@ -1149,10 +1149,10 @@ class WithPrivateNoticeTestCase(ChannelPluginTestCase):
         try:
             conf.supybot.reply.withNoticeWhenPrivate.setValue(True)
             m = self.assertNotError("eval irc.reply('y',to='x',private=True)")
-            self.assertTrue(m.command == 'NOTICE')
+            self.assertEqual(m.command, 'NOTICE')
             m = self.getMsg(' ')
             m = self.assertNotError("eval irc.reply('y',to='#x',private=True)")
-            self.assertFalse(m.command == 'NOTICE')
+            self.assertNotEqual(m.command, 'NOTICE')
         finally:
             conf.supybot.reply.withNoticeWhenPrivate.setValue(original)
 
@@ -1164,28 +1164,28 @@ class ProxyTestCase(SupyTestCase):
         irc = irclib.Irc('test')
         proxy = callbacks.SimpleProxy(irc, msg)
         # First one way...
-        self.assertFalse(proxy != irc)
-        self.assertTrue(proxy == irc)
+        self.assertEqual(proxy, irc)
+        self.assertEqual(proxy, irc)
         self.assertEqual(hash(proxy), hash(irc))
         # Then the other!
-        self.assertFalse(irc != proxy)
-        self.assertTrue(irc == proxy)
+        self.assertEqual(irc, proxy)
+        self.assertEqual(irc, proxy)
         self.assertEqual(hash(irc), hash(proxy))
 
         # And now dictionaries...
         d = {}
         d[irc] = 'foo'
-        self.assertTrue(len(d) == 1)
-        self.assertTrue(d[irc] == 'foo')
-        self.assertTrue(d[proxy] == 'foo')
+        self.assertEqual(len(d), 1)
+        self.assertEqual(d[irc], 'foo')
+        self.assertEqual(d[proxy], 'foo')
         d[proxy] = 'bar'
-        self.assertTrue(len(d) == 1)
-        self.assertTrue(d[irc] == 'bar')
-        self.assertTrue(d[proxy] == 'bar')
+        self.assertEqual(len(d), 1)
+        self.assertEqual(d[irc], 'bar')
+        self.assertEqual(d[proxy], 'bar')
         d[irc] = 'foo'
-        self.assertTrue(len(d) == 1)
-        self.assertTrue(d[irc] == 'foo')
-        self.assertTrue(d[proxy] == 'foo')
+        self.assertEqual(len(d), 1)
+        self.assertEqual(d[irc], 'foo')
+        self.assertEqual(d[proxy], 'foo')
 
 
 
