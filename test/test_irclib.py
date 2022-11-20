@@ -482,16 +482,102 @@ class IrcStateTestCase(SupyTestCase):
 
     def testJoin(self):
         st = irclib.IrcState()
+
         st.addMsg(self.irc, ircmsgs.join('#foo', prefix=self.irc.prefix))
         self.assertIn('#foo', st.channels)
         self.assertIn(self.irc.nick, st.channels['#foo'].users)
+
         st.addMsg(self.irc, ircmsgs.join('#foo', prefix='foo!bar@baz'))
         self.assertIn('foo', st.channels['#foo'].users)
-        st2 = st.copy()
-        st.addMsg(self.irc, ircmsgs.quit(prefix='foo!bar@baz'))
-        self.assertNotIn('foo', st.channels['#foo'].users)
-        self.assertIn('foo', st2.channels['#foo'].users)
 
+        st2 = st.copy()
+        st2.addMsg(self.irc, ircmsgs.quit(prefix='foo!bar@baz'))
+        self.assertNotIn('foo', st2.channels['#foo'].users)
+        self.assertIn('foo', st.channels['#foo'].users)
+
+    def testNickToHostmask(self):
+        st = irclib.IrcState()
+
+        st.addMsg(self.irc, ircmsgs.join('#foo', prefix='foo!bar@baz'))
+        st.addMsg(self.irc, ircmsgs.join('#foo', prefix='bar!baz@qux'))
+        self.assertEqual(st.nickToHostmask('foo'), 'foo!bar@baz')
+        self.assertEqual(st.nickToHostmask('bar'), 'bar!baz@qux')
+
+        # QUIT erases the entry
+        with self.subTest("QUIT"):
+            st2 = st.copy()
+            st2.addMsg(self.irc, ircmsgs.quit(prefix='foo!bar@baz'))
+            with self.assertRaises(KeyError):
+                st2.nickToHostmask('foo')
+            self.assertEqual(st2.nickToHostmask('bar'), 'bar!baz@qux')
+            self.assertEqual(st.nickToHostmask('foo'), 'foo!bar@baz')
+            self.assertEqual(st.nickToHostmask('bar'), 'bar!baz@qux')
+
+        # NICK moves the entry
+        with self.subTest("NICK"):
+            st2 = st.copy()
+            st2.addMsg(self.irc, ircmsgs.IrcMsg(prefix='foo!bar@baz',
+                                                command='NICK', args=['foo2']))
+            with self.assertRaises(KeyError):
+                st2.nickToHostmask('foo')
+            self.assertEqual(st2.nickToHostmask('foo2'), 'foo2!bar@baz')
+            self.assertEqual(st2.nickToHostmask('bar'), 'bar!baz@qux')
+            self.assertEqual(st.nickToHostmask('foo'), 'foo!bar@baz')
+            self.assertEqual(st.nickToHostmask('bar'), 'bar!baz@qux')
+
+        # NICK moves the entry (and overwrites if needed)
+        with self.subTest("NICK with overwrite"):
+            st2 = st.copy()
+            st2.addMsg(self.irc, ircmsgs.IrcMsg(prefix='foo!bar@baz',
+                                                command='NICK', args=['bar']))
+            with self.assertRaises(KeyError):
+                st2.nickToHostmask('foo')
+            self.assertEqual(st2.nickToHostmask('bar'), 'bar!bar@baz')
+            self.assertEqual(st.nickToHostmask('foo'), 'foo!bar@baz')
+            self.assertEqual(st.nickToHostmask('bar'), 'bar!baz@qux')
+
+        with self.subTest("PRIVMSG"):
+            st2 = st.copy()
+            st2.addMsg(self.irc, ircmsgs.IrcMsg(prefix='foo!bar2@baz2',
+                                                command='PRIVMSG',
+                                                args=['#chan', 'foo']))
+            self.assertEqual(st2.nickToHostmask('foo'), 'foo!bar2@baz2')
+            self.assertEqual(st2.nickToHostmask('bar'), 'bar!baz@qux')
+            self.assertEqual(st.nickToHostmask('foo'), 'foo!bar@baz')
+            self.assertEqual(st.nickToHostmask('bar'), 'bar!baz@qux')
+
+        with self.subTest("PRIVMSG with no host is ignored"):
+            st2 = st.copy()
+            st2.addMsg(self.irc, ircmsgs.IrcMsg(prefix='foo',
+                                                command='PRIVMSG',
+                                                args=['#chan', 'foo']))
+            self.assertEqual(st2.nickToHostmask('foo'), 'foo!bar@baz')
+            self.assertEqual(st2.nickToHostmask('bar'), 'bar!baz@qux')
+            self.assertEqual(st.nickToHostmask('foo'), 'foo!bar@baz')
+            self.assertEqual(st.nickToHostmask('bar'), 'bar!baz@qux')
+
+    def testNickToHostmaskWho(self):
+        st = irclib.IrcState()
+
+        st.addMsg(self.irc, ircmsgs.IrcMsg(command='352', # RPL_WHOREPLY
+            args=[self.irc.nick, '#chan', 'bar', 'baz', 'server.example',
+                  'foo', 'H', '0 real name']))
+        self.assertEqual(st.nickToHostmask('foo'), 'foo!bar@baz')
+
+    def testNickToHostmaskWhox(self):
+        st = irclib.IrcState()
+
+        st.addMsg(self.irc, ircmsgs.IrcMsg(command='354', # RPL_WHOSPCRPL
+            args=[self.irc.nick, '1', 'bar', '127.0.0.1', 'baz',
+                  'foo', 'H', '0', 'real name']))
+        self.assertEqual(st.nickToHostmask('foo'), 'foo!bar@baz')
+
+    def testChghost(self):
+        st = irclib.IrcState()
+
+        st.addMsg(self.irc, ircmsgs.IrcMsg(prefix='foo!bar@baz',
+            command='CHGHOST', args=['bar2', 'baz2']))
+        self.assertEqual(st.nickToHostmask('foo'), 'foo!bar2@baz2')
 
     def testEq(self):
         state1 = irclib.IrcState()

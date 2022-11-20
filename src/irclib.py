@@ -676,7 +676,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
 
         :type: ircutils.IrcDict[str, ChannelState]
 
-    .. attribute:: nickToHostmask
+    .. attribute:: nicksToHostmasks
 
         Stores the last hostmask of a seen nick.
 
