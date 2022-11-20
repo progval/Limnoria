@@ -681,6 +681,12 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         Stores the last hostmask of a seen nick.
 
         :type: ircutils.IrcDict[str, str]
+
+    .. attribute:: nicksToAccounts
+
+        Stores the current network account name of a seen nick.
+
+        :type: ircutils.IrcDict[str, str]
     """
     __firewalled__ = {'addMsg': None}
 
@@ -689,7 +695,8 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
                  nicksToHostmasks=None, channels=None,
                  capabilities_req=None,
                  capabilities_ack=None, capabilities_nak=None,
-                 capabilities_ls=None):
+                 capabilities_ls=None,
+                 nicksToAccounts=None):
         self.fsm = IrcStateFsm()
         if history is None:
             history = RingBuffer(conf.supybot.protocols.irc.maxHistoryLength())
@@ -697,6 +704,8 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
             supported = utils.InsensitivePreservingDict()
         if nicksToHostmasks is None:
             nicksToHostmasks = ircutils.IrcDict()
+        if nicksToAccounts is None:
+            nicksToAccounts = ircutils.IrcDict()
         if channels is None:
             channels = ircutils.IrcDict()
         self.capabilities_req = capabilities_req or set()
@@ -708,6 +717,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         self.history = history
         self.channels = channels
         self.nicksToHostmasks = nicksToHostmasks
+        self.nicksToAccounts = nicksToAccounts
 
         # Batches usually finish and are way shorter than 3600s, but
         # we need to:
@@ -725,6 +735,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         self.channels.clear()
         self.supported.clear()
         self.nicksToHostmasks.clear()
+        self.nicksToAccounts.clear()
         self.capabilities_req = set()
         self.capabilities_ack = set()
         self.capabilities_nak = set()
@@ -745,13 +756,16 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
 
     def __reduce__(self):
         return (self.__class__, (self.history, self.supported,
-                                 self.nicksToHostmasks, self.channels))
+                                 self.nicksToHostmasks,
+                                 self.nicksToAccounts,
+                                 self.channels))
 
     def __eq__(self, other):
         return self.history == other.history and \
                self.channels == other.channels and \
                self.supported == other.supported and \
                self.nicksToHostmasks == other.nicksToHostmasks and \
+               self.nicksToAccounts == other.nicksToAccounts and \
                self.batches == other.batches
 
     def __ne__(self, other):
@@ -761,6 +775,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         ret = self.__class__()
         ret.history = copy.deepcopy(self.history)
         ret.nicksToHostmasks = copy.deepcopy(self.nicksToHostmasks)
+        ret.nicksToAccounts = copy.deepcopy(self.nicksToAccounts)
         ret.channels = copy.deepcopy(self.channels)
         ret.batches = copy.deepcopy(self.batches)
         return ret
@@ -770,6 +785,8 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         self.history.append(msg)
         if ircutils.isUserHostmask(msg.prefix) and not msg.command == 'NICK':
             self.nicksToHostmasks[msg.nick] = msg.prefix
+        if 'account' in msg.server_tags:
+            self.nicksToAccounts[msg.nick] = msg.server_tags['account']
         if 'batch' in msg.server_tags:
             batch_name = msg.server_tags['batch']
             assert batch_name in self.batches, \
@@ -787,6 +804,11 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
     def nickToHostmask(self, nick):
         """Returns the hostmask for a given nick."""
         return self.nicksToHostmasks[nick]
+
+    def nickToAccount(self, nick):
+        """Returns the account for a given nick, or None if the nick is logged
+        out."""
+        return self.nicksToAccounts[nick]
 
     def getParentBatches(self, msg):
         """Given an IrcMsg, returns a list of all batches that contain it,
@@ -957,6 +979,11 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         (n, t, user, ip, host, nick, status, account, gecos) = msg.args
         hostmask = '%s!%s@%s' % (nick, user, host)
         self.nicksToHostmasks[nick] = hostmask
+        if account == '0':
+            # logged out
+            self.nicksToAccounts[nick] = None
+        else:
+            self.nicksToAccounts[nick] = account
 
     def do353(self, irc, msg):
         # NAMES reply.
@@ -978,6 +1005,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
             stripped_item = item.lstrip(prefix_chars)
             item_prefix = item[0:-len(stripped_item)]
             if ircutils.isUserHostmask(stripped_item):
+                # https://ircv3.net/specs/extensions/userhost-in-names
                 nick = ircutils.nickFromHostmask(stripped_item)
                 self.nicksToHostmasks[nick] = stripped_item
                 name = item_prefix + nick
@@ -989,10 +1017,19 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
             c.modes['s'] = None
 
     def doChghost(self, irc, msg):
+        # https://ircv3.net/specs/extensions/chghost
         (user, host) = msg.args
         nick = msg.nick
         hostmask = '%s!%s@%s' % (nick, user, host)
         self.nicksToHostmasks[nick] = hostmask
+
+    def doAccount(self, irc, msg):
+        # https://ircv3.net/specs/extensions/account-notify
+        account = msg.args[0]
+        if account == '*':
+            self.nicksToAccounts[msg.nick] = None
+        else:
+            self.nicksToAccounts[msg.nick] = account
 
     def doJoin(self, irc, msg):
         for channel in msg.args[0].split(','):
@@ -1004,6 +1041,12 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
                 self.channels[channel] = chan
                 # I don't know why this assert was here.
                 #assert msg.nick == irc.nick, msg
+        if 'extended-join' in self.capabilities_ack:
+            account = msg.args[1]
+            if account == '*':
+                self.nicksToAccounts[msg.nick] = None
+            else:
+                self.nicksToAccounts[msg.nick] = account
 
     def do367(self, irc, msg):
         # Example:
@@ -1083,6 +1126,8 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
         if msg.nick in self.nicksToHostmasks:
             # If we're quitting, it may not be.
             del self.nicksToHostmasks[msg.nick]
+        if msg.nick in self.nicksToAccounts:
+            del self.nicksToAccounts[msg.nick]
 
     def doTopic(self, irc, msg):
         if len(msg.args) == 1:
@@ -1100,6 +1145,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
     def doNick(self, irc, msg):
         newNick = msg.args[0]
         oldNick = msg.nick
+
         try:
             if msg.user and msg.host:
                 # Nick messages being handed out from the bot itself won't
@@ -1109,6 +1155,13 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
             del self.nicksToHostmasks[oldNick]
         except KeyError:
             pass
+
+        try:
+            self.nicksToAccounts[newNick] = self.nicksToAccounts[oldNick]
+            del self.nicksToAccounts[oldNick]
+        except KeyError:
+            pass
+
         channel_names = ircutils.IrcSet()
         for (name, channel) in self.channels.items():
             if msg.nick in channel.users:
