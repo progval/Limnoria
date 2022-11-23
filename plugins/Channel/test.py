@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import itertools
+
 from supybot.test import *
 
 import supybot.conf as conf
@@ -161,9 +163,13 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.assertTrue(m.command == 'MODE' and
                         m.args == (self.channel, '+v', 'bar'))
 
-    def assertKban(self, query, hostmask, **kwargs):
+    def assertKban(self, query, *hostmasks, **kwargs):
         m = self.getMsg(query, **kwargs)
-        self.assertEqual(m, ircmsgs.ban(self.channel, hostmask))
+        self.assertIn(m, [
+            ircmsgs.bans(self.channel, permutation)
+            for permutation in itertools.permutations(hostmasks)
+            ])
+
         m = self.getMsg(' ')
         self.assertEqual(m.command, 'KICK')
     def assertBan(self, query, hostmask, **kwargs):
@@ -278,25 +284,29 @@ class ChannelTestCase(ChannelPluginTestCase):
         for style in (['exact'], ['account', 'exact']):
             with conf.supybot.protocols.irc.banmask.context(style):
                 self.assertKban('kban --account --exact foobar',
-                                '~a:account1')
+                                '~a:account1', 'foobar!user@host.domain.tld')
                 join()
                 self.assertKban('kban --account foobar',
                                 '~a:account1')
                 join()
                 self.assertKban('kban --account --host foobar',
-                                '~a:account1')
+                                '~a:account1', '*!*@host.domain.tld')
                 join()
 
         with conf.supybot.protocols.irc.banmask.context(['account', 'exact']):
             self.assertKban('kban foobar',
-                            '~a:account1')
+                            '~a:account1', 'foobar!user@host.domain.tld')
+            join()
+
+        with conf.supybot.protocols.irc.banmask.context(['account', 'host']):
+            self.assertKban('kban foobar',
+                            '~a:account1', '*!*@host.domain.tld')
             join()
 
     def testBan(self):
         with conf.supybot.protocols.irc.banmask.context(['exact']):
             self.assertNotError('ban add foo!bar@baz')
             self.assertNotError('ban remove foo!bar@baz')
-            orig = conf.supybot.protocols.irc.strictRfc()
             with conf.supybot.protocols.irc.strictRfc.context(True):
                 # something wonky is going on here. irc.error (src/Channel.py|449)
                 # is being called but the assert is failing
@@ -322,7 +332,6 @@ class ChannelTestCase(ChannelPluginTestCase):
                             '"foobar!*@baz" (never expires)')
 
     def testIgnore(self):
-        orig = conf.supybot.protocols.irc.banmask()
         def ignore(given, expect=None):
             if expect is None:
                 expect = given
@@ -330,8 +339,9 @@ class ChannelTestCase(ChannelPluginTestCase):
             self.assertResponse('channel ignore list', "'%s'" % expect)
             self.assertNotError('channel ignore remove %s' % expect)
             self.assertRegexp('channel ignore list', 'not currently')
-        ignore('foo!bar@baz', '*!*@baz')
-        ignore('foo!*@*')
+        with conf.supybot.protocols.irc.banmask.context(['host']):
+            ignore('foo!bar@baz', '*!*@baz')
+            ignore('foo!*@*')
         with conf.supybot.protocols.irc.banmask.context(['exact']):
             ignore('foo!bar@baz')
             ignore('foo!*@*')

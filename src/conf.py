@@ -1215,7 +1215,7 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         isn't specified via options, the value of
         conf.supybot.protocols.irc.banmask is used.
 
-        Unlike :meth:`makeExtBanmask`, this is guaranteed to return an
+        Unlike :meth:`makeExtBanmasks`, this is guaranteed to return an
         RFC1459-like mask, suitable for ircdb's ignore lists.
 
         options - A list specifying which parts of the hostmask should
@@ -1228,10 +1228,15 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
             options = supybot.protocols.irc.banmask.getSpecific(
                 network, channel)()
         options = [option for option in options if option != 'account']
-        return self.makeExtBanmask(hostmask, options, channel, network=network)
+        print(hostmask, options)
+        masks = self.makeExtBanmasks(
+            hostmask, options, channel, network=network)
+        assert len(masks) == 1, 'Unexpected number of banmasks: %r' % masks
+        print(masks)
+        return masks[0]
 
-    def makeExtBanmask(self, hostmask, options=None, channel=None, *, network):
-        """Create a banmask from the given hostmask.  If a style of banmask
+    def makeExtBanmasks(self, hostmask, options=None, channel=None, *, network):
+        """Create banmasks from the given hostmask.  If a style of banmask
         isn't specified via options, the value of
         conf.supybot.protocols.irc.banmask is used.
 
@@ -1256,15 +1261,22 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         if not options:
             options = supybot.protocols.irc.banmask.getSpecific(
                 network, channel)()
+
+        add_star_mask = False
+        masks = []
+
         for option in options:
             if option == 'nick':
                 bnick = nick
+                add_star_mask = True
             elif option == 'user':
                 buser = user
+                add_star_mask = True
             elif option == 'host':
                 bhost = host
+                add_star_mask = True
             elif option == 'exact':
-                return hostmask
+                masks.append(hostmask)
             elif option == 'account':
                 import supybot.world as world
                 irc = world.getIrc(network)
@@ -1272,11 +1284,18 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
                     continue
                 extban = ircutils.accountExtban(nick, irc)
                 if extban is not None:
-                    return extban
+                    masks.append(extban)
+
+        if add_star_mask and (bnick, buser, bhost) != ('*', '*', '*'):
+            masks.append(ircutils.joinHostmask(bnick, buser, bhost))
+
         if (bnick, buser, bhost) == ('*', '*', '*') and \
-                ircutils.isUserHostmask(hostmask):
-            return hostmask
-        return ircutils.joinHostmask(bnick, buser, bhost)
+                ircutils.isUserHostmask(hostmask) and \
+                masks == []:
+            masks.append(hostmask)
+
+        return masks
+
 
 registerChannelValue(supybot.protocols.irc, 'banmask',
     Banmask(['host'], _("""Determines what will be used as the

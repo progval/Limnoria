@@ -368,7 +368,7 @@ class Channel(callbacks.Plugin):
             try:
                 bannedHostmask = irc.state.nickToHostmask(target)
                 banmaskstyle = conf.supybot.protocols.irc.banmask
-                banmask = banmaskstyle.makeExtBanmask(
+                banmasks = banmaskstyle.makeExtBanmasks(
                     bannedHostmask, [o[0] for o in optlist],
                     channel=channel, network=irc.network)
             except KeyError:
@@ -376,12 +376,14 @@ class Channel(callbacks.Plugin):
                         target.startswith('$'):
                     # Select the last part, or the whole target:
                     bannedNick = target.split(':')[-1]
-                    banmask = bannedHostmask = target
+                    bannedHostmask = target
+                    banmasks = [bannedHostmask]
                 else:
                     irc.error(format(_('I haven\'t seen %s.'), bannedNick), Raise=True)
         else:
             bannedNick = ircutils.nickFromHostmask(target)
-            banmask = bannedHostmask = target
+            bannedHostmask = target
+            banmasks = [bannedHostmask]
         if not irc.isNick(bannedNick):
             self.log.warning('%q tried to kban a non nick: %q',
                              msg.prefix, bannedNick)
@@ -398,29 +400,38 @@ class Channel(callbacks.Plugin):
             reason = msg.nick
         capability = ircdb.makeChannelCapability(channel, 'op')
         # Check (again) that they're not trying to make us kickban ourself.
-        if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
-            if ircutils.hostmaskPatternEqual(bannedHostmask, irc.prefix):
-                self.log.warning('%q tried to make me kban myself.',msg.prefix)
-                irc.error(_('I cowardly refuse to ban myself.'))
-                return
-            else:
-                self.log.warning('Using exact hostmask since banmask would '
-                                 'ban myself.')
-                banmask = bannedHostmask
+        for banmask in banmasks:
+            # TODO: check account ban too
+            if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
+                if ircutils.hostmaskPatternEqual(bannedHostmask, irc.prefix):
+                    self.log.warning('%q tried to make me kban myself.',msg.prefix)
+                    irc.error(_('I cowardly refuse to ban myself.'))
+                    return
+                else:
+                    self.log.warning('Using exact hostmask since banmask would '
+                                     'ban myself.')
+                    banmasks = [bannedHostmask]
         # Now, let's actually get to it.  Check to make sure they have
         # #channel,op and the bannee doesn't have #channel,op; or that the
         # bannee and the banner are both the same person.
         def doBan():
             if irc.state.channels[channel].isOp(bannedNick):
                 irc.queueMsg(ircmsgs.deop(channel, bannedNick))
-            irc.queueMsg(ircmsgs.ban(channel, banmask))
+            irc.queueMsg(ircmsgs.bans(channel, banmasks))
             if kick:
                 irc.queueMsg(ircmsgs.kick(channel, bannedNick, reason))
             if expiry > 0:
                 def f():
-                    if channel in irc.state.channels and \
-                       banmask in irc.state.channels[channel].bans:
-                        irc.queueMsg(ircmsgs.unban(channel, banmask))
+                    if channel not in irc.state.channels:
+                        return
+                    remaining_banmasks = [
+                        banmask
+                        for banmask in banmasks
+                        if banmask in irc.state.channels[channel].bans
+                    ]
+                    if remaining_banmasks:
+                        irc.queueMsg(ircmsgs.unbans(
+                            channel, remaining_banmasks))
                 schedule.addEvent(f, expiry)
         if bannedNick == msg.nick:
             doBan()
@@ -591,7 +602,7 @@ class Channel(callbacks.Plugin):
         hostmask = wrap(hostmask, ['op', ('haveHalfop+', _('ban someone')), 'text'])
 
         @internationalizeDocstring
-        def add(self, irc, msg, args, channel, banmask, expires):
+        def add(self, irc, msg, args, channel, banmasks, expires):
             """[<channel>] <nick|hostmask> [<expires>]
 
             If you have the #channel,op capability, this will effect a
@@ -605,11 +616,14 @@ class Channel(callbacks.Plugin):
             channel itself.
             """
             c = ircdb.channels.getChannel(channel)
-            c.addBan(banmask, expires)
+            if isinstance(banmasks, str):
+                banmasks = [banmasks]
+            for banmask in banmasks:
+                c.addBan(banmask, expires)
             ircdb.channels.setChannel(channel, c)
             irc.replySuccess()
         add = wrap(add, ['op',
-                         first('hostmask', 'extbanmask'),
+                         first('hostmask', 'extbanmasks'),
                          additional('expiry', 0)])
 
         @internationalizeDocstring
