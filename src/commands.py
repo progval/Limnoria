@@ -435,7 +435,14 @@ def getBanmask(irc, msg, args, state):
     getChannel(irc, msg, args, state)
     banmaskstyle = conf.supybot.protocols.irc.banmask
     state.args[-1] = banmaskstyle.makeBanmask(state.args[-1],
-            channel=state.channel)
+            channel=state.channel, network=irc.network)
+
+def getExtBanmask(irc, msg, args, state):
+    getHostmask(irc, msg, args, state)
+    getChannel(irc, msg, args, state)
+    banmaskstyle = conf.supybot.protocols.irc.extbanmask
+    state.args[-1] = banmaskstyle.makeExtBanmask(state.args[-1],
+            channel=state.channel, network=irc.network)
 
 def getUser(irc, msg, args, state):
     try:
@@ -806,6 +813,7 @@ wrappers = ircutils.IrcDict({
     'commandName': getCommandName,
     'email': getEmail,
     'expiry': getExpiry,
+    'extbanmask': getExtBanmask,
     'filename': getSomething, # XXX Check for validity.
     'float': getFloat,
     'glob': getGlob,

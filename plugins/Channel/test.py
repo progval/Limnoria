@@ -273,14 +273,24 @@ class ChannelTestCase(ChannelPluginTestCase):
                 self.channel, prefix='foobar!user@host.domain.tld'))
         join()
         self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
-        self.assertKban('kban --account --exact foobar',
-                        '~a:account1')
-        join()
-        self.assertKban('kban --account foobar',
-                        '~a:account1')
-        join()
-        self.assertKban('kban --account --host foobar',
-                        '~a:account1')
+
+
+        for style in (['exact'], ['account', 'exact']):
+            with conf.supybot.protocols.irc.banmask.context(style):
+                self.assertKban('kban --account --exact foobar',
+                                '~a:account1')
+                join()
+                self.assertKban('kban --account foobar',
+                                '~a:account1')
+                join()
+                self.assertKban('kban --account --host foobar',
+                                '~a:account1')
+                join()
+
+        with conf.supybot.protocols.irc.banmask.context(['account', 'exact']):
+            self.assertKban('kban foobar',
+                            '~a:account1')
+            join()
 
     def testBan(self):
         with conf.supybot.protocols.irc.banmask.context(['exact']):

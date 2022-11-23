@@ -163,7 +163,8 @@ class AutoMode(callbacks.Plugin):
                         # We're not in the channel anymore.
                         pass
                 schedule.addEvent(unban, time.time()+period)
-            banmask =conf.supybot.protocols.irc.banmask.makeBanmask(msg.prefix)
+            banmask = conf.supybot.protocols.irc.banmask.makeExtBanmask(
+                msg.prefix, channel=channel, network=irc.network)
             irc.queueMsg(ircmsgs.ban(channel, banmask))
             irc.queueMsg(ircmsgs.kick(channel, msg.nick))
 

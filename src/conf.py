@@ -1181,7 +1181,7 @@ registerGroup(supybot.protocols, 'irc')
 
 class Banmask(registry.SpaceSeparatedSetOfStrings):
     __slots__ = ('__parent', '__dict__') # __dict__ is needed to set __doc__
-    validStrings = ('exact', 'nick', 'user', 'host')
+    validStrings = ('exact', 'nick', 'user', 'host', 'account')
     def __init__(self, *args, **kwargs):
         assert self.validStrings, 'There must be some valid strings.  ' \
                                   'This is a bug.'
@@ -1215,6 +1215,31 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         isn't specified via options, the value of
         conf.supybot.protocols.irc.banmask is used.
 
+        Unlike :meth:`makeExtBanmask`, this is guaranteed to return an
+        RFC1459-like mask, suitable for ircdb's ignore lists.
+
+        options - A list specifying which parts of the hostmask should
+        explicitly be matched: nick, user, host.  If 'exact' is given, then
+        only the exact hostmask will be used.
+        """
+        if not network:
+            network = dynamic.irc.network
+        if not options:
+            options = supybot.protocols.irc.banmask.getSpecific(
+                network, channel)()
+        options = [option for option in options if option != 'account']
+        return self.makeExtBanmask(hostmask, options, channel, network=network)
+
+    def makeExtBanmask(self, hostmask, options=None, channel=None, *, network):
+        """Create a banmask from the given hostmask.  If a style of banmask
+        isn't specified via options, the value of
+        conf.supybot.protocols.irc.banmask is used.
+
+        Depending on the options and configuration, this may return a mask
+        in the format of an extban (eg. "~account:foobar" on UnrealIRCd).
+        If this is unwanted (eg. to pass to ircdb's ignore lists, use
+        :meth:`makeBanmask` instead)
+
         options - A list specifying which parts of the hostmask should
         explicitly be matched: nick, user, host.  If 'exact' is given, then
         only the exact hostmask will be used.
@@ -1224,8 +1249,6 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         """
         if not channel:
             channel = dynamic.channel
-        if not network:
-            network = dynamic.irc.network
         (nick, user, host) = ircutils.splitHostmask(hostmask)
         bnick = '*'
         buser = '*'

@@ -368,7 +368,9 @@ class Channel(callbacks.Plugin):
             try:
                 bannedHostmask = irc.state.nickToHostmask(target)
                 banmaskstyle = conf.supybot.protocols.irc.banmask
-                banmask = banmaskstyle.makeBanmask(bannedHostmask, [o[0] for o in optlist])
+                banmask = banmaskstyle.makeExtBanmask(
+                    bannedHostmask, [o[0] for o in optlist],
+                    channel=channel, network=irc.network)
             except KeyError:
                 if not conf.supybot.protocols.irc.strictRfc() and \
                         target.startswith('$'):
@@ -606,7 +608,9 @@ class Channel(callbacks.Plugin):
             c.addBan(banmask, expires)
             ircdb.channels.setChannel(channel, c)
             irc.replySuccess()
-        add = wrap(add, ['op', first('hostmask', 'banmask'), additional('expiry', 0)])
+        add = wrap(add, ['op',
+                         first('hostmask', 'extbanmask'),
+                         additional('expiry', 0)])
 
         @internationalizeDocstring
         def remove(self, irc, msg, args, channel, banmask):
