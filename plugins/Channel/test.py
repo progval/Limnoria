@@ -46,19 +46,19 @@ class ChannelTestCase(ChannelPluginTestCase):
     def testLobotomies(self):
         self.assertRegexp('lobotomy list', 'not.*any')
 
-##     def testCapabilities(self):
-##         self.prefix = 'foo!bar@baz'
-##         self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick, 'register foo bar',
-##                                          prefix=self.prefix))
-##         u = ircdb.users.getUser(0)
-##         u.addCapability('%s.op' % self.channel)
-##         ircdb.users.setUser(u)
-##         self.assertNotError(' ')
-##         self.assertResponse('user capabilities foo', '[]')
-##         self.assertNotError('channel addcapability foo op')
-##         self.assertRegexp('channel capabilities foo', 'op')
-##         self.assertNotError('channel removecapability foo op')
-##         self.assertResponse('user capabilities foo', '[]')
+    def testCapabilities(self):
+        self.prefix = 'foo!bar@baz'
+        self.irc.feedMsg(ircmsgs.privmsg(self.irc.nick, 'register foo bar',
+                                         prefix=self.prefix))
+        u = ircdb.users.getUser(0)
+        u.addCapability('%s.op' % self.channel)
+        ircdb.users.setUser(u)
+        self.assertNotError(' ')
+        self.assertResponse('user capabilities foo', '[]')
+        self.assertNotError('channel addcapability foo op')
+        self.assertRegexp('channel capabilities foo', 'op')
+        self.assertNotError('channel removecapability foo op')
+        self.assertResponse('user capabilities foo', '[]')
 
     def testCapabilities(self):
         self.assertNotError('channel capability list')
@@ -185,28 +185,39 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.assertBan('iban $a:nyuszika7h', '$a:nyuszika7h')
         self.assertNotError('unban $a:nyuszika7h')
 
-##    def testKban(self):
-##        self.irc.prefix = 'something!else@somehwere.else'
-##        self.irc.nick = 'something'
-##        self.irc.feedMsg(ircmsgs.join(self.channel,
-##                                      prefix='foobar!user@host.domain.tld'))
-##        self.assertError('kban foobar')
-##        self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
-##        self.assertError('kban foobar -1')
-##        self.assertKban('kban foobar', '*!*@*.domain.tld')
-##        self.assertKban('kban --exact foobar', 'foobar!user@host.domain.tld')
-##        self.assertKban('kban --host foobar', '*!*@host.domain.tld')
-##        self.assertKban('kban --user foobar', '*!user@*')
-##        self.assertKban('kban --nick foobar', 'foobar!*@*')
-##        self.assertKban('kban --nick --user foobar', 'foobar!user@*')
-##        self.assertKban('kban --nick --host foobar',
-##                       'foobar!*@host.domain.tld')
-##        self.assertKban('kban --user --host foobar', '*!user@host.domain.tld')
-##        self.assertKban('kban --nick --user --host foobar',
-##                       'foobar!user@host.domain.tld')
-##        self.assertNotRegexp('kban adlkfajsdlfkjsd', 'KeyError')
-##        self.assertNotRegexp('kban foobar time', 'ValueError')
-##        self.assertError('kban %s' % self.irc.nick)
+    def testKban(self):
+        self.irc.prefix = 'something!else@somehwere.else'
+        self.irc.nick = 'something'
+        def join():
+            self.irc.feedMsg(ircmsgs.join(
+                self.channel, prefix='foobar!user@host.domain.tld'))
+        join()
+        self.assertError('kban foobar')
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
+        #self.assertError('kban foobar -1')
+        #self.assertKban('kban foobar', '*!*@*.domain.tld')
+        #join()
+        self.assertKban('kban --exact foobar', 'foobar!user@host.domain.tld')
+        join()
+        self.assertKban('kban --host foobar', '*!*@host.domain.tld')
+        join()
+        self.assertKban('kban --user foobar', '*!user@*')
+        join()
+        self.assertKban('kban --nick foobar', 'foobar!*@*')
+        join()
+        self.assertKban('kban --nick --user foobar', 'foobar!user@*')
+        join()
+        self.assertKban('kban --nick --host foobar',
+                        'foobar!*@host.domain.tld')
+        join()
+        self.assertKban('kban --user --host foobar', '*!user@host.domain.tld')
+        join()
+        self.assertKban('kban --nick --user --host foobar',
+                        'foobar!user@host.domain.tld')
+        join()
+        self.assertKban('kban foobar', '*!*@host.domain.tld')
+
+        self.assertRegexp('kban adlkfajsdlfkjsd', 'adlkfajsdlfkjsd is not in')
 
     def testBan(self):
         with conf.supybot.protocols.irc.banmask.context(['exact']):
