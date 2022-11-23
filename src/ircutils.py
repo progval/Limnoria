@@ -345,6 +345,25 @@ def banmask(hostmask):
         else:
             return '*!*@'  + host
 
+
+def accountExtban(nick, irc):
+    """If 'nick' is logged in and the network supports account extbans,
+    returns a ban mask for it. If not, returns None."""
+    if 'ACCOUNTEXTBAN' not in irc.state.supported:
+        return None
+    if 'EXTBAN' not in irc.state.supported:
+        return None
+    try:
+        account = irc.state.nickToAccount(nick)
+    except KeyError:
+        account = None
+    if account is None:
+        return None
+    account_extban = irc.state.supported['ACCOUNTEXTBAN'].split(',')[0]
+    extban_prefix = irc.state.supported['EXTBAN'].split(',', 1)[0]
+    return '%s%s:%s'% (extban_prefix, account_extban, account)
+
+
 _plusRequireArguments = 'ovhblkqeI'
 _minusRequireArguments = 'ovhbkqeI'
 def separateModes(args):

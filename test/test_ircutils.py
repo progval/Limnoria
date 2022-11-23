@@ -367,6 +367,60 @@ class FunctionsTestCase(SupyTestCase):
                          '*!*@*.host.tld')
         self.assertEqual(ircutils.banmask('foo!bar@2001::'), '*!*@2001::*')
 
+    def testAccountExtban(self):
+        irc = getTestIrc()
+        irc.state.addMsg(irc, ircmsgs.IrcMsg(
+            prefix='foo!bar@baz', command='ACCOUNT', args=['account1']))
+        irc.state.addMsg(irc, ircmsgs.IrcMsg(
+            prefix='bar!baz@qux', command='ACCOUNT', args=['*']))
+
+        with self.subTest('spec example'):
+            irc.state.supported['ACCOUNTEXTBAN'] = 'a,account'
+            irc.state.supported['EXTBAN'] = '~,abc'
+            self.assertEqual(ircutils.accountExtban('foo', irc),
+                             '~a:account1')
+            self.assertIsNone(ircutils.accountExtban('bar', irc))
+            self.assertIsNone(ircutils.accountExtban('baz', irc))
+
+        with self.subTest('InspIRCd'):
+            irc.state.supported['ACCOUNTEXTBAN'] = 'account,R'
+            irc.state.supported['EXTBAN'] = ',abcR'
+            self.assertEqual(ircutils.accountExtban('foo', irc),
+                             'account:account1')
+            self.assertIsNone(ircutils.accountExtban('bar', irc))
+            self.assertIsNone(ircutils.accountExtban('baz', irc))
+
+        with self.subTest('Solanum'):
+            irc.state.supported['ACCOUNTEXTBAN'] = 'a'
+            irc.state.supported['EXTBAN'] = '$,abc'
+            self.assertEqual(ircutils.accountExtban('foo', irc),
+                             '$a:account1')
+            self.assertIsNone(ircutils.accountExtban('bar', irc))
+            self.assertIsNone(ircutils.accountExtban('baz', irc))
+
+        with self.subTest('UnrealIRCd'):
+            irc.state.supported['ACCOUNTEXTBAN'] = 'account,a'
+            irc.state.supported['EXTBAN'] = '~,abc'
+            self.assertEqual(ircutils.accountExtban('foo', irc),
+                             '~account:account1')
+            self.assertIsNone(ircutils.accountExtban('bar', irc))
+            self.assertIsNone(ircutils.accountExtban('baz', irc))
+
+        with self.subTest('no ACCOUNTEXTBAN'):
+            irc.state.supported.pop('ACCOUNTEXTBAN')
+            irc.state.supported['EXTBAN'] = '~,abc'
+            self.assertIsNone(ircutils.accountExtban('foo', irc))
+            self.assertIsNone(ircutils.accountExtban('bar', irc))
+            self.assertIsNone(ircutils.accountExtban('baz', irc))
+
+        with self.subTest('no EXTBAN'):
+            irc.state.supported['ACCOUNTEXTBAN'] = 'account,a'
+            irc.state.supported.pop('EXTBAN')
+            self.assertIsNone(ircutils.accountExtban('foo', irc))
+            self.assertIsNone(ircutils.accountExtban('bar', irc))
+            self.assertIsNone(ircutils.accountExtban('baz', irc))
+
+
     def testSeparateModes(self):
         self.assertEqual(ircutils.separateModes(['+ooo', 'x', 'y', 'z']),
                          [('+o', 'x'), ('+o', 'y'), ('+o', 'z')])

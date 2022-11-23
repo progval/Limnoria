@@ -1217,7 +1217,11 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
 
         options - A list specifying which parts of the hostmask should
         explicitly be matched: nick, user, host.  If 'exact' is given, then
-        only the exact hostmask will be used."""
+        only the exact hostmask will be used.
+        If 'account' is given (and not after 'exact') and the user is
+        logged in and the server supports account extbans, then an account
+        extban is returned instead.
+        """
         if not channel:
             channel = dynamic.channel
         if not network:
@@ -1238,6 +1242,14 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
                 bhost = host
             elif option == 'exact':
                 return hostmask
+            elif option == 'account':
+                import supybot.world as world
+                irc = world.getIrc(network)
+                if irc is None:
+                    continue
+                extban = ircutils.accountExtban(nick, irc)
+                if extban is not None:
+                    return extban
         if (bnick, buser, bhost) == ('*', '*', '*') and \
                 ircutils.isUserHostmask(hostmask):
             return hostmask

@@ -321,13 +321,16 @@ class Channel(callbacks.Plugin):
         --exact bans only the exact hostmask; --nick bans just the nick;
         --user bans just the user, and --host bans just the host
         You can combine the --nick, --user, and --host options as you choose.
+        If --account is provided and the user is logged in and the network
+        supports account bans, this will ban the user's account instead.
         <channel> is only necessary if the message isn't sent in the channel itself.
         """
         self._ban(irc, msg, args,
                 channel, optlist, bannedNick, expiry, reason, True)
     kban = wrap(kban,
                 ['op',
-                 getopts({'exact':'', 'nick':'', 'user':'', 'host':''}),
+                 getopts({'exact':'', 'nick':'', 'user':'', 'host':'',
+                          'account': ''}),
                  ('haveHalfop+', _('kick or ban someone')),
                  'nickInChannel',
                  optional('expiry', 0),
@@ -343,13 +346,16 @@ class Channel(callbacks.Plugin):
         don't specify a number of seconds) it will ban the person indefinitely.
         --exact can be used to specify an exact hostmask.
         You can combine the --nick, --user, and --host options as you choose.
+        If --account is provided and the user is logged in and the network
+        supports account bans, this will ban the user's account instead.
         <channel> is only necessary if the message isn't sent in the channel itself.
         """
         self._ban(irc, msg, args,
                 channel, optlist, bannedNick, expiry, None, False)
     iban = wrap(iban,
                 ['op',
-                 getopts({'exact':'', 'nick':'', 'user':'', 'host':''}),
+                 getopts({'exact':'', 'nick':'', 'user':'', 'host':'',
+                          'account': ''}),
                  ('haveHalfop+', _('ban someone')),
                  first('nick', 'hostmask'),
                  optional('expiry', 0)])
