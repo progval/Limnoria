@@ -164,8 +164,17 @@ class Web(callbacks.PluginRegexp):
         timeout = self.registryValue('timeout')
         headers = conf.defaultHttpHeaders(irc.network, msg.channel)
         try:
-            (target, text) = utils.web.getUrlTargetAndContent(url, size=size,
-                timeout=timeout, headers=headers)
+            fd = utils.web.getUrlFd(url, timeout=timeout, headers=headers)
+            target = fd.geturl()
+            text = fd.read(size)
+            response_headers = fd.headers
+            fd.close()
+        except socket.timeout:
+            if raiseErrors:
+                irc.error(_('Connection to %s timed out') % url, Raise=True)
+            else:
+                selg.log.info('Web plugins TitleSnarfer: URL <%s> timed out',
+                              url)
         except Exception as e:
             if raiseErrors:
                 irc.error(_('That URL raised <' + str(e)) + '>',
@@ -174,9 +183,19 @@ class Web(callbacks.PluginRegexp):
                 self.log.info('Web plugin TitleSnarfer: URL <%s> raised <%s>',
                               url, str(e))
                 return
+
+        encoding = None
+        if 'Content-Type' in fd.headers:
+            mime_params = [p.split('=', 1)
+                for p in fd.headers['Content-Type'].split(';')[1:]]
+            mime_params = {k.strip(): v.strip() for (k, v) in mime_params}
+            if mime_params.get('charset'):
+                encoding = mime_params['charset']
+
+        encoding = encoding or utils.web.getEncoding(text) or 'utf8'
+
         try:
-            text = text.decode(utils.web.getEncoding(text) or 'utf8',
-                    'replace')
+            text = text.decode(encoding, 'replace')
         except UnicodeDecodeError:
             if minisix.PY3:
                 if raiseErrors:
