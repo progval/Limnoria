@@ -2083,7 +2083,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             or (self.driver.ssl and self.driver.anyCertValidationEnabled())
 
         parsed_policy = ircutils.parseStsPolicy(
-            log, policy, secure_connection=secure_connection)
+            log, policy, tls_connection=self.driver.ssl)
         if parsed_policy is None:
             # There was an error (and it was logged). Ignore it and proceed
             # with the connection.
@@ -2106,11 +2106,28 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 self.driver.currentServer.hostname,
                 self.driver.currentServer.port,
                 policy)
+        elif self.driver.ssl:
+            # SSL enabled, but certificates are not checked -> reconnect on the
+            # same port and check certificates, before storing the STS policy.
+            hostname = self.driver.currentServer.hostname
+            port = self.driver.currentServer.port
+            attempt = self.driver.currentServer.attempt
+
+            log.info('Got STS policy over insecure TLS connection; '
+                     'reconnecting to check certificates. %r',
+                     self.driver.currentServer)
+            # Reconnect to the server, but with TLS *and* certificate
+            # validation this time.
+            self.state.fsm.on_shutdown(self, msg)
+
+            self.driver.reconnect(
+                server=Server(hostname, port, attempt, True),
+                wait=True)
         else:
             hostname = self.driver.currentServer.hostname
             attempt = self.driver.currentServer.attempt
 
-            log.info('Got STS policy over insecure connection; '
+            log.info('Got STS policy over insecure (cleartext) connection; '
                      'reconnecting to secure port. %r',
                      self.driver.currentServer)
             # Reconnect to the server, but with TLS *and* certificate
