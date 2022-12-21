@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+# Sources of supported versions:
+# * https://github.com/actions/python-versions/blob/main/versions-manifest.json
+# * https://downloads.python.org/pypy/versions.json
 jobs:
   build:
 
@@ -11,7 +14,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - python-version: "3.11.0-rc.2"
+          - python-version: "3.12.0-alpha.3"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+
+          - python-version: "3.11"
             with-opt-deps: true
             runs-on: ubuntu-22.04
 
@@ -23,6 +30,9 @@ jobs:
             runs-on: ubuntu-22.04
 
           - python-version: "3.9"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+          - python-version: "pypy-3.9"
             with-opt-deps: true
             runs-on: ubuntu-22.04
 
