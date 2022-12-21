@@ -1086,14 +1086,14 @@ def parseStsPolicy(logger, policy, secure_connection):
                 del parsed_policy[key]
             continue
         if parsed_policy.get(key) is None:
-            logger.error('Missing or empty "%s" key in STS policy.'
-                         'Aborting connection.', key)
+            logger.error('Missing or empty "%s" key in STS policy. '
+                         'Ignoring policy.', key)
             return None
         try:
             parsed_policy[key] = int(parsed_policy[key])
         except ValueError:
             logger.error('Expected integer as value for key "%s" in STS '
-                         'policy, got %r instead. Aborting connection.',
+                         'policy, got %r instead. Ignoring policy.',
                          key, parsed_policy[key])
             return None
 
