@@ -224,6 +224,73 @@ class ValuesTestCase(SupyTestCase):
             registry.open_registry(filename)
             self.assertEqual(conf.supybot.networks.test.password(), ' foo ')
 
+    def testReload(self):
+        import supybot.world as world
+        with conf.supybot.reply.whenAddressedBy.chars.context('@'):
+            with conf.supybot.reply.whenAddressedBy.chars\
+                    .get(':testreloadnet').get('#testreloadchan').context('#'):
+                with conf.supybot.reply.whenAddressedBy.chars \
+                        .get(':testreloadnet2').context(','):
+
+                    newircs = []
+                    for name in ("testreloadnet", "testreloadnet2", "testnet"):
+                        class newirc:
+                            network = name
+                        newircs.append(newirc)
+                        world.ircs.append(newirc)
+                    try:
+                        # separate function, to keep indent level to a sane
+                        # level
+                        self._testReload()
+                    finally:
+                        for newirc in newircs:
+                            world.ircs.remove(newirc)
+
+    def _testReload(self):
+        # sanity checks before the actual tests
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars(), '@')
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars
+            .getSpecific(network='testnet', channel='testchan')(),
+            '@')
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars
+            .getSpecific(channel='#testchan')(),
+            '@')
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars
+            .getSpecific(network='testreloadnet2')(),
+            ',')
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars
+            .getSpecific(network='testreloadnet',
+                channel='#testreloadchan')(),
+            '#')
+
+        filename = conf.supybot.directories.conf.dirize('reload.conf')
+        registry.close(conf.supybot, filename)
+        with open(filename, 'at') as fd:
+            fd.write('supybot.reply.whenAddressedBy.chars: !')
+
+        registry.open_registry(filename)
+
+        # new global value applies
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars(), '!')
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars
+            .getSpecific(network='testnet', channel='#testchan')(),
+            '!')
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars
+            .getSpecific(network='testnet', channel='#testchan')(),
+            '!')
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars
+            .getSpecific(channel='#testchan')(),
+            '!')
+
+        # remain unchanged
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars
+            .getSpecific(network='testreloadnet2')(),
+            ',')
+        self.assertEqual(conf.supybot.reply.whenAddressedBy.chars
+            .getSpecific(network='testreloadnet',
+                channel='#testreloadchan')(),
+            '#')
+
     def testWith(self):
         v = registry.String('foo', 'help')
         self.assertEqual(v(), 'foo')
