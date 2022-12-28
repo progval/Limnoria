@@ -255,6 +255,19 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
                 "\x02someuser\x02 (@someuser@example.org): My Biography",
             )
 
+    def testProfileNoHostmeta(self):
+        expected_requests = [
+            (HOSTMETA_URL, utils.web.Error("blah")),
+            (WEBFINGER_URL, WEBFINGER_DATA),
+            (ACTOR_URL, ACTOR_DATA),
+        ]
+
+        with self.mockRequests(expected_requests):
+            self.assertResponse(
+                "profile @someuser@example.org",
+                "\x02someuser\x02 (@someuser@example.org): My Biography",
+            )
+
     def testProfileSnarfer(self):
         with self.mockWebfingerSupport("not called"), self.mockRequests([]):
             self.assertSnarfNoResponse("aaa @nonexistinguser@example.org bbb")
