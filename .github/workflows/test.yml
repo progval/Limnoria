@@ -86,7 +86,7 @@ jobs:
           supybot-test test -v --plugins-dir=./plugins/ --no-network
 
       - name: Test with irctest
-        if: "${{ matrix.with-opt-deps && matrix.python-version != 'pypy-3.7' }}"
+        if: "${{ matrix.with-opt-deps && matrix.python-version != 'pypy-3.7' && matrix.python-version != 'pypy-3.9' }}"
         run: |
           git clone https://github.com/ProgVal/irctest.git
           cd irctest
