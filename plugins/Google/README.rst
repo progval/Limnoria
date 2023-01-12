@@ -43,21 +43,6 @@ Check: `Supported language codes`_
 Commands
 --------
 
-.. _command-google-cache:
-
-cache <url>
-  Returns a link to the cached version of <url> if it is available.
-
-.. _command-google-calc:
-
-calc <expression>
-  Uses Google's calculator to calculate the value of <expression>.
-
-.. _command-google-fight:
-
-fight <search string> <search string> [<search string> ...]
-  Returns the results of each search, in order, from greatest number of results to least.
-
 .. _command-google-google:
 
 google <search> [--{filter,language} <value>]
@@ -67,11 +52,6 @@ google <search> [--{filter,language} <value>]
 
 lucky [--snippet] <search>
   Does a google search, but only returns the first result. If option --snippet is given, returns also the page text snippet.
-
-.. _command-google-phonebook:
-
-phonebook <phone number>
-  Looks <phone number> up on Google.
 
 .. _command-google-translate:
 

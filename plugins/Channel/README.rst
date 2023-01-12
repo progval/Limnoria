@@ -114,7 +114,7 @@ halfop [<channel>] [<nick> ...]
 .. _command-channel-iban:
 
 iban [<channel>] [--{exact,nick,user,host}] <nick> [<seconds>]
-  If you have the #channel,op capability, this will ban <nick> for as many seconds as you specify, otherwise (if you specify 0 seconds or don't specify a number of seconds) it will ban the person indefinitely. --exact can be used to specify an exact hostmask. You can combine the exact, nick, user, and host options as you choose. <channel> is only necessary if the message isn't sent in the channel itself.
+  If you have the #channel,op capability, this will ban <nick> for as many seconds as you specify, otherwise (if you specify 0 seconds or don't specify a number of seconds) it will ban the person indefinitely. --exact can be used to specify an exact hostmask. You can combine the --nick, --user, and --host options as you choose. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-channel-ignore.add:
 
@@ -138,8 +138,8 @@ invite [<channel>] <nick>
 
 .. _command-channel-kban:
 
-kban [<channel>] [--{exact,nick,user,host}] <nick> [<seconds>] [<reason>]
-  If you have the #channel,op capability, this will kickban <nick> for as many seconds as you specify, or else (if you specify 0 seconds or don't specify a number of seconds) it will ban the person indefinitely. --exact bans only the exact hostmask; --nick bans just the nick; --user bans just the user, and --host bans just the host. You can combine these options as you choose. <reason> is a reason to give for the kick. <channel> is only necessary if the message isn't sent in the channel itself.
+kban [<channel>] [--{exact,nick,user,host,account}] <nick> [<seconds>] [<reason>]
+  If you have the #channel,op capability, this will kickban <nick> for as many seconds as you specify, or else (if you specify 0 seconds or don't specify a number of seconds) it will ban the person indefinitely. --exact bans only the exact hostmask; --nick bans just the nick; --user bans just the user, and --host bans just the host You can combine the --nick, --user, and --host options as you choose. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-channel-key:
 

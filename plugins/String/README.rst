@@ -50,8 +50,8 @@ md5 <text>
 
 .. _command-string-ord:
 
-ord <letter>
-  Returns the unicode codepoint of <letter>.
+ord <string>
+  Returns the unicode codepoint of characters in <string>.
 
 .. _command-string-re:
 
@@ -70,8 +70,8 @@ soundex <string> [<length>]
 
 .. _command-string-unicodename:
 
-unicodename <character>
-  Returns the name of the given unicode <character>.
+unicodename <string>
+  Returns the name of characters in <string>. This will error if any character is not a valid Unicode character.
 
 .. _command-string-unicodesearch:
 
