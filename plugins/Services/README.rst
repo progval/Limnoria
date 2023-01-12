@@ -167,7 +167,7 @@ supybot.plugins.Services.ghostDelay
 supybot.plugins.Services.nicks
   This config variable defaults to " ", is network-specific, and is not channel-specific.
 
-  Determines what nicks the bot will use with services.
+  Determines what nicks, space delimited, the bot will use with services.
 
 .. _conf-supybot.plugins.Services.noJoinsUntilIdentified:
 
