@@ -68,7 +68,7 @@ class ValidNickSet(conf.ValidNicks):
 
 Services = conf.registerPlugin('Services')
 conf.registerNetworkValue(Services, 'nicks',
-    ValidNickSet([], _("""Determines what nicks the bot will use with
+    ValidNickSet([], _("""Space-separated list of nicks the bot will use with
     services.""")))
 
 class Networks(registry.SpaceSeparatedSetOfStrings):
