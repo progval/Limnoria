@@ -990,10 +990,19 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             self.error(_('You\'ve attempted more nesting than is '
                               'currently allowed on this bot.'))
             return
+
         # The deepcopy here is necessary for Scheduler; it re-runs already
         # tokenized commands.  There's a possibility a simple copy[:] would
         # work, but we're being careful.
         self.args = copy.deepcopy(args)
+
+        # Another trick needed for Scheduler:
+        # A previous run of the command may have set 'ignored' to True,
+        # causing this run to not include response from nested commands;
+        # as NestedCommandsIrcProxy.reply() would confuse it with the
+        # subcommand setting 'ignored' to True itself.
+        msg.tag('ignored', False)
+
         self.counter = 0
         self._resetReplyAttributes()
         if not args:

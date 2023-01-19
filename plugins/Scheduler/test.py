@@ -89,7 +89,6 @@ class SchedulerTestCase(ChannelPluginTestCase):
         self.assertResponse(
             'scheduler list', 'There are currently no scheduled commands.')
 
-
     def testRepeat(self):
         self.assertRegexp('scheduler repeat repeater 5 echo testRepeat',
             'testRepeat')
@@ -131,6 +130,32 @@ class SchedulerTestCase(ChannelPluginTestCase):
         self.assertNotError('scheduler remove foo')
         timeFastForward(5)
         self.assertNoResponse(' ', timeout=1)
+
+    def testRepeatWorksWithNestedCommandsWithNoReply(self):
+        # the 'trylater' command uses ircmsgs.privmsg + irc.noReply(),
+        # similar to how the Anonymous plugin implements sending messages
+        # to channels/users without .reply() (as it is technically not a
+        # reply to the origin message)
+        count = 0
+        class TryLater(callbacks.Plugin):
+            def trylater(self, irc, msg, args):
+                nonlocal count
+                msg = ircmsgs.privmsg(msg.nick, "%d %s" % (count, args))
+                irc.queueMsg(msg)
+                irc.noReply()
+                count += 1
+
+        cb = TryLater(self.irc)
+        self.irc.addCallback(cb)
+        try:
+            self.assertResponse('scheduler repeat foo 5 "trylater [echo foo]"',
+                "0 ['foo']")
+            timeFastForward(5)
+            self.assertResponse(' ', "1 ['foo']")
+            timeFastForward(5)
+            self.assertResponse(' ', "2 ['foo']")
+        finally:
+            self.irc.removeCallback('TryLater')
 
     def testRepeatDisallowsIntegerNames(self):
         self.assertError('scheduler repeat 1234 1234 "echo NoIntegerNames"')
@@ -185,8 +210,6 @@ class SchedulerTestCase(ChannelPluginTestCase):
         self.assertNoResponse(' ', timeout=1) # T+95 to T+96
         timeFastForward(10)
         self.assertResponse(' ', 'testRepeat', timeout=1) # T+106
-
-
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
