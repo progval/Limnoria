@@ -148,6 +148,13 @@ class Scheduler(callbacks.Plugin):
                 channel=msg.channel, network=irc.network)
             if remove:
                 del self.events[str(f.eventId)]
+
+            # A previous run of the command may have set 'ignored' to True,
+            # causing this run to not include response from nested commands;
+            # as NestedCommandsIrcProxy.reply() would confuse it with the
+            # subcommand setting 'ignored' to True itself.
+            msg.tag('ignored', False)
+
             self.Proxy(irc, msg, tokens)
         return f
 

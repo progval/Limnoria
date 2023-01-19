@@ -996,13 +996,6 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         # work, but we're being careful.
         self.args = copy.deepcopy(args)
 
-        # Another trick needed for Scheduler:
-        # A previous run of the command may have set 'ignored' to True,
-        # causing this run to not include response from nested commands;
-        # as NestedCommandsIrcProxy.reply() would confuse it with the
-        # subcommand setting 'ignored' to True itself.
-        msg.tag('ignored', False)
-
         self.counter = 0
         self._resetReplyAttributes()
         if not args:
