@@ -30,16 +30,9 @@
 
 import sys
 import unittest
+from unittest import mock
 from supybot import questions
 from supybot.test import SupyTestCase
-
-try:
-    from unittest import mock  # Python 3.3+
-except ImportError:
-    try:
-        import mock  # Everything else, an external 'mock' library
-    except ImportError:
-        mock = None
 
 # so complicated construction because I want to
 # gain the string 'y' instead of the character 'y'
