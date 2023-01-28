@@ -229,7 +229,9 @@ def get_public_key_pem():
 def signed_request(url, headers=None, data=None):
     method = "get" if data is None else "post"
     instance_actor_url = get_instance_actor_url()
-    headers = gen.InsensitivePreservingDict(headers or {})
+    headers = gen.InsensitivePreservingDict(
+        {**web.defaultHeaders, **(headers or {})}
+    )
 
     if "Date" not in headers:
         headers["Date"] = email.utils.formatdate(usegmt=True)
