@@ -1776,7 +1776,8 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         'multi-prefix', 'metadata-notify', 'account-tag',
         'userhost-in-names', 'invite-notify', 'server-time',
         'chghost', 'batch', 'away-notify', 'message-tags',
-        'msgid', 'setname', 'labeled-response', 'echo-message'])
+        'msgid', 'setname', 'labeled-response', 'echo-message',
+        'standard-replies'])
     """IRCv3 capabilities requested when they are available.
 
     echo-message is special-cased to be requested only with labeled-response.
