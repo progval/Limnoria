@@ -47,9 +47,6 @@ jobs:
             with-opt-deps: false
             runs-on: ubuntu-22.04
           - python-version: "pypy-3.7"
-            with-opt-deps: true
-            runs-on: ubuntu-22.04
-          - python-version: "pypy-3.7"
             with-opt-deps: false
             runs-on: ubuntu-22.04
 
