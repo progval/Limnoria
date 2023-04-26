@@ -63,6 +63,6 @@ class ReplyNonChannelTestCase(PluginTestCase):
         self.prefix = 'something!else@somewhere.else'
         self.nick = 'something'
         m = self.assertAction('action foo', 'foo')
-        self.assertFalse(m.args[0] == self.irc.nick)
+        self.assertNotEqual(m.args[0], self.irc.nick)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

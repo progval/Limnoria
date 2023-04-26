@@ -31,6 +31,7 @@
 
 import functools
 from unittest.mock import patch
+import socket
 import sys
 
 import feedparser
@@ -362,7 +363,22 @@ class RSSTestCase(ChannelPluginTestCase):
         timeFastForward(1.1)
         mock._data = not_well_formed
         self.assertRegexp('rss http://example.com/',
-                          'Parser error')
+                          'Parser error: .*mismatch')
+
+    def testSocketError(self):
+        class MockResponse:
+            headers = {}
+            url = ''
+            def read(self):
+                raise socket.error("oh no")
+
+            def close(self):
+                pass
+        mock = MockResponse()
+        with patch("urllib.request.OpenerDirector.open", return_value=mock):
+            timeFastForward(1.1)
+            self.assertRegexp('rss http://example.com/',
+                              'Parser error: .*oh no')
 
     if network:
         timeout = 5  # Note this applies also to the above tests
@@ -398,7 +414,7 @@ class RSSTestCase(ChannelPluginTestCase):
             timeFastForward(1.1)
             self.assertNotError('rss %s' % url)
             m = self.assertNotError('rss %s 2' % url)
-            self.assertTrue(m.args[1].count(' | ') == 1)
+            self.assertEqual(m.args[1].count(' | '), 1)
 
         def testRssAdd(self):
             timeFastForward(1.1)

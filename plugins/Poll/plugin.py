@@ -131,7 +131,7 @@ class Poll_(callbacks.Plugin):
 
         poll_id = max(self._polls[(irc.network, channel)], default=0) + 1
 
-        answers = [(answer.split()[0], answer) for answer in answers]
+        answers = [(answer.split()[0].casefold(), answer) for answer in answers]
 
         answer_id_counts = collections.Counter(
             id_ for (id_, _) in answers
@@ -149,7 +149,10 @@ class Poll_(callbacks.Plugin):
             )
 
         self._polls[(irc.network, channel)][poll_id] = Poll(
-            question=question, answers=dict(answers), votes={}, open=True
+            question=question,
+            answers=dict(answers),
+            votes=ircutils.IrcDict(),
+            open=True,
         )
 
         irc.replySuccess(_("Poll # %d created.") % poll_id)
@@ -191,6 +194,8 @@ class Poll_(callbacks.Plugin):
         if msg.nick in poll.votes:
             irc.error(_("You already voted on this poll."), Raise=True)
 
+        answer_id = answer_id.casefold()
+
         if answer_id not in poll.answers:
             irc.error(
                 format(
@@ -218,11 +223,32 @@ class Poll_(callbacks.Plugin):
         counts.update({answer_id: 0 for answer_id in poll.answers})
 
         results = [
-            format(_("%n for %s"), (v, "vote"), k)
+            format(_("%n for %s"), (v, _("vote")), poll.answers[k].split()[0])
             for (k, v) in counts.most_common()
         ]
 
         irc.replies(results)
+
+    @wrap(["channel"])
+    def list(self, irc, msg, args, channel):
+        """[<channel>]
+
+        Lists open polls in the <channel>."""
+        results = [
+            format(
+                _("%i: %s (%n)"),
+                poll_id,
+                poll.question,
+                (len(poll.votes), _("vote")),
+            )
+            for (poll_id, poll) in self._polls[(irc.network, channel)].items()
+            if poll.open
+        ]
+
+        if results:
+            irc.replies(results)
+        else:
+            irc.reply(_("There are no open polls."))
 
 
 Class = Poll_

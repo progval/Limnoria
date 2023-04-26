@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2014, Artur Krysiak
-# Copyright (c) 2010-2021, The Limnoria Contributors
+# Copyright (c) 2010-2021, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,9 @@
 
 import sys
 import unittest
+from unittest import mock
 from supybot import questions
 from supybot.test import SupyTestCase
-
-try:
-    from unittest import mock  # Python 3.3+
-except ImportError:
-    try:
-        import mock  # Everything else, an external 'mock' library
-    except ImportError:
-        mock = None
 
 # so complicated construction because I want to
 # gain the string 'y' instead of the character 'y'

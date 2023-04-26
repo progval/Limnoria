@@ -990,10 +990,12 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
             self.error(_('You\'ve attempted more nesting than is '
                               'currently allowed on this bot.'))
             return
+
         # The deepcopy here is necessary for Scheduler; it re-runs already
         # tokenized commands.  There's a possibility a simple copy[:] would
         # work, but we're being careful.
         self.args = copy.deepcopy(args)
+
         self.counter = 0
         self._resetReplyAttributes()
         if not args:
@@ -1804,6 +1806,19 @@ class PluginRegexp(Plugin):
     def doPrivmsg(self, irc, msg):
         if msg.isError:
             return
+
+        if 'batch' in msg.server_tags:
+            parent_batches = irc.state.getParentBatches(msg)
+            parent_batch_types = [batch.type for batch in parent_batches]
+            if 'chathistory' in parent_batch_types:
+                # Either sent automatically by the server upon join,
+                # or triggered by a plugin (why?!)
+                # Either way, replying to messages from the history would
+                # look weird, because they may have been sent a while ago,
+                # and we may have already answered them.
+                # (this is the same behavior as in Owner.doPrivmsg)
+                return
+
         proxy = self.Proxy(irc, msg)
         if not msg.addressed:
             for (r, name) in self.unaddressedRes:

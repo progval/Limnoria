@@ -64,7 +64,7 @@ class Ctcp(callbacks.PluginRegexp):
     def callCommand(self, command, irc, msg, *args, **kwargs):
         if conf.supybot.abuse.flood.ctcp():
             now = time.time()
-            for (ignore, expiration) in self.ignores.items():
+            for (ignore, expiration) in list(self.ignores.items()):
                 if expiration < now:
                     del self.ignores[ignore]
                 elif ircutils.hostmaskPatternEqual(ignore, msg.prefix):

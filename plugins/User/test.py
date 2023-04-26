@@ -104,7 +104,7 @@ class UserTestCase(PluginTestCase):
         self.assertResponse('hostmask', self.prefix)
         self.assertError('@hostmask asdf')
         m = self.irc.takeMsg()
-        self.assertFalse(m is not None, m)
+        self.assertIsNone(m, m)
 
     def testRegisterPasswordLength(self):
         self.assertRegexp('register foo aa', 'at least 3 characters long.')
@@ -131,7 +131,7 @@ class UserTestCase(PluginTestCase):
         try:
             self.assertError('unregister foo')
             m = self.irc.takeMsg()
-            self.assertFalse(m is not None, m)
+            self.assertIsNone(m, m)
             self.assertTrue(ircdb.users.getUserId('foo'))
         finally:
             conf.supybot.databases.users.allowUnregistration.setValue(orig)

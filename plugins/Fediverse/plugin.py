@@ -38,6 +38,7 @@ from supybot.commands import urlSnarfer, wrap
 from supybot.i18n import PluginInternationalization
 
 from . import activitypub as ap
+from .utils import parse_xsd_duration
 
 
 importlib.reload(ap)
@@ -47,6 +48,10 @@ _ = PluginInternationalization("Fediverse")
 
 
 _username_regexp = re.compile("@(?P<localuser>[^@ ]+)@(?P<hostname>[^@ ]+)")
+
+
+def html_to_text(html):
+    return utils.web.htmlToText(html).split("\n", 1)[0].strip()
 
 
 class FediverseHttp(httpserver.SupyHTTPServerCallback):
@@ -222,18 +227,40 @@ class Fediverse(callbacks.PluginRegexp):
         name = actor.get("name", username)
         return "\x02%s\x02 (@%s@%s)" % (name, username, hostname)
 
+    def _format_author(self, irc, author):
+        if isinstance(author, str):
+            # it's an URL
+            try:
+                author = self._get_actor(irc, author)
+            except ap.ActivityPubError as e:
+                return _("<error: %s>") % str(e)
+            else:
+                return self._format_actor_fullname(author)
+        elif isinstance(author, dict):
+            if author.get("type") == "Group":
+                # Typically, there is an actor named "Default <username> channel"
+                # on PeerTube, which we do not want to show.
+                return None
+            if author.get("id"):
+                return self._format_author(irc, author["id"])
+        elif isinstance(author, list):
+            return format(
+                "%L",
+                filter(
+                    bool, [self._format_author(irc, item) for item in author]
+                ),
+            )
+        else:
+            return "<unknown>"
+
     def _format_status(self, irc, msg, status):
         if status["type"] == "Create":
             return self._format_status(irc, msg, status["object"])
         elif status["type"] == "Note":
-            author_url = status["attributedTo"]
-            try:
-                author = self._get_actor(irc, author_url)
-            except ap.ActivityPubError as e:
-                author_fullname = _("<error: %s>") % str(e)
-            else:
-                author_fullname = self._format_actor_fullname(author)
             cw = status.get("summary")
+            author_fullname = self._format_author(
+                irc, status.get("attributedTo")
+            )
             if cw:
                 if self.registryValue(
                     "format.statuses.showContentWithCW",
@@ -246,7 +273,7 @@ class Fediverse(callbacks.PluginRegexp):
                         % (
                             author_fullname,
                             cw,
-                            utils.web.htmlToText(status["content"]),
+                            html_to_text(status["content"]),
                         )
                     ]
                 else:
@@ -258,7 +285,7 @@ class Fediverse(callbacks.PluginRegexp):
                     _("%s: %s")
                     % (
                         author_fullname,
-                        utils.web.htmlToText(status["content"]),
+                        html_to_text(status["content"]),
                     )
                 ]
 
@@ -275,6 +302,17 @@ class Fediverse(callbacks.PluginRegexp):
                 return self._format_status(irc, msg, status)
             except ap.ActivityPubProtocolError as e:
                 return "<Could not fetch status: %s>" % e.args[0]
+        elif status["type"] == "Video":
+            author_fullname = self._format_author(
+                irc, status.get("attributedTo")
+            )
+            return format(
+                _("\x02%s\x02 (%T) by %s: %s"),
+                status["name"],
+                abs(parse_xsd_duration(status["duration"]).total_seconds()),
+                author_fullname,
+                html_to_text(status["content"]),
+            )
         else:
             assert False, "Unknown status type %s: %r" % (
                 status["type"],
@@ -292,14 +330,14 @@ class Fediverse(callbacks.PluginRegexp):
             _("%s: %s")
             % (
                 self._format_actor_fullname(actor),
-                utils.web.htmlToText(actor["summary"]),
+                html_to_text(actor["summary"]),
             )
         )
 
     def _format_profile(self, irc, msg, actor):
         return _("%s: %s") % (
             self._format_actor_fullname(actor),
-            utils.web.htmlToText(actor["summary"]),
+            html_to_text(actor["summary"]),
         )
 
     def usernameSnarfer(self, irc, msg, match):

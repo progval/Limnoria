@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
 # Copyright (c) 2010, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2022, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 ###
+
+import itertools
 
 import supybot.dbi as dbi
 import supybot.conf as conf
@@ -57,9 +59,7 @@ class DbiUrlDB(plugins.DbiChannelDB):
                                  near=msg.args[1], at=msg.receivedAt)
             super(self.__class__, self).add(record)
         def urls(self, p):
-            L = list(self.select(p))
-            L.reverse()
-            return L
+            return self.select(p, reverse=True)
 
 URLDB = plugins.DB('URL', {'flat': DbiUrlDB})
 
@@ -142,16 +142,18 @@ class URL(callbacks.Plugin):
                 if not predicate(record):
                     return False
             return True
-        urls = [record.url for record in self.db.urls(channel, predicate)]
-        if not urls:
+        urls = (record.url for record in self.db.urls(channel, predicate))
+        (urls, urls_copy) = itertools.tee(urls)
+        first_url = next(urls_copy, None)
+        if first_url is None:
             irc.reply(_('No URLs matched that criteria.'))
         else:
             if nolimit:
-                urls = [format('%u', url) for url in urls]
+                urls = (format('%u', url) for url in urls)
                 s = ', '.join(urls)
             else:
                 # We should optimize this with another URLDB method eventually.
-                s = urls[0]
+                s = first_url
             irc.reply(s)
     last = wrap(last, ['channeldb',
                        getopts({'from': 'something', 'with': 'something',

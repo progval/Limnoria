@@ -23,6 +23,9 @@ supybot.egg-info/
 test-conf/
 test-data/
 test-logs/
+doc-conf/
+doc-data/
+doc-logs/
 src/version.py
 INSTALL
 README.txt

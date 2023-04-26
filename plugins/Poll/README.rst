@@ -61,6 +61,11 @@ add [<channel>] <question> <answer1> [<answer2> [<answer3> [...]]]
 close [<channel>] <poll_id>
   Closes the specified poll.
 
+.. _command-poll-list:
+
+list [<channel>]
+  Lists open polls in the <channel>.
+
 .. _command-poll-results:
 
 results [<channel>] <poll_id>

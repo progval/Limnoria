@@ -61,10 +61,6 @@ class ProtocolError(ActivityPubError):
     pass
 
 
-class HostmetaError(ProtocolError):
-    pass
-
-
 class ActivityPubProtocolError(ActivityPubError):
     pass
 
@@ -118,7 +114,7 @@ def convert_exceptions(to_class, msg="", from_none=False):
 
 @sandbox
 def _get_webfinger_url(hostname):
-    with convert_exceptions(HostmetaError):
+    try:
         doc = ET.fromstring(
             web.getUrlContent("https://%s/.well-known/host-meta" % hostname)
         )
@@ -126,8 +122,9 @@ def _get_webfinger_url(hostname):
         for link in doc.iter(XRD_URI + "Link"):
             if link.attrib["rel"] == "lrdd":
                 return link.attrib["template"]
-
-    return "https://%s/.well-known/webfinger?resource={uri}"
+    except web.Error:
+        # Fall back to the default Webfinger URL
+        return "https://%s/.well-known/webfinger?resource={uri}" % hostname
 
 
 def has_webfinger_support(hostname):
@@ -232,7 +229,9 @@ def get_public_key_pem():
 def signed_request(url, headers=None, data=None):
     method = "get" if data is None else "post"
     instance_actor_url = get_instance_actor_url()
-    headers = gen.InsensitivePreservingDict(headers or {})
+    headers = gen.InsensitivePreservingDict(
+        {**web.defaultHeaders, **(headers or {})}
+    )
 
     if "Date" not in headers:
         headers["Date"] = email.utils.formatdate(usegmt=True)

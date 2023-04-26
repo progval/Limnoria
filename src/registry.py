@@ -84,7 +84,7 @@ def open_registry(filename, clear=False):
     global _lastModified
     if clear:
         _cache.clear()
-    _fd = open(filename)
+    _fd = open(filename, encoding='utf8')
     fd = utils.file.nonCommentNonEmptyLines(_fd)
     acc = ''
     slashEnd = re.compile(r'\\*$')
@@ -710,7 +710,7 @@ class OnlySomeStrings(String):
 
     def setValue(self, s):
         v = self.normalize(s)
-        if s in self.validStrings:
+        if v in self.validStrings:
             self.__parent.setValue(v)
         else:
             self.error(v)
@@ -875,6 +875,7 @@ class SpaceSeparatedListOfStrings(SpaceSeparatedListOf):
 class SpaceSeparatedSetOfStrings(SpaceSeparatedListOfStrings):
     __slots__ = ()
     List = set
+    sorted = True
 
 class CommaSeparatedListOfStrings(SeparatedListOf):
     __slots__ = ()
@@ -887,6 +888,7 @@ class CommaSeparatedSetOfStrings(SeparatedListOf):
     __slots__ = ()
     List = set
     Value = String
+    sorted = True
     def splitter(self, s):
         return re.split(r'\s*,\s*', s)
     joiner = ', '.join

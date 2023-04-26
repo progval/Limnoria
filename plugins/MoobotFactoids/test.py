@@ -54,8 +54,11 @@ class OptionListTestCase(SupyTestCase):
         while max and L:
             max -= 1
             option = plugin.pickOptions(s)
-            self.assertTrue(option in original,
-                            'Option %s not in %s' % (option, original))
+            self.assertIn(
+                option,
+                original,
+                'Option %s not in %s' % (option, original)
+            )
             if option in L:
                 L.remove(option)
         self.assertFalse(L, 'Some options never seen: %s' % L)

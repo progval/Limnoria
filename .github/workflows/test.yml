@@ -4,21 +4,58 @@ on:
   push:
   pull_request:
 
+# Sources of supported versions:
+# * https://github.com/actions/python-versions/blob/main/versions-manifest.json
+# * https://downloads.python.org/pypy/versions.json
 jobs:
   build:
 
     runs-on: ${{ matrix.runs-on }}
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11.0-alpha.2", "pypy-3.6", "pypy-3.7"]
-        with-opt-deps: [false, true]
-        runs-on: [ubuntu-latest]
-        exclude:
-          # Some of the dependencies don't work on old Python versions
+        include:
+          - python-version: "3.12.0-alpha.3"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+
+          - python-version: "3.11"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+
+          - python-version: "3.10"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+          - python-version: "3.10"
+            with-opt-deps: false
+            runs-on: ubuntu-22.04
+
+          - python-version: "3.9"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+          - python-version: "pypy-3.9"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+
+          - python-version: "3.8"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+
+          - python-version: "3.7"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+          - python-version: "3.7"
+            with-opt-deps: false
+            runs-on: ubuntu-22.04
+          - python-version: "pypy-3.7"
+            with-opt-deps: false
+            runs-on: ubuntu-22.04
+
           - python-version: "3.6"
-            with-opt-deps: true
+            with-opt-deps: false
+            runs-on: ubuntu-20.04
           - python-version: "pypy-3.6"
-            with-opt-deps: true
+            with-opt-deps: false
+            runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v2
@@ -46,7 +83,7 @@ jobs:
           supybot-test test -v --plugins-dir=./plugins/ --no-network
 
       - name: Test with irctest
-        if: "${{ matrix.with-opt-deps && matrix.python-version != 'pypy-3.7' }}"
+        if: "${{ matrix.with-opt-deps && matrix.python-version != 'pypy-3.7' && matrix.python-version != 'pypy-3.9' }}"
         run: |
           git clone https://github.com/ProgVal/irctest.git
           cd irctest

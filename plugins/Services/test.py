@@ -50,12 +50,12 @@ class ServicesTestCase(PluginTestCase):
         try:
             self.assertNotError('services password %s baz' % self.nick)
             m = self.assertNotError('services identify')
-            self.assertTrue(m.args[0] == 'NickServ')
-            self.assertTrue(m.args[1].lower() == 'identify baz')
+            self.assertEqual(m.args[0], 'NickServ')
+            self.assertEqual(m.args[1].lower(), 'identify baz')
             self.assertNotError('services password %s biff' % self.nick)
             m = self.assertNotError('services identify')
-            self.assertTrue(m.args[0] == 'NickServ')
-            self.assertTrue(m.args[1].lower() == 'identify biff')
+            self.assertEqual(m.args[0], 'NickServ')
+            self.assertEqual(m.args[1].lower(), 'identify biff')
         finally:
             self.assertNotError('services password %s ""' % self.nick)
 
@@ -84,8 +84,8 @@ class ServicesTestCase(PluginTestCase):
                 'Global: bar; test: bar2')
 
             m = self.assertNotError('services identify')
-            self.assertTrue(m.args[0] == 'NickServ')
-            self.assertTrue(m.args[1].lower() == 'identify bar2')
+            self.assertEqual(m.args[0], 'NickServ')
+            self.assertEqual(m.args[1].lower(), 'identify bar2')
         finally:
             self.assertNotError('services password %s ""' % self.nick)
 

@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2009, Jeremiah Fincher
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2022, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -349,7 +349,10 @@ class TimeoutQueue(object):
         return self.queue.dequeue()[1]
 
     def __iter__(self):
-        # We could _clearOldElements here, but what happens if someone stores
+        self._clearOldElements()
+
+        # You may think re-checking _getTimeout() after we just called
+        # _clearOldElements is redundant, but what happens if someone stores
         # the resulting generator and elements that should've timed out are
         # yielded?  Hmm?  What happens then, smarty-pants?
         for (t, elt) in self.queue:

@@ -243,21 +243,23 @@ class Alias(callbacks.Plugin):
     built-in Aka plugin instead (you can migrate your existing aliases using
     the 'importaliasdatabase' command.
 
-    To add an alias, `trout`, which expects a word as an argument::
+    To add an alias, ``trout``, which expects a word as an argument::
 
         <jamessan> @alias add trout "action slaps $1 with a large trout"
         <bot> jamessan: The operation succeeded.
         <jamessan> @trout me
         * bot slaps me with a large trout
 
-    To add an alias, `lastfm`, which expects a last.fm user and replies with
-    their recently played items::
+    Add an alias, ``randpercent``, which returns a random percentage value::
 
-        @alias add lastfm "rss [format concat http://ws.audioscrobbler.com/1.0/user/ [format concat [urlquote $1] /recenttracks.rss]]"
+        @alias add randpercent "squish [dice 1d100]%"
 
-    Note that if the nested commands being aliased hadn't been quoted, then
-    those commands would have been run immediately, and `@lastfm` would always
-    reply with the same information, the result of those commands.
+    This requires the ``Filter`` and ``Games`` plugins to be loaded.
+
+    Note that nested commands in an alias should be quoted, or they will only
+    run once when you create the alias, and not each time the alias is
+    called. (In this case, not quoting the nested command would mean that
+    ``@randpercent`` always responds with the same value!)
     """
     def __init__(self, irc):
         self.__parent = super(Alias, self)

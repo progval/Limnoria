@@ -88,6 +88,17 @@ class TimeTestCase(PluginTestCase):
         self.assertResponse('seconds 1y 1s', '31536001')
         self.assertResponse('seconds 1w 1s', '604801')
 
+    @skipIf(sys.version_info < (3, 7, 0),
+            "Python 3.6 does not support empty pattern matches, see: "
+            "https://docs.python.org/3/library/re.html#re.split")
+    def testSecondsNoSpace(self):
+        self.assertResponse('seconds 1m1s', '61')
+        self.assertResponse('seconds 1h1s', '3601')
+        self.assertResponse('seconds 1d1s', '86401')
+        self.assertResponse('seconds 2d2h2m2s', '180122')
+        self.assertResponse('seconds 1y1s', '31536001')
+        self.assertResponse('seconds 1w1s', '604801')
+
     def testNoErrors(self):
         self.assertNotError('ctime')
         self.assertNotError('time %Y')

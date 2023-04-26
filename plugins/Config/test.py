@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2009, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2022, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,10 +33,19 @@ import random
 
 from supybot.test import *
 import supybot.conf as conf
+import supybot.registry as registry
 
 _letters = 'abcdefghijklmnopqrstuvwxyz'
 def random_string():
     return ''.join(random.choice(_letters) for _ in range(16))
+
+class Fruit(registry.OnlySomeStrings):
+    validStrings = ('Apple', 'Orange')
+
+group = conf.registerGroup(conf.supybot.plugins.Config, 'test')
+conf.registerGlobalValue(group, 'fruit',
+    Fruit('Orange', '''Must be a fruit'''))
+
 
 class ConfigTestCase(ChannelPluginTestCase):
     # We add utilities so there's something in supybot.plugins.
@@ -49,6 +58,16 @@ class ConfigTestCase(ChannelPluginTestCase):
     def testGet(self):
         self.assertNotRegexp('config get supybot.reply', r'registry\.Group')
         self.assertResponse('config supybot.protocols.irc.throttleTime', '0.0')
+
+    def testSetOnlysomestrings(self):
+        self.assertResponse('config supybot.plugins.Config.test.fruit Apple',
+                            'The operation succeeded.')
+        self.assertResponse('config supybot.plugins.Config.test.fruit orange',
+                            'The operation succeeded.')
+        self.assertResponse('config supybot.plugins.Config.test.fruit Tomatoe',
+                            "Error: Valid values include 'Apple' and "
+                            "'Orange', not 'Tomatoe'.")
+
 
     def testList(self):
         self.assertError('config list asldfkj')

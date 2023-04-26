@@ -72,10 +72,16 @@ try:
 except ImportError:
     tzlocal = None
 
+
+# Note: Python 3.6 does not support empty pattern matches, see:
+# https://docs.python.org/3/library/re.html#re.split
+_SECONDS_SPLIT_RE = re.compile('(?<=[a-z]) ?')
+
+
 class Time(callbacks.Plugin):
     """This plugin allows you to use different time-related functions."""
     @internationalizeDocstring
-    def seconds(self, irc, msg, args):
+    def seconds(self, irc, msg, args, text):
         """[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]
 
         Returns the number of seconds in the number of <years>, <weeks>,
@@ -84,11 +90,13 @@ class Time(callbacks.Plugin):
         Useful for scheduling events at a given number of seconds in the
         future.
         """
-        if not args:
-            raise callbacks.ArgumentError
         seconds = 0
-        for arg in args:
-            if not arg or arg[-1] not in 'ywdhms':
+        if not text:
+            raise callbacks.ArgumentError
+        for arg in _SECONDS_SPLIT_RE.split(text):
+            if not arg:
+                continue
+            if arg[-1] not in 'ywdhms':
                 raise callbacks.ArgumentError
             (s, kind) = arg[:-1], arg[-1]
             try:
@@ -108,6 +116,7 @@ class Time(callbacks.Plugin):
             elif kind == 's':
                 seconds += i
         irc.reply(str(seconds))
+    seconds = wrap(seconds, ['text'])
 
     @internationalizeDocstring
     def at(self, irc, msg, args, s=None):

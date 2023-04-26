@@ -129,7 +129,7 @@ class TopicTestCase(ChannelPluginTestCase):
             conf.supybot.plugins.Topic.separator.setValue(' <==> ')
             _ = self.getMsg('topic add foo')
             m = self.getMsg('topic add bar')
-            self.assertTrue('<==>' in m.args[1])
+            self.assertIn('<==>', m.args[1])
         finally:
             conf.supybot.plugins.Topic.separator.setValue(original)
 

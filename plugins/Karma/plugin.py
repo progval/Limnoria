@@ -209,7 +209,7 @@ class SqliteKarmaDB(object):
 
     def load(self, channel, filename):
         filename = conf.supybot.directories.data.dirize(filename)
-        fd = open(filename)
+        fd = open(filename, encoding='utf8')
         reader = csv.reader(fd)
         db = self._getDb(channel)
         cursor = db.cursor()

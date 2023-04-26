@@ -70,8 +70,6 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self._attempt = -1
         self.servers = ()
         self.eagains = 0
-        self.inbuffer = b''
-        self.outbuffer = ''
         self.zombie = False
         self.connected = False
         self.writeCheckTime = None
@@ -248,6 +246,8 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
 
     def reconnect(self, wait=False, reset=True, server=None):
         self._attempt += 1
+        self.inbuffer = b''
+        self.outbuffer = ''
         self.nextReconnectTime = None
         if self.connected:
             self.onDisconnect()

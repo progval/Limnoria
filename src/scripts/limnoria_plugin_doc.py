@@ -297,7 +297,7 @@ def main():
                       'with the plugin\'s name and "$format" with the value '
                       'if --format.')
     parser.add_option('-f', '--format', dest='format', choices=['rst', 'stx'],
-                      default='stx', help='Specifies which output format to '
+                      default='rst', help='Specifies which output format to '
                       'use.')
     parser.add_option('--plugins-dir',
                       action='append', dest='pluginsDirs', default=[],

@@ -113,6 +113,9 @@ conf.registerGlobalValue(BadWords, 'stripFormatting',
     filtering.  If it's True, however, it will interact poorly with other
     plugins that do coloring or bolding of text.""")))
 
+conf.registerChannelValue(BadWords, 'selfCensor',
+    registry.Boolean(True, _("""Determines whether the bot will filter its own
+    messages.""")))
 conf.registerChannelValue(BadWords, 'kick',
     registry.Boolean(False, _("""Determines whether the bot will kick people with
     a warning when they use bad words.""")))

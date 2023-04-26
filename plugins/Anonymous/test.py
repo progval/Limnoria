@@ -39,7 +39,7 @@ class AnonymousTestCase(ChannelPluginTestCase):
 
         with conf.supybot.plugins.Anonymous.requireRegistration.context(False):
             m = self.assertNotError('anonymous say %s foo!' % self.channel)
-            self.assertTrue(m.args[1] == 'foo!')
+            self.assertEqual(m.args[1], 'foo!')
 
     def testTell(self):
         self.assertError('anonymous tell %s I love you!' % self.nick)
@@ -48,7 +48,7 @@ class AnonymousTestCase(ChannelPluginTestCase):
             self.assertError('anonymous tell %s foo!' % self.channel)
             with conf.supybot.plugins.Anonymous.allowPrivateTarget.context(True):
                 m = self.assertNotError('anonymous tell %s foo!' % self.nick)
-                self.assertTrue(m.args[1] == 'foo!')
+                self.assertEqual(m.args[1], 'foo!')
 
     def testAction(self):
         m = self.assertError('anonymous do %s loves you!' % self.channel)

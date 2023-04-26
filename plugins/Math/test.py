@@ -112,7 +112,10 @@ class MathTestCase(PluginTestCase):
         self.assertNotError('calc (1600 * 1200) - 2*(1024*1280)')
         self.assertNotError('calc 3-2*4')
         self.assertNotError('calc (1600 * 1200)-2*(1024*1280)')
-        self.assertError('calc factorial(20000)')
+        self.assertResponse('calc factorial(20000)',
+            'Error: factorial argument too large')
+        self.assertResponse('calc factorial(20000) / factorial(19999)',
+            'Error: factorial argument too large')
 
     def testCalcNoNameError(self):
         self.assertRegexp('calc foobar(x)', 'foobar is not a defined function')
@@ -147,7 +150,10 @@ class MathTestCase(PluginTestCase):
         self.assertResponse('icalc 1^1', '0')
         self.assertResponse('icalc 10**24', '1' + '0'*24)
         self.assertRegexp('icalc 49/6', '8.16')
-        self.assertNotError('icalc factorial(20000)')
+        self.assertRegexp('icalc factorial(20000)',
+            'Error: The answer exceeded')
+        self.assertResponse('icalc factorial(20000) / factorial(19999)',
+            '20000.0')
 
     def testRpn(self):
         self.assertResponse('rpn 5 2 +', '7')

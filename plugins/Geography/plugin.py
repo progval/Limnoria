@@ -150,7 +150,8 @@ class Geography(callbacks.Plugin):
                 continue
 
             offset_seconds = int(
-                datetime.datetime.now(tz=timezone).utcoffset().total_seconds())
+                datetime.datetime.now(tz=timezone).utcoffset().total_seconds()
+            )
             offset = self._format_utc_offset(offset_seconds)
 
             # Extract a human-friendly name, depending on the type of

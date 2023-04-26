@@ -50,10 +50,12 @@ def configure(advanced):
 class Ignores(registry.SpaceSeparatedListOf):
     List = ircutils.IrcSet
     Value = conf.ValidHostmask
+    sorted = True
     
 class Networks(registry.SpaceSeparatedListOf):
     List = ircutils.IrcSet
     Value = registry.String
+    sorted = True
 
 Relay = conf.registerPlugin('Relay')
 conf.registerChannelValue(Relay, 'color',

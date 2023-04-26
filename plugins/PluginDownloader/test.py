@@ -29,11 +29,9 @@
 ###
 
 import os
-import sys
 import shutil
 
 from supybot.test import *
-import supybot.utils.minisix as minisix
 
 pluginsPath = '%s/test-plugins' % os.getcwd()
 
@@ -62,7 +60,7 @@ class PluginDownloaderTestCase(PluginTestCase):
 
     def testRepolist(self):
         self.assertRegexp('repolist', '(.*, )?progval(, .*)?')
-        self.assertRegexp('repolist', '(.*, )?quantumlemur(, .*)?')
+        self.assertRegexp('repolist', '(.*, )?jlu5(, .*)?')
         self.assertRegexp('repolist progval', '(.*, )?AttackProtector(, .*)?')
 
     def testInstallprogval(self):
@@ -76,43 +74,18 @@ class PluginDownloaderTestCase(PluginTestCase):
             self.assertRegexp('plugindownloader install progval Darcs',
                     'Error:.*not available.*supybot.commands.allowShell')
 
-    def testInstallQuantumlemur(self):
-        self.assertError('plugindownloader install quantumlemur AttackProtector')
-        self.assertNotError('plugindownloader install quantumlemur Listener')
-        self.assertError('plugindownloader install quantumlemur AttackProtector')
-        self._testPluginInstalled('Listener')
-
-    def testInstallStepnem(self):
-        self.assertNotError('plugindownloader install stepnem Freenode')
-        self._testPluginInstalled('Freenode')
-
-    def testInstallNanotubeBitcoin(self):
-        self.assertNotError('plugindownloader install nanotube-bitcoin GPG')
-        self._testPluginInstalled('GPG')
-
-    def testInstallMtughanWeather(self):
-        self.assertNotError('plugindownloader install mtughan-weather '
-                            'WunderWeather')
-        self._testPluginInstalled('WunderWeather')
-
-    def testInstallSpiderDave(self):
-        self.assertNotError('plugindownloader install SpiderDave Pastebin')
-        self._testPluginInstalled('Pastebin')
-
     def testInstallNonAsciiInit(self):
         self.assertNotError('plugindownloader install Hoaas DuckDuckGo')
         self._testPluginInstalled('DuckDuckGo')
+
+    def testInstallLegacyWarning(self):
+        self.assertRegexp('plugindownloader install frumious Codepoints',
+                          'may be incompatible')
 
     def testInfo(self):
         self.assertResponse('plugindownloader info progval Twitter',
                 'Advanced Twitter plugin for Supybot, with capabilities '
                 'handling, and per-channel user account.')
-
-    if minisix.PY3:
-        def test_2to3(self):
-            self.assertRegexp('plugindownloader install SpiderDave Pastebin',
-                    'convert')
-            self.assertNotError('load Pastebin')
 
 if not network:
     class PluginDownloaderTestCase(PluginTestCase):

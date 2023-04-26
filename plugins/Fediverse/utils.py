@@ -1,6 +1,5 @@
 ###
-# Copyright (c) 2005, Jeremiah Fincher
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2022, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,38 +25,39 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+
 ###
 
-import supybot.conf as conf
-import supybot.ircutils as ircutils
-import supybot.registry as registry
-from supybot.i18n import PluginInternationalization, internationalizeDocstring
-_ = PluginInternationalization('Protector')
+import re
+import datetime
 
-def configure(advanced):
-    # This will be called by supybot to configure this module.  advanced is
-    # a bool that specifies whether the user identified themself as an advanced
-    # user or not.  You should effect your configuration by manipulating the
-    # registry as appropriate.
-    from supybot.questions import expect, anything, something, yn
-    conf.registerPlugin('Protector', True)
+# Credits for the regexp and function: https://stackoverflow.com/a/2765366/539465
+_XSD_DURATION_RE = re.compile(
+    "(?P<sign>-?)P"
+    "(?:(?P<years>\d+)Y)?"
+    "(?:(?P<months>\d+)M)?"
+    "(?:(?P<days>\d+)D)?"
+    "(?:T(?:(?P<hours>\d+)H)?(?:(?P<minutes>\d+)M)?(?:(?P<seconds>\d+)S)?)?"
+)
 
 
-Protector = conf.registerPlugin('Protector')
-conf.registerChannelValue(Protector, 'enable',
-    registry.Boolean(False, _("""Determines whether this plugin is enabled in a
-    given channel.""")))
+def parse_xsd_duration(s):
+    """Parses this format to a timedelta:
+    https://www.w3.org/TR/xmlschema11-2/#duration"""
+    # Fetch the match groups with default value of 0 (not None)
+    duration = _XSD_DURATION_RE.match(s).groupdict(0)
 
-class ImmuneNicks(conf.ValidNicks):
-    List = ircutils.IrcSet
-    sorted = True
+    # Create the timedelta object from extracted groups
+    delta = datetime.timedelta(
+        days=int(duration["days"])
+        + (int(duration["months"]) * 30)
+        + (int(duration["years"]) * 365),
+        hours=int(duration["hours"]),
+        minutes=int(duration["minutes"]),
+        seconds=int(duration["seconds"]),
+    )
 
-conf.registerChannelValue(Protector, 'immune',
-    ImmuneNicks([], _("""Determines what nicks the bot will consider to
-    be immune from enforcement.  These nicks will not even have their actions
-    watched by this plugin.  In general, only the ChanServ for this network
-    will be in this list.""")))
+    if duration["sign"] == "-":
+        delta *= -1
 
-
-
-# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
+    return delta

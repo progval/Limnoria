@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
-# Copyright (c) 2010-2021, The Limnoria Contributors
+# Copyright (c) 2010-2021, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -74,9 +74,9 @@ class FunctionsTestCase(SupyTestCase):
         self.assertNotEqual(f(irc, msg, '$today'), '$today')
         self.assertNotEqual(f(irc, msg, '$now'), '$now')
         n = f(irc, msg, '$randnick')
-        self.assertTrue(n in irc.state.channels['#foo'].users)
+        self.assertIn(n, irc.state.channels['#foo'].users)
         n = f(irc, msg, '$randomnick')
-        self.assertTrue(n in irc.state.channels['#foo'].users)
+        self.assertIn(n, irc.state.channels['#foo'].users)
         n = f(irc, msg, '$randomnick '*100)
         L = n.split()
         self.assertFalse(all(L[0].__eq__, L), 'all $randomnicks were the same')

@@ -41,8 +41,8 @@ class StatusTestCase(PluginTestCase):
 
     def testCpu(self):
         m = self.assertNotError('status cpu')
-        self.assertFalse('kB kB' in m.args[1])
-        self.assertFalse('None' in m.args[1], 'None in cpu output: %r.' % m)
+        self.assertNotIn('kB kB', m.args[1])
+        self.assertNotIn('None', m.args[1], 'None in cpu output: %r.' % m)
         for s in ['linux', 'freebsd', 'openbsd', 'netbsd', 'darwin']:
             if sys.platform.startswith(s):
                 self.assertTrue('B' in m.args[1] or 'KB' in m.args[1] or

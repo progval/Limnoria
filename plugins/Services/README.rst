@@ -153,6 +153,14 @@ supybot.plugins.Services.disabledNetworks
 
   Determines what networks this plugin will be disabled on.
 
+.. _conf-supybot.plugins.Services.ghostCommand:
+
+
+supybot.plugins.Services.ghostCommand
+  This config variable defaults to "GHOST", is network-specific, and is not channel-specific.
+
+  Determines the NickServ command to use for GHOST. If the network you're using runs Anope, set this to "RECOVER". If the network you're using runs Atheme, set this to "GHOST" or "REGAIN".
+
 .. _conf-supybot.plugins.Services.ghostDelay:
 
 
@@ -167,7 +175,7 @@ supybot.plugins.Services.ghostDelay
 supybot.plugins.Services.nicks
   This config variable defaults to " ", is network-specific, and is not channel-specific.
 
-  Determines what nicks the bot will use with services.
+  Space-separated list of nicks the bot will use with services.
 
 .. _conf-supybot.plugins.Services.noJoinsUntilIdentified:
 

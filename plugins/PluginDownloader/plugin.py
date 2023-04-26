@@ -121,11 +121,11 @@ class GithubRepository(GitRepository):
         assert directory is not None, \
                 'No valid directory in supybot.directories.plugins.'
 
+        possibly_incompatible = False
         try:
             assert archive.getmember(prefix + dirname).isdir(), \
                 'This is not a valid plugin (it is a file, not a directory).'
 
-            run_2to3 = minisix.PY3
             for file in archive.getmembers():
                 if file.name.startswith(prefix + dirname):
                     extractedFile = archive.extractfile(file)
@@ -140,42 +140,18 @@ class GithubRepository(GitRepository):
                         os.mkdir(newFileName)
                     else:
                         with open(newFileName, 'ab') as fd:
-                            reload_imported = False
                             for line in extractedFile.readlines():
-                                if minisix.PY3:
-                                    if b'import reload' in line:
-                                        reload_imported = True
-                                    elif not reload_imported and \
-                                            b'reload(' in line:
-                                        fd.write(b'from importlib import reload\n')
-                                        reload_imported = True
+                                if file.name.endswith('__init__.py') and \
+                                        line.startswith((b'import config', b'import plugin')):
+                                    possibly_incompatible = True
                                 fd.write(line)
-                    if newFileName.endswith('__init__.py'):
-                        with open(newFileName) as fd:
-                            lines = list(filter(lambda x:'import plugin' in x,
-                                fd.readlines()))
-                            if lines and lines[0].startswith('from . import'):
-                                # This should be already Python 3-compatible
-                                run_2to3 = False
         finally:
             archive.close()
             del archive
-        if run_2to3:
-            try:
-                import lib2to3
-            except ImportError:
-                return _('Plugin is probably not compatible with your '
-                        'Python version (3.x) and could not be converted '
-                        'because 2to3 is not installed.')
-            import subprocess
-            fixers = []
-            subprocess.Popen(['2to3', '-wn', os.path.join(directory, plugin)]) \
-                    .wait()
-            return _('Plugin was designed for Python 2, but an attempt to '
-                    'convert it to Python 3 has been made. There is no '
-                    'guarantee it will work, though.')
-        else:
-            return _('Plugin successfully installed.')
+        if possibly_incompatible:
+            return _('Plugin installed. However, it may be incompatible with '
+                     'Python 3 and require manual code changes to work correctly.')
+        return _('Plugin successfully installed.')
 
     def getInfo(self, plugin):
         archive = self._download(plugin)
@@ -201,64 +177,10 @@ repositories = utils.InsensitivePreservingDict({
                                                    'progval',
                                                    'Supybot-plugins'
                                                    ),
-               'quantumlemur':     GithubRepository(
-                                                   'quantumlemur',
-                                                   'Supybot-plugins',
-                                                   ),
-               'stepnem':          GithubRepository(
-                                                   'stepnem',
-                                                   'supybot-plugins',
-                                                   ),
-               'code4lib-snapshot':GithubRepository(
-                                                   'code4lib',
-                                                   'supybot-plugins',
-                                                   'Supybot-plugins-20060723',
-                                                   ),
-               'code4lib-edsu':    GithubRepository(
-                                                   'code4lib',
-                                                   'supybot-plugins',
-                                                   'edsu-plugins',
-                                                   ),
-               'code4lib':         GithubRepository(
-                                                   'code4lib',
-                                                   'supybot-plugins',
-                                                   'plugins',
-                                                   ),
-               'nanotube-bitcoin': GithubRepository(
-                                                   'nanotube',
-                                                   'supybot-bitcoin-'
-                                                             'marketmonitor',
-                                                   ),
-               'mtughan-weather':  GithubRepository(
-                                                   'mtughan',
-                                                   'Supybot-Weather',
-                                                   ),
                'SpiderDave':       GithubRepository(
                                                    'SpiderDave',
                                                    'spidey-supybot-plugins',
                                                    'Plugins',
-                                                   ),
-               'doorbot':          GithubRepository(
-                                                   'hacklab',
-                                                   'doorbot',
-                                                   ),
-               'boombot':          GithubRepository(
-                                                   'nod',
-                                                   'boombot',
-                                                   'plugins',
-                                                   ),
-               'mailed-notifier':  GithubRepository(
-                                                   'tbielawa',
-                                                   'supybot-mailed-notifier',
-                                                   ),
-               'pingdom':          GithubRepository(
-                                                   'rynop',
-                                                   'supyPingdom',
-                                                   'plugins',
-                                                   ),
-               'scrum':            GithubRepository(
-                                                   'amscanne',
-                                                   'supybot-scrum',
                                                    ),
                'Hoaas':            GithubRepository(
                                                    'Hoaas',
@@ -268,22 +190,10 @@ repositories = utils.InsensitivePreservingDict({
                                                    'nyuszika7h',
                                                    'limnoria-plugins'
                                                    ),
-               'nyuszika7h-old':   GithubRepository(
-                                                   'nyuszika7h',
-                                                   'Supybot-plugins'
-                                                   ),
-               'resistivecorpse':  GithubRepository(
-                                                   'resistivecorpse',
-                                                   'supybot-plugins'
-                                                   ),
                'frumious':         GithubRepository(
                                                    'frumiousbandersnatch',
                                                    'sobrieti-plugins',
                                                    'plugins',
-                                                   ),
-               'jonimoose':        GithubRepository(
-                                                   'Jonimoose',
-                                                   'Supybot-plugins',
                                                    ),
                'skgsergio':        GithubRepository(
                                                    'skgsergio',

@@ -226,6 +226,8 @@ def getEncoding(s):
 # From beautifulsoup (version 4.10.0, bs4/builder/__init__.py, line 391)
 _block_elements = set(["address", "article", "aside", "blockquote", "canvas", "dd", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "noscript", "ol", "output", "p", "pre", "section", "table", "tfoot", "ul", "video"])
 
+_block_elements.update({"br"})
+
 class HtmlToText(HTMLParser, object):
     """Taken from some eff-bot code on c.l.p."""
     entitydefs = entitydefs.copy()
