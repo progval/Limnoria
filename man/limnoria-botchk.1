@@ -1,0 +1,54 @@
+.\" Process this file with
+.\" groff -man -Tascii limnoria-botchk.1
+.\"
+.TH LIMNORIA-BOTCHK 1 "APRIL 2005"
+.SH NAME
+limnoria-botchk \- A script to start Limnoria if it's not already running.
+.SH SYNOPSIS
+.B limnoria-botchk
+.RI [ options ]
+.SH DESCRIPTION
+.B limnoria-botchk
+is a script that will start Limnoria if it detects that one is not currently
+running.  This can be useful for scheduling
+.IR limnoria (1)
+to run via
+.IR cron (8).
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\^\-help
+Show summary of options.
+.TP
+.BR \-v ", " \-\^\-verbose
+Use verbose output when running the script.
+.TP
+.BI \-\^\-botdir= BOTDIR
+Determines which directory the bot be started in.
+.TP
+.BI \-\^\-pidfile= PIDFILE
+Specifies the name of the pidfile to look for.  This should be relative
+to the given botdir.
+.TP
+.BI \-\^\-limnoria= LIMNORIA
+Specifies the location of
+.IR limnoria (1).
+If this is not given, it is assumed that
+.IR limnoria (1)
+is in the user's $PATH.
+.TP
+.BI \-\^\-conffile= CONFFILE
+Specifies the path to the bot's configuration file.  This will be used
+when (re)starting the bot.
+.SH "SEE ALSO"
+.IR python (1),
+.IR limnoria (1),
+.IR limnoria-test (1),
+.IR limnoria-wizard (1),
+.IR limnoria-adduser (1),
+.IR limnoria-plugin-doc (1),
+.IR limnoria-plugin-create (1)
+.SH AUTHOR
+This manual page was originally written by James McCoy
+<vega dot james at gmail dot com>.  Permission is granted to copy,
+distribute and/or modify this document under the terms of the Limnoria
+license, a BSD-style license.

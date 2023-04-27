@@ -276,7 +276,7 @@ def genDoc(m, options):
     finally:
         fd.close()
 
-if __name__ == '__main__':
+def main():
     import glob
     import os.path
     import optparse
@@ -348,5 +348,9 @@ if __name__ == '__main__':
         shutil.rmtree(conf.supybot.directories.log())
         shutil.rmtree(conf.supybot.directories.conf())
         shutil.rmtree(conf.supybot.directories.data())
+
+
+if __name__ == '__main__':
+    main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=78:

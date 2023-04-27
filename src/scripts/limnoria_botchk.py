@@ -53,7 +53,7 @@ def debug(s):
             s += os.linesep
         sys.stdout.write(s)
 
-if __name__ == '__main__':
+def main()
     # XXX I wanted this for conf.version, but this will create directories. We
     # really need to refactor conf so it either doesn't create directories, or
     # so that static information (like the version) can be imported from
@@ -134,5 +134,8 @@ if __name__ == '__main__':
         sys.exit(ret)
     else:
         sys.exit(0)
+
+if __name__ == '__main__':
+    main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

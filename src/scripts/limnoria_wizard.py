@@ -166,7 +166,7 @@ def getDirectoryName(default, basedir=os.curdir, prompt=True):
     return (dir, os.path.dirname(orig_dir))
 
 
-def main():
+def _main():
     import supybot.version as version
     parser = optparse.OptionParser(usage='Usage: %prog [options]',
                                    version='Supybot %s' % version.version)
@@ -815,9 +815,9 @@ def main():
     just have to start it like you start all your other Python scripts.""" % \
                                                          (filename, filename))
 
-if __name__ == '__main__':
+def main():
     try:
-        main()
+        _main()
     except KeyboardInterrupt:
         # We may still be using bold text when exiting during a prompt
         if questions.useBold:
@@ -828,5 +828,9 @@ if __name__ == '__main__':
         output("""Well, it looks like you canceled out of the wizard before
         it was done.  Unfortunately, I didn't get to write anything to file.
         Please run the wizard again to completion.""")
+
+
+if __name__ == '__main__':
+    main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

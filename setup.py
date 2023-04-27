@@ -117,7 +117,9 @@ packages = ['supybot',
             'supybot.locales',
             'supybot.utils',
             'supybot.drivers',
-            'supybot.plugins',] + \
+            'supybot.plugins',
+            'supybot.scripts',
+            ] + \
             ['supybot.plugins.'+s for s in plugins] + \
             [
              'supybot.plugins.Dict.local',
@@ -151,6 +153,17 @@ for plugin in plugins:
 
     if files:
         package_data.update({plugin_name: files})
+
+scripts = [
+    '',
+    '-test',
+    '-botchk',
+    '-wizard',
+    '-adduser',
+    '-reset-password',
+    '-plugin-doc',
+    '-plugin-create',
+]
 
 setup(
     # Metadata
@@ -202,25 +215,22 @@ setup(
 
     package_data=package_data,
 
-    scripts=['scripts/supybot',
-             'scripts/supybot-test',
-             'scripts/supybot-botchk',
-             'scripts/supybot-wizard',
-             'scripts/supybot-adduser',
-             'scripts/supybot-reset-password',
-             'scripts/supybot-plugin-doc',
-             'scripts/supybot-plugin-create',
-             ],
-    data_files=[('share/man/man1', ['man/supybot.1']),
-                ('share/man/man1', ['man/supybot-test.1']),
-                ('share/man/man1', ['man/supybot-botchk.1']),
-                ('share/man/man1', ['man/supybot-wizard.1']),
-                ('share/man/man1', ['man/supybot-adduser.1']),
-                ('share/man/man1', ['man/supybot-reset-password.1']),
-                ('share/man/man1', ['man/supybot-plugin-doc.1']),
-                ('share/man/man1', ['man/supybot-plugin-create.1']),
-        ],
+    entry_points={
+        'console_scripts': [
+            '%s%s = supybot.scripts.limnoria%s:main'
+            % (prefix, name, name.replace('-', '_'))
+            for name in scripts
+            for prefix in ('supybot', 'limnoria')
+        ]
+    },
 
-    )
+    data_files=[
+        ('share/man/man1', [
+            'man/%s%s.1' % (prefix, name)
+            for name in scripts
+            for prefix in ('supybot', 'limnoria')
+        ]),
+    ],
+)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -119,7 +119,7 @@ class path(str):
     def __eq__(self, other):
         return self._r.split(self) == self._r.split(other)
 
-if __name__ == '__main__':
+def main():
     import glob
     import os.path
     import optparse
@@ -242,5 +242,9 @@ if __name__ == '__main__':
         sys.exit(0)
     else:
         sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
