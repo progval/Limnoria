@@ -53,7 +53,7 @@ def debug(s):
             s += os.linesep
         sys.stdout.write(s)
 
-def main()
+def main():
     # XXX I wanted this for conf.version, but this will create directories. We
     # really need to refactor conf so it either doesn't create directories, or
     # so that static information (like the version) can be imported from
