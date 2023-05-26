@@ -118,7 +118,7 @@ class BadWordsInfilterTestCase(ChannelPluginTestCase):
                     args=(self.channel, 'oh shit'),
                     prefix='foobar!user@__no_testcap__',
                     server_tags={'msgid': 'abcde'}))
-                m = self.getMsg(' ', timeout=0.5)
+                m = self.getMsg(' ')
                 self.assertIsNotNone(m)
                 self.assertEqual(m.command, 'REDACT', m)
                 self.assertEqual(m.args, (self.channel, 'abcde'), m)
