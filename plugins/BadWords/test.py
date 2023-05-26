@@ -1,6 +1,6 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2023, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
 import supybot.conf as conf
 from supybot.test import *
 
-class BadWordsTestCase(PluginTestCase):
+class BadWordsOutfilterTestCase(PluginTestCase):
     plugins = ('BadWords', 'Utilities', 'Format', 'Filter')
     badwords = ('shit', 'ass', 'fuck')
     def tearDown(self):
@@ -79,6 +79,49 @@ class BadWordsTestCase(PluginTestCase):
         self.assertNotError('badwords add ass')
         self.assertNotError('badwords add "fuck you"')
         self.assertResponse('badwords list', 'ass, fuck you, and shit')
+
+
+class BadWordsInfilterTestCase(ChannelPluginTestCase):
+    plugins = ('BadWords',)
+    badwords = ('shit', 'ass', 'fuck')
+    def tearDown(self):
+        # .default() doesn't seem to be working for BadWords.words
+        #default = conf.supybot.plugins.BadWords.words.default()
+        #conf.supybot.plugins.BadWords.words.setValue(default)
+        conf.supybot.plugins.BadWords.words.setValue([])
+
+    def testKick(self):
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.assertNotError('badwords add shit')
+
+        with conf.supybot.plugins.BadWords.kick \
+                .getSpecific(self.irc.network, self.channel).context(True):
+            self.irc.feedMsg(ircmsgs.privmsg(self.channel,
+                                             'oh shit',
+                                             prefix='foobar!user@__no_testcap__'))
+            m = self.getMsg(' ')
+            self.assertIsNotNone(m)
+            self.assertEqual(m.command, 'KICK', m)
+            self.assertEqual(m.args[0], self.channel, m)
+            self.assertEqual(m.args[1], 'foobar', m)
+
+    def testRedact(self):
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.irc.state.capabilities_ack.add('draft/message-redaction')
+        self.assertNotError('badwords add shit')
+
+        with conf.supybot.plugins.BadWords.redact \
+                .getSpecific(self.irc.network, self.channel).context(True):
+            with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+                self.irc.feedMsg(ircmsgs.IrcMsg(
+                    command='PRIVMSG',
+                    args=(self.channel, 'oh shit'),
+                    prefix='foobar!user@__no_testcap__',
+                    server_tags={'msgid': 'abcde'}))
+                m = self.getMsg(' ', timeout=0.5)
+                self.assertIsNotNone(m)
+                self.assertEqual(m.command, 'REDACT', m)
+                self.assertEqual(m.args, (self.channel, 'abcde'), m)
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
