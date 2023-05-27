@@ -31,6 +31,17 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import os
+import sys
+import optparse
+import subprocess
+
+# XXX I wanted this for conf.version, but this will create directories. We
+# really need to refactor conf so it either doesn't create directories, or
+# so that static information (like the version) can be imported from
+# somewhere else.
+# from supybot import conf
+
 VERBOSE = False
 
 def readPid(filename):
@@ -54,16 +65,6 @@ def debug(s):
         sys.stdout.write(s)
 
 def main():
-    # XXX I wanted this for conf.version, but this will create directories. We
-    # really need to refactor conf so it either doesn't create directories, or
-    # so that static information (like the version) can be imported from
-    # somewhere else.
-    # import supybot.conf as conf
-    import os
-    import sys
-    import optparse
-    import subprocess
-
     parser = optparse.OptionParser(usage='Usage: %prog [options]')
     parser.add_option('', '--verbose', action='store_true',
                       help='Makes output verbose.')
