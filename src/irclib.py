@@ -2079,11 +2079,13 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.capUpkeep(msg)
 
     def _onCapSts(self, policy, msg):
+        tls_connection = self.driver.currentServer.force_tls_verification \
+            or self.driver.ssl
         secure_connection = self.driver.currentServer.force_tls_verification \
             or (self.driver.ssl and self.driver.anyCertValidationEnabled())
 
         parsed_policy = ircutils.parseStsPolicy(
-            log, policy, tls_connection=self.driver.ssl)
+            log, policy, tls_connection=tls_connection)
         if parsed_policy is None:
             # There was an error (and it was logged). Ignore it and proceed
             # with the connection.
