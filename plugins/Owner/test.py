@@ -48,6 +48,53 @@ class OwnerTestCase(PluginTestCase):
     def testIrcquote(self):
         self.assertResponse('ircquote PRIVMSG %s :foo' % self.irc.nick, 'foo')
 
+        self.feedMsg('ircquote PING foo')
+        self.assertEqual(self.irc.takeMsg(), ircmsgs.IrcMsg(
+            command='PING', args=('foo',)))
+
+    def testIrcquoteLabeledResponse(self):
+        self.irc.state.capabilities_ack.update({'labeled-response', 'batch'})
+        self.feedMsg('ircquote @label=abc PING foo')
+        self.assertEqual(self.irc.takeMsg(), ircmsgs.IrcMsg(
+            server_tags={'label': 'abc'}, command='PING', args=('foo',)))
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'label': 'abc'}, prefix='server.',
+            command='PONG', args=('foo',)))
+        self.assertResponse(' ', '@label=abc :server. PONG :foo')
+
+    def testIrcquoteLabeledResponseBatch(self):
+        self.irc.state.capabilities_ack.update({'labeled-response', 'batch'})
+        self.feedMsg('ircquote @label=abc WHO val')
+        self.assertEqual(self.irc.takeMsg(), ircmsgs.IrcMsg(
+            server_tags={'label': 'abc'}, command='WHO', args=('val',)))
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'label': 'abc'}, prefix='server.',
+            command='BATCH', args=('+4', 'labeled-response')))
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'batch': '4'}, prefix='server.',
+            command='311', args=('test', 'val', '~u', 'host', '*', 'Val L')))
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            server_tags={'batch': '4'}, prefix='server.',
+            command='311', args=('test', 'val', '#limnoria-bots')))
+
+        # Batch not complete yet -> no response
+        self.assertIsNone(self.irc.takeMsg())
+
+        # end of batch
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            prefix='server.', command='BATCH', args=('-4',)))
+
+        self.assertResponse(
+            ' ', '@label=abc :server. BATCH +4 :labeled-response')
+        self.assertResponse(
+            ' ', '@batch=4 :server. 311 test val ~u host * :Val L')
+        self.assertResponse(
+            ' ', '@batch=4 :server. 311 test val :#limnoria-bots')
+        self.assertResponse(
+            ' ', ':server. BATCH :-4')
+
+
     def testFlush(self):
         self.assertNotError('flush')
 
