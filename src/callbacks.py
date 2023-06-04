@@ -640,8 +640,8 @@ class ReplyIrcProxy(RichReplyMethods):
     the reply() and error() methods (as well as everything in RichReplyMethods,
     based on those two).
 
-    If `replyIrc` is given in addition to `irc`, commands will be run on `irc`
-    but replies will be delivered to `replyIrc`. This is used by the Network
+    If ``replyIrc`` is given in addition to ``irc``, commands will be run on ``irc``
+    but replies will be delivered to ``replyIrc``. This is used by the Network
     plugin to run commands on other networks."""
     _mores = ircutils.IrcDict()
     def __init__(self, irc, msg, replyIrc=None):
