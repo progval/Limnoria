@@ -149,7 +149,7 @@ class Network(callbacks.Plugin):
 
         Gives the bot <command> (with its associated <arg>s) on <network>.
         """
-        self.Proxy(otherIrc, msg, commandAndArgs)
+        self.Proxy(otherIrc, msg, commandAndArgs, replyIrc=irc)
     command = wrap(command, ['admin', ('networkIrc', True), many('something')])
 
     def cmdall(self, irc, msg, args, commandAndArgs):

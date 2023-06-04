@@ -638,10 +638,15 @@ _repr = repr
 class ReplyIrcProxy(RichReplyMethods):
     """This class is a thin wrapper around an irclib.Irc object that gives it
     the reply() and error() methods (as well as everything in RichReplyMethods,
-    based on those two)."""
+    based on those two).
+
+    If `replyIrc` is given in addition to `irc`, commands will be run on `irc`
+    but replies will be delivered to `replyIrc`. This is used by the Network
+    plugin to run commands on other networks."""
     _mores = ircutils.IrcDict()
-    def __init__(self, irc, msg):
+    def __init__(self, irc, msg, replyIrc=None):
         self.irc = irc
+        self.replyIrc = replyIrc or irc
         self.msg = msg
         self.getRealIrc()._setMsgChannel(self.msg)
 
@@ -669,8 +674,8 @@ class ReplyIrcProxy(RichReplyMethods):
         if msg is None:
             msg = self.msg
         if s:
-            m = _makeErrorReply(self, msg, s, **kwargs)
-            self.irc.queueMsg(m)
+            m = _makeErrorReply(self.replyIrc, msg, s, **kwargs)
+            self.replyIrc.queueMsg(m)
             return m
 
     def _defaultPrefixNick(self, msg):
@@ -754,29 +759,29 @@ class ReplyIrcProxy(RichReplyMethods):
     def _sendReply(self, s, target, msg, sendImmediately=False,
                    noLengthCheck=False, **kwargs):
         if sendImmediately:
-            sendMsg = self.irc.sendMsg
+            sendMsg = self.replyIrc.sendMsg
         else:
-            sendMsg = self.irc.queueMsg
+            sendMsg = self.replyIrc.queueMsg
 
-        if isinstance(self.irc, self.__class__):
+        if isinstance(self.replyIrc, self.__class__):
             s = s[:conf.supybot.reply.maximumLength()]
-            return self.irc.reply(s,
-                                  noLengthCheck=noLengthCheck,
-                                  **kwargs)
+            return self.replyIrc.reply(s,
+                                       noLengthCheck=noLengthCheck,
+                                       **kwargs)
         elif noLengthCheck:
             # noLengthCheck only matters to NestedCommandsIrcProxy, so
             # it's not used here.  Just in case you were wondering.
-            m = _makeReply(self, msg, s, **kwargs)
+            m = _makeReply(self.replyIrc, msg, s, **kwargs)
             sendMsg(m)
             return m
         else:
             s = ircutils.safeArgument(s)
             allowedLength = conf.get(conf.supybot.reply.mores.length,
-                channel=target, network=self.irc.network)
+                channel=target, network=self.replyIrc.network)
             if not allowedLength: # 0 indicates this.
                 allowedLength = 512 - self._replyOverhead(msg, **kwargs)
             maximumMores = conf.get(conf.supybot.reply.mores.maximum,
-                channel=target, network=self.irc.network)
+                channel=target, network=self.replyIrc.network)
             maximumLength = allowedLength * maximumMores
             if len(s) > maximumLength:
                 log.warning('Truncating to %s bytes from %s bytes.',
@@ -785,12 +790,12 @@ class ReplyIrcProxy(RichReplyMethods):
             s_size = len(s.encode()) if minisix.PY3 else len(s)
             if s_size <= allowedLength or \
                not conf.get(conf.supybot.reply.mores,
-                    channel=target, network=self.irc.network):
+                    channel=target, network=self.replyIrc.network):
                 # There's no need for action=self.action here because
                 # action implies noLengthCheck, which has already been
                 # handled.  Let's stick an assert in here just in case.
                 assert not kwargs.get('action')
-                m = _makeReply(self, msg, s, **kwargs)
+                m = _makeReply(self.replyIrc, msg, s, **kwargs)
                 sendMsg(m)
                 return m
             # The '(XX more messages)' may have not the same
@@ -803,7 +808,7 @@ class ReplyIrcProxy(RichReplyMethods):
             chunks.reverse()
 
             instant = conf.get(conf.supybot.reply.mores.instant,
-                channel=target, network=self.irc.network)
+                channel=target, network=self.replyIrc.network)
 
             # Big complex loop ahead, with lots of cases and opportunities for
             # off-by-one errors. Here is the meaning of each of the variables
@@ -859,9 +864,9 @@ class ReplyIrcProxy(RichReplyMethods):
                 if is_instant and not is_first:
                     d = kwargs.copy()
                     d['prefixNick'] = False
-                    msgs.append(_makeReply(self, msg, chunk, **d))
+                    msgs.append(_makeReply(self.replyIrc, msg, chunk, **d))
                 else:
-                    msgs.append(_makeReply(self, msg, chunk, **kwargs))
+                    msgs.append(_makeReply(self.replyIrc, msg, chunk, **kwargs))
 
             instant_messages = []
 
@@ -876,13 +881,15 @@ class ReplyIrcProxy(RichReplyMethods):
                 # return m
 
             if conf.supybot.protocols.irc.experimentalExtensions() \
-                    and 'draft/multiline' in self.state.capabilities_ack \
+                    and 'draft/multiline' in \
+                    self.replyIrc.state.capabilities_ack \
                     and len(instant_messages) > 1:
                 # More than one message to send now, and we are allowed to use
                 # multiline batches, so let's do it
-                self.queueMultilineBatches(
+                self.replyIrc.queueMultilineBatches(
                     instant_messages, target, msg.nick, concat=True,
-                    allowedLength=allowedLength, sendImmediately=sendImmediately)
+                    allowedLength=allowedLength,
+                    sendImmediately=sendImmediately)
             else:
                 for instant_msg in instant_messages:
                     sendMsg(instant_msg)
@@ -892,7 +899,7 @@ class ReplyIrcProxy(RichReplyMethods):
             prefix = msg.prefix
             if target and ircutils.isNick(target):
                 try:
-                    state = self.getRealIrc().state
+                    state = self.replyIrc.state
                     prefix = state.nickToHostmask(target)
                 except KeyError:
                     pass # We'll leave it as it is.
@@ -973,9 +980,10 @@ SimpleProxy = ReplyIrcProxy # Backwards-compatibility
 
 class NestedCommandsIrcProxy(ReplyIrcProxy):
     "A proxy object to allow proper nesting of commands (even threaded ones)."
-    def __init__(self, irc, msg, args, nested=0):
+    def __init__(self, irc, msg, args, nested=0, replyIrc=None):
         assert isinstance(args, list), 'Args should be a list, not a string.'
-        super(NestedCommandsIrcProxy, self).__init__(irc, msg)
+        super(NestedCommandsIrcProxy, self).__init__(
+            irc, msg, replyIrc=replyIrc)
         self.nested = nested
         self.repliedTo = False
         if not self.nested and isinstance(irc, self.__class__):

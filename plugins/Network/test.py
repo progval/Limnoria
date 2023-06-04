@@ -31,7 +31,7 @@
 from supybot.test import *
 
 class NetworkTestCase(PluginTestCase):
-    plugins = ['Network', 'Utilities']
+    plugins = ['Network', 'Utilities', 'String', 'Misc']
     def testNetworks(self):
         self.assertNotError('networks')
 
@@ -39,6 +39,28 @@ class NetworkTestCase(PluginTestCase):
         self.assertResponse('network command %s echo 1' % self.irc.network,
                             '1')
 
+    def testCommandRoutesBackToCaller(self):
+        self.otherIrc = getTestIrc("testnet1")
+        # This will fail with timeout if the response never comes back
+        self.assertResponse(
+            'network command testnet1 echo $network', 'testnet1')
+
+    def testCommandRoutesErrorsBackToCaller(self):
+        self.otherIrc = getTestIrc("testnet2")
+        self.assertRegexp(
+            f'network command testnet2 re s/.*// test',
+            'I tried to send you an empty message')
+
+    def testCommandRoutesMoreBackToCaller(self):
+        self.otherIrc = getTestIrc("testnet3")
+        self.assertNotError('clearmores')
+        self.assertError('more')
+        self.assertRegexp(
+            f'network command testnet3 echo {"Hello"*300}',
+            r'Hello.*\(\d+ more messages\)')
+        self.assertRegexp(
+            'more',
+            r'Hello.*\(\d+ more messages\)')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
