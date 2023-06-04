@@ -218,20 +218,21 @@ class String(callbacks.Plugin):
         s/regexp/replacement/flags, returns the result of applying such a
         regexp to <text>.
         """
-        if f('') and len(f(' ')) > len(f(''))+1: # Matches the empty string.
-            s = _('You probably don\'t want to match the empty string.')
-            irc.error(s)
-        else:
-            t = self.registryValue('re.timeout')
-            try:
-                v = process(f, text, timeout=t, pn=self.name(), cn='re')
-                if isinstance(v, list):
-                    v = format('%L', v)
-                irc.reply(v)
-            except commands.ProcessTimeoutError as e:
-                irc.error("ProcessTimeoutError: %s" % (e,))
-            except re.error as e:
-                irc.error(e.args[0])
+        try:
+            if f('') and len(f(' ')) > len(f(''))+1: # Matches the empty string.
+                s = _('You probably don\'t want to match the empty string.')
+                irc.error(s)
+            else:
+                t = self.registryValue('re.timeout')
+                try:
+                    v = process(f, text, timeout=t, pn=self.name(), cn='re')
+                    if isinstance(v, list):
+                        v = format('%L', v)
+                    irc.reply(v)
+                except commands.ProcessTimeoutError as e:
+                    irc.error("ProcessTimeoutError: %s" % (e,))
+        except re.error as e:
+            irc.error(e.args[0])
     re = thread(wrap(re, [first('regexpMatcherMany', 'regexpReplacer'),
                    'text']))
 
