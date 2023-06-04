@@ -93,6 +93,7 @@ class Owner(callbacks.Plugin):
         self.__parent.__init__(irc)
         # Setup command flood detection.
         self.commands = ircutils.FloodQueue(conf.supybot.abuse.flood.interval())
+        self.ircquote_responses = utils.structures.ExpiringDict(600)
         conf.supybot.abuse.flood.interval.addCallback(self.setFloodQueueTimeout)
         # Setup plugins and default plugins for commands.
         #
@@ -133,6 +134,31 @@ class Owner(callbacks.Plugin):
 
     def callPrecedence(self, irc):
         return ([], [cb for cb in irc.callbacks if cb is not self])
+
+    def __call__(self, irc, msg):
+        ret = super().__call__(irc, msg)
+
+        if not self.ircquote_responses:
+            # short-path: if we have no ircquote in flight (which we don't,
+            # most of the time), then we can skip all the batch and
+            # label resolution.
+            return ret
+
+        try:
+            label = msg.server_tags.get("label")
+
+            if label and msg.command != "BATCH":
+                # if labeled-response BATCH, then it's handled in
+                # _doBatchIrcquote
+                ircquote_response = self.ircquote_responses.pop(
+                    (irc.network, label), None)
+
+                if ircquote_response:
+                    ircquote_response["irc"].reply(str(msg).strip())
+        except Exception as e:
+            self.log.exception("Errored while sending ircquote response")
+        finally:
+            return ret
 
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG' and not world.testing:
@@ -229,6 +255,10 @@ class Owner(callbacks.Plugin):
         self.commands.timeout = conf.supybot.abuse.flood.interval()
 
     def doBatch(self, irc, msg):
+        self._doBatchMultiline(irc, msg)
+        self._doBatchIrcquote(irc, msg)
+
+    def _doBatchMultiline(self, irc, msg):
         if not conf.supybot.protocols.irc.experimentalExtensions():
             return
 
@@ -295,6 +325,30 @@ class Owner(callbacks.Plugin):
         )
 
         self._doPrivmsgs(irc, synthetic_msg)
+
+    def _doBatchIrcquote(self, irc, msg):
+        if not self.ircquote_responses:
+            # short-path: if we have no ircquote in flight (which we don't,
+            # most of the time), then we can skip all the batch and
+            # label resolution.
+            return
+
+        if not msg.args[0].startswith("-"):
+            return
+
+        batch = msg.tagged("batch")
+        label = batch.messages[0].server_tags.get("label")
+        if not label:
+            return
+
+        ircquote_response = self.ircquote_responses.pop(
+            (irc.network, label), None)
+
+        if ircquote_response:
+            ircquote_response["irc"].replies(
+                [str(msg).strip() for msg in batch.messages],
+                oneToOne=False
+            )
 
     def doPrivmsg(self, irc, msg):
         if 'batch' in msg.server_tags:
@@ -449,7 +503,11 @@ class Owner(callbacks.Plugin):
             irc.error(utils.exnToString(e))
         else:
             irc.queueMsg(m)
-            irc.noReply()
+            label = m.server_tags.get("label")
+            if label and "labeled-response" in irc.state.capabilities_ack:
+                self.ircquote_responses[(irc.network, label)] = {"irc": irc}
+            else:
+                irc.noReply()
     ircquote = wrap(ircquote, ['text'])
 
     def quit(self, irc, msg, args, text):
