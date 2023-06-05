@@ -48,19 +48,12 @@ def split(s):
 csv.join = join
 csv.split = split
 
-builtins = (__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)
-
-
-# We use this often enough that we're going to stick it in builtins.
 def force(x):
     if callable(x):
         return x()
     else:
         return x
-builtins['force'] = force
 
-# These imports need to happen below the block above, so things get put into
-# __builtins__ appropriately.
 from .gen import *
 from . import crypt, error, file, iter, net, python, seq, str, time, transaction, web
 
