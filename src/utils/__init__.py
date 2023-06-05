@@ -31,23 +31,6 @@
 
 from . import minisix
 
-###
-# csv.{join,split} -- useful functions that should exist.
-###
-import csv
-def join(L):
-    fd = minisix.io.StringIO()
-    writer = csv.writer(fd)
-    writer.writerow(L)
-    return fd.getvalue().rstrip('\r\n')
-
-def split(s):
-    fd = minisix.io.StringIO(s)
-    reader = csv.reader(fd)
-    return next(reader)
-csv.join = join
-csv.split = split
-
 def force(x):
     if callable(x):
         return x()

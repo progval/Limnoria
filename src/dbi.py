@@ -408,6 +408,19 @@ Mappings = {
     'flat': FlatfileMapping,
     }
 
+###
+# csv.{join,split} -- useful functions that should exist.
+###
+def csv_join(L):
+    fd = minisix.io.StringIO()
+    writer = csv.writer(fd)
+    writer.writerow(L)
+    return fd.getvalue().rstrip('\r\n')
+
+def csv_split(s):
+    fd = minisix.io.StringIO(s)
+    reader = csv.reader(fd)
+    return next(reader)
 
 class Record(object):
     def __init__(self, id=None, **kwargs):
@@ -444,11 +457,11 @@ class Record(object):
                 setattr(self, name, default)
 
     def serialize(self):
-        return csv.join([repr(getattr(self, name)) for name in self.fields])
+        return csv_join([repr(getattr(self, name)) for name in self.fields])
 
     def deserialize(self, s):
         unseenRecords = set(self.fields)
-        for (name, strValue) in zip(self.fields, csv.split(s)):
+        for (name, strValue) in zip(self.fields, csv_split(s)):
             setattr(self, name, self.converters[name](strValue))
             unseenRecords.remove(name)
         for name in unseenRecords:
