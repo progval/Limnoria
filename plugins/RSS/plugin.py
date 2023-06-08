@@ -674,7 +674,9 @@ class RSS(callbacks.Plugin):
         n = n or self.registryValue('defaultNumberOfHeadlines', channel, irc.network)
         entries = list(filter(lambda e:self.should_send_entry(irc.network, channel, e),
                               feed.entries))
+        entries = sort_feed_items(entries, 'newestFirst')
         entries = entries[:n]
+        entries = sort_feed_items(entries, self.registryValue('sortFeedItems'))
         headlines = map(lambda e:self.format_entry(irc.network, channel, feed, e, False),
                         entries)
         sep = self.registryValue('headlineSeparator', channel, irc.network)
