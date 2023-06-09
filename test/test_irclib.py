@@ -851,7 +851,7 @@ class StsTestCase(SupyTestCase):
             'irc.test': (6697, cap_value)})
         self.irc.driver.reconnect.assert_not_called()
 
-    def testStsInSecureConnectionWithoutPort(self):
+    def testStsInSecureConnectionWithPort(self):
         self._testStsInSecureConnection('duration=42,port=12345')
 
     def testStsInSecureConnectionWithoutPort(self):
