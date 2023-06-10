@@ -1072,28 +1072,27 @@ def parseCapabilityKeyValue(s):
 
     return d
 
-
-def parseStsPolicy(logger, policy, secure_connection):
+def parseStsPolicy(logger, policy, tls_connection):
     parsed_policy = parseCapabilityKeyValue(policy)
 
     for key in ('port', 'duration'):
-        if key == 'duration' and not secure_connection:
+        if key == 'duration' and not tls_connection:
             if key in parsed_policy:
                 del parsed_policy[key]
             continue
-        elif key == 'port' and secure_connection:
+        elif key == 'port' and tls_connection:
             if key in parsed_policy:
                 del parsed_policy[key]
             continue
         if parsed_policy.get(key) is None:
-            logger.error('Missing or empty "%s" key in STS policy.'
-                         'Aborting connection.', key)
+            logger.error('Missing or empty "%s" key in STS policy. '
+                         'Ignoring policy.', key)
             return None
         try:
             parsed_policy[key] = int(parsed_policy[key])
         except ValueError:
             logger.error('Expected integer as value for key "%s" in STS '
-                         'policy, got %r instead. Aborting connection.',
+                         'policy, got %r instead. Ignoring policy.',
                          key, parsed_policy[key])
             return None
 
