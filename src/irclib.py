@@ -2061,7 +2061,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             return
         caps = msg.args[2].split()
         assert caps, 'Empty list of capabilities'
-        log.debug('%s: Server acknowledged capabilities: %L',
+        log.debug('%s: Server acknowledged capabilities: %s',
                  self.network, caps)
         self.state.capabilities_ack.update(caps)
 
@@ -2074,7 +2074,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         caps = msg.args[2].split()
         assert caps, 'Empty list of capabilities'
         self.state.capabilities_nak.update(caps)
-        log.warning('%s: Server refused capabilities: %L',
+        log.warning('%s: Server refused capabilities: %s',
                     self.network, caps)
         self.capUpkeep(msg)
 
