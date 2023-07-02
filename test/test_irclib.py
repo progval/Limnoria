@@ -586,6 +586,7 @@ class IrcStateTestCase(SupyTestCase):
         st.addMsg(self.irc, ircmsgs.join('#foo', prefix='bar!baz@qux'))
         with self.assertRaises(KeyError):
             st.nickToAccount('foo')
+        with self.assertRaises(KeyError):
             st.nickToAccount('bar')
 
 
