@@ -615,6 +615,8 @@ class IrcStateTestCase(SupyTestCase):
             with self.assertRaises(KeyError):
                 st2.nickToAccount('foo')
             self.assertEqual(st2.nickToAccount('bar'), 'account2')
+
+            # check st isn't affected by changes to st2
             self.assertEqual(st.nickToAccount('foo'), 'account1')
             self.assertEqual(st.nickToAccount('bar'), 'account2')
 
@@ -627,6 +629,8 @@ class IrcStateTestCase(SupyTestCase):
                 st2.nickToAccount('foo')
             self.assertEqual(st2.nickToAccount('foo2'), 'account1')
             self.assertEqual(st2.nickToAccount('bar'), 'account2')
+
+            # check st isn't affected by changes to st2
             self.assertEqual(st.nickToAccount('foo'), 'account1')
             self.assertEqual(st.nickToAccount('bar'), 'account2')
 
@@ -638,6 +642,8 @@ class IrcStateTestCase(SupyTestCase):
             with self.assertRaises(KeyError):
                 st2.nickToAccount('foo')
             self.assertEqual(st2.nickToAccount('bar'), 'account1')
+
+            # check st isn't affected by changes to st2
             self.assertEqual(st.nickToAccount('foo'), 'account1')
             self.assertEqual(st.nickToAccount('bar'), 'account2')
 
