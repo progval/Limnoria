@@ -1289,7 +1289,7 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
 
         if (bnick, buser, bhost) == ('*', '*', '*') and \
                 ircutils.isUserHostmask(hostmask) and \
-                masks == []:
+                not masks:
             masks.append(hostmask)
 
         return masks
