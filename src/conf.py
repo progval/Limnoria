@@ -1228,11 +1228,9 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
             options = supybot.protocols.irc.banmask.getSpecific(
                 network, channel)()
         options = [option for option in options if option != 'account']
-        print(hostmask, options)
         masks = self.makeExtBanmasks(
             hostmask, options, channel, network=network)
         assert len(masks) == 1, 'Unexpected number of banmasks: %r' % masks
-        print(masks)
         return masks[0]
 
     def makeExtBanmasks(self, hostmask, options=None, channel=None, *, network):
