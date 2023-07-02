@@ -684,9 +684,10 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
 
     .. attribute:: nicksToAccounts
 
-        Stores the current services account name of a seen nick.
+        Stores the current services account name of a seen nick (or
+        :const:`None` for un-identified nicks)
 
-        :type: ircutils.IrcDict[str, str]
+        :type: ircutils.IrcDict[str, Optional[str]]
     """
     __firewalled__ = {'addMsg': None}
 
@@ -807,7 +808,8 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
 
     def nickToAccount(self, nick):
         """Returns the account for a given nick, or None if the nick is logged
-        out."""
+        out. Raises :exc:`KeyError` if the nick was not seen or its account is
+        not known yet."""
         return self.nicksToAccounts[nick]
 
     def getParentBatches(self, msg):
