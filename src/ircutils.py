@@ -346,7 +346,7 @@ def banmask(hostmask):
             return '*!*@'  + host
 
 
-def accountExtban(nick, irc):
+def accountExtban(irc, nick):
     """If 'nick' is logged in and the network supports account extbans,
     returns a ban mask for it. If not, returns None."""
     if 'ACCOUNTEXTBAN' not in irc.state.supported:

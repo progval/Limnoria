@@ -1280,7 +1280,7 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
                 irc = world.getIrc(network)
                 if irc is None:
                     continue
-                extban = ircutils.accountExtban(nick, irc)
+                extban = ircutils.accountExtban(irc, nick)
                 if extban is not None:
                     masks.append(extban)
 
