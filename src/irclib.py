@@ -684,7 +684,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
 
     .. attribute:: nicksToAccounts
 
-        Stores the current network account name of a seen nick.
+        Stores the current services account name of a seen nick.
 
         :type: ircutils.IrcDict[str, str]
     """
