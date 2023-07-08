@@ -29,8 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import itertools
-
 from supybot.test import *
 
 import supybot.conf as conf
@@ -165,10 +163,10 @@ class ChannelTestCase(ChannelPluginTestCase):
 
     def assertKban(self, query, *hostmasks, **kwargs):
         m = self.getMsg(query, **kwargs)
-        self.assertIn(m, [
-            ircmsgs.bans(self.channel, permutation)
-            for permutation in itertools.permutations(hostmasks)
-            ])
+        self.assertEqual(m.command, "MODE", m)
+        self.assertEqual(m.args[0], self.channel, m)
+        self.assertEqual(m.args[1], "+" + "b" * len(hostmasks), m)
+        self.assertCountEqual(m.args[2:], hostmasks, m)
 
         m = self.getMsg(' ')
         self.assertEqual(m.command, 'KICK')
