@@ -72,6 +72,8 @@ def import_conf():
     conf = __import__('supybot.conf').conf
     class Languages(conf.registry.OnlySomeStrings):
         validStrings = ['de', 'en', 'es', 'fi', 'fr', 'it']
+        errormsg = 'Value should be a supported language (%s), not %%r' % (
+            ', '.join(validStrings))
     conf.registerGlobalValue(conf.supybot, 'language',
         Languages(currentLocale, """Determines the bot's default
         language if translations exist. Currently supported are: %s"""
