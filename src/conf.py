@@ -676,8 +676,9 @@ registerChannelValue(supybot.replies, 'success',
 
 registerChannelValue(supybot.replies, 'error',
     registry.NormalizedString(_("""An error has occurred and has been logged.
-    Please contact this bot's administrator for more information."""), _("""
-    Determines what error message the bot gives when it wants to be
+    Please contact this bot's administrator for more information.
+    If this configuration variable is empty, no generic error message will be sent."""),
+    _("""Determines what error message the bot gives when it wants to be
     ambiguous.""")))
 
 registerChannelValue(supybot.replies, 'errorOwner',

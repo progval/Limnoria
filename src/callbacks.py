@@ -506,8 +506,11 @@ class RichReplyMethods(object):
             msg = kwargs['msg']
             if ircdb.checkCapability(msg.prefix, 'owner'):
                 v = self._getConfig(conf.supybot.replies.errorOwner)
-        s = self.__makeReply(v, s)
-        return self.reply(s, **kwargs)
+        if v:
+            s = self.__makeReply(v, s)
+            return self.reply(s, **kwargs)
+        else:
+            self.noReply()
 
     def _getTarget(self, to=None):
         """Compute the target according to self.to, the provided to,
