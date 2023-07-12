@@ -1283,6 +1283,11 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
                 extban = ircutils.accountExtban(irc, nick)
                 if extban is not None:
                     masks.append(extban)
+            else:
+                from . import log
+                log.warning(
+                    "Unknown mask option passed to makeExtBanmasks: %r",
+                    option)
 
         if add_star_mask and (bnick, buser, bhost) != ('*', '*', '*'):
             masks.append(ircutils.joinHostmask(bnick, buser, bhost))
