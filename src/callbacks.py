@@ -733,6 +733,9 @@ class ReplyIrcProxy(RichReplyMethods):
                 kwargs['target'] = kwargs.get('to', None) or msg.args[0]
         if 'prefixNick' not in kwargs:
             kwargs['prefixNick'] = self._defaultPrefixNick(msg)
+        if kwargs.get("action"):
+            kwargs["prefixNick"] = False
+            kwargs["noLengthCheck"] = True
         self._sendReply(s, msg=msg, **kwargs)
 
     def __getattr__(self, attr):
