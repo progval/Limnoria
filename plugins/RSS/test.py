@@ -69,6 +69,9 @@ class MockResponse:
     def close(self):
         pass
 
+    def geturl(self):
+        return url
+
 def mock_urllib(f):
     mock = MockResponse()
 
