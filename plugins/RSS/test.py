@@ -360,6 +360,14 @@ class RSSTestCase(ChannelPluginTestCase):
                     'On the other hand, the refractor\'s')
 
     @mock_urllib
+    def testFeedAttribute(self, mock):
+        timeFastForward(1.1)
+        with conf.supybot.plugins.RSS.format.context('$feed_title: $title'):
+            mock._data = xkcd_new
+            self.assertRegexp('rss http://xkcd.com/rss.xml',
+                              r'xkcd\.com: Telescopes')
+
+    @mock_urllib
     def testBadlyFormedFeedWithNoItems(self, mock):
         # This combination will cause the RSS command to show the last parser
         # error.

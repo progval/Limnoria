@@ -493,10 +493,11 @@ class RSS(callbacks.Plugin):
             template = self.registryValue(key_name, channel, network)
         date = entry.get('published_parsed')
         date = utils.str.timestamp(date)
-        s = string.Template(template).safe_substitute(
-                entry,
-                feed_name=feed.name,
-                date=date)
+        kwargs = {"feed_%s" % k: v for (k, v) in feed.data.items() if
+                  isinstance(v, str)}
+        kwargs["feed_name"] = feed.name
+        kwargs.update(entry)
+        s = string.Template(template).safe_substitute(entry, **kwargs, date=date)
         return self._normalize_entry(s)
 
     def announce_entry(self, irc, channel, feed, entry):
