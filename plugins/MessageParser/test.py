@@ -89,7 +89,10 @@ class MessageParserTestCase(ChannelPluginTestCase):
     def testSyntaxError(self):
         self.assertNotError(r'messageparser add "test" "echo foo \" bar"')
         self.feedMsg('test')
-        self.assertResponse(' ', 'Error: No closing quotation')
+        self.assertResponse(
+            ' ',
+            r"""Error: No closing quotation, in """
+            r"""'echo foo " bar' (triggered by 'test')""")
 
     def testMatchedBackslashes(self):
         # Makes sure backslashes in matched arguments are not interpreted
