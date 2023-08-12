@@ -468,7 +468,12 @@ class IrcChannel(object):
             return True
         if world.testing:
             return False
-        assert ircutils.isUserHostmask(hostmask), 'got %s' % hostmask
+        if not ircutils.isUserHostmask(hostmask):
+            # Treat messages from a server (e.g. snomasks) as not ignored, as
+            # the ignores system doesn't understand them
+            if '.' not in hostmask:
+                raise ValueError("Expected full prefix, got %r" % hostmask)
+            return False
         if self.checkBan(hostmask):
             return True
         if self.ignores.match(hostmask):
