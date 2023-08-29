@@ -372,6 +372,30 @@ class Services(callbacks.Plugin):
             self.log.info('Received notice from NickServ %s: %q.', on,
                           ircutils.stripFormatting(msg.args[1]))
 
+    def do903(self, irc, msg):  # RPL_SASLSUCCESS
+        if self.disabled(irc):
+            return
+        state = self._getState(irc)
+        state.identified = True
+        for channel in irc.state.channels.keys():
+            self.checkPrivileges(irc, channel)
+        if irc.state.fsm in [irclib.IrcStateFsm.CONNECTED,
+                             irclib.IrcStateFsm.CONNECTED_SASL]:
+            for channel in state.channels:
+                irc.queueMsg(networkGroup.channels.join(channel))
+            waitingJoins = state.waitingJoins
+            state.waitingJoins = []
+            for join in waitingJoins:
+                irc.sendMsg(join)
+
+    do907 = do903  # ERR_SASLALREADY, just to be sure we didn't miss it
+
+    def do901(self, irc, msg):  # RPL_LOGGEDOUT
+        if self.disabled(irc):
+            return
+        state = self._getState(irc)
+        state.identified = False
+
     def checkPrivileges(self, irc, channel):
         if self.disabled(irc):
             return
