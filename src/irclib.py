@@ -559,14 +559,14 @@ class IrcStateFsm(object):
             self.States.UNINITIALIZED,
         ])
 
-    def on_sasl_cap(self, irc, msg):
-        '''Whenever we see the 'sasl' capability in a CAP LS response'''
+    def on_sasl_start(self, irc, msg):
+        '''Whenever we initiate a SASL transaction.'''
         if self.state == self.States.INIT_CAP_NEGOTIATION:
             self._transition(irc, msg, self.States.INIT_SASL)
         elif self.state == self.States.CONNECTED:
             self._transition(irc, msg, self.States.CONNECTED_SASL)
         else:
-            raise ValueError('Got sasl cap while in state %s' % self.state)
+            raise ValueError('Started SASL while in state %s' % self.state)
 
     def on_sasl_auth_finished(self, irc, msg):
         '''When sasl auth either succeeded or failed.'''
@@ -1729,7 +1729,6 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.authenticate_decoder = None
         self.sasl_next_mechanisms = []
         self.sasl_current_mechanism = None
-
         for mechanism in network_config.sasl.mechanisms():
             if mechanism == 'ecdsa-nist256p-challenge':
                 if not crypto:
@@ -1767,17 +1766,13 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 else:
                     self.sasl_next_mechanisms.append(mechanism)
 
-        if self.sasl_next_mechanisms:
-            self.REQUEST_CAPABILITIES.add('sasl')
-
-
     # Note: echo-message is only requested if labeled-response is available.
     REQUEST_CAPABILITIES = set(['account-notify', 'extended-join',
         'multi-prefix', 'metadata-notify', 'account-tag',
         'userhost-in-names', 'invite-notify', 'server-time',
         'chghost', 'batch', 'away-notify', 'message-tags',
         'msgid', 'setname', 'labeled-response', 'echo-message',
-        'standard-replies'])
+        'sasl', 'standard-replies'])
     """IRCv3 capabilities requested when they are available.
 
     echo-message is special-cased to be requested only with labeled-response.
@@ -1901,17 +1896,21 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
     def _maybeStartSasl(self, msg):
         if not self.sasl_authenticated and \
                 'sasl' in self.state.capabilities_ack:
-            self.state.fsm.on_sasl_cap(self, msg)
-            assert 'sasl' in self.state.capabilities_ls, (
-                'Got "CAP ACK sasl" without receiving "CAP LS sasl" or '
-                '"CAP NEW sasl" first.')
-            s = self.state.capabilities_ls['sasl']
-            if s is not None:
-                available = set(map(str.lower, s.split(',')))
-                self.sasl_next_mechanisms = [
-                        x for x in self.sasl_next_mechanisms
-                        if x.lower() in available]
-            self.tryNextSaslMechanism(msg)
+            self.startSasl(msg)
+
+    def startSasl(self, msg):
+        self.state.fsm.on_sasl_start(self, msg)
+        assert 'sasl' in self.state.capabilities_ls, (
+            'Starting SASL without receiving "CAP LS sasl" or '
+            '"CAP NEW sasl" first.')
+        self.resetSasl()
+        s = self.state.capabilities_ls['sasl']
+        if s is not None:
+            available = set(map(str.lower, s.split(',')))
+            self.sasl_next_mechanisms = [
+                    x for x in self.sasl_next_mechanisms
+                    if x.lower() in available]
+        self.tryNextSaslMechanism(msg)
 
     def doAuthenticate(self, msg):
         self.state.fsm.expect_state([

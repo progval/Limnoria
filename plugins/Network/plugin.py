@@ -306,6 +306,17 @@ class Network(callbacks.Plugin):
         irc.reply(format("%L", sorted(otherIrc.state.capabilities_ls)))
     capabilities = wrap(capabilities, ['networkIrc'])
 
+    def authenticate(self, irc, msg, args):
+        """takes no arguments
+
+        Manually initiate SASL authentication.
+        """
+        if 'sasl' in irc.state.capabilities_ack:
+            irc.startSasl(msg)
+            irc.replySuccess()
+        else:
+            irc.error(_('SASL not supported'))
+    authenticate = wrap(authenticate)
 
 Class = Network
 
