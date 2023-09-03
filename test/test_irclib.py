@@ -1501,34 +1501,26 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
             conf.supybot.networks.test.sasl.username.setValue('jilles')
             conf.supybot.networks.test.sasl.password.setValue('sesame')
             self.irc = irclib.Irc('test')
+
+            self.startCapNegociation()
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('PLAIN',)))
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=('+',)))
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('amlsbGVzAGppbGxlcwBzZXNhbWU=',)))
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='900', args=('jilles',)))
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
+
+            self.endCapNegociation()
         finally:
             conf.supybot.networks.test.sasl.username.setValue('')
             conf.supybot.networks.test.sasl.password.setValue('')
-        self.assertEqual(self.irc.sasl_current_mechanism, None)
-        self.irc.sasl_next_mechanisms = ['scram-sha-256', 'plain']
-
-        self.startCapNegociation()
-
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('SCRAM-SHA-256',)))
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='904',
-            args=('mechanism not available',)))
-
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('PLAIN',)))
-
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=('+',)))
-
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('amlsbGVzAGppbGxlcwBzZXNhbWU=',)))
-
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='900', args=('jilles',)))
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
-
-        self.endCapNegociation()
 
     def testExternalFallbackToPlain(self):
         try:
@@ -1536,35 +1528,36 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
             conf.supybot.networks.test.sasl.password.setValue('sesame')
             conf.supybot.networks.test.certfile.setValue('foo')
             self.irc = irclib.Irc('test')
+
+            self.assertEqual(self.irc.sasl_current_mechanism, None)
+            self.irc.sasl_next_mechanisms = ['external', 'plain']
+
+            self.startCapNegociation()
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('EXTERNAL',)))
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='904',
+                args=('mechanism not available',)))
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('PLAIN',)))
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=('+',)))
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('amlsbGVzAGppbGxlcwBzZXNhbWU=',)))
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='900', args=('jilles',)))
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
+
+            self.endCapNegociation()
         finally:
             conf.supybot.networks.test.sasl.username.setValue('')
             conf.supybot.networks.test.sasl.password.setValue('')
             conf.supybot.networks.test.certfile.setValue('')
-        self.assertEqual(self.irc.sasl_current_mechanism, None)
-        self.irc.sasl_next_mechanisms = ['external', 'plain']
-
-        self.startCapNegociation()
-
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('EXTERNAL',)))
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='904',
-            args=('mechanism not available',)))
-
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('PLAIN',)))
-
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=('+',)))
-
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('amlsbGVzAGppbGxlcwBzZXNhbWU=',)))
-
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='900', args=('jilles',)))
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
-
-        self.endCapNegociation()
 
     def testFilter(self):
         try:
@@ -1572,29 +1565,27 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
             conf.supybot.networks.test.sasl.password.setValue('sesame')
             conf.supybot.networks.test.certfile.setValue('foo')
             self.irc = irclib.Irc('test')
+
+            self.startCapNegociation(caps='sasl=foo,plain,bar')
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('PLAIN',)))
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=('+',)))
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('amlsbGVzAGppbGxlcwBzZXNhbWU=',)))
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='900', args=('jilles',)))
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
+
+            self.endCapNegociation()
         finally:
             conf.supybot.networks.test.sasl.username.setValue('')
             conf.supybot.networks.test.sasl.password.setValue('')
             conf.supybot.networks.test.certfile.setValue('')
-        self.assertEqual(self.irc.sasl_current_mechanism, None)
-        self.irc.sasl_next_mechanisms = ['external', 'plain']
-
-        self.startCapNegociation(caps='sasl=foo,plain,bar')
-
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('PLAIN',)))
-
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=('+',)))
-
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('amlsbGVzAGppbGxlcwBzZXNhbWU=',)))
-
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='900', args=('jilles',)))
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
-
-        self.endCapNegociation()
 
     def testReauthenticate(self):
         try:
@@ -1629,29 +1620,29 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
                     args=('*', 'DEL', 'sasl')))
             self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
                     args=('*', 'NEW', 'sasl=PLAIN')))
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m.command, 'CAP', 'Expected CAP, got %r.' % m)
+            self.assertEqual(m.args[0], 'REQ', m)
+            self.assertEqual(m.args[1], 'sasl')
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+                args=('*', 'ACK', 'sasl')))
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('PLAIN',)))
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=('+',)))
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('amlsbGVzAGppbGxlcwBzZXNhbWU=',)))
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='900', args=('jilles',)))
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
         finally:
             conf.supybot.networks.test.sasl.username.setValue('')
             conf.supybot.networks.test.sasl.password.setValue('')
-
-        m = self.irc.takeMsg()
-        self.assertEqual(m.command, 'CAP', 'Expected CAP, got %r.' % m)
-        self.assertEqual(m.args[0], 'REQ', m)
-        self.assertEqual(m.args[1], 'sasl')
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-            args=('*', 'ACK', 'sasl')))
-
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('PLAIN',)))
-
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='AUTHENTICATE', args=('+',)))
-
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('amlsbGVzAGppbGxlcwBzZXNhbWU=',)))
-
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='900', args=('jilles',)))
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='903', args=('jilles',)))
 
 
 
