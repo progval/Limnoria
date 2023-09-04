@@ -49,8 +49,9 @@ if not os.path.exists('test-conf'):
 registryFilename = os.path.join('test-conf', 'test.conf')
 fd = open(registryFilename, 'w')
 fd.write("""
-supybot.directories.data: %(base_dir)s/test-data
+supybot.directories.backup: /dev/null
 supybot.directories.conf: %(base_dir)s/test-conf
+supybot.directories.data: %(base_dir)s/test-data
 supybot.directories.log: %(base_dir)s/test-logs
 supybot.reply.whenNotCommand: True
 supybot.log.stdout: False
@@ -229,8 +230,8 @@ def main():
         runner = unittest.TextTestRunner(verbosity=2)
     print('Testing began at %s (pid %s)' % (time.ctime(), os.getpid()))
     if options.clean:
+        log.setLevel(100)  # don't log anything anymore
         shutil.rmtree(conf.supybot.directories.log())
-        log._mkDirs()
         shutil.rmtree(conf.supybot.directories.conf())
         shutil.rmtree(conf.supybot.directories.data())
     result = runner.run(suite)
