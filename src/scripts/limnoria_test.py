@@ -230,8 +230,8 @@ def main():
         runner = unittest.TextTestRunner(verbosity=2)
     print('Testing began at %s (pid %s)' % (time.ctime(), os.getpid()))
     if options.clean:
-        log.setLevel(100)  # don't log anything anymore
         shutil.rmtree(conf.supybot.directories.log())
+        log._mkDirs()
         shutil.rmtree(conf.supybot.directories.conf())
         shutil.rmtree(conf.supybot.directories.data())
     result = runner.run(suite)
