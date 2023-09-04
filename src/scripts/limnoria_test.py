@@ -132,6 +132,9 @@ def main():
     parser.add_option('-c', '--clean', action='store_true', default=False,
                       dest='clean', help='Cleans the various data/conf/logs'
                       'directories before running tests.')
+    parser.add_option('--clean-after', action='store_true', default=False,
+                      dest='clean_after', help='Cleans the various data/conf/logs'
+                      'directories after running tests.')
     parser.add_option('-t', '--timeout', action='store', type='float',
                       dest='timeout',
                       help='Sets the timeout, in seconds, for tests to return '
@@ -238,6 +241,12 @@ def main():
 
     if hasattr(unittest, 'asserts'):
         print('Total asserts: %s' % unittest.asserts)
+
+    if options.clean_after:
+        log.setLevel(100)  # don't log anything anymore
+        shutil.rmtree(conf.supybot.directories.log())
+        shutil.rmtree(conf.supybot.directories.conf())
+        shutil.rmtree(conf.supybot.directories.data())
 
     if result.wasSuccessful():
         sys.exit(0)
