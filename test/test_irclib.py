@@ -1494,9 +1494,10 @@ class BatchTestCase(SupyTestCase):
 
 class SaslTestCase(SupyTestCase, CapNegMixin):
     def setUp(self):
-        pass
+        self._default_mechanisms = conf.supybot.networks.test.sasl.mechanisms()
 
     def tearDown(self):
+        conf.supybot.networks.test.sasl.mechanisms.setValue(self._default_mechanisms)
         conf.supybot.networks.test.sasl.username.setValue('')
         conf.supybot.networks.test.sasl.password.setValue('')
         conf.supybot.networks.test.certfile.setValue('')
@@ -1504,19 +1505,30 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
     def testPlain(self):
         conf.supybot.networks.test.sasl.username.setValue('jilles')
         conf.supybot.networks.test.sasl.password.setValue('sesame')
+        conf.supybot.networks.test.sasl.mechanisms.setValue(
+            ['scram-sha-256', 'plain'])
 
         self.irc = irclib.Irc('test')
 
         self.assertEqual(self.irc.sasl_current_mechanism, None)
-        self.irc.sasl_next_mechanisms = ['scram-sha-256', 'plain']
 
-        self.startCapNegociation()
+        if irclib.scram:
+            self.assertEqual(self.irc.sasl_next_mechanisms,
+                ['scram-sha-256', 'plain'])
 
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('SCRAM-SHA-256',)))
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='904',
-            args=('mechanism not available',)))
+            self.startCapNegociation()
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('SCRAM-SHA-256',)))
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='904',
+                args=('mechanism not available',)))
+        else:
+            self.assertEqual(self.irc.sasl_next_mechanisms,
+                ['plain'])
+
+            self.startCapNegociation()
+
 
         m = self.irc.takeMsg()
         self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
@@ -1537,11 +1549,14 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
         conf.supybot.networks.test.sasl.username.setValue('jilles')
         conf.supybot.networks.test.sasl.password.setValue('sesame')
         conf.supybot.networks.test.certfile.setValue('foo')
+        conf.supybot.networks.test.sasl.mechanisms.setValue(
+            ['external', 'plain'])
 
         self.irc = irclib.Irc('test')
 
         self.assertEqual(self.irc.sasl_current_mechanism, None)
-        self.irc.sasl_next_mechanisms = ['external', 'plain']
+        self.assertEqual(self.irc.sasl_next_mechanisms,
+            ['external', 'plain'])
 
         self.startCapNegociation()
 
@@ -1570,11 +1585,14 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
         conf.supybot.networks.test.sasl.username.setValue('jilles')
         conf.supybot.networks.test.sasl.password.setValue('sesame')
         conf.supybot.networks.test.certfile.setValue('foo')
+        conf.supybot.networks.test.sasl.mechanisms.setValue(
+            ['external', 'plain'])
 
         self.irc = irclib.Irc('test')
 
         self.assertEqual(self.irc.sasl_current_mechanism, None)
-        self.irc.sasl_next_mechanisms = ['external', 'plain']
+        self.assertEqual(self.irc.sasl_next_mechanisms,
+            ['external', 'plain'])
 
         self.startCapNegociation(caps='sasl=foo,plain,bar')
 
@@ -1596,11 +1614,14 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
     def testReauthenticate(self):
         conf.supybot.networks.test.sasl.username.setValue('jilles')
         conf.supybot.networks.test.sasl.password.setValue('sesame')
+        conf.supybot.networks.test.sasl.mechanisms.setValue(
+            ['external', 'plain'])
 
         self.irc = irclib.Irc('test')
 
         self.assertEqual(self.irc.sasl_current_mechanism, None)
-        self.irc.sasl_next_mechanisms = ['plain']
+        self.assertEqual(self.irc.sasl_next_mechanisms,
+            ['plain'])
 
         self.startCapNegociation(caps='')
 
