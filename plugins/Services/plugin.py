@@ -380,8 +380,8 @@ class Services(callbacks.Plugin):
         state.identified = True
         for channel in irc.state.channels.keys():
             self.checkPrivileges(irc, channel)
-        if irc.state.fsm in [irclib.IrcStateFsm.CONNECTED,
-                             irclib.IrcStateFsm.CONNECTED_SASL]:
+        if irc.state.fsm in [irclib.IrcStateFsm.States.CONNECTED,
+                             irclib.IrcStateFsm.States.CONNECTED_SASL]:
             for channel in state.channels:
                 irc.queueMsg(networkGroup.channels.join(channel))
             waitingJoins = state.waitingJoins
