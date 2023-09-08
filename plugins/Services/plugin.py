@@ -37,6 +37,7 @@ from . import config
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
