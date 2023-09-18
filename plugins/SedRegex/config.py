@@ -57,6 +57,9 @@ conf.registerChannelValue(SedRegex, 'enable',
 conf.registerChannelValue(SedRegex, 'ignoreRegex',
     registry.Boolean(True, _("""Should Perl/sed regex replacing
                      ignore messages which look like valid regex?""")))
+conf.registerChannelValue(SedRegex, 'sedString',
+    registry.String(_(' meant to say:'), _("""Sets the prefix to the changed
+                                    message.""")))
 conf.registerGlobalValue(SedRegex, 'processTimeout',
     registry.PositiveFloat(0.5,  _("""Sets the timeout when processing a single
                                    regexp. The default should be adequate unless

@@ -239,8 +239,9 @@ class SedRegex(callbacks.PluginRegexp):
 
                         subst = axe_spaces(subst)
 
-                        return _("%s meant to say: %s") % \
-                            (messageprefix, subst)
+                        sed_string = self.registryValue('sedString', msg.channel, irc.network)
+                        return _("%s%s %s") % \
+                            (messageprefix, sed_string, subst)
                 except Exception as e:
                     self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
                     raise
