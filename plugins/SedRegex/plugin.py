@@ -237,12 +237,12 @@ class SedRegex(callbacks.PluginRegexp):
 
                         if m.nick == msg.nick:
                             fmt = self.registryValue('sedString', msg.channel, irc.network)
-                            env = {'nick': m.nick, 'replacement': subst}
+                            env = {'replacement': subst}
                         else:
                             fmt = self.registryValue('sedEdited', msg.channel, irc.network)
-                            env = {'nick': m.nick, 'otherNick': msg.nick, 'replacement': subst}
+                            env = {'otherNick': msg.nick, 'replacement': subst}
 
-                        return ircutils.standardSubstitute(irc, msg, fmt, env)
+                        return ircutils.standardSubstitute(irc, m, fmt, env)
 
                 except Exception as e:
                     self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
