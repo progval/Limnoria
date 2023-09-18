@@ -236,14 +236,14 @@ class SedRegex(callbacks.PluginRegexp):
                         subst = axe_spaces(subst)
 
                         if m.nick == msg.nick:
-                            sed_string = self.registryValue('sedString', msg.channel, irc.network)
-                            return _("%s%s %s") % \
-                                (m.nick, sed_string, subst)
+                            fmt = self.registryValue('sedString', msg.channel, irc.network)
+                            env = {'nick': m.nick, 'replacement': subst}
                         else:
-                            sed_author = self.registryValue('sedAuthorString', msg.channel, irc.network)
-                            sed_string = self.registryValue('sedEditedString', msg.channel, irc.network)
-                            return _("%s%s %s%s %s") % \
-                                (msg.nick, sed_author, m.nick, sed_string, subst)
+                            fmt = self.registryValue('sedEdited', msg.channel, irc.network)
+                            env = {'nick': m.nick, 'otherNick': msg.nick, 'replacement': subst}
+
+                        return ircutils.standardSubstitute(irc, msg, fmt, env)
+
                 except Exception as e:
                     self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
                     raise
