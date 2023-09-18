@@ -58,12 +58,12 @@ conf.registerChannelValue(SedRegex, 'ignoreRegex',
     registry.Boolean(True, _("""Should Perl/sed regex replacing
                      ignore messages which look like valid regex?""")))
 conf.registerChannelValue(SedRegex, 'sedString',
-    registry.String(_('$nick meant to say $replacement'), _("""Sets the format
+    registry.String(_('$nick meant to say: $replacement'), _("""Sets the format
                                     string for a message edited by the original
                                     author. Required fileds: $nick (nick of the
                                     author), $replacement (edited message)""")))
 conf.registerChannelValue(SedRegex, 'sedEdited',
-    registry.String(_('$otherNick thinks $nick meant to say $replacement'), _("""
+    registry.String(_('$otherNick thinks $nick meant to say: $replacement'), _("""
                                     Sets the format string for a message edited by
                                     another author. Required fileds: $nick (nick
                                     of the original author), $otherNick (nick of

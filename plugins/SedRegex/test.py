@@ -279,6 +279,23 @@ class SedRegexTestCase(ChannelPluginTestCase):
         with conf.supybot.protocols.irc.strictRfc.context(True):
             self.assertSnarfNoResponse('%s: s/123/321/' % ircutils.nickFromHostmask(frm), frm=self.__class__.other2)
 
+    def testFmtString(self):
+        fmt = "<$nick>: $replacement"
+        with conf.supybot.plugins.sedregex.sedString.context(fmt):
+            self.feedMsg('frog')
+            self.feedMsg('s/frog/frogged')
+            m = self.getMsg(' ')
+            self.assertIn('<%s>: frogged' % self.nick, str(m))
+
+    def testFmtStringOtherPerson(self):
+        fmt = "(edited by $otherNick) <$nick>: $replacement"
+        with conf.supybot.plugins.sedregex.sedEdited.context(fmt):
+            self.feedMsg('frog', frm=self.__class__.other)
+            self.feedMsg('s/frog/frogged/', frm=self.__class__.other2)
+            m = self.getMsg(' ')
+            self.assertIn('(edited by %s) <%s>: frogged' % (ircutils.nickFromHostmask(self.__class__.other2),
+                                                            ircutils.nickFromHostmask(self.__class__.other)), str(m))
+
     # TODO: test ignores
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
