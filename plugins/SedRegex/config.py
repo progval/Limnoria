@@ -60,6 +60,12 @@ conf.registerChannelValue(SedRegex, 'ignoreRegex',
 conf.registerChannelValue(SedRegex, 'sedString',
     registry.String(_(' meant to say:'), _("""Sets the prefix to the changed
                                     message.""")))
+conf.registerChannelValue(SedRegex, 'sedAuthorString',
+    registry.String(_(' thinks'), _("""Sets the prefix of the
+                                    author of the changed message""")))
+conf.registerChannelValue(SedRegex, 'sedEditedString',
+    registry.String(_(' meant to say:'), _("""Sets the prefix of the
+                                    edited, changed message""")))
 conf.registerGlobalValue(SedRegex, 'processTimeout',
     registry.PositiveFloat(0.5,  _("""Sets the timeout when processing a single
                                    regexp. The default should be adequate unless

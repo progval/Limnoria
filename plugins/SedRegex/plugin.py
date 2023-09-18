@@ -222,10 +222,6 @@ class SedRegex(callbacks.PluginRegexp):
                 if self.registryValue('ignoreRegex', msg.channel, irc.network) and m.tagged(TAG_IS_REGEX):
                     self.log.debug("Skipping message %s because it is tagged as isRegex", m.args[1])
                     continue
-                if m.nick == msg.nick:
-                    messageprefix = msg.nick
-                else:
-                    messageprefix = '%s thinks %s' % (msg.nick, m.nick)
 
                 try:
                     replace_result = pattern.search(text)
@@ -239,9 +235,15 @@ class SedRegex(callbacks.PluginRegexp):
 
                         subst = axe_spaces(subst)
 
-                        sed_string = self.registryValue('sedString', msg.channel, irc.network)
-                        return _("%s%s %s") % \
-                            (messageprefix, sed_string, subst)
+                        if m.nick == msg.nick:
+                            sed_string = self.registryValue('sedString', msg.channel, irc.network)
+                            return _("%s%s %s") % \
+                                (m.nick, sed_string, subst)
+                        else:
+                            sed_author = self.registryValue('sedAuthorString', msg.channel, irc.network)
+                            sed_string = self.registryValue('sedEditedString', msg.channel, irc.network)
+                            return _("%s%s %s%s %s") % \
+                                (msg.nick, sed_author, m.nick, sed_string, subst)
                 except Exception as e:
                     self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
                     raise
