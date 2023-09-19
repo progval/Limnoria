@@ -283,7 +283,7 @@ class SedRegexTestCase(ChannelPluginTestCase):
         fmt = "<$nick>: $replacement"
         with conf.supybot.plugins.sedregex.format.context(fmt):
             self.feedMsg('frog')
-            self.feedMsg('s/frog/frogged')
+            self.feedMsg('s/frog/frogged/')
             m = self.getMsg(' ')
             self.assertIn('<%s>: frogged' % self.nick, str(m))
 
