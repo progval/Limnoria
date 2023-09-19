@@ -236,10 +236,10 @@ class SedRegex(callbacks.PluginRegexp):
                         subst = axe_spaces(subst)
 
                         if m.nick == msg.nick:
-                            fmt = self.registryValue('sedString', msg.channel, irc.network)
+                            fmt = self.registryValue('format', msg.channel, irc.network)
                             env = {'replacement': subst}
                         else:
-                            fmt = self.registryValue('sedEdited', msg.channel, irc.network)
+                            fmt = self.registryValue('format.other', msg.channel, irc.network)
                             env = {'otherNick': msg.nick, 'replacement': subst}
 
                         return ircutils.standardSubstitute(irc, m, fmt, env)

@@ -281,7 +281,7 @@ class SedRegexTestCase(ChannelPluginTestCase):
 
     def testFmtString(self):
         fmt = "<$nick>: $replacement"
-        with conf.supybot.plugins.sedregex.sedString.context(fmt):
+        with conf.supybot.plugins.sedregex.format.context(fmt):
             self.feedMsg('frog')
             self.feedMsg('s/frog/frogged')
             m = self.getMsg(' ')
@@ -289,7 +289,7 @@ class SedRegexTestCase(ChannelPluginTestCase):
 
     def testFmtStringOtherPerson(self):
         fmt = "(edited by $otherNick) <$nick>: $replacement"
-        with conf.supybot.plugins.sedregex.sedEdited.context(fmt):
+        with conf.supybot.plugins.sedregex.format.other.context(fmt):
             self.feedMsg('frog', frm=self.__class__.other)
             self.feedMsg('s/frog/frogged/', frm=self.__class__.other2)
             m = self.getMsg(' ')
