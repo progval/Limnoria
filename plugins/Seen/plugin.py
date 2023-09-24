@@ -289,8 +289,14 @@ class Seen(callbacks.Plugin):
             db = self.db
         try:
             (when, said) = db.seen(channel, '<last>')
-            reply = format(_('Someone was last seen in %s %s ago'),
-                 channel, utils.timeElapsed(time.time()-when))
+            pattern = r'<([^>]*)>'
+            try:
+                nick = re.search(pattern, str(said)).group(1)
+            except AttributeError:
+                irc.error(format(_('I couldn\'t parse the nick of the speaker of the last line.')))
+                return
+            reply = format(_('Last seen in %s was %s, %s ago'),
+                 channel, nick, utils.timeElapsed(time.time()-when))
             if self.registryValue('showLastMessage', channel, irc.network):
                 reply = _('%s: %s') % (reply, said)
             irc.reply(reply)
@@ -328,7 +334,7 @@ class Seen(callbacks.Plugin):
             irc.reply(reply)
         except KeyError:
             if user.name in irc.state.channels[channel].users:
-                irc.reply(format(_("%s is in the channel right now.")))
+                irc.reply(format(_("%s is in the channel right now."), user.name))
             else:
                 irc.reply(format(_('I have not seen %s.'), user.name))
 
