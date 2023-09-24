@@ -195,9 +195,14 @@ class Seen(callbacks.Plugin):
             if len(results) == 1:
                 (nick, info) = results[0]
                 (when, said) = info
-                reply = format(_('%s was last seen in %s %s ago'),
-                                 nick, channel,
-                                 utils.timeElapsed(time.time()-when))
+                if nick in irc.state.channels[channel].users:
+                    reply = format(_('%s was last seen in %s %s ago, and is still there now'),
+                                     nick, channel,
+                                     utils.timeElapsed(time.time()-when))
+                else:
+                    reply = format(_('%s was last seen in %s %s ago'),
+                                     nick, channel,
+                                     utils.timeElapsed(time.time()-when))
                 if self.registryValue('showLastMessage', channel, irc.network):
                     if minisix.PY2:
                         said = said.decode('utf8')
@@ -207,8 +212,12 @@ class Seen(callbacks.Plugin):
                 L = []
                 for (nick, info) in results:
                     (when, said) = info
-                    L.append(format(_('%s (%s ago)'), nick,
-                                    utils.timeElapsed(time.time()-when)))
+                    if nick in irc.state.channels[channel].users:
+                        L.append(format(_('%s (%s ago - they\'re still there)'), nick,
+                                        utils.timeElapsed(time.time()-when)))
+                    else:
+                        L.append(format(_('%s (%s ago)'), nick,
+                                        utils.timeElapsed(time.time()-when)))
                 irc.reply(format(_('%s could be %L'), name, (L, _('or'))))
             else:
                 irc.reply(format(_('I haven\'t seen anyone matching %s.'), name))
