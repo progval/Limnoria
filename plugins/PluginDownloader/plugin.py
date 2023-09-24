@@ -230,6 +230,7 @@ repositories = utils.InsensitivePreservingDict({
                'appas':            GithubRepository(
                                                    'matiasw',
                                                    'my-limnoria-plugins',
+                                                   ),
                })
 
 class PluginDownloader(callbacks.Plugin):
