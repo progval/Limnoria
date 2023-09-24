@@ -196,7 +196,7 @@ class Seen(callbacks.Plugin):
                 (nick, info) = results[0]
                 (when, said) = info
                 if nick in irc.state.channels[channel].users:
-                    reply = format(_('%s was last seen in %s %s ago, and is still there now'),
+                    reply = format(_('%s was last seen in %s %s ago, and is still in the channel'),
                                      nick, channel,
                                      utils.timeElapsed(time.time()-when))
                 else:
@@ -213,7 +213,7 @@ class Seen(callbacks.Plugin):
                 for (nick, info) in results:
                     (when, said) = info
                     if nick in irc.state.channels[channel].users:
-                        L.append(format(_('%s (%s ago - they\'re still there)'), nick,
+                        L.append(format(_('%s (%s ago, and is still in the channel)'), nick,
                                         utils.timeElapsed(time.time()-when)))
                     else:
                         L.append(format(_('%s (%s ago)'), nick,
@@ -287,7 +287,7 @@ class Seen(callbacks.Plugin):
         try:
             (when, said) = db.seen(channel, '<last>')
             reply = format(_('Someone was last seen in %s %s ago'),
-                             channel, utils.timeElapsed(time.time()-when))
+                 channel, utils.timeElapsed(time.time()-when))
             if self.registryValue('showLastMessage', channel, irc.network):
                 reply = _('%s: %s') % (reply, said)
             irc.reply(reply)
@@ -312,9 +312,14 @@ class Seen(callbacks.Plugin):
             db = self.db
         try:
             (when, said) = db.seen(channel, user.id)
-            reply = format(_('%s was last seen in %s %s ago'),
-                             user.name, channel,
-                             utils.timeElapsed(time.time()-when))
+            if user.name in irc.state.channels[channel].users:
+                reply = format(_('%s was last seen in %s %s ago and is still in the channel'),
+                                 user.name, channel,
+                                 utils.timeElapsed(time.time()-when))
+            else:
+                reply = format(_('%s was last seen in %s %s ago'),
+                                 user.name, channel,
+                                 utils.timeElapsed(time.time()-when))
             if self.registryValue('showLastMessage', channel, irc.network):
                 reply = _('%s: %s') % (reply, said)
             irc.reply(reply)
