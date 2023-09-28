@@ -93,6 +93,16 @@ class ChannelDBTestCase(ChannelPluginTestCase):
                           '^%s was last seen' % self.nick)
         # Test case: 'seen' with a user (user in channel)
         self.assertRegexp('seen %s' %self.nick, 'is in the channel now')
+        # Test case: 'seen' with a nick (user not in channel)
+        testnick = "user123"
+        self.irc.feedMsg(ircmsgs.join(self.channel, testnick, "user123!baz"))
+        self.irc.feedMsg(ircmsgs.part(self.channel, prefix="user123!baz"))
+        self.assertNotError('seen %s' % self.nick)
+        #TODO: handle this case in the plugin
+        # Test case: user has joined, said nothing, and left:
+#        self.assertRegexp('seen %s' %testnick,
+#                          '^%s was last seen' %testnick)
+        self.assertNotRegexp("seen %s" %testnick, "is in the channel now")
         self.assertNotError('config plugins.Seen.minimumNonWildcard 0')
         orig = conf.supybot.protocols.irc.strictRfc()
         try:
@@ -104,6 +114,7 @@ class ChannelDBTestCase(ChannelPluginTestCase):
                 self.assertRegexp('seen bar*', '^I haven\'t seen anyone matching')
         finally:
             conf.supybot.protocols.irc.strictRfc.setValue(orig)
+
 
     def testSeenNoUser(self):
         self.irc.feedMsg(ircmsgs.join(self.channel, self.irc.nick,
