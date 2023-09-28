@@ -91,6 +91,8 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.assertIn(self.nick.upper(), m.args[1])
         self.assertRegexp('seen user %s' % self.nick,
                           '^%s was last seen' % self.nick)
+        # Test case: 'seen' with a user (user in channel)
+        self.assertRegexp('seen %s' %self.nick, 'is in the channel now')
         self.assertNotError('config plugins.Seen.minimumNonWildcard 0')
         orig = conf.supybot.protocols.irc.strictRfc()
         try:
