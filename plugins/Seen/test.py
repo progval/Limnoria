@@ -85,6 +85,8 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.assertNotError('config plugins.Seen.minimumNonWildcard 2')
         self.assertError('seen *')
         self.assertNotError('seen %s' % self.nick)
+        # Test case: 'seen' with a nick (user in channel)
+        self.assertRegexp('seen %s' %self.nick, 'is in the channel now')
         m = self.assertNotError('seen %s' % self.nick.upper())
         self.assertIn(self.nick.upper(), m.args[1])
         self.assertRegexp('seen user %s' % self.nick,
