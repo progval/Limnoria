@@ -15,3 +15,4 @@ cryptography                # required to load the Fediverse plugin (used to imp
 feedparser                  # required to load the RSS plugin
 pytz;python_version<'3.9'   # enables timezone manipulation in the Time and Geography plugins. On Python >=3.9, the standard library is used instead
 python-dateutil             # enable fancy time string parsing in the Time plugin
+ddate                       # required for the ddate command in the Time plugin
