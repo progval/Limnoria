@@ -200,6 +200,13 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         """Called by _select() when we can read data."""
         try:
             new_data = self.conn.recv(1024)
+            if hasattr(self.conn, "pending") and self.conn.pending():
+                # This is a TLS socket and there are decrypted bytes in the
+                # buffer. We need to read them now, or we would not get them
+                # until the next time select() returns this socket (which may
+                # be in a very long time, as select() does not know recv() on
+                # the TLS wrapper would not block).
+                new_data += self.conn.recv(self.conn.pending())
             if not new_data:
                 # Socket was closed
                 self._handleSocketError(None)
