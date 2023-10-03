@@ -76,15 +76,53 @@ class Status(callbacks.Plugin):
 
         Returns the status of the bot.
         """
-        networks = {}
+        # Initialize dictionaries 
+        nicks = {}
+        channel_counts = {}
+        op_counts = {}
+        halfop_counts = {}
+        voice_counts = {}
+        normal_counts = {}
+    
+        # Iterate through each IRC network
         for Irc in world.ircs:
-            networks.setdefault(Irc.network, []).append(Irc.nick)
-        networks = sorted(networks.items())
-        networks = [format(_('%s as %L'), net, nicks) for (net,nicks) in networks]
-        L = [format(_('I am connected to %L.'), networks)]
+            network_name = Irc.network
+            channels = Irc.state.channels
+    
+            # Initialize counts for this network
+            channel_counts[network_name] = 0
+            op_counts[network_name] = 0
+            halfop_counts[network_name] = 0
+            voice_counts[network_name] = 0
+            normal_counts[network_name] = 0
+            nicks[network_name] = Irc.nick
+    
+            # Iterate through channels in this network
+            for channel, channelinfo in channels.items():
+                # Increment the channel count for this network
+                channel_counts[network_name] += 1
+                if Irc.nick in channelinfo.ops:
+                    op_counts[network_name] += 1
+                elif Irc.nick in channelinfo.halfops:
+                    halfop_counts[network_name] += 1
+                elif Irc.nick in channelinfo.voices:
+                    voice_counts[network_name] += 1
+                elif Irc.nick in channelinfo.users:
+                    normal_counts[network_name] += 1
+
+        # Prepare the response
+        response_lines = []
+        for network_name in channel_counts:
+            response_lines.append(
+                f"I am connected to {network_name} as {nicks[network_name]}, Channels: {channel_counts[network_name]}, "
+                f"Ops: {op_counts[network_name]}, Half-Ops: {halfop_counts[network_name]}, "
+                f"Voiced: {voice_counts[network_name]}, Regular: {normal_counts[network_name]} "
+            )
+    
+        irc.reply("".join(response_lines))
+            
         if world.profiling:
-            L.append(_('I am currently in code profiling mode.'))
-        irc.reply('  '.join(L))
+            irc.reply(_('I am currently in code profiling mode.'))
     status = wrap(status)
 
     @internationalizeDocstring
