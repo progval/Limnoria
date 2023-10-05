@@ -76,17 +76,53 @@ class Status(callbacks.Plugin):
 
         Returns the status of the bot.
         """
+        # Initialize dictionaries 
+        nicks = {}
         networks = {}
+        # Iterate through each IRC network
         for Irc in world.ircs:
-            networks.setdefault(Irc.network, []).append(Irc.nick)
-        networks = sorted(networks.items())
-        networks = [format(_('%s as %L'), net, nicks) for (net,nicks) in networks]
-        L = [format(_('I am connected to %L.'), networks)]
+            network_name = Irc.network
+            channels = Irc.state.channels
+    
+            # Initialize counts for this network
+            channel_counts = len(channels)
+            op_counts = sum(1 for channel in channels.values() if Irc.nick in channel.ops)
+            halfop_counts = sum(1 for channel in channels.values() if Irc.nick in channel.halfops)
+            voice_counts = sum(1 for channel in channels.values() if Irc.nick in channel.voices)
+            normal_counts = sum(1 for channel in channels.values() if Irc.nick in channel.users)
+    
+            # Store the counts in dictionaries
+            nicks[network_name] = Irc.nick
+            networks[network_name] = {
+                'Channels': channel_counts,
+                'Ops': op_counts,
+                'Half-Ops': halfop_counts,
+                'Voiced': voice_counts,
+                'Regular': normal_counts
+            }
+    
+        # Prepare the response
+        response_lines = []
+        for network_name, counts in networks.items():
+            response_lines.append(
+                format(
+                    _('I am connected to %s as %s: Channels: %s, Ops: %s, Half-Ops: %s, Voiced: %s, Regular: %s'),
+                    network_name,
+                    nicks[network_name],
+                    counts['Channels'],
+                    counts['Ops'],
+                    counts['Half-Ops'],
+                    counts['Voiced'],
+                    counts['Regular']
+                )
+            )
+    
         if world.profiling:
-            L.append(_('I am currently in code profiling mode.'))
-        irc.reply('  '.join(L))
+            response_lines.append(_('I am currently in code profiling mode.'))
+        response = format(_("%L"), response_lines)
+        irc.reply(response)
     status = wrap(status)
-
+   
     @internationalizeDocstring
     def threads(self, irc, msg, args):
         """takes no arguments
