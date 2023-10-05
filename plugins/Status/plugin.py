@@ -78,53 +78,51 @@ class Status(callbacks.Plugin):
         """
         # Initialize dictionaries 
         nicks = {}
-        channel_counts = {}
-        op_counts = {}
-        halfop_counts = {}
-        voice_counts = {}
-        normal_counts = {}
-    
+        networks = {}
         # Iterate through each IRC network
         for Irc in world.ircs:
             network_name = Irc.network
             channels = Irc.state.channels
     
             # Initialize counts for this network
-            channel_counts[network_name] = 0
-            op_counts[network_name] = 0
-            halfop_counts[network_name] = 0
-            voice_counts[network_name] = 0
-            normal_counts[network_name] = 0
-            nicks[network_name] = Irc.nick
+            channel_counts = len(channels)
+            op_counts = sum(1 for channel in channels.values() if Irc.nick in channel.ops)
+            halfop_counts = sum(1 for channel in channels.values() if Irc.nick in channel.halfops)
+            voice_counts = sum(1 for channel in channels.values() if Irc.nick in channel.voices)
+            normal_counts = sum(1 for channel in channels.values() if Irc.nick in channel.users)
     
-            # Iterate through channels in this network
-            for channel, channelinfo in channels.items():
-                # Increment the channel count for this network
-                channel_counts[network_name] += 1
-                if Irc.nick in channelinfo.ops:
-                    op_counts[network_name] += 1
-                elif Irc.nick in channelinfo.halfops:
-                    halfop_counts[network_name] += 1
-                elif Irc.nick in channelinfo.voices:
-                    voice_counts[network_name] += 1
-                elif Irc.nick in channelinfo.users:
-                    normal_counts[network_name] += 1
-
+            # Store the counts in dictionaries
+            nicks[network_name] = Irc.nick
+            networks[network_name] = {
+                'Channels': channel_counts,
+                'Ops': op_counts,
+                'Half-Ops': halfop_counts,
+                'Voiced': voice_counts,
+                'Regular': normal_counts
+            }
+    
         # Prepare the response
         response_lines = []
-        for network_name in channel_counts:
+        for network_name, counts in networks.items():
             response_lines.append(
-                f"I am connected to {network_name} as {nicks[network_name]}, Channels: {channel_counts[network_name]}, "
-                f"Ops: {op_counts[network_name]}, Half-Ops: {halfop_counts[network_name]}, "
-                f"Voiced: {voice_counts[network_name]}, Regular: {normal_counts[network_name]} "
+                format(
+                    _('I am connected to %s as %s: Channels: %s, Ops: %s, Half-Ops: %s, Voiced: %s, Regular: %s'),
+                    network_name,
+                    nicks[network_name],
+                    counts['Channels'],
+                    counts['Ops'],
+                    counts['Half-Ops'],
+                    counts['Voiced'],
+                    counts['Regular']
+                )
             )
     
-        irc.reply("".join(response_lines))
-            
         if world.profiling:
-            irc.reply(_('I am currently in code profiling mode.'))
+            response_lines.append(_('I am currently in code profiling mode.'))
+        response = format(_("%L"), response_lines)
+        irc.reply(response)
     status = wrap(status)
-
+   
     @internationalizeDocstring
     def threads(self, irc, msg, args):
         """takes no arguments
