@@ -136,8 +136,8 @@ def _addressed(irc, msg, prefixChars=None, nicks=None,
                         continue
                 except ValueError: # split didn't work.
                     continue
-            elif whenAddressedByNickAtEnd and lowered.endswith(nick):
-                rest = payload[:-len(nick)]
+            elif whenAddressedByNickAtEnd and lowered.rstrip().endswith(nick):
+                rest = payload.rstrip()[:-len(nick)]
                 possiblePayload = rest.rstrip(' \t,;')
                 if possiblePayload != rest:
                     # There should be some separator between the nick and the
