@@ -269,7 +269,6 @@ class FunctionsTestCase(SupyTestCase):
         irc = getTestIrc()
         msg = ircmsgs.privmsg('#foo', 'baz, bar')
         irc._tagMsg(msg)
-        nick = irc.nick
         self.assertEqual(callbacks.addressed('bar', msg,
                                              whenAddressedByNickAtEnd=True),
                          'baz')
