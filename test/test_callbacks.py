@@ -201,11 +201,6 @@ class FunctionsTestCase(SupyTestCase):
         badmsg = ircmsgs.privmsg('#foo', '%s`: foo' % nick)
         self.assertFalse(callbacks.addressed(irc, badmsg))
 
-    def testWhenAddressedByNickAtEnd(self):
-        nick = ircutils.nickFromHostmask(self.prefix)
-        self.assertResponse("jaldkfjkdlaljf %s  \t" %nick,
-                "Error: \"jaldkfjkdlaljf\" is not a valid command.")
-
     def testAddressedLegacy(self):
         """Checks callbacks.addressed still accepts the 'nick' argument
         instead of 'irc'."""
@@ -274,9 +269,16 @@ class FunctionsTestCase(SupyTestCase):
         irc = getTestIrc()
         msg = ircmsgs.privmsg('#foo', 'baz, bar')
         irc._tagMsg(msg)
+        nick = irc.nick
         self.assertEqual(callbacks.addressed('bar', msg,
                                              whenAddressedByNickAtEnd=True),
                          'baz')
+        # Test that it still works with trailing whitespace:
+        msg = ircmsgs.privmsg('#foo', 'baz, bar   \t')
+        self.assertEqual(callbacks.addressed('bar', msg,
+                                             whenAddressedByNickAtEnd=True),
+                         'baz')
+
 
     def testAddressedPrefixCharsTakePrecedenceOverNickAtEnd(self):
         irc = getTestIrc()
