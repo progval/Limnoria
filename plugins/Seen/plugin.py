@@ -289,12 +289,11 @@ class Seen(callbacks.Plugin):
             db = self.db
         try:
             (when, said) = db.seen(channel, '<last>')
-            pattern = r'<([^>]*)>'
-            try:
-                nick = re.search(pattern, str(said)).group(1)
-            except AttributeError:
-                irc.error(format(_('I couldn\'t parse the nick of the speaker of the last line.')))
-                return
+            pattern = r'<(.*?)>'
+            match = re.search(pattern, said)
+            if not match:
+                irc.error(format(_('I couldn\'t parse the nick of the speaker of the last line.')), Raise=True)
+            nick = match.group(1)
             reply = format(_('Last seen in %s was %s, %s ago'),
                  channel, nick, utils.timeElapsed(time.time()-when))
             if self.registryValue('showLastMessage', channel, irc.network):
