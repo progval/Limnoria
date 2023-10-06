@@ -201,6 +201,11 @@ class FunctionsTestCase(SupyTestCase):
         badmsg = ircmsgs.privmsg('#foo', '%s`: foo' % nick)
         self.assertFalse(callbacks.addressed(irc, badmsg))
 
+    def testWhenAddressedByNickAtEnd(self):
+        nick = ircutils.nickFromHostmask(self.prefix)
+        self.assertResponse("jaldkfjkdlaljf %s  \t" %nick,
+                "Error: \"jaldkfjkdlaljf\" is not a valid command.")
+
     def testAddressedLegacy(self):
         """Checks callbacks.addressed still accepts the 'nick' argument
         instead of 'irc'."""

@@ -252,11 +252,6 @@ class MiscTestCase(ChannelPluginTestCase):
         finally:
             nickConfig.setValue(orig)
 
-    def testWhenAddressedByNickAtEnd(self):
-        nick = ircutils.nickFromHostmask(self.prefix)
-        self.assertResponse("jaldkfjkdlaljf %s  \t" %nick,
-                "Error: \"jaldkfjkdlaljf\" is not a valid command.")
-
     def testMore(self):
         self.assertResponse('echo %s' % ('abc '*400),
                             'abc '*112 + ' \x02(3 more messages)\x02')
