@@ -272,6 +272,12 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(callbacks.addressed('bar', msg,
                                              whenAddressedByNickAtEnd=True),
                          'baz')
+        # Test that it still works with trailing whitespace:
+        msg = ircmsgs.privmsg('#foo', 'baz, bar   \t')
+        self.assertEqual(callbacks.addressed('bar', msg,
+                                             whenAddressedByNickAtEnd=True),
+                         'baz')
+
 
     def testAddressedPrefixCharsTakePrecedenceOverNickAtEnd(self):
         irc = getTestIrc()
