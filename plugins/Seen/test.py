@@ -83,12 +83,10 @@ class ChannelDBTestCase(ChannelPluginTestCase):
         self.assertNotError('seen last')
         self.assertNotError('list')
         self.assertNotError('config plugins.Seen.minimumNonWildcard 2')
-        self.assertError('seen *')
-        self.assertNotError('seen %s' % self.nick)
-        m = self.assertNotError('seen %s' % self.nick.upper())
-        self.assertIn(self.nick.upper(), m.args[1])
         self.assertRegexp('seen user %s' % self.nick,
                           '^%s was last seen' % self.nick)
+        self.assertError('seen *')
+        self.assertNotError('seen %s' % self.nick)
         self.assertNotError('config plugins.Seen.minimumNonWildcard 0')
         orig = conf.supybot.protocols.irc.strictRfc()
         try:
@@ -100,6 +98,28 @@ class ChannelDBTestCase(ChannelPluginTestCase):
                 self.assertRegexp('seen bar*', '^I haven\'t seen anyone matching')
         finally:
             conf.supybot.protocols.irc.strictRfc.setValue(orig)
+
+
+    def testSeenNickInChannel(self):
+        # Test case: 'seen' with a nick (user in channel)
+        self.irc.feedMsg(ircmsgs.join(self.channel, self.irc.nick,
+                                         prefix=self.prefix))
+        self.assertRegexp('seen %s' % self.nick, 'is in the channel right now')
+        m = self.assertNotError('seen %s' % self.nick.upper())
+        self.assertIn(self.nick.upper(), m.args[1])
+
+    def testSeenUserInChannel(self):
+        # Test case: 'seen' with a user (user in channel)
+        self.irc.feedMsg(ircmsgs.join(self.channel, self.irc.nick,
+                                         prefix=self.prefix))
+        self.assertRegexp('seen user %s' % self.nick, 'is in the channel right now')
+
+    def testSeenNickNotInChannel(self):
+        # Test case: 'seen' with a nick (user not in channel)
+        testnick = "user123"
+        self.irc.feedMsg(ircmsgs.join(self.channel, testnick, "user123!baz"))
+        self.irc.feedMsg(ircmsgs.part(self.channel, prefix="user123!baz"))
+        self.assertNotRegexp("seen %s" % testnick, "is in the channel right now")
 
     def testSeenNoUser(self):
         self.irc.feedMsg(ircmsgs.join(self.channel, self.irc.nick,

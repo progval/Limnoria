@@ -195,9 +195,14 @@ class Seen(callbacks.Plugin):
             if len(results) == 1:
                 (nick, info) = results[0]
                 (when, said) = info
-                reply = format(_('%s was last seen in %s %s ago'),
-                                 nick, channel,
-                                 utils.timeElapsed(time.time()-when))
+                if nick in irc.state.channels[channel].users:
+                    reply = format(_('%s was last seen in %s %s ago, and is in the channel now'),
+                                     nick, channel,
+                                     utils.timeElapsed(time.time()-when))
+                else:
+                    reply = format(_('%s was last seen in %s %s ago'),
+                                     nick, channel,
+                                     utils.timeElapsed(time.time()-when))
                 if self.registryValue('showLastMessage', channel, irc.network):
                     if minisix.PY2:
                         said = said.decode('utf8')
@@ -207,13 +212,20 @@ class Seen(callbacks.Plugin):
                 L = []
                 for (nick, info) in results:
                     (when, said) = info
-                    L.append(format(_('%s (%s ago)'), nick,
-                                    utils.timeElapsed(time.time()-when)))
+                    if nick in irc.state.channels[channel].users:
+                        L.append(format(_('%s (%s ago, and is in the channel now)'), nick,
+                                        utils.timeElapsed(time.time()-when)))
+                    else:
+                        L.append(format(_('%s (%s ago)'), nick,
+                                        utils.timeElapsed(time.time()-when)))
                 irc.reply(format(_('%s could be %L'), name, (L, _('or'))))
             else:
                 irc.reply(format(_('I haven\'t seen anyone matching %s.'), name))
         except KeyError:
-            irc.reply(format(_('I have not seen %s.'), name))
+            if name in irc.state.channels[channel].users:
+                irc.reply(format(_("%s is in the channel right now."), name))
+            else:
+                irc.reply(format(_('I have not seen %s.'), name))
 
     def _checkChannelPresence(self, irc, channel, target, you):
         if channel not in irc.state.channels:
@@ -277,8 +289,13 @@ class Seen(callbacks.Plugin):
             db = self.db
         try:
             (when, said) = db.seen(channel, '<last>')
-            reply = format(_('Someone was last seen in %s %s ago'),
-                             channel, utils.timeElapsed(time.time()-when))
+            pattern = r'<(.*?)>'
+            match = re.search(pattern, said)
+            if not match:
+                irc.error(format(_('I couldn\'t parse the nick of the speaker of the last line.')), Raise=True)
+            nick = match.group(1)
+            reply = format(_('Last seen in %s was %s, %s ago'),
+                 channel, nick, utils.timeElapsed(time.time()-when))
             if self.registryValue('showLastMessage', channel, irc.network):
                 reply = _('%s: %s') % (reply, said)
             irc.reply(reply)
@@ -303,14 +320,22 @@ class Seen(callbacks.Plugin):
             db = self.db
         try:
             (when, said) = db.seen(channel, user.id)
-            reply = format(_('%s was last seen in %s %s ago'),
-                             user.name, channel,
-                             utils.timeElapsed(time.time()-when))
+            if user.name in irc.state.channels[channel].users:
+                reply = format(_('%s was last seen in %s %s ago and is in the channel now'),
+                                 user.name, channel,
+                                 utils.timeElapsed(time.time()-when))
+            else:
+                reply = format(_('%s was last seen in %s %s ago'),
+                                 user.name, channel,
+                                 utils.timeElapsed(time.time()-when))
             if self.registryValue('showLastMessage', channel, irc.network):
                 reply = _('%s: %s') % (reply, said)
             irc.reply(reply)
         except KeyError:
-            irc.reply(format(_('I have not seen %s.'), user.name))
+            if user.name in irc.state.channels[channel].users:
+                irc.reply(format(_("%s is in the channel right now."), user.name))
+            else:
+                irc.reply(format(_('I have not seen %s.'), user.name))
 
     @internationalizeDocstring
     def user(self, irc, msg, args, channel, user):
