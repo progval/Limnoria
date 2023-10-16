@@ -39,7 +39,7 @@ _ = PluginInternationalization('NickCapture')
 
 class NickCapture(callbacks.Plugin):
     """This plugin constantly tries to take whatever nick is configured as
-    supybot.nick.  Just make sure that's set appropriately, and thus plugin
+    supybot.nick.  Just make sure that's set appropriately, and this plugin
     will do the rest."""
     public = False
     def __init__(self, irc):
