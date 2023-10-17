@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2010-2021, Valentin Lorentz
