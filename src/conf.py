@@ -954,7 +954,7 @@ class DataFilename(registry.String):
     def __call__(self):
         v = super(DataFilename, self).__call__()
         dataDir = supybot.directories.data()
-        if not v.startswith(dataDir):
+        if not v.startswith("/") and not v.startswith(dataDir):
             v = os.path.basename(v)
             v = os.path.join(dataDir, v)
         self.setValue(v)
@@ -984,7 +984,7 @@ registerGlobalValue(supybot.directories.data, 'tmp',
     DataFilenameDirectory('tmp', _("""Determines what directory temporary files
     are put into.""")))
 registerGlobalValue(supybot.directories.data, 'web',
-    Directory('web', _("""Determines what directory files of the
+    DataFilenameDirectory('web', _("""Determines what directory files of the
     web server (templates, custom images, ...) are put into.""")))
 
 def _update_tmp():
