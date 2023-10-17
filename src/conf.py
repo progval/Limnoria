@@ -984,7 +984,7 @@ registerGlobalValue(supybot.directories.data, 'tmp',
     DataFilenameDirectory('tmp', _("""Determines what directory temporary files
     are put into.""")))
 registerGlobalValue(supybot.directories.data, 'web',
-    DataFilenameDirectory('web', _("""Determines what directory files of the
+    Directory('web', _("""Determines what directory files of the
     web server (templates, custom images, ...) are put into.""")))
 
 def _update_tmp():
