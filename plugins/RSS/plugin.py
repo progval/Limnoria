@@ -497,6 +497,35 @@ class RSS(callbacks.Plugin):
                   isinstance(v, str)}
         kwargs["feed_name"] = feed.name
         kwargs.update(entry)
+        for (key, value) in list(kwargs.items()):
+            # First look for plain text
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict) and 'value' in item and \
+                            item.get('type') == 'text/plain':
+                        value = item['value']
+                        break
+            # Then look for HTML text or URL
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict) and item.get('type') in \
+                            ('text/html', 'application/xhtml+xml'):
+                        if 'value' in item:
+                            value = utils.web.htmlToText(item['value'])
+                        elif 'href' in item:
+                            value = item['href']
+            # Then fall back to any URL
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict) and 'href' in item:
+                        value = item['href']
+                        break
+            # Finally, as a last resort, use the value as-is
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict) and 'value' in item:
+                        value = item['value']
+            kwargs[key] = value
         s = string.Template(template).safe_substitute(entry, **kwargs, date=date)
         return self._normalize_entry(s)
 
