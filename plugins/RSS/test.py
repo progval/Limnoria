@@ -359,83 +359,91 @@ class RSSTestCase(ChannelPluginTestCase):
                     'On the other hand, the refractor\'s')
 
     @mock_urllib
-    def testContentHtmlOnly(self, mock):
+    def testAtomContentHtmlOnly(self, mock):
         timeFastForward(1.1)
-        with conf.supybot.plugins.RSS.format.context('$content'):
-            mock._data = """
+        mock._data = """
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
   <title>Recent Commits to anope:2.0</title>
   <updated>2023-10-04T16:14:39Z</updated>
   <entry>
-    <title>title with &lt;pre&gt;HTML&lt;pre&gt;</title>
+    <title>title with &lt;pre&gt;HTML&lt;/pre&gt;</title>
     <updated>2023-10-04T16:14:39Z</updated>
     <content type="html">
-      content with &lt;pre&gt;HTML&lt;pre&gt;
+      content with &lt;pre&gt;HTML&lt;/pre&gt;
     </content>
   </entry>
 </feed>"""
+        with conf.supybot.plugins.RSS.format.context('$content'):
+            self.assertRegexp('rss https://example.org',
+                    'content with HTML')
+        with conf.supybot.plugins.RSS.format.context('$description'):
             self.assertRegexp('rss https://example.org',
                     'content with HTML')
 
     @mock_urllib
-    def testContentXhtmlOnly(self, mock):
+    def testAtomContentXhtmlOnly(self, mock):
         timeFastForward(1.1)
-        with conf.supybot.plugins.RSS.format.context('$content'):
-            mock._data = """
+        mock._data = """
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
   <title>Recent Commits to anope:2.0</title>
   <updated>2023-10-04T16:14:39Z</updated>
   <entry>
-    <title>title with &lt;pre&gt;HTML&lt;pre&gt;</title>
+    <title>title with &lt;pre&gt;HTML&lt;/pre&gt;</title>
     <updated>2023-10-04T16:14:39Z</updated>
     <content type="xhtml">
       <div xmlns="http://www.w3.org/1999/xhtml">
-        content with <pre>XHTML<pre>
+        content with <pre>XHTML</pre>
       </div>
     </content>
   </entry>
 </feed>"""
+        with conf.supybot.plugins.RSS.format.context('$content'):
+            self.assertRegexp('rss https://example.org',
+                    'content with XHTML')
+        with conf.supybot.plugins.RSS.format.context('$description'):
             self.assertRegexp('rss https://example.org',
                     'content with XHTML')
 
     @mock_urllib
-    def testContentHtmlAndPlaintext(self, mock):
+    def testAtomContentHtmlAndPlaintext(self, mock):
         timeFastForward(1.1)
-        with conf.supybot.plugins.RSS.format.context('$content'):
-            mock._data = """
+        mock._data = """
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
   <title>Recent Commits to anope:2.0</title>
   <updated>2023-10-04T16:14:39Z</updated>
   <entry>
-    <title>title with &lt;pre&gt;HTML&lt;pre&gt;</title>
+    <title>title with &lt;pre&gt;HTML&lt;/pre&gt;</title>
     <updated>2023-10-04T16:14:39Z</updated>
     <!-- Atom spec says multiple contents is invalid, feedparser says it's not.
          I like having the option, so let's make sure we support it. -->
     <content type="html">
-      content with &lt;pre&gt;HTML&lt;pre&gt;
+      content with &lt;pre&gt;HTML&lt;/pre&gt;
     </content>
     <content type="text">
       content with plaintext
     </content>
   </entry>
 </feed>"""
+        with conf.supybot.plugins.RSS.format.context('$content'):
+            self.assertRegexp('rss https://example.org',
+                    'content with plaintext')
+        with conf.supybot.plugins.RSS.format.context('$description'):
             self.assertRegexp('rss https://example.org',
                     'content with plaintext')
 
     @mock_urllib
-    def testContentPlaintextAndHtml(self, mock):
+    def testAtomContentPlaintextAndHtml(self, mock):
         timeFastForward(1.1)
-        with conf.supybot.plugins.RSS.format.context('$content'):
-            mock._data = """
+        mock._data = """
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
   <title>Recent Commits to anope:2.0</title>
   <updated>2023-10-04T16:14:39Z</updated>
   <entry>
-    <title>title with &lt;pre&gt;HTML&lt;pre&gt;</title>
+    <title>title with &lt;pre&gt;HTML&lt;/pre&gt;</title>
     <updated>2023-10-04T16:14:39Z</updated>
     <!-- Atom spec says multiple contents is invalid, feedparser says it's not.
          I like having the option, so let's make sure we support it. -->
@@ -443,12 +451,36 @@ class RSSTestCase(ChannelPluginTestCase):
       content with plaintext
     </content>
     <content type="html">
-      content with &lt;pre&gt;HTML&lt;pre&gt;
+      content with &lt;pre&gt;HTML&lt;/pre&gt;
     </content>
   </entry>
 </feed>"""
+        with conf.supybot.plugins.RSS.format.context('$content'):
             self.assertRegexp('rss https://example.org',
                     'content with plaintext')
+        with conf.supybot.plugins.RSS.format.context('$description'):
+            self.assertRegexp('rss https://example.org',
+                    'content with plaintext')
+
+    @mock_urllib
+    def testRssDescriptionHtml(self, mock):
+        timeFastForward(1.1)
+        mock._data = """
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:schema="http://schema.org/" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" version="2.0">
+  <channel>
+    <title>feed title</title>
+    <description/>
+    <language>en</language>
+    <item>
+    <title>title with &lt;pre&gt;HTML&lt;/pre&gt;</title>
+    <description>description with &lt;pre&gt;HTML&lt;/pre&gt;</description>
+    </item>
+  </channel>
+</feed>"""
+        with conf.supybot.plugins.RSS.format.context('$description'):
+            self.assertRegexp('rss https://example.org',
+                    'description with HTML')
 
     @mock_urllib
     def testFeedAttribute(self, mock):

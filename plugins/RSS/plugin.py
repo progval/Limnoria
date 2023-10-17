@@ -526,6 +526,19 @@ class RSS(callbacks.Plugin):
                     if isinstance(item, dict) and 'value' in item:
                         value = item['value']
             kwargs[key] = value
+
+        for key in ('summary', 'title'):
+            detail = kwargs.get('%s_detail' % key)
+            if isinstance(detail, dict) and detail.get('type') in \
+                    ('text/html', 'application/xhtml+xml'):
+                kwargs[key] = utils.web.htmlToText(detail['value'])
+
+                if 'description' not in kwargs and kwargs[key]:
+                    kwargs['description'] = kwargs[key]
+
+        if 'description' not in kwargs and kwargs.get('content'):
+            kwargs['description'] = kwargs['content']
+
         s = string.Template(template).safe_substitute(entry, **kwargs, date=date)
         return self._normalize_entry(s)
 
