@@ -941,7 +941,7 @@ class Directory(registry.String):
         if os.path.isabs(filename):
             filename = os.path.abspath(filename)
             selfAbs = os.path.abspath(myself)
-            commonPrefix = os.path.commonprefix([selfAbs, filename])
+            commonPrefix = os.path.commonpath([selfAbs, filename])
             filename = filename[len(commonPrefix):]
         elif not os.path.isabs(myself):
             if filename.startswith(myself):

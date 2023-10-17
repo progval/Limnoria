@@ -337,7 +337,7 @@ class Static(SupyHTTPServerCallback):
         super(Static, self).__init__()
         self._mimetype = mimetype
     def doGetOrHead(self, handler, path, write_content):
-        response = get_template(path)
+        response = get_template(path[1:]) # strip leading /
         if minisix.PY3:
             response = response.encode()
         handler.send_response(200)
