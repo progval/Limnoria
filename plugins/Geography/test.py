@@ -187,7 +187,7 @@ class GeographyLocaltimeTestCase(PluginTestCase):
 
 class GeographyWikidataTestCase(SupyTestCase):
     @skipIf(not network, "Network test")
-    def testOsmidToTimezone(self):
+    def testRelationOsmidToTimezone(self):
         self.assertEqual(
             wikidata.uri_from_osmid(450381),
             "http://www.wikidata.org/entity/Q22690",
@@ -195,6 +195,12 @@ class GeographyWikidataTestCase(SupyTestCase):
         self.assertEqual(
             wikidata.uri_from_osmid(192468),
             "http://www.wikidata.org/entity/Q47045",
+        )
+    @skipIf(not network, "Network test")
+    def testNodeOsmidToTimezone(self):
+        self.assertEqual(
+            wikidata.uri_from_osmid(436012592),
+            "http://www.wikidata.org/entity/Q933",
         )
 
     @skipIf(not network, "Network test")

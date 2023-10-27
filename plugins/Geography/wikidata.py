@@ -115,7 +115,14 @@ LIMIT 1
 OSMID_QUERY = string.Template(
     """
 SELECT ?item WHERE {
-  ?item wdt:P402 "$osmid".
+  {
+    ?item wdt:P402 "$osmid".  # OSM relation ID
+  }
+  UNION
+  {
+    ?item wdt:P11693 "$osmid".  # OSM node ID
+  }
+
 }
 LIMIT 1
 """
