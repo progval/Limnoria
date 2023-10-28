@@ -85,6 +85,12 @@ class WebTestCase(ChannelPluginTestCase):
                 'title https://www.reddit.com/r/irc/',
                 'Internet Relay Chat')
 
+        def testTitleMarcinfo(self):
+            # Checks that we don't crash on 'Content-Type: text/html;'
+            self.assertResponse(
+                    'title https://marc.info/?l=openbsd-tech&m=169841790407370&w=2',
+                    "'Removing syscall(2) from libc and kernel' - MARC")
+
         def testTitleSnarfer(self):
             try:
                 conf.supybot.plugins.Web.titleSnarfer.setValue(True)
