@@ -177,9 +177,15 @@ class Fediverse(callbacks.PluginRegexp):
 
     def _has_webfinger_support(self, hostname):
         if hostname not in self._webfinger_support_cache:
-            self._webfinger_support_cache[hostname] = ap.has_webfinger_support(
-                hostname
-            )
+            try:
+                self._webfinger_support_cache[hostname] = ap.has_webfinger_support(
+                    hostname
+                )
+            except Exception as e:
+                self.log.error(
+                    "Checking Webfinger support for %s raised %s", hostname, e
+                )
+                return False
         return self._webfinger_support_cache[hostname]
 
     def _get_actor(self, irc, username):
