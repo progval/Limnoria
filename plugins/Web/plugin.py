@@ -173,8 +173,9 @@ class Web(callbacks.PluginRegexp):
             if raiseErrors:
                 irc.error(_('Connection to %s timed out') % url, Raise=True)
             else:
-                selg.log.info('Web plugins TitleSnarfer: URL <%s> timed out',
+                self.log.info('Web plugins TitleSnarfer: URL <%s> timed out',
                               url)
+                return
         except Exception as e:
             if raiseErrors:
                 irc.error(_('That URL raised <' + str(e)) + '>',
