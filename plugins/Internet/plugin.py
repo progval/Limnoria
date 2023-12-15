@@ -158,7 +158,7 @@ class Internet(callbacks.Plugin):
         if not status:
             status = 'unknown'
         try:
-            t = telnetlib.Telnet('whois.pir.org', 43)
+            t = telnetlib.Telnet('whois.iana.org', 43)
         except socket.error as e:
             irc.error(str(e))
             return
