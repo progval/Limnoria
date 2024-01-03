@@ -144,7 +144,7 @@ supybot.plugins.Unix.ping
 
 
   supybot.plugins.Unix.ping.command
-    This config variable defaults to "/bin/ping", is not network-specific, and is not channel-specific.
+    This config variable defaults to "/usr/bin/ping", is not network-specific, and is not channel-specific.
 
     Determines what command will be called for the ping command.
 
@@ -166,7 +166,7 @@ supybot.plugins.Unix.ping6
 
 
   supybot.plugins.Unix.ping6.command
-    This config variable defaults to "/bin/ping6", is not network-specific, and is not channel-specific.
+    This config variable defaults to "/usr/bin/ping6", is not network-specific, and is not channel-specific.
 
     Determines what command will be called for the ping6 command.
 
@@ -210,7 +210,7 @@ supybot.plugins.Unix.sysuname
 
 
   supybot.plugins.Unix.sysuname.command
-    This config variable defaults to "/bin/uname", is not network-specific, and is not channel-specific.
+    This config variable defaults to "/usr/bin/uname", is not network-specific, and is not channel-specific.
 
     Determines what command will be called for the uname command.
 

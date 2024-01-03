@@ -21,6 +21,11 @@ and checking latency to the server.
 Commands
 --------
 
+.. _command-network-authenticate:
+
+authenticate takes no arguments
+  Manually initiate SASL authentication.
+
 .. _command-network-capabilities:
 
 capabilities [<network>]
