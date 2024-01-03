@@ -31,9 +31,8 @@
 """
 Provides basic functionality for handling RSS/RDF feeds, and allows announcing
 them periodically to channels.
-In order to use this plugin you must have the following modules
-installed:
-* feedparser: http://feedparser.org/
+In order to use this plugin you must have `python3-feedparser
+<https://pypi.org/project/feedparser/>`_ installed.
 """
 
 import supybot
