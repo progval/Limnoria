@@ -364,6 +364,11 @@ class RSS(callbacks.Plugin):
                                feed.url, e)
                 feed.last_exception = e
                 return
+            except http.client.HTTPException as e:
+                self.log.warning("HTTP error while fetching <%s>: %s",
+                               feed.url, e)
+                feed.last_exception = e
+                return
             except Exception as e:
                 self.log.error("Failed to fetch <%s>: %s", feed.url, e)
                 raise  # reraise so @log.firewall prints the traceback
