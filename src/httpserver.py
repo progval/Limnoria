@@ -34,7 +34,10 @@ An embedded and centralized HTTP server for Supybot's plugins.
 import os
 import cgi
 import socket
+import sys
 from threading import Thread
+from wsgiref.handlers import BaseHandler, SimpleHandler
+from wsgiref.simple_server import WSGIRequestHandler
 
 import supybot.log as log
 import supybot.conf as conf
@@ -181,6 +184,20 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
             except KeyError:
                 callback = Supy404()
 
+        if not isinstance(callback, SupyHTTPServerCallback):
+            # WSGI-based callback
+            environ = WSGIRequestHandler.get_environ(self)
+            environ.update({
+                'PATH_INFO': '/' + (environ['PATH_INFO'].split('/', 2) + [''])[2]
+            })
+            SimpleHandler(
+                stdin=self.rfile, stdout=self.wfile, stderr=sys.stderr, environ=environ,
+                multithread=False
+            ).run(callback)
+            return
+
+        # BaseHTTPRequestHandler-based callback
+
         # Some shortcuts
         for name in ('send_response', 'send_header', 'end_headers', 'rfile',
                 'wfile', 'headers'):
@@ -189,6 +206,22 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
         path = self.path
         if not callback.fullpath:
             path = '/' + path.split('/', 2)[-1]
+
+        if callback == 'doPost':
+            if 'Content-Type' not in self.headers:
+                self.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+            if self.headers['Content-Type'] == 'application/x-www-form-urlencoded':
+                form = cgi.FieldStorage(
+                    fp=self.rfile,
+                    headers=self.headers,
+                    environ={'REQUEST_METHOD':'POST',
+                             'CONTENT_TYPE':self.headers['Content-Type'],
+                             })
+            else:
+                content_length = int(self.headers.get('Content-Length', '0'))
+                form = self.rfile.read(content_length)
+            kwargs['form'] = form
+
         getattr(callback, callbackMethod)(self, path,
                 *args, **kwargs)
 
@@ -196,19 +229,7 @@ class SupyHTTPRequestHandler(BaseHTTPRequestHandler):
         self.do_X('doGet')
 
     def do_POST(self):
-        if 'Content-Type' not in self.headers:
-            self.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        if self.headers['Content-Type'] == 'application/x-www-form-urlencoded':
-            form = cgi.FieldStorage(
-                fp=self.rfile,
-                headers=self.headers,
-                environ={'REQUEST_METHOD':'POST',
-                         'CONTENT_TYPE':self.headers['Content-Type'],
-                         })
-        else:
-            content_length = int(self.headers.get('Content-Length', '0'))
-            form = self.rfile.read(content_length)
-        self.do_X('doPost', form=form)
+        self.do_X('doPost')
 
     def do_HEAD(self):
         self.do_X('doHead')
@@ -312,7 +333,7 @@ class SupyIndex(SupyHTTPServerCallback):
         plugins = [
             (name, cb)
             for (name, cb) in handler.server.callbacks.items()
-            if cb.public]
+            if getattr(cb, 'public', True)]
         if plugins == []:
             plugins = _('No plugins available.')
         else:
@@ -425,7 +446,15 @@ class RealSupyHTTPServer(HTTPServer):
             self.address_family = socket.AF_INET6
         else:
             raise AssertionError(protocol)
+
         HTTPServer.__init__(self, address, callback)
+
+        host, port = self.server_address[:2]
+        self.base_environ = {
+            'SERVER_NAME': socket.getfqdn(host),
+            'SERVER_PORT': str(port),
+        }
+
         self.callbacks = DEFAULT_CALLBACKS.copy()
 
     def server_bind(self):
@@ -441,10 +470,11 @@ class RealSupyHTTPServer(HTTPServer):
                     'reloaded the plugin and it didn\'t properly unhook. '
                     'Forced unhook.') % subdir)
         self.callbacks[subdir] = callback
-        callback.doHook(self, subdir)
+        if hasattr(callback, 'doHook'):
+            callback.doHook(self, subdir)
     def unhook(self, subdir):
         callback = self.callbacks.pop(subdir, None)
-        if callback:
+        if callback and hasattr(callback, 'doUnhook'):
             callback.doUnhook(self)
         return callback
 
@@ -452,6 +482,8 @@ class RealSupyHTTPServer(HTTPServer):
         return 'server at %s %i' % self.server_address[0:2]
 
 class TestSupyHTTPServer(RealSupyHTTPServer):
+    base_environ = {}
+
     def __init__(self, *args, **kwargs):
         self.callbacks = {}
         self.server_address = ("0.0.0.0", 0)
