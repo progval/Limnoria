@@ -1781,7 +1781,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
     """
 
     REQUEST_EXPERIMENTAL_CAPABILITIES = set(['draft/account-registration',
-        'draft/multiline'])
+        'draft/message-redaction', 'draft/multiline'])
     """Like REQUEST_CAPABILITIES, but these capabilities are only requested
     if supybot.protocols.irc.experimentalExtensions is enabled."""
 
