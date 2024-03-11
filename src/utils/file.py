@@ -36,7 +36,7 @@ import random
 import shutil
 import os.path
 
-from . import crypt
+from . import crypt, force
 
 def sanitizeName(filename):
     """Removes / from filenames and escapes them if they are '.' or '..'."""
