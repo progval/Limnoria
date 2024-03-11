@@ -579,6 +579,112 @@ class IrcStateTestCase(SupyTestCase):
             command='CHGHOST', args=['bar2', 'baz2']))
         self.assertEqual(st.nickToHostmask('foo'), 'foo!bar2@baz2')
 
+    def testNickToAccountBaseJoin(self):
+        st = irclib.IrcState()
+
+        st.addMsg(self.irc, ircmsgs.join('#foo', prefix='foo!bar@baz'))
+        st.addMsg(self.irc, ircmsgs.join('#foo', prefix='bar!baz@qux'))
+        with self.assertRaises(KeyError):
+            st.nickToAccount('foo')
+        with self.assertRaises(KeyError):
+            st.nickToAccount('bar')
+
+
+    def testNickToAccountExtendedJoin(self):
+        st = irclib.IrcState()
+        st.capabilities_ack.add('extended-join')
+
+        st.addMsg(self.irc, ircmsgs.IrcMsg(
+            command='JOIN', prefix='foo!bar@baz',
+            args=['#foo', 'account1', 'real name1']))
+        st.addMsg(self.irc, ircmsgs.IrcMsg(
+            command='JOIN', prefix='bar!baz@qux',
+            args=['#foo', 'account2', 'real name2']))
+        st.addMsg(self.irc, ircmsgs.IrcMsg(
+            command='JOIN', prefix='baz!qux@quux',
+            args=['#foo', '*', 'real name3']))
+        self.assertEqual(st.nickToAccount('foo'), 'account1')
+        self.assertEqual(st.nickToAccount('bar'), 'account2')
+        self.assertIsNone(st.nickToAccount('baz'))
+        with self.assertRaises(KeyError):
+            st.nickToAccount('qux')
+
+        # QUIT erases the entry
+        with self.subTest("QUIT"):
+            st2 = st.copy()
+            st2.addMsg(self.irc, ircmsgs.quit(prefix='foo!bar@baz'))
+            with self.assertRaises(KeyError):
+                st2.nickToAccount('foo')
+            self.assertEqual(st2.nickToAccount('bar'), 'account2')
+
+            # check st isn't affected by changes to st2
+            self.assertEqual(st.nickToAccount('foo'), 'account1')
+            self.assertEqual(st.nickToAccount('bar'), 'account2')
+
+        # NICK moves the entry
+        with self.subTest("NICK"):
+            st2 = st.copy()
+            st2.addMsg(self.irc, ircmsgs.IrcMsg(prefix='foo!bar@baz',
+                                                command='NICK', args=['foo2']))
+            with self.assertRaises(KeyError):
+                st2.nickToAccount('foo')
+            self.assertEqual(st2.nickToAccount('foo2'), 'account1')
+            self.assertEqual(st2.nickToAccount('bar'), 'account2')
+
+            # check st isn't affected by changes to st2
+            self.assertEqual(st.nickToAccount('foo'), 'account1')
+            self.assertEqual(st.nickToAccount('bar'), 'account2')
+
+        # NICK moves the entry (and overwrites if needed)
+        with self.subTest("NICK with overwrite"):
+            st2 = st.copy()
+            st2.addMsg(self.irc, ircmsgs.IrcMsg(prefix='foo!bar@baz',
+                                                command='NICK', args=['bar']))
+            with self.assertRaises(KeyError):
+                st2.nickToAccount('foo')
+            self.assertEqual(st2.nickToAccount('bar'), 'account1')
+
+            # check st isn't affected by changes to st2
+            self.assertEqual(st.nickToAccount('foo'), 'account1')
+            self.assertEqual(st.nickToAccount('bar'), 'account2')
+
+    def testNickToAccountWho(self):
+        st = irclib.IrcState()
+
+        st.addMsg(self.irc, ircmsgs.IrcMsg(command='352', # RPL_WHOREPLY
+            args=[self.irc.nick, '#chan', 'bar', 'baz', 'server.example',
+                  'foo', 'H', '0 real name']))
+        with self.assertRaises(KeyError):
+            st.nickToAccount('foo')
+
+    def testNickToAccountWhox(self):
+        st = irclib.IrcState()
+
+        st.addMsg(self.irc, ircmsgs.IrcMsg(command='354', # RPL_WHOSPCRPL
+            args=[self.irc.nick, '1', 'bar', '127.0.0.1', 'baz',
+                  'foo', 'H', 'account1', 'real name']))
+        self.assertEqual(st.nickToAccount('foo'), 'account1')
+
+        st.addMsg(self.irc, ircmsgs.IrcMsg(command='354', # RPL_WHOSPCRPL
+            args=[self.irc.nick, '1', 'bar', '127.0.0.1', 'baz',
+                  'foo', 'H', '0', 'real name']))
+        self.assertIsNone(st.nickToAccount('foo'))
+
+    def testAccountNotify(self):
+        st = irclib.IrcState()
+
+        st.addMsg(self.irc, ircmsgs.IrcMsg(prefix='foo!bar@baz',
+            command='ACCOUNT', args=['account1']))
+        self.assertEqual(st.nickToAccount('foo'), 'account1')
+
+        st.addMsg(self.irc, ircmsgs.IrcMsg(prefix='foo!bar@baz',
+            command='ACCOUNT', args=['account2']))
+        self.assertEqual(st.nickToAccount('foo'), 'account2')
+
+        st.addMsg(self.irc, ircmsgs.IrcMsg(prefix='foo!bar@baz',
+            command='ACCOUNT', args=['*']))
+        self.assertIsNone(st.nickToAccount('foo'))
+
     def testEq(self):
         state1 = irclib.IrcState()
         state2 = irclib.IrcState()
