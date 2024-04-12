@@ -45,7 +45,6 @@ import traceback
 
 # We need to do this before we import conf.
 main_temp_dir = TemporaryDirectory()
-print(f"Temporary directory path: {main_temp_dir.name}")
 
 os.makedirs(os.path.join(main_temp_dir.name, 'conf'))
 os.makedirs(os.path.join(main_temp_dir.name, 'data'))
@@ -259,8 +258,9 @@ def main():
     if result.wasSuccessful():
         sys.exit(0)
     else:
-        # deactivate autocleaning for the temporary directiories to allow inspection
+        # Deactivate autocleaning for the temporary directiories to allow inspection.
         main_temp_dir._finalizer.detach()
+        print(f"Temporary directory path: {main_temp_dir.name}")
         sys.exit(1)
 
 
