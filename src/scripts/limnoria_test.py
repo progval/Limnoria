@@ -44,19 +44,20 @@ import logging
 import traceback
 
 # We need to do this before we import conf.
-temporary_directories = {
-    'test_conf': TemporaryDirectory(),
-    'test_data': TemporaryDirectory(),
-    'test_logs': TemporaryDirectory()
-}
+main_temp_dir = TemporaryDirectory()
+print(f"Temporary directory path: {main_temp_dir.name}")
 
-registryFilename = os.path.join(temporary_directories['test_conf'].name, 'test.conf')
+os.makedirs(os.path.join(main_temp_dir.name, 'conf'))
+os.makedirs(os.path.join(main_temp_dir.name, 'data'))
+os.makedirs(os.path.join(main_temp_dir.name, 'logs'))
+
+registryFilename = os.path.join(main_temp_dir.name, 'conf', 'test.conf')
 with open(registryFilename, 'w') as fd:
     fd.write("""
 supybot.directories.backup: /dev/null
-supybot.directories.conf: {test_conf}
-supybot.directories.data: {test_data}
-supybot.directories.log: {test_logs}
+supybot.directories.conf: {temp_conf}
+supybot.directories.data: {temp_data}
+supybot.directories.log: {temp_logs}
 supybot.reply.whenNotCommand: True
 supybot.log.stdout: False
 supybot.log.stdout.level: ERROR
@@ -71,9 +72,11 @@ supybot.networks.testnet2.server: should.not.need.this
 supybot.networks.testnet3.server: should.not.need.this
 supybot.nick: test
 supybot.databases.users.allowUnregistration: True
-""".format(test_conf=temporary_directories['test_conf'].name,
-           test_data=temporary_directories['test_data'].name,
-           test_logs=temporary_directories['test_logs'].name))
+""".format(
+        temp_conf=os.path.join(main_temp_dir.name, 'conf'),
+        temp_data=os.path.join(main_temp_dir.name, 'data'),
+        temp_logs=os.path.join(main_temp_dir.name, 'logs')
+    ))
 
 import supybot.registry as registry
 registry.open_registry(registryFilename)
@@ -256,9 +259,8 @@ def main():
     if result.wasSuccessful():
         sys.exit(0)
     else:
-        # deactivate autocleaning for the temp dirs to allow inspection
-        for temp_dir in temporary_directories.values():
-            temp_dir._finalizer.detach()
+        # deactivate autocleaning for the temporary directiories to allow inspection
+        main_temp_dir._finalizer.detach()
         sys.exit(1)
 
 
