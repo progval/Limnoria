@@ -36,6 +36,7 @@ import sys
 import time
 import shutil
 import fnmatch
+from tempfile import TemporaryDirectory
 started = time.time()
 
 import supybot
@@ -43,16 +44,19 @@ import logging
 import traceback
 
 # We need to do this before we import conf.
-if not os.path.exists('test-conf'):
-    os.mkdir('test-conf')
+temporary_directories = {
+    'test_conf': TemporaryDirectory(),
+    'test_data': TemporaryDirectory(),
+    'test_logs': TemporaryDirectory()
+}
 
-registryFilename = os.path.join('test-conf', 'test.conf')
-fd = open(registryFilename, 'w')
-fd.write("""
+registryFilename = os.path.join(temporary_directories['test_conf'].name, 'test.conf')
+with open(registryFilename, 'w') as fd:
+    fd.write("""
 supybot.directories.backup: /dev/null
-supybot.directories.conf: %(base_dir)s/test-conf
-supybot.directories.data: %(base_dir)s/test-data
-supybot.directories.log: %(base_dir)s/test-logs
+supybot.directories.conf: {test_conf}
+supybot.directories.data: {test_data}
+supybot.directories.log: {test_logs}
 supybot.reply.whenNotCommand: True
 supybot.log.stdout: False
 supybot.log.stdout.level: ERROR
@@ -67,8 +71,9 @@ supybot.networks.testnet2.server: should.not.need.this
 supybot.networks.testnet3.server: should.not.need.this
 supybot.nick: test
 supybot.databases.users.allowUnregistration: True
-""" % {'base_dir': os.getcwd()})
-fd.close()
+""".format(test_conf=temporary_directories['test_conf'].name,
+           test_data=temporary_directories['test_data'].name,
+           test_logs=temporary_directories['test_logs'].name))
 
 import supybot.registry as registry
 registry.open_registry(registryFilename)
@@ -251,6 +256,9 @@ def main():
     if result.wasSuccessful():
         sys.exit(0)
     else:
+        # deactivate autocleaning for the temp dirs to allow inspection
+        for temp_dir in temporary_directories.values():
+            temp_dir._finalizer.detach()
         sys.exit(1)
 
 
