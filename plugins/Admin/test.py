@@ -87,13 +87,16 @@ class AdminTestCase(PluginTestCase):
         ircdb.users.delUser(u.id)
 
     def testJoin(self):
-        m = self.getMsg('join #foo')
-        self.assertEqual(m.command, 'JOIN')
-        self.assertEqual(m.args[0], '#foo')
-        m = self.getMsg('join #foo key')
-        self.assertEqual(m.command, 'JOIN')
-        self.assertEqual(m.args[0], '#foo')
-        self.assertEqual(m.args[1], 'key')
+        try:
+            m = self.getMsg('join #foo')
+            self.assertEqual(m.command, 'JOIN')
+            self.assertEqual(m.args[0], '#foo')
+            m = self.getMsg('join #foo key')
+            self.assertEqual(m.command, 'JOIN')
+            self.assertEqual(m.args[0], '#foo')
+            self.assertEqual(m.args[1], 'key')
+        finally:
+            self.getMsg('part #foo')
 
     def testNick(self):
         try:
