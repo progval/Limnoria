@@ -154,7 +154,7 @@ class Web(callbacks.PluginRegexp):
         if parsed_url.netloc == 'youtube.com' \
                 or parsed_url.netloc.endswith(('.youtube.com')):
             # there is a lot of Javascript before the <title>
-            size = max(409600, size)
+            size = max(819200, size)
         if parsed_url.netloc in ('reddit.com', 'www.reddit.com', 'new.reddit.com'):
             # Since 2022-03, New Reddit has 'Reddit - Dive into anything' as
             # <title> on every page.
