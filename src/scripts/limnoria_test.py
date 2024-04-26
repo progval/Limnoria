@@ -61,7 +61,7 @@ supybot.reply.whenNotCommand: True
 supybot.log.stdout: False
 supybot.log.stdout.level: ERROR
 supybot.log.level: DEBUG
-supybot.log.format: %%(levelname)s %%(message)s
+supybot.log.format: %(levelname)s %(message)s
 supybot.log.plugins.individualLogfiles: False
 supybot.protocols.irc.throttleTime: 0
 supybot.reply.whenAddressedBy.chars: @
