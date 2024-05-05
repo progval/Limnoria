@@ -31,7 +31,6 @@
 
 import time
 import socket
-import telnetlib
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -158,14 +157,14 @@ class Internet(callbacks.Plugin):
         if not status:
             status = 'unknown'
         try:
-            t = telnetlib.Telnet('whois.iana.org', 43)
+            sock = socket.create_connection(('whois.iana.org', 43))
         except socket.error as e:
             irc.error(str(e))
             return
-        t.write(b'registrar ')
-        t.write(registrar.split('(')[0].strip().encode('ascii'))
-        t.write(b'\n')
-        s = t.read_all()
+        sock.sendall(b'registrar ')
+        sock.sendall(registrar.split('(')[0].strip().encode('ascii'))
+        sock.sendall(b'\n')
+        s = sock.recv(100000)
         url = ''
         for line in s.splitlines():
             line = line.decode('ascii').strip()
