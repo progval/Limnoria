@@ -49,10 +49,12 @@ except ImportError:
     install. This package is pretty standard, and often installed alongside
     Python, but it is missing on your system.
     Try installing it with your package manager, it is usually called
-    'python3-setuptools'. If that does not work, try installing python3-pip
+    'python3-setuptools'; or with '%s -m pip install setuptools'.
+    If that does not work, try installing python3-pip
     instead, either with your package manager or by following these
     instructions: https://pip.pypa.io/en/stable/installation/ (replace
-    'python' with 'python3' in all the commands)""")
+    'python' with 'python3' in all the commands)"""
+    % sys.executable)
     sys.stderr.write(os.linesep*2)
     sys.stderr.write(textwrap.fill(s))
     sys.stderr.write(os.linesep*2)
