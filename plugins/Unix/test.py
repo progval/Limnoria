@@ -31,6 +31,11 @@
 import os
 import socket
 
+try:
+    import crypt
+except ImportError:
+    crypt = None
+
 from supybot.test import *
 
 try:
@@ -106,8 +111,9 @@ if os.name == 'posix':
         def testProgstats(self):
             self.assertNotError('progstats')
 
-        def testCrypt(self):
-            self.assertNotError('crypt jemfinch')
+        if crypt is not None:  # Python < 3.13
+            def testCrypt(self):
+                self.assertNotError('crypt jemfinch')
 
         @skipUnlessFortune
         def testFortune(self):
