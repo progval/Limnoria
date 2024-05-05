@@ -849,7 +849,7 @@ class UnitGroup:
 
     def updateCurrentUnit(self, text, cursorPos):
         "Set current unit number"
-        self.currentNum = len(re.findall('[\*/]', text[:cursorPos]))
+        self.currentNum = len(re.findall(r'[\*/]', text[:cursorPos]))
 
     def currentUnit(self):
         "Return current unit if its a full match, o/w None"
@@ -925,7 +925,7 @@ class UnitGroup:
     def parseGroup(self, text):
         "Return list of units from text string"
         unitList = []
-        parts = [part.strip() for part in re.split('([\*/])', text)]
+        parts = [part.strip() for part in re.split(r'([\*/])', text)]
         numerator = 1
         while parts:
             unit = self.parseUnit(parts.pop(0))
@@ -1180,7 +1180,7 @@ class Unit:
             self.equiv = unitList[0].strip()
             if self.equiv[0] == '[':   # used only for non-linear units
                 try:
-                    self.equiv, self.fromEqn = re.match('\[(.*?)\](.*)', \
+                    self.equiv, self.fromEqn = re.match(r'\[(.*?)\](.*)', \
                                                         self.equiv).groups()
                     if ';' in self.fromEqn:
                         self.fromEqn, self.toEqn = self.fromEqn.split(';', 1)
@@ -1190,7 +1190,7 @@ class Unit:
                     raise UnitDataError('Bad equation for "%s"' % self.name)
             else:                # split factor and equiv unit for linear
                 parts = self.equiv.split(None, 1)
-                if len(parts) > 1 and re.search('[^\d\.eE\+\-\*/]', parts[0]) \
+                if len(parts) > 1 and re.search(r'[^\d\.eE\+\-\*/]', parts[0]) \
                    == None:       # only allowed digits and operators
                     try:
                         self.factor = float(eval(parts[0]))
