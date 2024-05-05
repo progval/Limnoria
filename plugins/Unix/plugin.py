@@ -33,13 +33,18 @@ import os
 import re
 import pwd
 import sys
-import crypt
 import errno
 import random
 import select
 import struct
 import subprocess
 import shlex
+
+try:
+    import crypt
+except ImportError:
+    # Python >= 3.13
+    crypt = None
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -119,25 +124,26 @@ class Unix(callbacks.Plugin):
         irc.reply(format('%i', os.getpid()), private=True)
     pid = wrap(pid, [('checkCapability', 'owner')])
 
-    _cryptre = re.compile(b'[./0-9A-Za-z]')
-    @internationalizeDocstring
-    def crypt(self, irc, msg, args, password, salt):
-        """<password> [<salt>]
+    if crypt is not None:  # Python < 3.13
+        _cryptre = re.compile(b'[./0-9A-Za-z]')
+        @internationalizeDocstring
+        def crypt(self, irc, msg, args, password, salt):
+            """<password> [<salt>]
 
-        Returns the resulting of doing a crypt() on <password>.  If <salt> is
-        not given, uses a random salt.  If running on a glibc2 system,
-        prepending '$1$' to your salt will cause crypt to return an MD5sum
-        based crypt rather than the standard DES based crypt.
-        """
-        def makeSalt():
-            s = b'\x00'
-            while self._cryptre.sub(b'', s) != b'':
-                s = struct.pack('<h', random.randrange(-(2**15), 2**15))
-            return s
-        if not salt:
-            salt = makeSalt().decode()
-        irc.reply(crypt.crypt(password, salt))
-    crypt = wrap(crypt, ['something', additional('something')])
+            Returns the resulting of doing a crypt() on <password>.  If <salt> is
+            not given, uses a random salt.  If running on a glibc2 system,
+            prepending '$1$' to your salt will cause crypt to return an MD5sum
+            based crypt rather than the standard DES based crypt.
+            """
+            def makeSalt():
+                s = b'\x00'
+                while self._cryptre.sub(b'', s) != b'':
+                    s = struct.pack('<h', random.randrange(-(2**15), 2**15))
+                return s
+            if not salt:
+                salt = makeSalt().decode()
+            irc.reply(crypt.crypt(password, salt))
+        crypt = wrap(crypt, ['something', additional('something')])
 
     @internationalizeDocstring
     def spell(self, irc, msg, args, word):
