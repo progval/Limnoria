@@ -84,7 +84,7 @@ def mock_urllib(f):
 
 url = 'http://www.advogato.org/rss/articles.xml'
 class RSSTestCase(ChannelPluginTestCase):
-    plugins = ('RSS','Plugin')
+    plugins = ('RSS', 'Plugin')
 
     timeout = 1
 
@@ -120,6 +120,27 @@ class RSSTestCase(ChannelPluginTestCase):
             self.assertNotError('rss remove xkcd')
         self.assertEqual(self.irc.getCallback('RSS').feed_names, {})
         self.assertTrue(self.irc.getCallback('RSS').get_feed('http://xkcd.com/rss.xml'))
+
+    @mock_urllib
+    def testChangeUrl(self, mock):
+        try:
+            self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+            self.assertNotError('rss remove xkcd')
+            self.assertNotError('rss add xkcd https://xkcd.com/rss.xml')
+            self.assertRegexp('help xkcd', 'https://')
+        finally:
+            self._feedMsg('rss remove xkcd')
+
+    @mock_urllib
+    def testChangeName(self, mock):
+        try:
+            self.assertNotError('rss add xkcd http://xkcd.com/rss.xml')
+            self.assertNotError('rss remove xkcd')
+            self.assertNotError('rss add xkcd2 http://xkcd.com/rss.xml')
+            self.assertRegexp('help xkcd2', 'http://xkcd.com')
+        finally:
+            self._feedMsg('rss remove xkcd')
+            self._feedMsg('rss remove xkcd2')
 
     @mock_urllib
     def testInitialAnnounceNewest(self, mock):

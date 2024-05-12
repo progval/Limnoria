@@ -280,7 +280,7 @@ class RSS(callbacks.Plugin):
             raise callbacks.Error(s)
         if url:
             feed = self.feeds.get(url)
-            if feed and feed.name != feed.url:
+            if feed and feed.name != feed.url and feed.name in self.feed_names:
                 s = format(_('I already have a feed with that URL named %s.'),
                         feed.name)
                 raise callbacks.Error(s)
