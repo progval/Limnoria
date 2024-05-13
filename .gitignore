@@ -18,7 +18,6 @@ merge.sh
 nano.save
 push.sh
 py3k/
-src/version.py
 supybot.egg-info/
 test-conf/
 test-data/
@@ -26,7 +25,6 @@ test-logs/
 doc-conf/
 doc-data/
 doc-logs/
-src/version.py
 INSTALL
 README.txt
 conf/
