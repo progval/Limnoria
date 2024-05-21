@@ -419,6 +419,15 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
         registry.String('', _("""Determines what user modes the bot will request
         from the server when it first connects. If empty, defaults to
         supybot.protocols.irc.umodes""")))
+    registerGlobalValue(network, 'vhost',
+        registry.String('', _("""Determines what vhost the bot will bind to before
+        connecting a server (IRC, HTTP, ...) via IPv4. If empty, defaults to
+        supybot.protocols.irc.vhost""")))
+    registerGlobalValue(network, 'vhostv6',
+        registry.String('', _("""Determines what vhost the bot will bind to before
+        connecting a server (IRC, HTTP, ...) via IPv6. If empty, defaults to
+        supybot.protocols.irc.vhostv6""")))
+
     sasl = registerGroup(network, 'sasl')
     registerGlobalValue(sasl, 'username', registry.String(sasl_username,
         _("""Determines what SASL username will be used on %s. This should
