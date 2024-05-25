@@ -253,6 +253,7 @@ class Math(callbacks.Plugin):
             digits = len(str(number).split('.')[1])
         except IndexError:
             digits = 0
+
         try:
             newNum = convertcore.convert(number, unit1, unit2)
             if isinstance(newNum, float):
@@ -261,11 +262,23 @@ class Math(callbacks.Plugin):
                     if char != '0':
                         break
                     zeros += 1
+
                 # Let's add one signifiant digit. Physicists would not like
                 # that, but common people usually do not give extra zeros...
                 # (for example, with '32 C to F', an extra digit would be
                 # expected).
                 newNum = round(newNum, digits + 1 + zeros)
+
+                # However, if the difference is negligeable compared to the
+                # precision we got in the input, we remove two more digits.
+                # this is useful for rounding .9999999 up.
+                newNum2 = round(newNum, digits - 1 + zeros)
+                try:
+                    if abs((newNum2 - newNum) / newNum) < 10**(-digits-10):
+                        newNum = newNum2
+                except ZeroDivisionError:
+                    pass
+
             newNum = self._floatToString(newNum)
             irc.reply(str(newNum))
         except convertcore.UnitDataError as ude:
