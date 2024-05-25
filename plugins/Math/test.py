@@ -188,6 +188,13 @@ class MathTestCase(PluginTestCase):
         self.assertError('convert 1 mol to grams')
         self.assertError('convert 1 m to kpa')
 
+    def testConvertSignificantDigits(self):
+        self.assertResponse('convert 1 s to ns', '1000000000')
+        self.assertResponse('convert 0.9999999999999999 s to ns',
+                            '999999999.9999999')
+        self.assertResponse('convert 1000000000 ns to s', '1')
+        self.assertResponse('convert 999999999.9999999 ns to s', '1')
+
     def testConvertSingularPlural(self):
         self.assertResponse('convert [calc 2*pi] rads to degrees', '360')
         self.assertResponse('convert 1 carat to grams', '0.2')
