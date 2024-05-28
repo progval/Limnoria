@@ -1,6 +1,118 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_scheme = "calver-by-date"
+
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project]
+dynamic = ["version"]  # filled by setuptools-scm
+name = "limnoria"
+authors = [
+    { name = "Valentin Lorentz", email = "progval+limnoria@progval.net" },
+]
+description = """\
+    A robust, full-featured Python IRC bot with a clean and flexible plugin API. \
+    Equipped with a complete ACL system for specifying user permissions with as \
+    much as per-command granularity. \
+    Batteries are included in the form of numerous plugins already written. \
+"""
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Environment :: No Input/Output (Daemon)",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Natural Language :: Finnish",
+    "Natural Language :: French",
+    "Natural Language :: Hungarian",
+    "Natural Language :: Italian",
+    "Operating System :: OS Independent",
+    "Operating System :: POSIX",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Chat :: Internet Relay Chat",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+requires-python = ">= 3.6.0"
+
+[project.urls]
+"Homepage" = "https://limnoria.net/"
+"Source" = "https://github.com/progval/Limnoria/"
+"Bug Reports" = "https://github.com/progval/Limnoria/issues"
+# TODO:
+#download-url = "https://pypi.python.org/pypi/limnoria"
+#platforms = [
+#    "linux",
+#    "linux2",
+#    "win32",
+#    "cygwin",
+#    "darwin"
+#]
+
+[project.scripts]
+limnoria = "supybot.scripts.limnoria:main"
+limnoria-test = "supybot.scripts.limnoria_test:main"
+limnoria-botchk = "supybot.scripts.limnoria_botchk:main"
+limnoria-wizard = "supybot.scripts.limnoria_wizard:main"
+limnoria-adduser = "supybot.scripts.limnoria_adduser:main"
+limnoria-reset-password = "supybot.scripts.limnoria_reset_password:main"
+limnoria-plugin-doc = "supybot.scripts.limnoria_plugin_doc:main"
+limnoria-plugin-create = "supybot.scripts.limnoria_plugin_create:main"
+supybot = "supybot.scripts.limnoria:main"
+supybot-test = "supybot.scripts.limnoria_test:main"
+supybot-botchk = "supybot.scripts.limnoria_botchk:main"
+supybot-wizard = "supybot.scripts.limnoria_wizard:main"
+supybot-adduser = "supybot.scripts.limnoria_adduser:main"
+supybot-reset-password = "supybot.scripts.limnoria_reset_password:main"
+supybot-plugin-doc = "supybot.scripts.limnoria_plugin_doc:main"
+supybot-plugin-create = "supybot.scripts.limnoria_plugin_create:main"
+
+[tool.setuptools]
+provides = ["supybot"]
+include-package-data = true
+packages = [
+    "supybot",
+    "supybot.utils",
+    "supybot.locales",
+    "supybot.plugins",
+    "supybot.drivers",
+    "supybot.plugins.Dict.local",
+    "supybot.plugins.Math.local",
+]
+
+[tool.setuptools.data-files]
+"share/man/man1" = [
+    "man/limnoria.1",
+    "man/limnoria-test.1",
+    "man/limnoria-botchk.1",
+    "man/limnoria-wizard.1",
+    "man/limnoria-adduser.1",
+    "man/limnoria-reset-password.1",
+    "man/limnoria-plugin-doc.1",
+    "man/limnoria-plugin-create.1",
+    "man/supybot.1",
+    "man/supybot-test.1",
+    "man/supybot-botchk.1",
+    "man/supybot-wizard.1",
+    "man/supybot-adduser.1",
+    "man/supybot-reset-password.1",
+    "man/supybot-plugin-doc.1",
+    "man/supybot-plugin-create.1",
+]
 
 [tool.black]
 line-length = 79
