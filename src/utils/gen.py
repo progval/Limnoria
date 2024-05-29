@@ -167,7 +167,9 @@ def saltHash(password, salt=None, hash='sha'):
         hasher = crypt.md5
     return '|'.join([salt, hasher((salt + password).encode('utf8')).hexdigest()])
 
-_astStr2 = ast.Str if minisix.PY2 else ast.Bytes
+_OLD_AST = sys.version_info[0:2] < (3, 8)
+"""Whether the AST classes predate the python 3.8 API changes"""
+
 def safeEval(s, namespace=None):
     """Evaluates s, safely.  Useful for turning strings into tuples/lists/etc.
     without unsafely using eval()."""
@@ -175,12 +177,11 @@ def safeEval(s, namespace=None):
         node = ast.parse(s, mode='eval').body
     except SyntaxError as e:
         raise ValueError('Invalid string: %s.' % e)
+
     def checkNode(node):
         if node.__class__ is ast.Expr:
             node = node.value
-        if node.__class__ in (ast.Num,
-                              ast.Str,
-                              _astStr2):
+        if not _OLD_AST and node.__class__ is ast.Constant:
             return True
         elif node.__class__ in (ast.List,
                               ast.Tuple):
@@ -196,10 +197,12 @@ def safeEval(s, namespace=None):
                 return True
             else:
                 return False
-        elif node.__class__ is ast.NameConstant:
+        elif _OLD_AST and node.__class__ in (ast.Num, ast.Str, ast.Bytes):
+            # ast.Num, ast.Str, ast.Bytes are deprecated since Python 3.8
+            # and removed since Python 3.14; replaced by ast.Constant.
             return True
-        elif sys.version_info[0:2] >= (3, 8) and \
-                node.__class__ is ast.Constant:
+        elif _OLD_AST and node.__class__ is ast.NameConstant:
+            # ditto
             return True
         else:
             return False
