@@ -40,7 +40,7 @@ jobs:
           - python-version: "3.9"
             with-opt-deps: true
             runs-on: ubuntu-22.04
-          - python-version: "pypy-3.10"
+          - python-version: "pypy-3.9"
             with-opt-deps: true
             runs-on: ubuntu-22.04
 
