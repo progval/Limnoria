@@ -236,8 +236,8 @@ msgstr ""
 msgid ""
 "Unable to react, the network does not allow draft/reply and/or draft/react."
 msgstr ""
-"Не удаётся отправить реакцию, данная сеть не позволяет использовать draft/"
-"reply или draft/react."
+"Не удаётся отправить реакцию, данная сеть не позволяет использовать"
+"draft/reply или draft/react."
 
 #: plugin.py:181
 msgid "I couldn't find a message from %s in my history of %s messages."
