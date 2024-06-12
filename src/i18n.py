@@ -50,7 +50,7 @@ MSGSTR = 'msgstr "'
 FUZZY = '#, fuzzy'
 
 currentLocale = 'en'
-SUPPORTED_LANGUAGES = ['de', 'en', 'es', 'fi', 'fr', 'it']
+SUPPORTED_LANGUAGES = ['de', 'en', 'es', 'fi', 'fr', 'it', 'ru']
 
 class PluginNotFound(Exception):
     pass
