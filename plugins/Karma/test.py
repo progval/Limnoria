@@ -60,6 +60,10 @@ class KarmaTestCase(ChannelPluginTestCase):
                           'Karma for [\'"]moo[\'"].*increased 1.*total.*1')
         self.assertRegexp('karma MoO',
                           'Karma for [\'"]MoO[\'"].*increased 1.*total.*1')
+        # Test trailing characters and spaces
+        self.assertNoResponse('baz, 	++', 2)
+        self.assertRegexp('karma baz',
+                          'Karma for [\'"]baz[\'"].*increased 1.*total.*1')
 
     def testKarmaRankingDisplayConfigurable(self):
         try:
