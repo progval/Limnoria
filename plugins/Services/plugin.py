@@ -179,7 +179,11 @@ class Services(callbacks.Plugin):
         if nick not in self.registryValue('nicks', network=irc.network):
             return
         nickserv = self.registryValue('NickServ', network=irc.network)
-        password = self._getNickServPassword(nick, irc.network)
+        try:
+            password = self._getNickServPassword(nick, irc.network)
+        except Exception:
+            self.log.exception('Could not get NickServ password for %s', nick)
+            return
         ghostDelay = self.registryValue('ghostDelay', network=irc.network)
         if not ghostDelay:
             return
