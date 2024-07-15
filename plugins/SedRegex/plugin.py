@@ -56,25 +56,30 @@ axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})
 class SearchNotFoundError(Exception):
     pass
 
-def _replacer_process(msg, target, pattern, replacement, count,
+def _replacer_process(source, target, pattern, replacement, count,
                       messages, historyLength, config, log):
-    for m in messages:
-        if m.command in ('PRIVMSG', 'NOTICE') and \
-                ircutils.strEqual(m.args[0], msg.args[0]):
-            if target and m.nick != target:
+    (source_nick, source_args) = source
+    for (i, (nick, prefix, args)) in enumerate(messages):
+        if ircutils.strEqual(args[0], source_args[0]):
+            if target and nick != target:
                 continue
             # Don't snarf ignored users' messages unless specifically
             # told to.
-            if ircdb.checkIgnored(m.prefix) and not target:
+            if ircdb.checkIgnored(prefix) and not target:
                 continue
 
+            """
             # When running substitutions, ignore the "* nick" part of any actions.
             action = ircmsgs.isAction(m)
             if action:
                 text = ircmsgs.unAction(m)
             else:
                 text = m.args[1]
+            """
+            action = False
+            text = args[1]
 
+            """
             # Test messages sent before SedRegex was activated. Mark them all as seen
             # so we only need to do this check once per message.
             if not m.tagged(TAG_SEEN):
@@ -85,6 +90,7 @@ def _replacer_process(msg, target, pattern, replacement, count,
             if config['ignoreRegex'] and m.tagged(TAG_IS_REGEX):
                 log.debug("Skipping message %s because it is tagged as isRegex", m.args[1])
                 continue
+            """
 
             try:
                 replace_result = pattern.search(text)
@@ -93,25 +99,25 @@ def _replacer_process(msg, target, pattern, replacement, count,
                         replacement = ircutils.bold(replacement)
                     subst = pattern.sub(replacement, text, count)
                     if action:  # If the message was an ACTION, prepend the nick back.
-                        subst = '* %s %s' % (m.nick, subst)
+                        subst = '* %s %s' % (nick, subst)
 
                     subst = axe_spaces(subst)
 
-                    if m.nick == msg.nick:
+                    if nick == source_nick:
                         fmt = config['format']
                         env = {'replacement': subst}
                     else:
                         fmt = config['format.other']
-                        env = {'otherNick': msg.nick, 'replacement': subst}
+                        env = {'otherNick': source_nick, 'replacement': subst}
 
-                    return (m, fmt, env)
+                    return (i, fmt, env)
 
             except Exception as e:
                 log.warning(_("SedRegex error: %s"), e, exc_info=True)
                 raise
 
     log.debug(_("SedRegex: Search %r not found in the last %i messages of %s."),
-                     msg.args[1], historyLength, msg.args[0])
+                     source_args[1], historyLength, source_args[0])
     raise SearchNotFoundError()
 
 class SedRegex(callbacks.PluginRegexp):
@@ -233,7 +239,10 @@ class SedRegex(callbacks.PluginRegexp):
         if not ircutils.isNick(str(target)):
             return
 
-        iterable = [m for m in iterable if m.tagged('receivedBy') == irc]
+        messages = [m for m in iterable
+                    if m.tagged('receivedBy') == irc
+                    and m.command in ('PRIVMSG', 'NOTICE')]
+        iterable = [(m.nick, m.prefix, m.args) for m in messages]
 
         regex_timeout = self.registryValue('processTimeout')
         config = {
@@ -242,13 +251,13 @@ class SedRegex(callbacks.PluginRegexp):
             'format.other')
         }
         try:
-            (m, fmt, env) = process(_replacer_process, msg,
+            (i, fmt, env) = process(_replacer_process, (msg.nick, msg.args),
                     target=target, pattern=pattern, replacement=replacement,
                     count=count, messages=iterable,
                     historyLength=len(irc.state.history),
                     config=config, log=self.log,
                     timeout=regex_timeout, pn=self.name(), cn='replacer')
-            message = ircutils.standardSubstitute(irc, m, fmt, env)
+            message = ircutils.standardSubstitute(irc, messages[i], fmt, env)
         except ProcessTimeoutError:
             irc.error(_("Search timed out."))
         except SearchNotFoundError:
