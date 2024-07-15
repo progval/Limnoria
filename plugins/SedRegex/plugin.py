@@ -56,11 +56,11 @@ axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})
 class SearchNotFoundError(Exception):
     pass
 
-def _replacer_process(irc, msg, target, pattern, replacement, count,
-                      messages, config, log):
+def _replacer_process(msg, target, pattern, replacement, count,
+                      messages, historyLength, config, log):
     for m in messages:
         if m.command in ('PRIVMSG', 'NOTICE') and \
-                ircutils.strEqual(m.args[0], msg.args[0]) and m.tagged('receivedBy') == irc:
+                ircutils.strEqual(m.args[0], msg.args[0]):
             if target and m.nick != target:
                 continue
             # Don't snarf ignored users' messages unless specifically
@@ -104,14 +104,14 @@ def _replacer_process(irc, msg, target, pattern, replacement, count,
                         fmt = config['format.other']
                         env = {'otherNick': msg.nick, 'replacement': subst}
 
-                    return ircutils.standardSubstitute(irc, m, fmt, env)
+                    return (m, fmt, env)
 
             except Exception as e:
                 log.warning(_("SedRegex error: %s"), e, exc_info=True)
                 raise
 
     log.debug(_("SedRegex: Search %r not found in the last %i messages of %s."),
-                     msg.args[1], len(irc.state.history), msg.args[0])
+                     msg.args[1], historyLength, msg.args[0])
     raise SearchNotFoundError()
 
 class SedRegex(callbacks.PluginRegexp):
@@ -233,6 +233,8 @@ class SedRegex(callbacks.PluginRegexp):
         if not ircutils.isNick(str(target)):
             return
 
+        iterable = [m for m in iterable if m.tagged('receivedBy') == irc]
+
         regex_timeout = self.registryValue('processTimeout')
         config = {
             key: self.registryValue(key, msg.channel, irc.network)
@@ -240,11 +242,13 @@ class SedRegex(callbacks.PluginRegexp):
             'format.other')
         }
         try:
-            message = process(_replacer_process, irc, msg,
+            (m, fmt, env) = process(_replacer_process, msg,
                     target=target, pattern=pattern, replacement=replacement,
                     count=count, messages=iterable,
+                    historyLength=len(irc.state.history),
                     config=config, log=self.log,
                     timeout=regex_timeout, pn=self.name(), cn='replacer')
+            message = ircutils.standardSubstitute(irc, m, fmt, env)
         except ProcessTimeoutError:
             irc.error(_("Search timed out."))
         except SearchNotFoundError:
