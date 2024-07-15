@@ -56,6 +56,64 @@ axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})
 class SearchNotFoundError(Exception):
     pass
 
+def _replacer_process(irc, msg, target, pattern, replacement, count,
+                      messages, config, log):
+    for m in messages:
+        if m.command in ('PRIVMSG', 'NOTICE') and \
+                ircutils.strEqual(m.args[0], msg.args[0]) and m.tagged('receivedBy') == irc:
+            if target and m.nick != target:
+                continue
+            # Don't snarf ignored users' messages unless specifically
+            # told to.
+            if ircdb.checkIgnored(m.prefix) and not target:
+                continue
+
+            # When running substitutions, ignore the "* nick" part of any actions.
+            action = ircmsgs.isAction(m)
+            if action:
+                text = ircmsgs.unAction(m)
+            else:
+                text = m.args[1]
+
+            # Test messages sent before SedRegex was activated. Mark them all as seen
+            # so we only need to do this check once per message.
+            if not m.tagged(TAG_SEEN):
+                m.tag(TAG_SEEN)
+                if SED_REGEX.match(m.args[1]):
+                    m.tag(TAG_IS_REGEX)
+            # Ignore messages containing a regexp if ignoreRegex is on.
+            if config['ignoreRegex'] and m.tagged(TAG_IS_REGEX):
+                log.debug("Skipping message %s because it is tagged as isRegex", m.args[1])
+                continue
+
+            try:
+                replace_result = pattern.search(text)
+                if replace_result:
+                    if config['boldReplacementText']:
+                        replacement = ircutils.bold(replacement)
+                    subst = pattern.sub(replacement, text, count)
+                    if action:  # If the message was an ACTION, prepend the nick back.
+                        subst = '* %s %s' % (m.nick, subst)
+
+                    subst = axe_spaces(subst)
+
+                    if m.nick == msg.nick:
+                        fmt = config['format']
+                        env = {'replacement': subst}
+                    else:
+                        fmt = config['format.other']
+                        env = {'otherNick': msg.nick, 'replacement': subst}
+
+                    return ircutils.standardSubstitute(irc, m, fmt, env)
+
+            except Exception as e:
+                log.warning(_("SedRegex error: %s"), e, exc_info=True)
+                raise
+
+    log.debug(_("SedRegex: Search %r not found in the last %i messages of %s."),
+                     msg.args[1], len(irc.state.history), msg.args[0])
+    raise SearchNotFoundError()
+
 class SedRegex(callbacks.PluginRegexp):
     """
     Enable SedRegex on the desired channels:
@@ -176,9 +234,16 @@ class SedRegex(callbacks.PluginRegexp):
             return
 
         regex_timeout = self.registryValue('processTimeout')
+        config = {
+            key: self.registryValue(key, msg.channel, irc.network)
+            for key in ('ignoreRegex', 'boldReplacementText', 'format',
+            'format.other')
+        }
         try:
-            message = process(self._replacer_process, irc, msg,
-                    target, pattern, replacement, count, iterable,
+            message = process(_replacer_process, irc, msg,
+                    target=target, pattern=pattern, replacement=replacement,
+                    count=count, messages=iterable,
+                    config=config, log=self.log,
                     timeout=regex_timeout, pn=self.name(), cn='replacer')
         except ProcessTimeoutError:
             irc.error(_("Search timed out."))
@@ -193,64 +258,6 @@ class SedRegex(callbacks.PluginRegexp):
         else:
             irc.reply(message, prefixNick=False)
     replacer.__doc__ = SED_REGEX.pattern
-
-    def _replacer_process(self, irc, msg, target, pattern, replacement, count, messages):
-        for m in messages:
-            if m.command in ('PRIVMSG', 'NOTICE') and \
-                    ircutils.strEqual(m.args[0], msg.args[0]) and m.tagged('receivedBy') == irc:
-                if target and m.nick != target:
-                    continue
-                # Don't snarf ignored users' messages unless specifically
-                # told to.
-                if ircdb.checkIgnored(m.prefix) and not target:
-                    continue
-
-                # When running substitutions, ignore the "* nick" part of any actions.
-                action = ircmsgs.isAction(m)
-                if action:
-                    text = ircmsgs.unAction(m)
-                else:
-                    text = m.args[1]
-
-                # Test messages sent before SedRegex was activated. Mark them all as seen
-                # so we only need to do this check once per message.
-                if not m.tagged(TAG_SEEN):
-                    m.tag(TAG_SEEN)
-                    if SED_REGEX.match(m.args[1]):
-                        m.tag(TAG_IS_REGEX)
-                # Ignore messages containing a regexp if ignoreRegex is on.
-                if self.registryValue('ignoreRegex', msg.channel, irc.network) and m.tagged(TAG_IS_REGEX):
-                    self.log.debug("Skipping message %s because it is tagged as isRegex", m.args[1])
-                    continue
-
-                try:
-                    replace_result = pattern.search(text)
-                    if replace_result:
-                        if self.registryValue('boldReplacementText',
-                                              msg.channel, irc.network):
-                            replacement = ircutils.bold(replacement)
-                        subst = pattern.sub(replacement, text, count)
-                        if action:  # If the message was an ACTION, prepend the nick back.
-                            subst = '* %s %s' % (m.nick, subst)
-
-                        subst = axe_spaces(subst)
-
-                        if m.nick == msg.nick:
-                            fmt = self.registryValue('format', msg.channel, irc.network)
-                            env = {'replacement': subst}
-                        else:
-                            fmt = self.registryValue('format.other', msg.channel, irc.network)
-                            env = {'otherNick': msg.nick, 'replacement': subst}
-
-                        return ircutils.standardSubstitute(irc, m, fmt, env)
-
-                except Exception as e:
-                    self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
-                    raise
-
-        self.log.debug(_("SedRegex: Search %r not found in the last %i messages of %s."),
-                         msg.args[1], len(irc.state.history), msg.args[0])
-        raise SearchNotFoundError()
 
 Class = SedRegex
 
