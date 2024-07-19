@@ -237,7 +237,17 @@ class ChannelTestCase(ChannelPluginTestCase):
                         'foobar!user@host.domain.tld')
         join()
         self.assertKban('kban --account foobar',
-                        'foobar!user@host.domain.tld')
+                        '*!*@host.domain.tld')
+        join()
+        with conf.supybot.protocols.irc.banmask.context(['user', 'host']):
+            # falls back from --account to config
+            self.assertKban('kban --account foobar',
+                            '*!user@host.domain.tld')
+        join()
+        with conf.supybot.protocols.irc.banmask.context(['account']):
+            # falls back from --account to config, then to exact hostmask
+            self.assertKban('kban --account foobar',
+                            'foobar!user@host.domain.tld')
         join()
         self.assertKban('kban --account --host foobar',
                         '*!*@host.domain.tld')
@@ -259,7 +269,17 @@ class ChannelTestCase(ChannelPluginTestCase):
                         'foobar!user@host.domain.tld')
         join()
         self.assertKban('kban --account foobar',
-                        'foobar!user@host.domain.tld')
+                        '*!*@host.domain.tld')
+        join()
+        with conf.supybot.protocols.irc.banmask.context(['user', 'host']):
+            # falls back from --account to config
+            self.assertKban('kban --account foobar',
+                            '*!user@host.domain.tld')
+        join()
+        with conf.supybot.protocols.irc.banmask.context(['account']):
+            # falls back from --account to config, then to exact hostmask
+            self.assertKban('kban --account foobar',
+                            'foobar!user@host.domain.tld')
         join()
         self.assertKban('kban --account --host foobar',
                         '*!*@host.domain.tld')

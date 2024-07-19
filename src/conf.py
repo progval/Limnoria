@@ -1303,6 +1303,17 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
             masks.append(ircutils.joinHostmask(bnick, buser, bhost))
 
         if (bnick, buser, bhost) == ('*', '*', '*') and \
+                options == ['account'] and \
+                not masks:
+            # found no ban mask to set (because options == ['account'] and user
+            # is logged out?), try again with the default ban mask
+            options = supybot.protocols.irc.banmask.getSpecific(
+                    network, channel)()
+            options = [option for option in options if option != 'account']
+            return self.makeExtBanmasks(
+                hostmask, options=options, channel=channel, network=network)
+
+        if (bnick, buser, bhost) == ('*', '*', '*') and \
                 ircutils.isUserHostmask(hostmask) and \
                 not masks:
             masks.append(hostmask)
