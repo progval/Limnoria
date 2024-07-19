@@ -1316,7 +1316,12 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         if (bnick, buser, bhost) == ('*', '*', '*') and \
                 ircutils.isUserHostmask(hostmask) and \
                 not masks:
-            masks.append(hostmask)
+            # still no ban mask found, fallback to the host, if any
+            if host != '*':
+                masks.append(ircutils.joinHostmask('*', '*', host))
+            else:
+                # if no host, fall back to the exact mask provided
+                masks.append(hostmask)
 
         return masks
 
