@@ -40,7 +40,6 @@ class InternetTestCase(PluginTestCase):
                                 'Host not found.')
 
         def testWhois(self):
-            self.assertNotError('internet whois ohio-state.edu')
             self.assertNotError('internet whois microsoft.com')
             self.assertNotError('internet whois inria.fr')
             self.assertNotError('internet whois slime.com.au')

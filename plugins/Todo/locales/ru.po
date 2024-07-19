@@ -1,0 +1,176 @@
+# Todo plugin for Limnoria
+# Copyright (C) 2024 Limnoria
+# ssdaniel24 <bo7oaonteg2m__at__mailDOTru>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"PO-Revision-Date: 2024-06-12 15:01+0300\n"
+"Last-Translator: ssdaniel24 <bo7oaonteg2m__at__mailDOTru>\n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: config.py:51
+msgid ""
+"Determines whether users can read the\n"
+"    todo-list of another user."
+msgstr "Определяет, могут ли пользователи читать чужие списки дел."
+
+#: plugin.py:123
+msgid ""
+"This plugin allows you to create your own personal to-do list on\n"
+"    the bot."
+msgstr ""
+"Этот плагин позволяет вам создавать ваши собственные списки дел в боте."
+
+#: plugin.py:139
+msgid ""
+"[<username>] [<task id>]\n"
+"\n"
+"        Retrieves a task for the given task id.  If no task id is given, "
+"it\n"
+"        will return a list of task ids that that user has added to their "
+"todo\n"
+"        list.\n"
+"        "
+msgstr ""
+"[<имя пользователя>] [<id задачи>]\n"
+"\n"
+"Получает задачу по заданному id. Если id не передан в аргументы, то "
+"возвращает список id задач, которые данный пользователь добавил в свой "
+"список дел."
+
+#: plugin.py:150
+msgid "You are not allowed to see other users todo-list."
+msgstr "Вам не разрешено видеть чужие списки дел."
+
+#: plugin.py:157
+msgid "#%i: %s"
+msgstr "#%i: %s"
+
+#: plugin.py:162
+msgid "%s for %s: %L"
+msgstr "%s для %s: %L"
+
+#: plugin.py:166
+msgid "That user has no tasks in their todo list."
+msgstr "Этот пользователь не имеет задач в его/её списке дел."
+
+#: plugin.py:168
+msgid "You have no tasks in your todo list."
+msgstr "У вас нет задач в вашем списке дел."
+
+#: plugin.py:175
+msgid "Active"
+msgstr "Активная"
+
+#: plugin.py:177
+msgid "Inactive"
+msgstr "Неактивная"
+
+#: plugin.py:179
+msgid ", priority: %i"
+msgstr ", приоритет: %i"
+
+#: plugin.py:182
+msgid "%s todo for %s: %s (Added at %s)"
+msgstr "%s задача для %s: %s (добавлено %s)"
+
+#: plugin.py:186 plugin.py:270 plugin.py:284
+msgid "task id"
+msgstr "id задачи"
+
+#: plugin.py:191
+msgid ""
+"[--priority=<num>] <text>\n"
+"\n"
+"        Adds <text> as a task in your own personal todo list.  The "
+"optional\n"
+"        priority argument allows you to set a task as a high or low "
+"priority.\n"
+"        Any integer is valid.\n"
+"        "
+msgstr ""
+"[--priority=<число>] <текст>\n"
+"\n"
+"Добавляет данный <текст> в ваш список дел. Необязательный аргумент с "
+"приоритетом позволяет вам задавать высокий или низкий приоритет задачи. "
+"Допустимо любое целое число."
+
+#: plugin.py:202
+msgid "(Todo #%i added)"
+msgstr "(Задача #%i добавлена)"
+
+#: plugin.py:208
+msgid ""
+"<task id> [<task id> ...]\n"
+"\n"
+"        Removes <task id> from your personal todo list.\n"
+"        "
+msgstr ""
+"<id задачи> [<id задачи> ...]\n"
+"\n"
+"Удаляет задачу с данным <id> из вашего списка дела."
+
+#: plugin.py:219
+msgid ""
+"Task %i could not be removed either because that id doesn't exist or it has "
+"been removed already."
+msgstr ""
+"Задача %i не может быть удалена, так как либо задачи с таким id не "
+"существует, либо она уже удалена."
+
+#: plugin.py:223
+msgid ""
+"No tasks were removed because the following tasks could not be removed: %L."
+msgstr ""
+"Ни одна задача не была удалена, так как они не могут быть удалены: %L."
+
+#: plugin.py:233
+msgid ""
+"[--{regexp} <value>] [<glob> <glob> ...]\n"
+"\n"
+"        Searches your todos for tasks matching <glob>.  If --regexp is "
+"given,\n"
+"        its associated value is taken as a regexp and matched against the\n"
+"        tasks.\n"
+"        "
+msgstr ""
+"[-{regexp} <значение>] [<шаблон> <шаблон> ...]\n"
+"\n"
+"Производит поиск задач по вашим спискам дел, совпадающих с <шаблоном> "
+"поиска. Если дан --regexp, то его <значение> принимается как регулярное "
+"выражение и сопоставляется с задачами."
+
+#: plugin.py:256
+msgid "No tasks matched that query."
+msgstr "Ни одна задача не совпадает с запросом."
+
+#: plugin.py:262
+msgid ""
+"<id> <priority>\n"
+"\n"
+"        Sets the priority of the todo with the given id to the specified "
+"value.\n"
+"        "
+msgstr ""
+"<id> <приоритет>\n"
+"\n"
+"Выставляет приоритет задачи с данным <id> в данное значение."
+
+#: plugin.py:276
+msgid ""
+"<task id> <regexp>\n"
+"\n"
+"        Modify the task with the given id using the supplied regexp.\n"
+"        "
+msgstr ""
+"<id задачи> <regexp>\n"
+"\n"
+"Изменяет задачу с данным id, используя данное регулярное выражение."

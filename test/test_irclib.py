@@ -946,79 +946,85 @@ class StsTestCase(SupyTestCase):
     def tearDown(self):
         ircdb.networks.networks = {}
 
-    def testStsInSecureConnection(self):
+    def _testStsInSecureConnection(self, cap_value):
         self.irc.driver.anyCertValidationEnabled.return_value = True
         self.irc.driver.ssl = True
         self.irc.driver.currentServer = drivers.Server('irc.test', 6697, None, False)
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-            args=('*', 'LS', 'sts=duration=42,port=12345')))
+            args=('*', 'LS', 'sts=' + cap_value)))
 
         self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {
-            'irc.test': (6697, 'duration=42,port=12345')})
+            'irc.test': (6697, cap_value)})
         self.irc.driver.reconnect.assert_not_called()
 
-    def testStsInSecureConnectionNoPort(self):
+    def testStsInSecureConnectionWithPort(self):
+        self._testStsInSecureConnection('duration=42,port=12345')
+
+    def testStsInSecureConnectionWithoutPort(self):
+        self._testStsInSecureConnection('duration=42')
+
+    def testStsInSecureConnectionMissingDuration(self):
+        # "A persistence policy, expressed via the duration key. REQUIRED on a
+        # secure connection"
         self.irc.driver.anyCertValidationEnabled.return_value = True
         self.irc.driver.ssl = True
         self.irc.driver.currentServer = drivers.Server('irc.test', 6697, None, False)
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-            args=('*', 'LS', 'sts=duration=42')))
+            args=('*', 'LS', 'sts=port=12345')))
 
-        self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {
-            'irc.test': (6697, 'duration=42')})
+        self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
         self.irc.driver.reconnect.assert_not_called()
 
-    def testStsInInsecureTlsConnection(self):
+    def _testStsInInsecureTlsConnection(self, cap_value):
         self.irc.driver.anyCertValidationEnabled.return_value = False
         self.irc.driver.ssl = True
-        self.irc.driver.currentServer = drivers.Server('irc.test', 6667, None, False)
+        self.irc.driver.currentServer = drivers.Server('irc.test', 6697, None, False)
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-            args=('*', 'LS', 'sts=duration=42,port=6697')))
+            args=('*', 'LS', 'sts=' + cap_value)))
 
         self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
         self.irc.driver.reconnect.assert_called_once_with(
             server=drivers.Server('irc.test', 6697, None, True),
             wait=True)
 
-    def testStsInCleartextConnection(self):
+    def testStsInInsecureTlsConnectionWithPort(self):
+        self._testStsInInsecureTlsConnection('duration=42,port=6697')
+
+    def testStsInInsecureTlsConnectionWithoutPort(self):
+        self._testStsInInsecureTlsConnection('duration=42')
+
+    def _testStsInCleartextConnection(self, cap_value):
         self.irc.driver.anyCertValidationEnabled.return_value = False
-        self.irc.driver.ssl = True
+        self.irc.driver.ssl = False
         self.irc.driver.currentServer = drivers.Server('irc.test', 6667, None, False)
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-            args=('*', 'LS', 'sts=duration=42,port=6697')))
+            args=('*', 'LS', 'sts=' + cap_value)))
 
         self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
         self.irc.driver.reconnect.assert_called_once_with(
             server=drivers.Server('irc.test', 6697, None, True),
             wait=True)
+
+    def testStsInCleartextConnectionWithDuration(self):
+        self._testStsInCleartextConnection('duration=42,port=6697')
+
+    def testStsInCleartextConnectionWithoutDuration(self):
+        self._testStsInCleartextConnection('port=6697')
 
     def testStsInCleartextConnectionInvalidDuration(self):
         # "Servers MAY send this key to all clients, but insecurely
         # connected clients MUST ignore it."
+        self._testStsInCleartextConnection('duration=foo,port=6697')
+
+    def testStsInCleartextConnectionMissingPort(self):
         self.irc.driver.anyCertValidationEnabled.return_value = False
-        self.irc.driver.ssl = True
+        self.irc.driver.ssl = False
         self.irc.driver.currentServer = drivers.Server('irc.test', 6667, None, False)
         self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-            args=('*', 'LS', 'sts=duration=foo,port=6697')))
+            args=('*', 'LS', 'sts=duration=42')))
 
         self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
-        self.irc.driver.reconnect.assert_called_once_with(
-            server=drivers.Server('irc.test', 6697, None, True),
-            wait=True)
-
-    def testStsInCleartextConnectionNoDuration(self):
-        # "Servers MAY send this key to all clients, but insecurely
-        # connected clients MUST ignore it."
-        self.irc.driver.anyCertValidationEnabled.return_value = False
-        self.irc.driver.ssl = True
-        self.irc.driver.currentServer = drivers.Server('irc.test', 6667, None, False)
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-            args=('*', 'LS', 'sts=port=6697')))
-
-        self.assertEqual(ircdb.networks.getNetwork('test').stsPolicies, {})
-        self.irc.driver.reconnect.assert_called_once_with(
-            server=drivers.Server('irc.test', 6697, None, True),
-            wait=True)
+        self.irc.driver.reconnect.assert_not_called()
 
 class IrcTestCase(SupyTestCase):
     def setUp(self):
@@ -1594,26 +1600,41 @@ class BatchTestCase(SupyTestCase):
 
 class SaslTestCase(SupyTestCase, CapNegMixin):
     def setUp(self):
-        pass
+        self._default_mechanisms = conf.supybot.networks.test.sasl.mechanisms()
+
+    def tearDown(self):
+        conf.supybot.networks.test.sasl.mechanisms.setValue(self._default_mechanisms)
+        conf.supybot.networks.test.sasl.username.setValue('')
+        conf.supybot.networks.test.sasl.password.setValue('')
+        conf.supybot.networks.test.certfile.setValue('')
 
     def testPlain(self):
-        try:
-            conf.supybot.networks.test.sasl.username.setValue('jilles')
-            conf.supybot.networks.test.sasl.password.setValue('sesame')
-            self.irc = irclib.Irc('test')
-        finally:
-            conf.supybot.networks.test.sasl.username.setValue('')
-            conf.supybot.networks.test.sasl.password.setValue('')
+        conf.supybot.networks.test.sasl.username.setValue('jilles')
+        conf.supybot.networks.test.sasl.password.setValue('sesame')
+        conf.supybot.networks.test.sasl.mechanisms.setValue(
+            ['scram-sha-256', 'plain'])
+
+        self.irc = irclib.Irc('test')
+
         self.assertEqual(self.irc.sasl_current_mechanism, None)
-        self.irc.sasl_next_mechanisms = ['scram-sha-256', 'plain']
 
-        self.startCapNegociation()
+        if irclib.scram:
+            self.assertEqual(self.irc.sasl_next_mechanisms,
+                ['scram-sha-256', 'plain'])
 
-        m = self.irc.takeMsg()
-        self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
-            args=('SCRAM-SHA-256',)))
-        self.irc.feedMsg(ircmsgs.IrcMsg(command='904',
-            args=('mechanism not available',)))
+            self.startCapNegociation()
+
+            m = self.irc.takeMsg()
+            self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
+                args=('SCRAM-SHA-256',)))
+            self.irc.feedMsg(ircmsgs.IrcMsg(command='904',
+                args=('mechanism not available',)))
+        else:
+            self.assertEqual(self.irc.sasl_next_mechanisms,
+                ['plain'])
+
+            self.startCapNegociation()
+
 
         m = self.irc.takeMsg()
         self.assertEqual(m, ircmsgs.IrcMsg(command='AUTHENTICATE',
@@ -1631,17 +1652,17 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
         self.endCapNegociation()
 
     def testExternalFallbackToPlain(self):
-        try:
-            conf.supybot.networks.test.sasl.username.setValue('jilles')
-            conf.supybot.networks.test.sasl.password.setValue('sesame')
-            conf.supybot.networks.test.certfile.setValue('foo')
-            self.irc = irclib.Irc('test')
-        finally:
-            conf.supybot.networks.test.sasl.username.setValue('')
-            conf.supybot.networks.test.sasl.password.setValue('')
-            conf.supybot.networks.test.certfile.setValue('')
+        conf.supybot.networks.test.sasl.username.setValue('jilles')
+        conf.supybot.networks.test.sasl.password.setValue('sesame')
+        conf.supybot.networks.test.certfile.setValue('foo')
+        conf.supybot.networks.test.sasl.mechanisms.setValue(
+            ['external', 'plain'])
+
+        self.irc = irclib.Irc('test')
+
         self.assertEqual(self.irc.sasl_current_mechanism, None)
-        self.irc.sasl_next_mechanisms = ['external', 'plain']
+        self.assertEqual(self.irc.sasl_next_mechanisms,
+            ['external', 'plain'])
 
         self.startCapNegociation()
 
@@ -1667,17 +1688,17 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
         self.endCapNegociation()
 
     def testFilter(self):
-        try:
-            conf.supybot.networks.test.sasl.username.setValue('jilles')
-            conf.supybot.networks.test.sasl.password.setValue('sesame')
-            conf.supybot.networks.test.certfile.setValue('foo')
-            self.irc = irclib.Irc('test')
-        finally:
-            conf.supybot.networks.test.sasl.username.setValue('')
-            conf.supybot.networks.test.sasl.password.setValue('')
-            conf.supybot.networks.test.certfile.setValue('')
+        conf.supybot.networks.test.sasl.username.setValue('jilles')
+        conf.supybot.networks.test.sasl.password.setValue('sesame')
+        conf.supybot.networks.test.certfile.setValue('foo')
+        conf.supybot.networks.test.sasl.mechanisms.setValue(
+            ['external', 'plain'])
+
+        self.irc = irclib.Irc('test')
+
         self.assertEqual(self.irc.sasl_current_mechanism, None)
-        self.irc.sasl_next_mechanisms = ['external', 'plain']
+        self.assertEqual(self.irc.sasl_next_mechanisms,
+            ['external', 'plain'])
 
         self.startCapNegociation(caps='sasl=foo,plain,bar')
 
@@ -1697,15 +1718,16 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
         self.endCapNegociation()
 
     def testReauthenticate(self):
-        try:
-            conf.supybot.networks.test.sasl.username.setValue('jilles')
-            conf.supybot.networks.test.sasl.password.setValue('sesame')
-            self.irc = irclib.Irc('test')
-        finally:
-            conf.supybot.networks.test.sasl.username.setValue('')
-            conf.supybot.networks.test.sasl.password.setValue('')
+        conf.supybot.networks.test.sasl.username.setValue('jilles')
+        conf.supybot.networks.test.sasl.password.setValue('sesame')
+        conf.supybot.networks.test.sasl.mechanisms.setValue(
+            ['external', 'plain'])
+
+        self.irc = irclib.Irc('test')
+
         self.assertEqual(self.irc.sasl_current_mechanism, None)
-        self.irc.sasl_next_mechanisms = ['plain']
+        self.assertEqual(self.irc.sasl_next_mechanisms,
+            ['plain'])
 
         self.startCapNegociation(caps='')
 
@@ -1722,16 +1744,12 @@ class SaslTestCase(SupyTestCase, CapNegMixin):
         self.irc.takeMsg() # None. But even if it was CAP REQ sasl, it would be ok
         self.assertEqual(self.irc.takeMsg(), None)
 
-        try:
-            conf.supybot.networks.test.sasl.username.setValue('jilles')
-            conf.supybot.networks.test.sasl.password.setValue('sesame')
-            self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-                    args=('*', 'DEL', 'sasl')))
-            self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
-                    args=('*', 'NEW', 'sasl=PLAIN')))
-        finally:
-            conf.supybot.networks.test.sasl.username.setValue('')
-            conf.supybot.networks.test.sasl.password.setValue('')
+        conf.supybot.networks.test.sasl.username.setValue('jilles')
+        conf.supybot.networks.test.sasl.password.setValue('sesame')
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+                args=('*', 'DEL', 'sasl')))
+        self.irc.feedMsg(ircmsgs.IrcMsg(command='CAP',
+                args=('*', 'NEW', 'sasl=PLAIN')))
 
         m = self.irc.takeMsg()
         self.assertEqual(m.command, 'CAP', 'Expected CAP, got %r.' % m)

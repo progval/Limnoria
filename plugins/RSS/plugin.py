@@ -280,7 +280,7 @@ class RSS(callbacks.Plugin):
             raise callbacks.Error(s)
         if url:
             feed = self.feeds.get(url)
-            if feed and feed.name != feed.url:
+            if feed and feed.name != feed.url and feed.name in self.feed_names:
                 s = format(_('I already have a feed with that URL named %s.'),
                         feed.name)
                 raise callbacks.Error(s)
@@ -361,6 +361,11 @@ class RSS(callbacks.Plugin):
                         modified=feed.modified, handlers=handlers)
             except socket.error as e:
                 self.log.warning("Network error while fetching <%s>: %s",
+                               feed.url, e)
+                feed.last_exception = e
+                return
+            except http.client.HTTPException as e:
+                self.log.warning("HTTP error while fetching <%s>: %s",
                                feed.url, e)
                 feed.last_exception = e
                 return
@@ -493,10 +498,53 @@ class RSS(callbacks.Plugin):
             template = self.registryValue(key_name, channel, network)
         date = entry.get('published_parsed')
         date = utils.str.timestamp(date)
-        s = string.Template(template).safe_substitute(
-                entry,
-                feed_name=feed.name,
-                date=date)
+        kwargs = {"feed_%s" % k: v for (k, v) in feed.data.items() if
+                  isinstance(v, str)}
+        kwargs["feed_name"] = feed.name
+        kwargs.update(entry)
+        for (key, value) in list(kwargs.items()):
+            # First look for plain text
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict) and 'value' in item and \
+                            item.get('type') == 'text/plain':
+                        value = item['value']
+                        break
+            # Then look for HTML text or URL
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict) and item.get('type') in \
+                            ('text/html', 'application/xhtml+xml'):
+                        if 'value' in item:
+                            value = utils.web.htmlToText(item['value'])
+                        elif 'href' in item:
+                            value = item['href']
+            # Then fall back to any URL
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict) and 'href' in item:
+                        value = item['href']
+                        break
+            # Finally, as a last resort, use the value as-is
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict) and 'value' in item:
+                        value = item['value']
+            kwargs[key] = value
+
+        for key in ('summary', 'title'):
+            detail = kwargs.get('%s_detail' % key)
+            if isinstance(detail, dict) and detail.get('type') in \
+                    ('text/html', 'application/xhtml+xml'):
+                kwargs[key] = utils.web.htmlToText(detail['value'])
+
+                if 'description' not in kwargs and kwargs[key]:
+                    kwargs['description'] = kwargs[key]
+
+        if 'description' not in kwargs and kwargs.get('content'):
+            kwargs['description'] = kwargs['content']
+
+        s = string.Template(template).safe_substitute(entry, **kwargs, date=date)
         return self._normalize_entry(s)
 
     def announce_entry(self, irc, channel, feed, entry):

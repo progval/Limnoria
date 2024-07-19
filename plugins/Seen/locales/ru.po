@@ -1,0 +1,201 @@
+# Seen plugin for Limnoria
+# Copyright (C) 2024 Limnoria
+# ssdaniel24 <bo7oaonteg2m__at__mailDOTru>, 2024.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"PO-Revision-Date: 2024-06-12 15:01+0300\n"
+"Last-Translator: ssdaniel24 <bo7oaonteg2m__at__mailDOTru>\n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: config.py:50
+msgid ""
+"The minimum non-wildcard characters\n"
+"    required to perform a 'seen' request. Of course, it only applies if "
+"there\n"
+"    is a wildcard in the request."
+msgstr ""
+"Минимальное количество обыкновенных символов (не символов подстановки!), "
+"необходимые для запроса 'seen'. Конечно же эта настройка действует только, "
+"когда запрос содержит символы подстановки."
+
+#: config.py:54
+msgid ""
+"Determines whether the last message will\n"
+"    be displayed with @seen. Useful for keeping messages from a channel\n"
+"    private."
+msgstr ""
+"Определяет будет ли последнее сообщение показываться в результатах команды "
+"seen. Полезно для сохранения приватности сообщений в канале."
+
+#: plugin.py:98
+msgid ""
+"This plugin allows you to see when and what someone last said and\n"
+"    what you missed since you left a channel."
+msgstr ""
+"Этот плагин позволяет вам видеть, когда и что кто-нибудь в последний раз "
+"написал, и что вы упустили с тех пор как покинули канал."
+
+#: plugin.py:190
+msgid "Not enough non-wildcard characters."
+msgstr "Недостаточно обыкновенных символов (НЕ символов подстановки)."
+
+#: plugin.py:198 plugin.py:306
+msgid "%s was last seen in %s %s ago"
+msgstr "%s в последний раз видели в %s %s назад."
+
+#: plugin.py:204 plugin.py:283 plugin.py:310
+msgid "%s: %s"
+msgstr "%s: %s"
+
+#: plugin.py:210
+msgid "%s (%s ago)"
+msgstr "%s (%s назад)"
+
+#: plugin.py:212
+msgid "%s could be %L"
+msgstr "%s мог(ла) быть %L"
+
+#: plugin.py:212
+msgid "or"
+msgstr "или"
+
+#: plugin.py:214
+msgid "I haven't seen anyone matching %s."
+msgstr "Я не видел никого, кто бы соответствовал %s."
+
+#: plugin.py:216 plugin.py:313
+msgid "I have not seen %s."
+msgstr "Я не видел %s."
+
+#: plugin.py:223
+msgid "You must be in %s to use this command."
+msgstr "Вы должны быть в %s для использования этой команды."
+
+#: plugin.py:225
+msgid "%s must be in %s to use this command."
+msgstr "%s должен/должна быть в %s для использования этой команды."
+
+#: plugin.py:231
+msgid ""
+"[<channel>] <nick>\n"
+"\n"
+"        Returns the last time <nick> was seen and what <nick> was last "
+"seen\n"
+"        saying. <channel> is only necessary if the message isn't sent on "
+"the\n"
+"        channel itself. <nick> may contain * as a wildcard.\n"
+"        "
+msgstr ""
+"[<канал>] <ник>\n"
+"\n"
+"Возвращает последнее время, когда видели <ник> и его/её последнее "
+"сообщение. Передавать <канал> требуется в случае, если команда запущена не "
+"на этом канале. Данный <ник> может содержать * как символ подстановки."
+
+#: plugin.py:238 plugin.py:256
+msgid "You've found me!"
+msgstr "О нет! Вы нашли меня."
+
+#: plugin.py:246
+msgid ""
+"[<channel>] [--user <name>] [<nick>]\n"
+"\n"
+"        Returns the last time <nick> was seen and what <nick> was last "
+"seen\n"
+"        doing.  This includes any form of activity, instead of just "
+"PRIVMSGs.\n"
+"        If <nick> isn't specified, returns the last activity seen in\n"
+"        <channel>.  If --user is specified, looks up name in the user "
+"database\n"
+"        and returns the last time user was active in <channel>.  <channel> "
+"is\n"
+"        only necessary if the message isn't sent on the channel itself.\n"
+"        "
+msgstr ""
+"[<канал>] [--user <имя>] [<ник>]\n"
+"\n"
+"Возвращает последнее время, когда видели <ник> и его/её последние "
+"действия. Это включает в себя любые формы активности, не ограничиваясь "
+"только PRIVMSG. Если <ник> не задан, то возвращает последнюю активность в "
+"данном <канале>. Если задан --user, то ищет данное <имя> в базе данных и "
+"возвращает последнее время, когда этот пользователь был активен в данном "
+"<канале>. Передавать <канал> требуется в случае, если команда запущена не "
+"на этом канале."
+
+#: plugin.py:280
+msgid "Someone was last seen in %s %s ago"
+msgstr "В последний раз кого-то видели в %s %s назад"
+
+#: plugin.py:286
+msgid "I have never seen anyone."
+msgstr "Я не видел никого."
+
+#: plugin.py:290
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Returns the last thing said in <channel>.  <channel> is only "
+"necessary\n"
+"        if the message isn't sent in the channel itself.\n"
+"        "
+msgstr ""
+"[<канал>]\n"
+"\n"
+"Возвращает последнее, что писали в <канале>. Передавать в аргумент <канал> "
+"требуется в случае, если команда запущена не на этом канале."
+
+#: plugin.py:317
+msgid ""
+"[<channel>] <name>\n"
+"\n"
+"        Returns the last time <name> was seen and what <name> was last "
+"seen\n"
+"        saying.  This looks up <name> in the user seen database, which "
+"means\n"
+"        that it could be any nick recognized as user <name> that was "
+"seen.\n"
+"        <channel> is only necessary if the message isn't sent in the "
+"channel\n"
+"        itself.\n"
+"        "
+msgstr ""
+"[<канал>] <имя>\n"
+"\n"
+"Возвращает время, когда в последний раз видели <имя> и его/её последнее "
+"сообщение. Эта команда ищет <имя> в базе данных пользователей Seen, что "
+"значит поиск будет производится среди всех ников, закреплённых за "
+"пользователем с данным <именем>. Передавать в аргументы <канал> требуется "
+"в случае, если команда запущена не на этом канале."
+
+#: plugin.py:331
+msgid ""
+"[<channel>] [<nick>]\n"
+"\n"
+"        Returns the messages since <nick> last left the channel.\n"
+"        If <nick> is not given, it defaults to the nickname of the person\n"
+"        calling the command.\n"
+"        "
+msgstr ""
+"[<канал>] [<ник>]\n"
+"\n"
+"Возвращает сообщения с тех пор как данный <ник> покинул канал. Если <ник> "
+"не передан в аргументы, то используется ник пользователя, запустившего "
+"команду."
+
+#: plugin.py:363
+msgid "I couldn't find in my history of %s messages where %r last left %s"
+msgstr "Не могу найти в моей истории сообщений (%s), где %r покинул %s."
+
+#: plugin.py:372
+msgid "Either %s didn't leave, or no messages were sent while %s was gone."
+msgstr ""
+"Либо %s не покидал(а) канал, либо ни одного сообщения не было отправлено с "
+"тех пор, как %s вышел/вышла."

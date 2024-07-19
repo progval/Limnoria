@@ -104,7 +104,7 @@ def _main():
 
 def main():
     try:
-        main()
+        _main()
     except KeyboardInterrupt:
         pass
 

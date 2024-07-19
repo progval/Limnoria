@@ -67,6 +67,22 @@ supybot.plugins.SedRegex.enable
 
   Should Perl/sed-style regex replacing work in this channel?
 
+.. _conf-supybot.plugins.SedRegex.format:
+
+
+supybot.plugins.SedRegex.format
+  This config variable defaults to "$nick meant to say: $replacement", is network-specific, and is channel-specific.
+
+  Sets the format string for a message edited by the original author. Required fields: $nick (nick of the author), $replacement (edited message)
+
+  .. _conf-supybot.plugins.SedRegex.format.other:
+
+
+  supybot.plugins.SedRegex.format.other
+    This config variable defaults to "$otherNick thinks $nick meant to say: $replacement", is network-specific, and is channel-specific.
+
+    Sets the format string for a message edited by another author. Required fields: $nick (nick of the original author), $otherNick (nick of the editor), $replacement (edited message)
+
 .. _conf-supybot.plugins.SedRegex.ignoreRegex:
 
 

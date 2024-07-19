@@ -11,10 +11,15 @@ jobs:
   build:
 
     runs-on: ${{ matrix.runs-on }}
+    timeout-minutes: 10
     strategy:
       matrix:
         include:
-          - python-version: "3.12.0-alpha.7"
+          - python-version: "3.13.0-alpha.6"
+            with-opt-deps: false  # https://github.com/pyca/cryptography/issues/10806
+            runs-on: ubuntu-22.04
+
+          - python-version: "3.12.0"
             with-opt-deps: true
             runs-on: ubuntu-22.04
 
@@ -66,7 +71,7 @@ jobs:
 
       - name: Upgrade pip
         run: |
-          python3 -m pip install --upgrade pip
+          python3 -m pip install --upgrade pip setuptools
 
       - name: Install optional dependencies
         if: ${{ matrix.with-opt-deps }}
@@ -83,9 +88,9 @@ jobs:
           supybot-test test -v --plugins-dir=./plugins/ --no-network
 
       - name: Test with irctest
-        if: "${{ matrix.with-opt-deps && matrix.python-version != 'pypy-3.7' && matrix.python-version != 'pypy-3.9' }}"
+        if: "${{ matrix.with-opt-deps && matrix.python-version != '3.7' && matrix.python-version != 'pypy-3.7' && matrix.python-version != 'pypy-3.9' }}"
         run: |
-          git clone https://github.com/ProgVal/irctest.git
+          git clone https://github.com/progval/irctest.git
           cd irctest
           pip3 install -r requirements.txt
           make limnoria PYTEST_ARGS=-vs

@@ -57,6 +57,17 @@ conf.registerChannelValue(SedRegex, 'enable',
 conf.registerChannelValue(SedRegex, 'ignoreRegex',
     registry.Boolean(True, _("""Should Perl/sed regex replacing
                      ignore messages which look like valid regex?""")))
+conf.registerChannelValue(SedRegex, 'format',
+    registry.String(_('$nick meant to say: $replacement'), _("""Sets the format
+                                    string for a message edited by the original
+                                    author. Required fields: $nick (nick of the
+                                    author), $replacement (edited message)""")))
+conf.registerChannelValue(SedRegex.format, 'other',
+    registry.String(_('$otherNick thinks $nick meant to say: $replacement'), _("""
+                                    Sets the format string for a message edited by
+                                    another author. Required fields: $nick (nick
+                                    of the original author), $otherNick (nick of
+                                    the editor), $replacement (edited message)""")))
 conf.registerGlobalValue(SedRegex, 'processTimeout',
     registry.PositiveFloat(0.5,  _("""Sets the timeout when processing a single
                                    regexp. The default should be adequate unless

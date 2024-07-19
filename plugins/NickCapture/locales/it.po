@@ -28,7 +28,7 @@ msgstr ""
 #: plugin.py:41
 msgid ""
 "This plugin constantly tries to take whatever nick is configured as\n"
-"    supybot.nick.  Just make sure that's set appropriately, and thus plugin\n"
+"    supybot.nick.  Just make sure that's set appropriately, and this plugin\n"
 "    will do the rest."
 msgstr ""
 "Questo plugin cerca costantemente di ottenere qualsiasi nick sia impostato\n"

@@ -1023,9 +1023,14 @@ class Channel(callbacks.Plugin):
             network = conf.supybot.networks.get(irc.network)
             network.channels().remove(channel)
         except KeyError:
-            pass
-        if channel not in irc.state.channels:
-            irc.error(_('I\'m not in %s.') % channel, Raise=True)
+            if channel not in irc.state.channels:
+                # Not configured AND not in the channel
+                irc.error(_('I\'m not in %s.') % channel, Raise=True)
+        else:
+            if channel not in irc.state.channels:
+                # Configured, but not in the channel
+                irc.reply(_('%s removed from configured join list.') % channel)
+                return
         reason = (reason or self.registryValue("partMsg", channel, irc.network))
         reason = ircutils.standardSubstitute(irc, msg, reason)
         irc.queueMsg(ircmsgs.part(channel, reason))

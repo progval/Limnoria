@@ -38,6 +38,9 @@ class NetworkTestCase(PluginTestCase):
     def testCommand(self):
         self.assertResponse('network command %s echo 1' % self.irc.network,
                             '1')
+        # empty args should be allowed, see
+        # https://github.com/progval/Limnoria/issues/1541
+        self.assertResponse('network command %s len ""' % self.irc.network, '0')
 
     def testCommandRoutesBackToCaller(self):
         self.otherIrc = getTestIrc("testnet1")

@@ -68,7 +68,9 @@ conf.registerChannelValue(RSS, 'format',
     will use for displaying headlines of a RSS feed that is triggered
     manually. In addition to fields defined by feedparser ($published
     (the entry date), $title, $link, $description, $id, etc.), the following
-    variables can be used: $feed_name, $date (parsed date, as defined in
+    variables can be used: $feed_name (the configured name)
+    $feed_title/$feed_subtitle/$feed_author/$feed_language/$feed_link,
+    $date (parsed date, as defined in
     supybot.reply.format.time)""")))
 conf.registerChannelValue(RSS, 'announceFormat',
     registry.String(_('News from $feed_name: $title <$link>'),

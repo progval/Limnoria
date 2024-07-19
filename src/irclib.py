@@ -559,14 +559,14 @@ class IrcStateFsm(object):
             self.States.UNINITIALIZED,
         ])
 
-    def on_sasl_cap(self, irc, msg):
-        '''Whenever we see the 'sasl' capability in a CAP LS response'''
+    def on_sasl_start(self, irc, msg):
+        '''Whenever we initiate a SASL transaction.'''
         if self.state == self.States.INIT_CAP_NEGOTIATION:
             self._transition(irc, msg, self.States.INIT_SASL)
         elif self.state == self.States.CONNECTED:
             self._transition(irc, msg, self.States.CONNECTED_SASL)
         else:
-            raise ValueError('Got sasl cap while in state %s' % self.state)
+            raise ValueError('Started SASL while in state %s' % self.state)
 
     def on_sasl_auth_finished(self, irc, msg):
         '''When sasl auth either succeeded or failed.'''
@@ -1784,7 +1784,6 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         self.authenticate_decoder = None
         self.sasl_next_mechanisms = []
         self.sasl_current_mechanism = None
-
         for mechanism in network_config.sasl.mechanisms():
             if mechanism == 'ecdsa-nist256p-challenge':
                 if not crypto:
@@ -1822,17 +1821,13 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 else:
                     self.sasl_next_mechanisms.append(mechanism)
 
-        if self.sasl_next_mechanisms:
-            self.REQUEST_CAPABILITIES.add('sasl')
-
-
     # Note: echo-message is only requested if labeled-response is available.
     REQUEST_CAPABILITIES = set(['account-notify', 'extended-join',
         'multi-prefix', 'metadata-notify', 'account-tag',
         'userhost-in-names', 'invite-notify', 'server-time',
         'chghost', 'batch', 'away-notify', 'message-tags',
         'msgid', 'setname', 'labeled-response', 'echo-message',
-        'standard-replies'])
+        'sasl', 'standard-replies'])
     """IRCv3 capabilities requested when they are available.
 
     echo-message is special-cased to be requested only with labeled-response.
@@ -1956,17 +1951,21 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
     def _maybeStartSasl(self, msg):
         if not self.sasl_authenticated and \
                 'sasl' in self.state.capabilities_ack:
-            self.state.fsm.on_sasl_cap(self, msg)
-            assert 'sasl' in self.state.capabilities_ls, (
-                'Got "CAP ACK sasl" without receiving "CAP LS sasl" or '
-                '"CAP NEW sasl" first.')
-            s = self.state.capabilities_ls['sasl']
-            if s is not None:
-                available = set(map(str.lower, s.split(',')))
-                self.sasl_next_mechanisms = [
-                        x for x in self.sasl_next_mechanisms
-                        if x.lower() in available]
-            self.tryNextSaslMechanism(msg)
+            self.startSasl(msg)
+
+    def startSasl(self, msg):
+        self.state.fsm.on_sasl_start(self, msg)
+        assert 'sasl' in self.state.capabilities_ls, (
+            'Starting SASL without receiving "CAP LS sasl" or '
+            '"CAP NEW sasl" first.')
+        self.resetSasl()
+        s = self.state.capabilities_ls['sasl']
+        if s is not None:
+            available = set(map(str.lower, s.split(',')))
+            self.sasl_next_mechanisms = [
+                    x for x in self.sasl_next_mechanisms
+                    if x.lower() in available]
+        self.tryNextSaslMechanism(msg)
 
     def doAuthenticate(self, msg):
         self.state.fsm.expect_state([
@@ -2116,7 +2115,7 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
             return
         caps = msg.args[2].split()
         assert caps, 'Empty list of capabilities'
-        log.debug('%s: Server acknowledged capabilities: %L',
+        log.debug('%s: Server acknowledged capabilities: %s',
                  self.network, caps)
         self.state.capabilities_ack.update(caps)
 
@@ -2129,16 +2128,18 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
         caps = msg.args[2].split()
         assert caps, 'Empty list of capabilities'
         self.state.capabilities_nak.update(caps)
-        log.warning('%s: Server refused capabilities: %L',
+        log.warning('%s: Server refused capabilities: %s',
                     self.network, caps)
         self.capUpkeep(msg)
 
     def _onCapSts(self, policy, msg):
+        tls_connection = self.driver.currentServer.force_tls_verification \
+            or self.driver.ssl
         secure_connection = self.driver.currentServer.force_tls_verification \
             or (self.driver.ssl and self.driver.anyCertValidationEnabled())
 
         parsed_policy = ircutils.parseStsPolicy(
-            log, policy, secure_connection=secure_connection)
+            log, policy, tls_connection=tls_connection)
         if parsed_policy is None:
             # There was an error (and it was logged). Ignore it and proceed
             # with the connection.
@@ -2161,11 +2162,28 @@ class Irc(IrcCommandDispatcher, log.Firewalled):
                 self.driver.currentServer.hostname,
                 self.driver.currentServer.port,
                 policy)
+        elif self.driver.ssl:
+            # SSL enabled, but certificates are not checked -> reconnect on the
+            # same port and check certificates, before storing the STS policy.
+            hostname = self.driver.currentServer.hostname
+            port = self.driver.currentServer.port
+            attempt = self.driver.currentServer.attempt
+
+            log.info('Got STS policy over insecure TLS connection; '
+                     'reconnecting to check certificates. %r',
+                     self.driver.currentServer)
+            # Reconnect to the server, but with TLS *and* certificate
+            # validation this time.
+            self.state.fsm.on_shutdown(self, msg)
+
+            self.driver.reconnect(
+                server=Server(hostname, port, attempt, True),
+                wait=True)
         else:
             hostname = self.driver.currentServer.hostname
             attempt = self.driver.currentServer.attempt
 
-            log.info('Got STS policy over insecure connection; '
+            log.info('Got STS policy over insecure (cleartext) connection; '
                      'reconnecting to secure port. %r',
                      self.driver.currentServer)
             # Reconnect to the server, but with TLS *and* certificate

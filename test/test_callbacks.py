@@ -272,6 +272,12 @@ class FunctionsTestCase(SupyTestCase):
         self.assertEqual(callbacks.addressed('bar', msg,
                                              whenAddressedByNickAtEnd=True),
                          'baz')
+        # Test that it still works with trailing whitespace:
+        msg = ircmsgs.privmsg('#foo', 'baz, bar   \t')
+        self.assertEqual(callbacks.addressed('bar', msg,
+                                             whenAddressedByNickAtEnd=True),
+                         'baz')
+
 
     def testAddressedPrefixCharsTakePrecedenceOverNickAtEnd(self):
         irc = getTestIrc()
@@ -684,9 +690,23 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             irc.reply('foo', action=True)
             irc.reply('bar') # We're going to check that this isn't an action.
 
+        def doNotice(self, irc, msg):
+            irc.reply('foo', action=True)
+            irc.reply('bar') # We're going to check that this isn't an action.
+
     def testNotActionSecondReply(self):
         self.irc.addCallback(self.TwoRepliesFirstAction(self.irc))
         self.assertAction('testactionreply', 'foo')
+        m = self.getMsg(' ')
+        self.assertFalse(m.args[1].startswith('\x01ACTION'))
+
+    def testNotActionSecondReplyNotCommand(self):
+        """Same as testNotActionSecondReply, but tests ReplyIrcProxy instead of
+        NestedCommandsIrcProxy."""
+        self.irc.addCallback(self.TwoRepliesFirstAction(self.irc))
+        self.irc.feedMsg(ircmsgs.notice(self.channel, 'test action reply',
+                                        prefix=self.prefix))
+        self.assertAction(' ', 'foo')
         m = self.getMsg(' ')
         self.assertFalse(m.args[1].startswith('\x01ACTION'))
 

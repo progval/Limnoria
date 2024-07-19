@@ -253,7 +253,8 @@ def _main():
     language. This can be changed at any time. You need to answer with a short
     id for the language, such as 'en', 'fr', 'it' (without the quotes). If
     you want to use English, just press enter.""")
-    language = something('What language do you want to use?', default='en')
+    language = expect('What language do you want to use?',
+                      i18n.SUPPORTED_LANGUAGES, default='en')
 
     class Empty:
         """This is a hack to allow the i18n to get the current language, before

@@ -128,7 +128,7 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
             cursor.execute("UPDATE triggers SET usage_count=? WHERE regexp=?", (old_count + 1, regexp,))
             db.commit()
 
-    def _runCommandFunction(self, irc, msg, command):
+    def _runCommandFunction(self, irc, msg, command, action_name):
         """Run a command from message, as if command was sent over IRC."""
         try:
             tokens = callbacks.tokenize(command,
@@ -136,7 +136,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         except SyntaxError as e:
             # Emulate what callbacks.py does
             self.log.debug('Error return: %s', utils.exnToString(e))
-            irc.error(str(e))
+            irc.error(format('%s, in %r (triggered by %r)',
+                             e, command, action_name))
         try:
             self.Proxy(irc.irc, msg, tokens)
         except Exception as e:
@@ -191,24 +192,27 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
                 return
             max_triggers = self.registryValue('maxTriggers', channel, irc.network)
             for (channel, regexp, action) in results:
-                for match in re.finditer(regexp, msg.args[1]):
-                    if match is not None:
-                        thisaction = action
-                        self._updateRank(irc.network, channel, regexp)
-                        for (i, j) in enumerate(match.groups()):
-                            if match.group(i+1) is not None:
-                                # Need a lambda to prevent re.sub from
-                                # interpreting backslashes in the replacement
-                                thisaction = re.sub(r'\$' + str(i+1), lambda _: match.group(i+1), thisaction)
-                        actions.append(thisaction)
-                        if max_triggers != 0 and max_triggers == len(actions):
-                            break
-                if max_triggers != 0 and max_triggers == len(actions):
-                    break
+                try:
+                    for match in re.finditer(regexp, msg.args[1]):
+                        if match is not None:
+                            thisaction = action
+                            self._updateRank(irc.network, channel, regexp)
+                            for (i, j) in enumerate(match.groups()):
+                                if match.group(i+1) is not None:
+                                    # Need a lambda to prevent re.sub from
+                                    # interpreting backslashes in the replacement
+                                    thisaction = re.sub(r'\$' + str(i+1), lambda _: match.group(i+1), thisaction)
+                            actions.append((regexp, thisaction))
+                            if max_triggers != 0 and max_triggers == len(actions):
+                                break
+                    if max_triggers != 0 and max_triggers == len(actions):
+                        break
+                except Exception:
+                    self.log.exception('Error while handling %r', regexp)
 
 
-            for action in actions:
-                self._runCommandFunction(irc, msg, action)
+            for (regexp, action) in actions:
+                self._runCommandFunction(irc, msg, action, regexp)
 
     def doPrivmsg(self, irc, msg):
         if not callbacks.addressed(irc, msg): #message is not direct command

@@ -154,7 +154,7 @@ class Web(callbacks.PluginRegexp):
         if parsed_url.netloc == 'youtube.com' \
                 or parsed_url.netloc.endswith(('.youtube.com')):
             # there is a lot of Javascript before the <title>
-            size = max(409600, size)
+            size = max(819200, size)
         if parsed_url.netloc in ('reddit.com', 'www.reddit.com', 'new.reddit.com'):
             # Since 2022-03, New Reddit has 'Reddit - Dive into anything' as
             # <title> on every page.
@@ -173,8 +173,9 @@ class Web(callbacks.PluginRegexp):
             if raiseErrors:
                 irc.error(_('Connection to %s timed out') % url, Raise=True)
             else:
-                selg.log.info('Web plugins TitleSnarfer: URL <%s> timed out',
+                self.log.info('Web plugins TitleSnarfer: URL <%s> timed out',
                               url)
+                return
         except Exception as e:
             if raiseErrors:
                 irc.error(_('That URL raised <' + str(e)) + '>',
@@ -186,9 +187,14 @@ class Web(callbacks.PluginRegexp):
 
         encoding = None
         if 'Content-Type' in fd.headers:
-            mime_params = [p.split('=', 1)
+            # using p.partition('=') instead of 'p.split('=', 1)' because,
+            # unlike RFC 7231, RFC 9110 allows an empty parameter list
+            # after ';':
+            # * https://www.rfc-editor.org/rfc/rfc9110.html#name-media-type
+            # * https://www.rfc-editor.org/rfc/rfc9110.html#parameter
+            mime_params = [p.partition('=')
                 for p in fd.headers['Content-Type'].split(';')[1:]]
-            mime_params = {k.strip(): v.strip() for (k, v) in mime_params}
+            mime_params = {k.strip(): v.strip() for (k, sep, v) in mime_params}
             if mime_params.get('charset'):
                 encoding = mime_params['charset']
 

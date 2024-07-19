@@ -37,6 +37,7 @@ from . import config
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
+import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -123,9 +124,11 @@ class Services(callbacks.Plugin):
             return
         nickserv = self.registryValue('NickServ', network=irc.network)
         password = self._getNickServPassword(nick, irc.network)
-        if not nickserv or not password:
-            s = 'Tried to identify without a NickServ or password set.'
-            self.log.warning(s)
+        if not nickserv:
+            self.log.warning('Tried to identify without a NickServ set.')
+            return
+        if not password:
+            self.log.warning('Tried to identify without a password set.')
             return
         assert ircutils.strEqual(irc.nick, nick), \
                'Identifying with not normal nick.'
@@ -149,16 +152,15 @@ class Services(callbacks.Plugin):
         ghostDelay = self.registryValue('ghostDelay', network=irc.network)
         if not ghostDelay:
             return
-        if not nickserv or not password:
-            s = 'Tried to ghost without a NickServ or password set.'
-            self.log.warning(s)
+        if not nickserv:
+            self.log.warning('Tried to ghost without a NickServ set.')
+            return
+        if not password:
+            self.log.warning('Tried to ghost without a password set.')
             return
         if state.sentGhost and time.time() < (state.sentGhost + ghostDelay):
             self.log.warning('Refusing to send GHOST more than once every '
                              '%s seconds.' % ghostDelay)
-        elif not password:
-            self.log.warning('Not ghosting: no password set.')
-            return
         else:
             self.log.info('Sending ghost (current nick: %s; ghosting: %s)',
                           irc.nick, nick)
@@ -177,7 +179,11 @@ class Services(callbacks.Plugin):
         if nick not in self.registryValue('nicks', network=irc.network):
             return
         nickserv = self.registryValue('NickServ', network=irc.network)
-        password = self._getNickServPassword(nick, irc.network)
+        try:
+            password = self._getNickServPassword(nick, irc.network)
+        except Exception:
+            self.log.exception('Could not get NickServ password for %s', nick)
+            return
         ghostDelay = self.registryValue('ghostDelay', network=irc.network)
         if not ghostDelay:
             return
@@ -371,6 +377,30 @@ class Services(callbacks.Plugin):
         else:
             self.log.info('Received notice from NickServ %s: %q.', on,
                           ircutils.stripFormatting(msg.args[1]))
+
+    def do903(self, irc, msg):  # RPL_SASLSUCCESS
+        if self.disabled(irc):
+            return
+        state = self._getState(irc)
+        state.identified = True
+        for channel in irc.state.channels.keys():
+            self.checkPrivileges(irc, channel)
+        if irc.state.fsm in [irclib.IrcStateFsm.States.CONNECTED,
+                             irclib.IrcStateFsm.States.CONNECTED_SASL]:
+            for channel in state.channels:
+                irc.queueMsg(networkGroup.channels.join(channel))
+            waitingJoins = state.waitingJoins
+            state.waitingJoins = []
+            for join in waitingJoins:
+                irc.sendMsg(join)
+
+    do907 = do903  # ERR_SASLALREADY, just to be sure we didn't miss it
+
+    def do901(self, irc, msg):  # RPL_LOGGEDOUT
+        if self.disabled(irc):
+            return
+        state = self._getState(irc)
+        state.identified = False
 
     def checkPrivileges(self, irc, channel):
         if self.disabled(irc):

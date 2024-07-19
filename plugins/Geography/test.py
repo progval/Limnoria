@@ -79,11 +79,11 @@ class GeographyTimezoneTestCase(PluginTestCase):
                 "timezone New York", r"America/New_York \(currently UTC-[45]\)"
             )
 
-        tz = pytz.timezone("Canada/Newfoundland")
+        tz = pytz.timezone("America/St_Johns")
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
             self.assertRegexp(
                 "timezone Newfoundland",
-                r"Canada/Newfoundland \(currently UTC-[23]:30\)",
+                r"America/St_Johns \(currently UTC-[23]:30\)",
             )
 
         tz = pytz.timezone("Asia/Kolkata")
@@ -107,11 +107,11 @@ class GeographyTimezoneTestCase(PluginTestCase):
                 "timezone New York", r"America/New_York \(currently UTC-[45]\)"
             )
 
-        tz = zoneinfo.ZoneInfo("Canada/Newfoundland")
+        tz = zoneinfo.ZoneInfo("America/St_Johns")
         with patch.object(wikidata, "timezone_from_uri", return_value=tz):
             self.assertRegexp(
                 "timezone Newfoundland",
-                r"Canada/Newfoundland \(currently UTC-[23]:30\)",
+                r"America/St_Johns \(currently UTC-[23]:30\)",
             )
 
         tz = zoneinfo.ZoneInfo("Asia/Kolkata")
@@ -187,7 +187,7 @@ class GeographyLocaltimeTestCase(PluginTestCase):
 
 class GeographyWikidataTestCase(SupyTestCase):
     @skipIf(not network, "Network test")
-    def testOsmidToTimezone(self):
+    def testRelationOsmidToTimezone(self):
         self.assertEqual(
             wikidata.uri_from_osmid(450381),
             "http://www.wikidata.org/entity/Q22690",
@@ -195,6 +195,12 @@ class GeographyWikidataTestCase(SupyTestCase):
         self.assertEqual(
             wikidata.uri_from_osmid(192468),
             "http://www.wikidata.org/entity/Q47045",
+        )
+    @skipIf(not network, "Network test")
+    def testNodeOsmidToTimezone(self):
+        self.assertEqual(
+            wikidata.uri_from_osmid(436012592),
+            "http://www.wikidata.org/entity/Q933",
         )
 
     @skipIf(not network, "Network test")

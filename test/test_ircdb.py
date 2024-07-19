@@ -350,6 +350,23 @@ class IrcChannelTestCase(IrcdbTestCase):
         c.removeBan(banmask)
         self.assertFalse(c.checkIgnored(prefix))
 
+        # Only full n!u@h is accepted here
+        self.assertRaises(ValueError, c.checkIgnored, 'foo')
+
+    def testIgnoredServerNames(self):
+        c = ircdb.IrcChannel()
+        # Server names are not handled by the ignores system, so this is false
+        self.assertFalse(c.checkIgnored('irc.example.com'))
+        # But we should treat full prefixes that match nick!user@host normally,
+        # even if they include "." like a server name
+        prefix = 'irc.example.com!bar@baz'
+        banmask = ircutils.banmask(prefix)
+        self.assertFalse(c.checkIgnored(prefix))
+        c.addIgnore(banmask)
+        self.assertTrue(c.checkIgnored(prefix))
+        c.removeIgnore(banmask)
+        self.assertFalse(c.checkIgnored(prefix))
+
 class IrcNetworkTestCase(IrcdbTestCase):
     def testDefaults(self):
         n = ircdb.IrcNetwork()

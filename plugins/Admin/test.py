@@ -50,6 +50,7 @@ class AdminTestCase(PluginTestCase):
         self.irc.feedMsg(ircmsgs.join('#Baz', prefix=self.prefix))
         getAfterJoinMessages()
         self.assertRegexp('channels', '#bar, #Baz, and #foo')
+        self.assertNotRegexp('config networks.test.channels', '.*#foo.*')
 
     def testIgnoreAddRemove(self):
         self.assertNotError('admin ignore add foo!bar@baz')
@@ -87,13 +88,16 @@ class AdminTestCase(PluginTestCase):
         ircdb.users.delUser(u.id)
 
     def testJoin(self):
-        m = self.getMsg('join #foo')
-        self.assertEqual(m.command, 'JOIN')
-        self.assertEqual(m.args[0], '#foo')
-        m = self.getMsg('join #foo key')
-        self.assertEqual(m.command, 'JOIN')
-        self.assertEqual(m.args[0], '#foo')
-        self.assertEqual(m.args[1], 'key')
+        try:
+            m = self.getMsg('join #foo')
+            self.assertEqual(m.command, 'JOIN')
+            self.assertEqual(m.args[0], '#foo')
+            m = self.getMsg('join #foo key')
+            self.assertEqual(m.command, 'JOIN')
+            self.assertEqual(m.args[0], '#foo')
+            self.assertEqual(m.args[1], 'key')
+        finally:
+            conf.supybot.networks.test.channels.setValue('')
 
     def testNick(self):
         try:
@@ -107,10 +111,13 @@ class AdminTestCase(PluginTestCase):
         self.assertError('admin capability add %s owner' % self.nick)
 
     def testJoinOnOwnerInvite(self):
-        self.irc.feedMsg(ircmsgs.invite(conf.supybot.nick(), '#foo', prefix=self.prefix))
-        m = self.getMsg(' ')
-        self.assertEqual(m.command, 'JOIN')
-        self.assertEqual(m.args[0], '#foo')
+        try:
+            self.irc.feedMsg(ircmsgs.invite(conf.supybot.nick(), '#foo', prefix=self.prefix))
+            m = self.getMsg(' ')
+            self.assertEqual(m.command, 'JOIN')
+            self.assertEqual(m.args[0], '#foo')
+        finally:
+            conf.supybot.networks.test.channels.setValue('')
 
     def testNoJoinOnUnprivilegedInvite(self):
         try:
@@ -121,6 +128,7 @@ class AdminTestCase(PluginTestCase):
                     'Error: "somecommand" is not a valid command.')
         finally:
             world.testing = True
+            self.assertNotRegexp('config networks.test.channels', '.*#foo.*')
 
     def testAcmd(self):
         self.irc.feedMsg(ircmsgs.join('#foo', prefix=self.prefix))

@@ -50,6 +50,7 @@ MSGSTR = 'msgstr "'
 FUZZY = '#, fuzzy'
 
 currentLocale = 'en'
+SUPPORTED_LANGUAGES = ['de', 'en', 'es', 'fi', 'fr', 'it', 'ru']
 
 class PluginNotFound(Exception):
     pass
@@ -71,7 +72,9 @@ def import_conf():
     global conf
     conf = __import__('supybot.conf').conf
     class Languages(conf.registry.OnlySomeStrings):
-        validStrings = ['de', 'en', 'es', 'fi', 'fr', 'it']
+        validStrings = SUPPORTED_LANGUAGES
+        errormsg = 'Value should be a supported language (%s), not %%r' % (
+            ', '.join(validStrings))
     conf.registerGlobalValue(conf.supybot, 'language',
         Languages(currentLocale, """Determines the bot's default
         language if translations exist. Currently supported are: %s"""

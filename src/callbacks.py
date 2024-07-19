@@ -136,8 +136,8 @@ def _addressed(irc, msg, prefixChars=None, nicks=None,
                         continue
                 except ValueError: # split didn't work.
                     continue
-            elif whenAddressedByNickAtEnd and lowered.endswith(nick):
-                rest = payload[:-len(nick)]
+            elif whenAddressedByNickAtEnd and lowered.rstrip().endswith(nick):
+                rest = payload.rstrip()[:-len(nick)]
                 possiblePayload = rest.rstrip(' \t,;')
                 if possiblePayload != rest:
                     # There should be some separator between the nick and the
@@ -506,8 +506,11 @@ class RichReplyMethods(object):
             msg = kwargs['msg']
             if ircdb.checkCapability(msg.prefix, 'owner'):
                 v = self._getConfig(conf.supybot.replies.errorOwner)
-        s = self.__makeReply(v, s)
-        return self.reply(s, **kwargs)
+        if v:
+            s = self.__makeReply(v, s)
+            return self.reply(s, **kwargs)
+        else:
+            self.noReply()
 
     def _getTarget(self, to=None):
         """Compute the target according to self.to, the provided to,
@@ -730,6 +733,9 @@ class ReplyIrcProxy(RichReplyMethods):
                 kwargs['target'] = kwargs.get('to', None) or msg.args[0]
         if 'prefixNick' not in kwargs:
             kwargs['prefixNick'] = self._defaultPrefixNick(msg)
+        if kwargs.get("action"):
+            kwargs["prefixNick"] = False
+            kwargs["noLengthCheck"] = True
         self._sendReply(s, msg=msg, **kwargs)
 
     def __getattr__(self, attr):

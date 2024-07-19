@@ -15,13 +15,9 @@ Last rule: you shouldn't add a mandatory dependency. Limnoria does not
 come with any (besides Python), so please try to keep all dependencies
 optional.
 
-[Style Guidelines]:https://limnoria.readthedocs.io/en/latest/develop/style.html
+[Style Guidelines]:https://docs.limnoria.net/develop/style.html
 
 ## Sending patches
-
-When you send a pull request, **send it to the testing branch**. 
-It will be merged to master when it's considered to be stable enough to be 
-supported.
 
 Don't fear that you spam Limnoria by sending many pull requests. According 
 to @ProgVal, it's easier for them to accept pull requests than to 
@@ -32,6 +28,6 @@ is very appreciated.
 
 See also [Contributing to Limnoria] at [Limnoria documentation].
 
-[Contributing to Limnoria]:https://limnoria.readthedocs.io/en/latest/contribute/index.html
+[Contributing to Limnoria]:https://docs.limnoria.net/contribute/index.html
 
-[Limnoria documentation]:https://limnoria.readthedocs.io/
+[Limnoria documentation]:https://docs.limnoria.net/

@@ -36,6 +36,7 @@ import sys
 import time
 import shutil
 import fnmatch
+from tempfile import TemporaryDirectory
 started = time.time()
 
 import supybot
@@ -43,20 +44,24 @@ import logging
 import traceback
 
 # We need to do this before we import conf.
-if not os.path.exists('test-conf'):
-    os.mkdir('test-conf')
+main_temp_dir = TemporaryDirectory()
 
-registryFilename = os.path.join('test-conf', 'test.conf')
-fd = open(registryFilename, 'w')
-fd.write("""
-supybot.directories.data: %(base_dir)s/test-data
-supybot.directories.conf: %(base_dir)s/test-conf
-supybot.directories.log: %(base_dir)s/test-logs
+os.makedirs(os.path.join(main_temp_dir.name, 'conf'))
+os.makedirs(os.path.join(main_temp_dir.name, 'data'))
+os.makedirs(os.path.join(main_temp_dir.name, 'logs'))
+
+registryFilename = os.path.join(main_temp_dir.name, 'conf', 'test.conf')
+with open(registryFilename, 'w') as fd:
+    fd.write("""
+supybot.directories.backup: /dev/null
+supybot.directories.conf: {temp_conf}
+supybot.directories.data: {temp_data}
+supybot.directories.log: {temp_logs}
 supybot.reply.whenNotCommand: True
 supybot.log.stdout: False
 supybot.log.stdout.level: ERROR
 supybot.log.level: DEBUG
-supybot.log.format: %%(levelname)s %%(message)s
+supybot.log.format: %(levelname)s %(message)s
 supybot.log.plugins.individualLogfiles: False
 supybot.protocols.irc.throttleTime: 0
 supybot.reply.whenAddressedBy.chars: @
@@ -66,8 +71,11 @@ supybot.networks.testnet2.server: should.not.need.this
 supybot.networks.testnet3.server: should.not.need.this
 supybot.nick: test
 supybot.databases.users.allowUnregistration: True
-""" % {'base_dir': os.getcwd()})
-fd.close()
+""".format(
+        temp_conf=os.path.join(main_temp_dir.name, 'conf'),
+        temp_data=os.path.join(main_temp_dir.name, 'data'),
+        temp_logs=os.path.join(main_temp_dir.name, 'logs')
+    ))
 
 import supybot.registry as registry
 registry.open_registry(registryFilename)
@@ -131,6 +139,9 @@ def main():
     parser.add_option('-c', '--clean', action='store_true', default=False,
                       dest='clean', help='Cleans the various data/conf/logs'
                       'directories before running tests.')
+    parser.add_option('--clean-after', action='store_true', default=False,
+                      dest='clean_after', help='Cleans the various data/conf/logs'
+                      'directories after running tests.')
     parser.add_option('-t', '--timeout', action='store', type='float',
                       dest='timeout',
                       help='Sets the timeout, in seconds, for tests to return '
@@ -238,9 +249,18 @@ def main():
     if hasattr(unittest, 'asserts'):
         print('Total asserts: %s' % unittest.asserts)
 
+    if options.clean_after:
+        log.setLevel(100)  # don't log anything anymore
+        shutil.rmtree(conf.supybot.directories.log())
+        shutil.rmtree(conf.supybot.directories.conf())
+        shutil.rmtree(conf.supybot.directories.data())
+
     if result.wasSuccessful():
         sys.exit(0)
     else:
+        # Deactivate autocleaning for the temporary directiories to allow inspection.
+        main_temp_dir._finalizer.detach()
+        print(f"Temporary directory path: {main_temp_dir.name}")
         sys.exit(1)
 
 

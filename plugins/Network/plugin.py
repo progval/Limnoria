@@ -150,7 +150,7 @@ class Network(callbacks.Plugin):
         Gives the bot <command> (with its associated <arg>s) on <network>.
         """
         self.Proxy(otherIrc, msg, commandAndArgs, replyIrc=irc)
-    command = wrap(command, ['admin', ('networkIrc', True), many('something')])
+    command = wrap(command, ['admin', ('networkIrc', True), many('anything')])
 
     def cmdall(self, irc, msg, args, commandAndArgs):
         """<command> [<arg> ...]
@@ -160,7 +160,7 @@ class Network(callbacks.Plugin):
         ircs = world.ircs
         for ircd in ircs:
             self.Proxy(ircd, msg, commandAndArgs)
-    cmdall = wrap(cmdall, ['admin', many('something')])
+    cmdall = wrap(cmdall, ['admin', many('anything')])
 
     ###
     # whois command-related stuff.
@@ -306,6 +306,17 @@ class Network(callbacks.Plugin):
         irc.reply(format("%L", sorted(otherIrc.state.capabilities_ls)))
     capabilities = wrap(capabilities, ['networkIrc'])
 
+    def authenticate(self, irc, msg, args):
+        """takes no arguments
+
+        Manually initiate SASL authentication.
+        """
+        if 'sasl' in irc.state.capabilities_ack:
+            irc.startSasl(msg)
+            irc.replySuccess()
+        else:
+            irc.error(_('SASL not supported'))
+    authenticate = wrap(authenticate)
 
 Class = Network
 

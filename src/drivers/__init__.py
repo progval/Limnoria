@@ -108,7 +108,7 @@ class ServersMixin(object):
 
         # The policy was stored, which means it was received on a secure
         # connection.
-        policy = ircutils.parseStsPolicy(log, policy, secure_connection=True)
+        policy = ircutils.parseStsPolicy(log, policy, tls_connection=True)
 
         if lastDisconnect + policy['duration'] < time.time():
             log.info('STS policy expired, removing.')

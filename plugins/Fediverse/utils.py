@@ -33,11 +33,11 @@ import datetime
 
 # Credits for the regexp and function: https://stackoverflow.com/a/2765366/539465
 _XSD_DURATION_RE = re.compile(
-    "(?P<sign>-?)P"
-    "(?:(?P<years>\d+)Y)?"
-    "(?:(?P<months>\d+)M)?"
-    "(?:(?P<days>\d+)D)?"
-    "(?:T(?:(?P<hours>\d+)H)?(?:(?P<minutes>\d+)M)?(?:(?P<seconds>\d+)S)?)?"
+    r"(?P<sign>-?)P"
+    r"(?:(?P<years>\d+)Y)?"
+    r"(?:(?P<months>\d+)M)?"
+    r"(?:(?P<days>\d+)D)?"
+    r"(?:T(?:(?P<hours>\d+)H)?(?:(?P<minutes>\d+)M)?(?:(?P<seconds>\d+)S)?)?"
 )
 
 

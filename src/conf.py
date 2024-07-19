@@ -419,6 +419,15 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
         registry.String('', _("""Determines what user modes the bot will request
         from the server when it first connects. If empty, defaults to
         supybot.protocols.irc.umodes""")))
+    registerGlobalValue(network, 'vhost',
+        registry.String('', _("""Determines what vhost the bot will bind to before
+        connecting a server (IRC, HTTP, ...) via IPv4. If empty, defaults to
+        supybot.protocols.irc.vhost""")))
+    registerGlobalValue(network, 'vhostv6',
+        registry.String('', _("""Determines what vhost the bot will bind to before
+        connecting a server (IRC, HTTP, ...) via IPv6. If empty, defaults to
+        supybot.protocols.irc.vhostv6""")))
+
     sasl = registerGroup(network, 'sasl')
     registerGlobalValue(sasl, 'username', registry.String(sasl_username,
         _("""Determines what SASL username will be used on %s. This should
@@ -676,8 +685,9 @@ registerChannelValue(supybot.replies, 'success',
 
 registerChannelValue(supybot.replies, 'error',
     registry.NormalizedString(_("""An error has occurred and has been logged.
-    Please contact this bot's administrator for more information."""), _("""
-    Determines what error message the bot gives when it wants to be
+    Please contact this bot's administrator for more information.
+    If this configuration variable is empty, no generic error message will be sent."""),
+    _("""Determines what error message the bot gives when it wants to be
     ambiguous.""")))
 
 registerChannelValue(supybot.replies, 'errorOwner',
@@ -940,7 +950,7 @@ class Directory(registry.String):
         if os.path.isabs(filename):
             filename = os.path.abspath(filename)
             selfAbs = os.path.abspath(myself)
-            commonPrefix = os.path.commonprefix([selfAbs, filename])
+            commonPrefix = os.path.commonpath([selfAbs, filename])
             filename = filename[len(commonPrefix):]
         elif not os.path.isabs(myself):
             if filename.startswith(myself):
@@ -953,7 +963,7 @@ class DataFilename(registry.String):
     def __call__(self):
         v = super(DataFilename, self).__call__()
         dataDir = supybot.directories.data()
-        if not v.startswith(dataDir):
+        if not v.startswith("/") and not v.startswith(dataDir):
             v = os.path.basename(v)
             v = os.path.join(dataDir, v)
         self.setValue(v)
