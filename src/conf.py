@@ -1250,8 +1250,8 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
 
         Depending on the options and configuration, this may return a mask
         in the format of an extban (eg. "~account:foobar" on UnrealIRCd).
-        If this is unwanted (eg. to pass to ircdb's ignore lists, use
-        :meth:`makeBanmask` instead)
+        If this is unwanted (eg. to pass to ircdb's ignore lists), use
+        :meth:`makeBanmask` instead.
 
         options - A list specifying which parts of the hostmask should
         explicitly be matched: nick, user, host.  If 'exact' is given, then
