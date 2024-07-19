@@ -189,6 +189,30 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.assertBan('iban $a:nyuszika7h', '$a:nyuszika7h')
         self.assertNotError('unban $a:nyuszika7h')
 
+    def testWontIbanItself(self):
+        self.irc.state.supported['ACCOUNTEXTBAN'] = 'a,account'
+        self.irc.state.supported['EXTBAN'] = '~,abc'
+
+        self.irc.feedMsg(ircmsgs.join(self.channel,
+                                      prefix='foobar!user@host.domain.tld'))
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
+
+        # not authenticated, falls back to hostname and notices the match
+        self.assertError('iban --account ' + self.nick)
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(prefix=self.prefix, command='ACCOUNT',
+                                        args=['botaccount']))
+
+        # notices the matching account
+        self.assertError('iban --account ' + self.nick)
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(prefix='othernick!otheruser@otherhost',
+                                        command='ACCOUNT',
+                                        args=['botaccount']))
+
+        # ditto
+        self.assertError('iban --account othernick')
+
     def testKban(self):
         self.irc.prefix = 'something!else@somehwere.else'
         self.irc.nick = 'something'
