@@ -399,9 +399,10 @@ class Channel(callbacks.Plugin):
         if not reason:
             reason = msg.nick
         capability = ircdb.makeChannelCapability(channel, 'op')
+
         # Check (again) that they're not trying to make us kickban ourself.
+        self_account_extban = ircutils.accountExtban(irc, irc.nick)
         for banmask in banmasks:
-            # TODO: check account ban too
             if ircutils.hostmaskPatternEqual(banmask, irc.prefix):
                 if ircutils.hostmaskPatternEqual(bannedHostmask, irc.prefix):
                     self.log.warning('%q tried to make me kban myself.',msg.prefix)
@@ -411,6 +412,13 @@ class Channel(callbacks.Plugin):
                     self.log.warning('Using exact hostmask since banmask would '
                                      'ban myself.')
                     banmasks = [bannedHostmask]
+            elif self_account_extban is not None \
+                    and banmask.lower() == self_account_extban.lower():
+                self.log.warning('%q tried to make me kban myself.',msg.prefix)
+                irc.error(_('I cowardly refuse to ban myself.'))
+                return
+
+
         # Now, let's actually get to it.  Check to make sure they have
         # #channel,op and the bannee doesn't have #channel,op; or that the
         # bannee and the banner are both the same person.
