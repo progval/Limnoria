@@ -86,12 +86,13 @@ provides = ["supybot"]
 include-package-data = true
 packages = [
     "supybot",
-    "supybot.utils",
+    "supybot.drivers",
     "supybot.locales",
     "supybot.plugins",
-    "supybot.drivers",
     "supybot.plugins.Dict.local",
     "supybot.plugins.Math.local",
+    "supybot.scripts",
+    "supybot.utils",
 ]
 
 [tool.setuptools.data-files]
