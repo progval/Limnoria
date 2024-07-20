@@ -1,0 +1,152 @@
+# NickAuth plugin in Limnoria.
+# Copyright (C) 2013 Limnoria
+# ssdaniel24 <bo7oaonteg2m__at__mailDOTru>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"PO-Revision-Date: 2024-07-20 22:11+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: plugin.py:47
+msgid ""
+"\n"
+"    This plugin allows users to use their network services account to\n"
+"    authenticate to the bot.\n"
+"\n"
+"    They first have to use ``@nickauth nick add <the nick>`` while being\n"
+"    identified to the bot and then use ``@auth`` when they want to\n"
+"    identify to the bot.\n"
+"    "
+msgstr ""
+"Этот плагин позволяет пользователям использовать их аккаунт в сервисах IRC-"
+"сети для авторизации в боте.\n"
+"\n"
+"Но сначала им потребуется использовать команду ``@nickauth nick add <свой "
+"ник>``, будучи авторизованным в боте, а в дальнейшем использовать "
+"``@auth``, когда они хотят авторизоваться в боте."
+
+#: plugin.py:62 plugin.py:67
+msgid "You are not authenticated."
+msgstr "Вы не авторизованы."
+
+#: plugin.py:70
+msgid "You must be owner to do that."
+msgstr "Вы должны быть владельцем, чтобы сделать это."
+
+#: plugin.py:75
+msgid ""
+"[<network>] <user> <nick>\n"
+"\n"
+"            Add <nick> to the list of nicks owned by the <user> on the\n"
+"            <network>. You have to register this nick to the network\n"
+"            services to be authenticated.\n"
+"            <network> defaults to the current network.\n"
+"            "
+msgstr ""
+"[<сеть>] <пользователь> <ник>\n"
+"\n"
+"Добавляет <ник> в список ников, которыми владеет <пользователь> в данной "
+"<сети>. Вы должны зарегистрировать этот ник в сервисах сети, чтобы иметь "
+"возможность авторизоваться через него.\n"
+"<сетью> по умолчанию задана текущая."
+
+#: plugin.py:88
+msgid "This nick is already used by someone on this network."
+msgstr "Этот ник уже используется кем-то в этой сети."
+
+#: plugin.py:97
+msgid ""
+"[<network>] <user> <nick>\n"
+"\n"
+"            Remove <nick> from the list of nicks owned by the <user> on "
+"the\n"
+"            <network>.\n"
+"            <network> defaults to the current network.\n"
+"            "
+msgstr ""
+"[<сеть>] <пользователь> <ник>\n"
+"\n"
+"Удаляет <ник> из списка ников, которыми владеет <пользователь> в данной "
+"<сети>.\n"
+"<сетью> по умолчанию задана текущая."
+
+#: plugin.py:109
+msgid "This nick is not registered to you on this network."
+msgstr "Этот ник не зарегистрирован за вами в этой сети."
+
+#: plugin.py:118
+msgid ""
+"[<network>] [<user>]\n"
+"\n"
+"            Lists nicks of the <user> on the network.\n"
+"            <network> defaults to the current network.\n"
+"            "
+msgstr ""
+"[<сеть>] [<пользователь>]\n"
+"\n"
+"Показывает список ников <пользователя> в этой сети.\n"
+"<сетью> по умолчанию задана текущая."
+
+#: plugin.py:127
+msgid "You are not identified and <user> is not given."
+msgstr "Вы не авторизованы, и <пользователь> не дан."
+
+#: plugin.py:138
+#, fuzzy
+msgid "You have no recognized nick on this network."
+msgstr "У вас нет распознанных ников в этой сети."
+
+#: plugin.py:141
+#, fuzzy
+msgid "%s has no recognized nick on this network."
+msgstr "%s не имеет распознанных ников в этой сети."
+
+#: plugin.py:148
+msgid ""
+"takes no argument\n"
+"\n"
+"        Tries to authenticate you using network services.\n"
+"        If you get no reply, it means you are not authenticated to the\n"
+"        network services."
+msgstr ""
+"не принимает аргументов\n"
+"\n"
+"Пытается авторизовать вас, используя сервисы сети. Если вы не получили "
+"ответа, то значит вы не авторизованы в сервисах сети."
+
+#: plugin.py:159
+msgid ""
+"If the messages has a server tag with account name, tries to\n"
+"        authenticate it."
+msgstr ""
+
+#: plugin.py:180
+msgid ""
+"Your secure flag is true and your hostmask doesn't match any of your known "
+"hostmasks."
+msgstr ""
+"Ваша настройка защита установлена в true, и ваша хост-маска не совпадает "
+"ни с одной известной."
+
+#: plugin.py:184
+msgid "You are now authenticated as %s."
+msgstr "Вы авторизованы как %s."
+
+#: plugin.py:186
+msgid ""
+"No user claimed the nick %s on this network. If this is you, you should "
+"connect with an other method and use the \"nickauth nick add\" command, or "
+"ask the owner of the bot to do it."
+msgstr ""
+"Ни один пользователь не владеет ником %s в этой сети. Если это вы, то вы "
+"должны подключиться другим способом и использовать команду \"nickauth nick "
+"add\" или попросить владельца бота сделать это."
