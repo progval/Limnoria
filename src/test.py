@@ -318,7 +318,8 @@ class PluginTestCase(SupyTestCase):
             raise TimeoutError(query)
         if lastGetHelp not in m.args[1]:
             self.assertTrue(m.args[1].startswith('Error:'),
-                            '%r did not error: %s' % (query, m.args[1]))
+                            '%r did not error: %s' %
+                            (query, ' '.join(m.args[1:])))
         return m
 
     def assertSnarfError(self, query, **kwargs):

@@ -161,9 +161,13 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.assertTrue(m.command == 'MODE' and
                         m.args == (self.channel, '+v', 'bar'))
 
-    def assertKban(self, query, hostmask, **kwargs):
+    def assertKban(self, query, *hostmasks, **kwargs):
         m = self.getMsg(query, **kwargs)
-        self.assertEqual(m, ircmsgs.ban(self.channel, hostmask))
+        self.assertEqual(m.command, "MODE", m)
+        self.assertEqual(m.args[0], self.channel, m)
+        self.assertEqual(m.args[1], "+" + "b" * len(hostmasks), m)
+        self.assertCountEqual(m.args[2:], hostmasks, m)
+
         m = self.getMsg(' ')
         self.assertEqual(m.command, 'KICK')
     def assertBan(self, query, hostmask, **kwargs):
@@ -184,6 +188,30 @@ class ChannelTestCase(ChannelPluginTestCase):
         conf.supybot.protocols.irc.strictRfc.setValue(False)
         self.assertBan('iban $a:nyuszika7h', '$a:nyuszika7h')
         self.assertNotError('unban $a:nyuszika7h')
+
+    def testWontIbanItself(self):
+        self.irc.state.supported['ACCOUNTEXTBAN'] = 'a,account'
+        self.irc.state.supported['EXTBAN'] = '~,abc'
+
+        self.irc.feedMsg(ircmsgs.join(self.channel,
+                                      prefix='foobar!user@host.domain.tld'))
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
+
+        # not authenticated, falls back to hostname and notices the match
+        self.assertError('iban --account ' + self.nick)
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(prefix=self.prefix, command='ACCOUNT',
+                                        args=['botaccount']))
+
+        # notices the matching account
+        self.assertError('iban --account ' + self.nick)
+
+        self.irc.feedMsg(ircmsgs.IrcMsg(prefix='othernick!otheruser@otherhost',
+                                        command='ACCOUNT',
+                                        args=['botaccount']))
+
+        # ditto
+        self.assertError('iban --account othernick')
 
     def testKban(self):
         self.irc.prefix = 'something!else@somehwere.else'
@@ -219,11 +247,108 @@ class ChannelTestCase(ChannelPluginTestCase):
 
         self.assertRegexp('kban adlkfajsdlfkjsd', 'adlkfajsdlfkjsd is not in')
 
+    def testAccountKbanNoAccount(self):
+        self.irc.prefix = 'something!else@somehwere.else'
+        self.irc.nick = 'something'
+        self.irc.state.supported['ACCOUNTEXTBAN'] = 'a,account'
+        self.irc.state.supported['EXTBAN'] = '~,abc'
+        def join():
+            self.irc.feedMsg(ircmsgs.join(
+                self.channel, prefix='foobar!user@host.domain.tld'))
+        join()
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
+        self.assertKban('kban --account --exact foobar',
+                        'foobar!user@host.domain.tld')
+        join()
+        self.assertKban('kban --account foobar',
+                        '*!*@host.domain.tld')
+        join()
+        with conf.supybot.protocols.irc.banmask.context(['user', 'host']):
+            # falls back from --account to config
+            self.assertKban('kban --account foobar',
+                            '*!user@host.domain.tld')
+        join()
+        with conf.supybot.protocols.irc.banmask.context(['account']):
+            # falls back from --account to config, then to only the host
+            self.assertKban('kban --account foobar',
+                            '*!*@host.domain.tld')
+        join()
+        self.assertKban('kban --account --host foobar',
+                        '*!*@host.domain.tld')
+
+    def testAccountKbanLoggedOut(self):
+        self.irc.prefix = 'something!else@somehwere.else'
+        self.irc.nick = 'something'
+        self.irc.state.supported['ACCOUNTEXTBAN'] = 'a,account'
+        self.irc.state.supported['EXTBAN'] = '~,abc'
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            prefix='foobar!user@host.domain.tld',
+            command='ACCOUNT', args=['*']))
+        def join():
+            self.irc.feedMsg(ircmsgs.join(
+                self.channel, prefix='foobar!user@host.domain.tld'))
+        join()
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
+        self.assertKban('kban --account --exact foobar',
+                        'foobar!user@host.domain.tld')
+        join()
+        self.assertKban('kban --account foobar',
+                        '*!*@host.domain.tld')
+        join()
+        with conf.supybot.protocols.irc.banmask.context(['user', 'host']):
+            # falls back from --account to config
+            self.assertKban('kban --account foobar',
+                            '*!user@host.domain.tld')
+        join()
+        with conf.supybot.protocols.irc.banmask.context(['account']):
+            # falls back from --account to config, then to only the host
+            self.assertKban('kban --account foobar',
+                            '*!*@host.domain.tld')
+        join()
+        self.assertKban('kban --account --host foobar',
+                        '*!*@host.domain.tld')
+
+    def testAccountKbanLoggedIn(self):
+        self.irc.prefix = 'something!else@somehwere.else'
+        self.irc.nick = 'something'
+        self.irc.state.supported['ACCOUNTEXTBAN'] = 'a,account'
+        self.irc.state.supported['EXTBAN'] = '~,abc'
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            prefix='foobar!user@host.domain.tld',
+            command='ACCOUNT', args=['account1']))
+        def join():
+            self.irc.feedMsg(ircmsgs.join(
+                self.channel, prefix='foobar!user@host.domain.tld'))
+        join()
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.irc.nick))
+
+
+        for style in (['exact'], ['account', 'exact']):
+            with conf.supybot.protocols.irc.banmask.context(style):
+                self.assertKban('kban --account --exact foobar',
+                                '~a:account1', 'foobar!user@host.domain.tld')
+                join()
+                self.assertKban('kban --account foobar',
+                                '~a:account1')
+                join()
+                self.assertKban('kban --account --host foobar',
+                                '~a:account1', '*!*@host.domain.tld')
+                join()
+
+        with conf.supybot.protocols.irc.banmask.context(['account', 'exact']):
+            self.assertKban('kban foobar',
+                            '~a:account1', 'foobar!user@host.domain.tld')
+            join()
+
+        with conf.supybot.protocols.irc.banmask.context(['account', 'host']):
+            self.assertKban('kban foobar',
+                            '~a:account1', '*!*@host.domain.tld')
+            join()
+
     def testBan(self):
         with conf.supybot.protocols.irc.banmask.context(['exact']):
             self.assertNotError('ban add foo!bar@baz')
             self.assertNotError('ban remove foo!bar@baz')
-            orig = conf.supybot.protocols.irc.strictRfc()
             with conf.supybot.protocols.irc.strictRfc.context(True):
                 # something wonky is going on here. irc.error (src/Channel.py|449)
                 # is being called but the assert is failing
@@ -249,7 +374,6 @@ class ChannelTestCase(ChannelPluginTestCase):
                             '"foobar!*@baz" (never expires)')
 
     def testIgnore(self):
-        orig = conf.supybot.protocols.irc.banmask()
         def ignore(given, expect=None):
             if expect is None:
                 expect = given
@@ -257,8 +381,9 @@ class ChannelTestCase(ChannelPluginTestCase):
             self.assertResponse('channel ignore list', "'%s'" % expect)
             self.assertNotError('channel ignore remove %s' % expect)
             self.assertRegexp('channel ignore list', 'not currently')
-        ignore('foo!bar@baz', '*!*@baz')
-        ignore('foo!*@*')
+        with conf.supybot.protocols.irc.banmask.context(['host']):
+            ignore('foo!bar@baz', '*!*@baz')
+            ignore('foo!*@*')
         with conf.supybot.protocols.irc.banmask.context(['exact']):
             ignore('foo!bar@baz')
             ignore('foo!*@*')
