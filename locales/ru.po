@@ -37,7 +37,7 @@ msgid "That's not a valid %s."
 msgstr "Это не является допустимым %s."
 
 msgid "(XX more messages)"
-msgstr "(ещё XX сообщений)"
+msgstr "(XX сообщений осталось)"
 
 msgid "more message"
 msgstr "сообщение осталось"
