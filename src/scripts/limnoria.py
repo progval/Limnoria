@@ -363,7 +363,9 @@ def main():
     if options.profile:
         import profile
         world.profiling = True
-        profile.run('run()', '%s-%i.prof' % (nick, time.time()))
+        profile.runctx('run()',
+                       globals=globals(), locals={**locals(), "run": run},
+                       filename='%s-%i.prof' % (nick, time.time()))
     else:
         run()
 
