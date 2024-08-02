@@ -361,11 +361,11 @@ def main():
     owner = Owner.Class()
 
     if options.profile:
-        import profile
+        import cProfile
         world.profiling = True
-        profile.runctx('run()',
-                       globals=globals(), locals={**locals(), "run": run},
-                       filename='%s-%i.prof' % (nick, time.time()))
+        cProfile.runctx('run()',
+                        globals=globals(), locals={**locals(), "run": run},
+                        filename='%s-%i.prof' % (nick, time.time()))
     else:
         run()
 
