@@ -151,7 +151,7 @@ class Web(callbacks.PluginRegexp):
         size = conf.supybot.protocols.http.peekSize()
 
         parsed_url = utils.web.urlparse(url)
-        if parsed_url.netloc == 'youtube.com' \
+        if parsed_url.netloc in ('youtube.com', 'youtu.be') \
                 or parsed_url.netloc.endswith(('.youtube.com')):
             # there is a lot of Javascript before the <title>
             size = max(819200, size)
