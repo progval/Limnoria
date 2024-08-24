@@ -737,7 +737,10 @@ class NormalizedString(String):
     def serialize(self):
         s = self.__parent.serialize()
         prefixLen = len(self._name) + 2
-        lines = textwrap.wrap(s, width=76-prefixLen)
+        # break_long_words=False so we don't split in the middle of a
+        # unicode_escape sequence when there are multiple escape sequences in a
+        # row.
+        lines = textwrap.wrap(s, width=76-prefixLen, break_long_words=False)
         last = len(lines)-1
         for (i, line) in enumerate(lines):
             if i != 0:
