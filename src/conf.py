@@ -547,6 +547,13 @@ registerChannelValue(supybot.reply.mores, 'instant',
     they are formed).  Defaults to 1, which means that a more command will be
     required for all but the first chunk.""")))
 
+# XXX: User value.
+registerNetworkValue(supybot.reply.mores.instant, 'whenPrivate',
+    registry.NonNegativeInteger(0, _("""Determines how many mores will be sent
+    instantly (i.e., without the use of the more command, immediately when
+    they are formed) when sending messages in private.  Defaults to 0, which means
+    that it defaults to the generic supybot.reply.mores.instant value.""")))
+
 registerChannelValue(supybot.reply, 'oneToOne',
     registry.Boolean(True, _("""Determines whether the bot will send
     multi-message replies in a single message. This defaults to True 

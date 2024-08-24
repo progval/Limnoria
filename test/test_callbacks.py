@@ -547,6 +547,13 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             "'" + "foo " * 110 + " \x02(2 more messages)\x02")
         self.assertNoResponse(" ", timeout=0.1)
 
+        # not in private -> no effect
+        with conf.supybot.reply.mores.instant.inPrivate.context(2):
+            self.assertResponse(
+                "eval 'foo '*300",
+                "'" + "foo " * 110 + " \x02(2 more messages)\x02")
+            self.assertNoResponse(" ", timeout=0.1)
+
         with conf.supybot.reply.mores.instant.context(2):
             self.assertResponse(
                 "eval 'foo '*300",
@@ -567,6 +574,55 @@ class PrivmsgTestCase(ChannelPluginTestCase):
                 " ",
                 " " + "foo " * 79 + "'")
             self.assertNoResponse(" ", timeout=0.1)
+
+    def testReplyInstantInPrivate(self):
+        self.assertNoResponse(' ')
+        self.assertResponse(
+            "eval irc.reply('foo '*300, private=True)",
+            "foo " * 113 + "\x02(2 more messages)\x02")
+        self.assertResponse(" ", "None")
+
+        with conf.supybot.reply.mores.instant.whenPrivate.context(2):
+            self.assertResponse(
+                "eval irc.reply('foo '*300, private=True)",
+                "foo " * 112 + "foo")
+            self.assertResponse(
+                " ",
+                " foo" * 112 + "  \x02(1 more message)\x02")
+            self.assertResponse(" ", "None")
+
+        with conf.supybot.reply.mores.instant.whenPrivate.context(2):
+            with conf.supybot.reply.mores.instant.context(3): # ignored
+                self.assertResponse(
+                    "eval irc.reply('foo '*300, private=True)",
+                    "foo " * 112 + "foo")
+                self.assertResponse(
+                    " ",
+                    " foo" * 112 + "  \x02(1 more message)\x02")
+                self.assertResponse(" ", "None")
+
+        # fall back because supybot.reply.mores.instant.inPrivate is 0
+        with conf.supybot.reply.mores.instant.context(2):
+            self.assertResponse(
+                "eval irc.reply('foo '*300, private=True)",
+                "foo " * 112 + "foo")
+            self.assertResponse(
+                " ",
+                " foo" * 112 + "  \x02(1 more message)\x02")
+            self.assertResponse(" ", "None")
+
+        # fall back because supybot.reply.mores.instant.inPrivate is 0
+        with conf.supybot.reply.mores.instant.context(3):
+            self.assertResponse(
+                "eval irc.reply('foo '*300, private=True)",
+                "foo " * 112 + "foo")
+            self.assertResponse(
+                " ",
+                " foo" * 112 + " ")
+            self.assertResponse(
+                " ",
+                "foo " * 75)
+            self.assertResponse(" ", "None")
 
     def testReplyPrivate(self):
         # Send from a very long nick, which should be taken into account when
