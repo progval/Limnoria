@@ -77,47 +77,47 @@ Commands
 
 .. _command-aka-add:
 
-add [--channel <#channel>] <name> <command>
+``add [--channel <#channel>] <name> <command>``
   Defines an alias <name> that executes <command>. The <command> should be in the standard "command argument [nestedcommand argument]" arguments to the alias; they'll be filled with the first, second, etc. arguments. $1, $2, etc. can be used for required arguments. @1, @2, etc. can be used for optional arguments. $* simply means "all arguments that have not replaced $1, $2, etc.", ie. it will also include optional arguments.
 
 .. _command-aka-remove:
 
-remove [--channel <#channel>] <name>
+``remove [--channel <#channel>] <name>``
   Removes the given alias, if unlocked.
 
 .. _command-aka-lock:
 
-lock [--channel <#channel>] <alias>
+``lock [--channel <#channel>] <alias>``
   Locks an alias so that no one else can change it.
 
 .. _command-aka-unlock:
 
-unlock [--channel <#channel>] <alias>
+``unlock [--channel <#channel>] <alias>``
   Unlocks an alias so that people can define new aliases over it.
 
 .. _command-aka-importaliasdatabase:
 
-importaliasdatabase takes no arguments
+``importaliasdatabase takes no arguments``
   Imports the Alias database into Aka's, and clean the former.
 
 .. _command-aka-show:
 
-show [--channel <#channel>] <alias>
+``show [--channel <#channel>] <alias>``
   This command shows the content of an Aka.
 
 .. _command-aka-list:
 
-list [--channel <#channel>] [--keys] [--unlocked|--locked]
+``list [--channel <#channel>] [--keys] [--unlocked|--locked]``
   Lists all Akas defined for <channel>. If <channel> is not specified, lists all global Akas. If --keys is given, lists only the Aka names and not their commands.
 
 .. _command-aka-set:
 
-set [--channel <#channel>] <name> <command>
+``set [--channel <#channel>] <name> <command>``
   Overwrites an existing alias <name> to execute <command> instead. The <command> should be in the standard "command argument [nestedcommand argument]" arguments to the alias; they'll be filled with the first, second, etc. arguments. $1, $2, etc. can be used for required arguments. @1, @2, etc. can be used for optional arguments. $* simply means "all arguments that have not replaced $1, $2, etc.", ie. it will also include optional arguments.
 
 .. _command-aka-search:
 
-search [--channel <#channel>] <query>
+``search [--channel <#channel>] <query>``
   Searches Akas defined for <channel>. If <channel> is not specified, searches all global Akas.
 
 .. _conf-Aka:

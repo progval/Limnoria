@@ -43,27 +43,27 @@ Commands
 
 .. _command-alias-add:
 
-add <name> <command>
+``add <name> <command>``
   Defines an alias <name> that executes <command>. The <command> should be in the standard "command argument [nestedcommand argument]" arguments to the alias; they'll be filled with the first, second, etc. arguments. $1, $2, etc. can be used for required arguments. @1, @2, etc. can be used for optional arguments. $* simply means "all remaining arguments," and cannot be combined with optional arguments.
 
 .. _command-alias-list:
 
-list [--locked|--unlocked]
+``list [--locked|--unlocked]``
   Lists alias names of a particular type, defaults to all aliases if no --locked or --unlocked option is given.
 
 .. _command-alias-lock:
 
-lock <alias>
+``lock <alias>``
   Locks an alias so that no one else can change it.
 
 .. _command-alias-remove:
 
-remove <name>
+``remove <name>``
   Removes the given alias, if unlocked.
 
 .. _command-alias-unlock:
 
-unlock <alias>
+``unlock <alias>``
   Unlocks an alias so that people can define new aliases over it.
 
 .. _conf-Alias:

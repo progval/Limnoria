@@ -23,27 +23,27 @@ Commands
 
 .. _command-reply-action:
 
-action <text>
+``action <text>``
   Replies with <text> as an action. Use nested commands to your benefit here.
 
 .. _command-reply-notice:
 
-notice <text>
+``notice <text>``
   Replies with <text> in a notice. Use nested commands to your benefit here. If you want a private notice, nest the private command.
 
 .. _command-reply-private:
 
-private <text>
+``private <text>``
   Replies with <text> in private. Use nested commands to your benefit here.
 
 .. _command-reply-replies:
 
-replies <str> [<str> ...]
+``replies <str> [<str> ...]``
   Replies with each of its arguments <str> in separate replies, depending the configuration of supybot.reply.oneToOne.
 
 .. _command-reply-reply:
 
-reply <text>
+``reply <text>``
   Replies with <text>. Equivalent to the alias, 'echo $nick: $1'.
 
 .. _conf-Reply:

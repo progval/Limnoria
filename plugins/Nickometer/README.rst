@@ -22,7 +22,7 @@ Commands
 
 .. _command-nickometer-nickometer:
 
-nickometer [<nick>]
+``nickometer [<nick>]``
   Tells you how lame said nick is. If <nick> is not given, uses the nick of the person giving the command.
 
 .. _conf-Nickometer:

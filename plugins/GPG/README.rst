@@ -50,27 +50,27 @@ Commands
 
 .. _command-gpg-key.add:
 
-key add <key id> <key server>
+``key add <key id> <key server>``
   Add a GPG key to your account.
 
 .. _command-gpg-key.list:
 
-key list takes no arguments
+``key list takes no arguments``
   List your GPG keys.
 
 .. _command-gpg-key.remove:
 
-key remove <fingerprint>
+``key remove <fingerprint>``
   Remove a GPG key from your account.
 
 .. _command-gpg-signing.auth:
 
-signing auth <url>
+``signing auth <url>``
   Check the GPG signature at the <url> and authenticates you if the key used is associated to a user.
 
 .. _command-gpg-signing.gettoken:
 
-signing gettoken takes no arguments
+``signing gettoken takes no arguments``
   Send you a token that you'll have to sign with your key.
 
 .. _conf-GPG:

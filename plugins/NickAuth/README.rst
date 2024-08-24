@@ -25,22 +25,22 @@ Commands
 
 .. _command-nickauth-auth:
 
-auth takes no argument
+``auth takes no argument``
   Tries to authenticate you using network services. If you get no reply, it means you are not authenticated to the network services.
 
 .. _command-nickauth-nick.add:
 
-nick add [<network>] <user> <nick>
+``nick add [<network>] <user> <nick>``
   Add <nick> to the list of nicks owned by the <user> on the <network>. You have to register this nick to the network services to be authenticated. <network> defaults to the current network.
 
 .. _command-nickauth-nick.list:
 
-nick list [<network>] [<user>]
+``nick list [<network>] [<user>]``
   Lists nicks of the <user> on the network. <network> defaults to the current network.
 
 .. _command-nickauth-nick.remove:
 
-nick remove [<network>] <user> <nick>
+``nick remove [<network>] <user> <nick>``
   Remove <nick> from the list of nicks owned by the <user> on the <network>. <network> defaults to the current network.
 
 .. _conf-NickAuth:

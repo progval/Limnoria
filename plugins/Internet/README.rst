@@ -22,17 +22,17 @@ Commands
 
 .. _command-internet-dns:
 
-dns <host|ip>
+``dns <host|ip>``
   Returns the ip of <host> or the reverse DNS hostname of <ip>.
 
 .. _command-internet-hexip:
 
-hexip <ip>
+``hexip <ip>``
   Returns the hexadecimal IP for that IP.
 
 .. _command-internet-whois:
 
-whois <domain>
+``whois <domain>``
   Returns WHOIS information on the registration of <domain>.
 
 .. _conf-Internet:

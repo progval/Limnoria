@@ -45,17 +45,17 @@ Commands
 
 .. _command-google-google:
 
-google <search> [--{filter,language} <value>]
+``google <search> [--{filter,language} <value>]``
   Searches google.com for the given string. As many results as can fit are included. --language accepts a language abbreviation; --filter accepts a filtering level ('active', 'moderate', 'off').
 
 .. _command-google-lucky:
 
-lucky [--snippet] <search>
+``lucky [--snippet] <search>``
   Does a google search, but only returns the first result. If option --snippet is given, returns also the page text snippet.
 
 .. _command-google-translate:
 
-translate <source language> [to] <target language> <text>
+``translate <source language> [to] <target language> <text>``
   Returns <text> translated from <source language> into <target language>. <source language> and <target language> take language codes (not language names), which are listed here: https://cloud.google.com/translate/docs/languages
 
 .. _conf-Google:

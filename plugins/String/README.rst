@@ -20,67 +20,67 @@ Commands
 
 .. _command-string-chr:
 
-chr <number>
+``chr <number>``
   Returns the unicode character associated with codepoint <number>
 
 .. _command-string-decode:
 
-decode <encoding> <text>
+``decode <encoding> <text>``
   Returns an un-encoded form of the given text; the valid encodings are available in the documentation of the Python codecs module: <http://docs.python.org/library/codecs.html#standard-encodings>.
 
 .. _command-string-encode:
 
-encode <encoding> <text>
+``encode <encoding> <text>``
   Returns an encoded form of the given text; the valid encodings are available in the documentation of the Python codecs module: <http://docs.python.org/library/codecs.html#standard-encodings>.
 
 .. _command-string-len:
 
-len <text>
+``len <text>``
   Returns the length of <text>.
 
 .. _command-string-levenshtein:
 
-levenshtein <string1> <string2>
+``levenshtein <string1> <string2>``
   Returns the levenshtein distance (also known as the "edit distance" between <string1> and <string2>)
 
 .. _command-string-md5:
 
-md5 <text>
+``md5 <text>``
   Returns the md5 hash of a given string.
 
 .. _command-string-ord:
 
-ord <string>
+``ord <string>``
   Returns the unicode codepoint of characters in <string>.
 
 .. _command-string-re:
 
-re <regexp> <text>
+``re <regexp> <text>``
   If <regexp> is of the form m/regexp/flags, returns the portion of <text> that matches the regexp. If <regexp> is of the form s/regexp/replacement/flags, returns the result of applying such a regexp to <text>.
 
 .. _command-string-sha:
 
-sha <text>
+``sha <text>``
   Returns the SHA1 hash of a given string.
 
 .. _command-string-soundex:
 
-soundex <string> [<length>]
+``soundex <string> [<length>]``
   Returns the Soundex hash to a given length. The length defaults to 4, since that's the standard length for a soundex hash. For unlimited length, use 0. Maximum length 1024.
 
 .. _command-string-unicodename:
 
-unicodename <string>
+``unicodename <string>``
   Returns the name of characters in <string>. This will error if any character is not a valid Unicode character.
 
 .. _command-string-unicodesearch:
 
-unicodesearch <name>
+``unicodesearch <name>``
   Searches for a unicode character from its <name>.
 
 .. _command-string-xor:
 
-xor <password> <text>
+``xor <password> <text>``
   Returns <text> XOR-encrypted with <password>.
 
 .. _conf-String:

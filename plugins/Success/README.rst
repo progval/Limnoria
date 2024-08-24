@@ -26,32 +26,32 @@ Commands
 
 .. _command-success-add:
 
-add [<channel>] <text>
+``add [<channel>] <text>``
   Adds <text> to the success database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-success-change:
 
-change [<channel>] <id> <regexp>
+``change [<channel>] <id> <regexp>``
   Changes the success with id <id> according to the regular expression <regexp>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-success-get:
 
-get [<channel>] <id>
+``get [<channel>] <id>``
   Gets the success with id <id> from the success database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-success-remove:
 
-remove [<channel>] <id>
+``remove [<channel>] <id>``
   Removes the success with id <id> from the success database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-success-search:
 
-search [<channel>] [--{regexp,by} <value>] [<glob>]
+``search [<channel>] [--{regexp,by} <value>] [<glob>]``
   Searches for successes matching the criteria given.
 
 .. _command-success-stats:
 
-stats [<channel>]
+``stats [<channel>]``
   Returns the number of successes in the database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _conf-Success:

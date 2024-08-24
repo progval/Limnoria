@@ -25,17 +25,17 @@ Commands
 
 .. _command-badwords-add:
 
-add <word> [<word> ...]
+``add <word> [<word> ...]``
   Adds all <word>s to the list of words being censored.
 
 .. _command-badwords-list:
 
-list takes no arguments
+``list takes no arguments``
   Returns the list of words being censored.
 
 .. _command-badwords-remove:
 
-remove <word> [<word> ...]
+``remove <word> [<word> ...]``
   Removes <word>s from the list of words being censored.
 
 .. _conf-BadWords:

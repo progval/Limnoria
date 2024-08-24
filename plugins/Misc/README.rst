@@ -21,62 +21,62 @@ Commands
 
 .. _command-misc-apropos:
 
-apropos <string>
+``apropos <string>``
   Searches for <string> in the commands currently offered by the bot, returning a list of the commands containing that string.
 
 .. _command-misc-clearmores:
 
-clearmores takes no arguments
+``clearmores takes no arguments``
   Clears all mores for the current network.
 
 .. _command-misc-completenick:
 
-completenick [<channel>] <beginning> [--match-case]
+``completenick [<channel>] <beginning> [--match-case]``
   Returns the nick of someone on the channel whose nick begins with the given <beginning>. <channel> defaults to the current channel.
 
 .. _command-misc-help:
 
-help [<plugin>] [<command>]
+``help [<plugin>] [<command>]``
   This command gives a useful description of what <command> does. <plugin> is only necessary if the command is in more than one plugin. You may also want to use the 'list' command to list all available plugins and commands.
 
 .. _command-misc-last:
 
-last [--{from,in,on,with,without,regexp} <value>] [--nolimit]
+``last [--{from,in,on,with,without,regexp} <value>] [--nolimit]``
   Returns the last message matching the given criteria. --from requires a nick from whom the message came; --in requires a channel the message was sent to; --on requires a network the message was sent on; --with requires some string that had to be in the message; --regexp requires a regular expression the message must match; --nolimit returns all the messages that can be found. By default, the channel this command is given in is searched.
 
 .. _command-misc-list:
 
-list [--private] [--unloaded] [<plugin>]
+``list [--private] [--unloaded] [<plugin>]``
   Lists the commands available in the given plugin. If no plugin is given, lists the public plugins available. If --private is given, lists the private plugins. If --unloaded is given, it will list available plugins that are not loaded.
 
 .. _command-misc-more:
 
-more [<nick>]
+``more [<nick>]``
   If the last command was truncated due to IRC message length limitations, returns the next chunk of the result of the last command. If <nick> is given, it takes the continuation of the last command from <nick> instead of the person sending this message.
 
 .. _command-misc-noticetell:
 
-noticetell <nick> <text>
+``noticetell <nick> <text>``
   Tells the <nick> whatever <text> is, in a notice. Use nested commands to your benefit here.
 
 .. _command-misc-ping:
 
-ping takes no arguments
+``ping takes no arguments``
   Checks to see if the bot is alive.
 
 .. _command-misc-source:
 
-source takes no arguments
+``source takes no arguments``
   Returns a URL saying where to get Limnoria.
 
 .. _command-misc-tell:
 
-tell <nick> <text>
+``tell <nick> <text>``
   Tells the <nick> whatever <text> is. Use nested commands to your benefit here.
 
 .. _command-misc-version:
 
-version takes no arguments
+``version takes no arguments``
   Returns the version of the current bot.
 
 .. _conf-Misc:

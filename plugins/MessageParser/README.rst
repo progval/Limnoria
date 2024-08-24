@@ -27,47 +27,47 @@ Commands
 
 .. _command-messageparser-add:
 
-add [<channel>|global] <regexp> <action>
+``add [<channel>|global] <regexp> <action>``
   Associates <regexp> with <action>. <channel> is only necessary if the message isn't sent on the channel itself. Action is echoed upon regexp match, with variables $1, $2, etc. being interpolated from the regexp match groups.
 
 .. _command-messageparser-info:
 
-info [<channel>|global] [--id] <regexp>
+``info [<channel>|global] [--id] <regexp>``
   Display information about <regexp> in the triggers database. <channel> is only necessary if the message isn't sent in the channel itself. If option --id specified, will retrieve by regexp id, not content.
 
 .. _command-messageparser-list:
 
-list [<channel>|global]
+``list [<channel>|global]``
   Lists regexps present in the triggers database. <channel> is only necessary if the message isn't sent in the channel itself. Regexp ID listed in parentheses.
 
 .. _command-messageparser-lock:
 
-lock [<channel>|global] <regexp>
+``lock [<channel>|global] <regexp>``
   Locks the <regexp> so that it cannot be removed or overwritten to. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-messageparser-rank:
 
-rank [<channel>|global]
+``rank [<channel>|global]``
   Returns a list of top-ranked regexps, sorted by usage count (rank). The number of regexps returned is set by the rankListLength registry value. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-messageparser-remove:
 
-remove [<channel>|global] [--id] <regexp>]
+``remove [<channel>|global] [--id] <regexp>]``
   Removes the trigger for <regexp> from the triggers database. <channel> is only necessary if the message isn't sent in the channel itself. If option --id specified, will retrieve by regexp id, not content.
 
 .. _command-messageparser-show:
 
-show [<channel>|global] [--id] <regexp>
+``show [<channel>|global] [--id] <regexp>``
   Looks up the value of <regexp> in the triggers database. <channel> is only necessary if the message isn't sent in the channel itself. If option --id specified, will retrieve by regexp id, not content.
 
 .. _command-messageparser-unlock:
 
-unlock [<channel>|global] <regexp>
+``unlock [<channel>|global] <regexp>``
   Unlocks the entry associated with <regexp> so that it can be removed or overwritten. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-messageparser-vacuum:
 
-vacuum [<channel>|global]
+``vacuum [<channel>|global]``
   Vacuums the database for <channel>. See SQLite vacuum doc here: http://www.sqlite.org/lang_vacuum.html <channel> is only necessary if the message isn't sent in the channel itself. First check if user has the required capability specified in plugin config requireVacuumCapability.
 
 .. _conf-MessageParser:

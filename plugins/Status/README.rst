@@ -22,52 +22,52 @@ Commands
 
 .. _command-status-cmd:
 
-cmd takes no arguments
+``cmd takes no arguments``
   Returns some interesting command-related statistics.
 
 .. _command-status-commands:
 
-commands takes no arguments
+``commands takes no arguments``
   Returns a list of the commands offered by the bot.
 
 .. _command-status-cpu:
 
-cpu takes no arguments
+``cpu takes no arguments``
   Returns some interesting CPU-related statistics on the bot.
 
 .. _command-status-net:
 
-net takes no arguments
+``net takes no arguments``
   Returns some interesting network-related statistics.
 
 .. _command-status-network:
 
-network takes no arguments
+``network takes no arguments``
   Returns the network the bot is on.
 
 .. _command-status-processes:
 
-processes takes no arguments
+``processes takes no arguments``
   Returns the number of processes that have been spawned, and list of ones that are still active.
 
 .. _command-status-server:
 
-server takes no arguments
+``server takes no arguments``
   Returns the server the bot is on.
 
 .. _command-status-status:
 
-status takes no arguments
+``status takes no arguments``
   Returns the status of the bot.
 
 .. _command-status-threads:
 
-threads takes no arguments
+``threads takes no arguments``
   Returns the current threads that are active.
 
 .. _command-status-uptime:
 
-uptime takes no arguments
+``uptime takes no arguments``
   Returns the amount of time the bot has been running.
 
 .. _conf-Status:

@@ -25,7 +25,7 @@ Commands
 
 .. _command-ddg-search:
 
-search <text>
+``search <text>``
   Searches for <text> on DuckDuckGo's web search.
 
 .. _conf-DDG:

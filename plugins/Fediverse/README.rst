@@ -42,22 +42,22 @@ Commands
 
 .. _command-fediverse-featured:
 
-featured <@user@instance>
+``featured <@user@instance>``
   Returnes the featured statuses of @user@instance (aka. pinned toots).
 
 .. _command-fediverse-profile:
 
-profile <@user@instance>
+``profile <@user@instance>``
   Returns generic information on the account @user@instance.
 
 .. _command-fediverse-status:
 
-status <url>
+``status <url>``
   Shows the content of the status at <url>.
 
 .. _command-fediverse-statuses:
 
-statuses <@user@instance>
+``statuses <@user@instance>``
   Returned the last statuses of @user@instance.
 
 .. _conf-Fediverse:

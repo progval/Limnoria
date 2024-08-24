@@ -53,22 +53,22 @@ Commands
 
 .. _command-anonymous-do:
 
-do <channel> <action>
+``do <channel> <action>``
   Performs <action> in <channel>.
 
 .. _command-anonymous-react:
 
-react <channel> <reaction> <nick>
+``react <channel> <reaction> <nick>``
   Sends the <reaction> to <nick>'s last message. <reaction> is typically a smiley or an emoji. This may not be supported on the current network, as this command depends on IRCv3 features. This is also not supported if supybot.protocols.irc.experimentalExtensions disabled (don't enable it unless you know what you are doing).
 
 .. _command-anonymous-say:
 
-say <channel> <text>
+``say <channel> <text>``
   Sends <text> to <channel>.
 
 .. _command-anonymous-tell:
 
-tell <nick> <text>
+``tell <nick> <text>``
   Sends <text> to <nick>. Can only be used if supybot.plugins.Anonymous.allowPrivateTarget is True.
 
 .. _conf-Anonymous:
