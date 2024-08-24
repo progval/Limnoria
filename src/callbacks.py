@@ -769,6 +769,9 @@ class ReplyIrcProxy(RichReplyMethods):
         else:
             sendMsg = self.replyIrc.queueMsg
 
+        public = bool(self.msg.channel)
+        private = kwargs.get('private', False) or not public
+
         if isinstance(self.replyIrc, self.__class__):
             s = s[:conf.supybot.reply.maximumLength()]
             return self.replyIrc.reply(s,
@@ -813,8 +816,14 @@ class ReplyIrcProxy(RichReplyMethods):
             # (which is used like a stack)
             chunks.reverse()
 
-            instant = conf.get(conf.supybot.reply.mores.instant,
-                channel=target, network=self.replyIrc.network)
+            instant = 0
+            if private:
+                # if zero, falls back to supybot.reply.mores.instant
+                instant = conf.get(conf.supybot.reply.mores.instant.whenPrivate,
+                    network=self.replyIrc.network)
+            if instant <= 0:
+                instant = conf.get(conf.supybot.reply.mores.instant,
+                    channel=target, network=self.replyIrc.network)
 
             # Big complex loop ahead, with lots of cases and opportunities for
             # off-by-one errors. Here is the meaning of each of the variables
@@ -912,8 +921,6 @@ class ReplyIrcProxy(RichReplyMethods):
             if '!' in prefix and '@' in prefix:
                 mask = prefix.split('!', 1)[1]
                 self._mores[mask] = msgs
-            public = bool(self.msg.channel)
-            private = kwargs.get('private', False) or not public
             self._mores[msg.nick] = (private, msgs)
             return response
 
