@@ -815,6 +815,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         join_factoids = False
         formats = []
         criteria = []
+        join_criteria = []
         target = 'keys.key'
         predicateName = 'p'
         db = self.getDb(channel)
@@ -836,20 +837,23 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
             criteria.append('TARGET LIKE ?')
             formats.append(self._sqlTrans(glob))
 
-        if join_factoids:
+        def _join_factoids():
             if 'factoids' not in tables:
                 tables.append('factoids')
                 tables.append('relations')
-            criteria.append(
+            join_criteria.append(
                 'factoids.id=relations.fact_id AND keys.id=relations.key_id'
             )
+        if join_factoids:
+            _join_factoids()
 
         cursor = db.cursor()
-        sql = """SELECT keys.key FROM %s WHERE %s""" % \
-              (', '.join(tables), ' AND '.join(criteria))
+        sql = """SELECT DISTINCT keys.key FROM %s WHERE %s""" % \
+              (', '.join(tables), ' AND '.join(criteria + join_criteria))
         sql = sql + " ORDER BY keys.key"
         sql = sql.replace('TARGET', target)
         cursor.execute(sql, formats)
+
         if cursor.rowcount == 0:
             irc.reply(_('No keys matched that query.'))
         elif cursor.rowcount == 1 and \
@@ -865,7 +869,44 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
         elif len(results) == 1 and \
              self.registryValue('showFactoidIfOnlyOneMatch',
                                 channel, irc.network):
-            self.whatis(irc, msg, [channel, results[0][0]])
+            ((key,),) = results
+
+            # add the knowledge we gained, so avoid a full search again
+            join_criteria.append('keys.key=?')
+            formats.append(key)
+
+            if not join_factoids:
+                # if they were not joined before, we need to join
+                # them now to get the values
+                _join_factoids()
+
+            sql = """
+                SELECT factoids.fact, (1 AND %s) FROM %s
+                WHERE %s
+                ORDER BY factoids.id
+            """ % \
+                  (' AND '.join(criteria), ', '.join(tables),
+                   ' AND '.join(['keys.key=?', *join_criteria]))
+            sql = sql.replace('TARGET', target)
+            formats.append(key)
+            cursor.execute(sql, formats)
+            factoids = cursor.fetchall()
+            assert factoids  # we had a result before, and still should now
+            if len(factoids) == 1:
+                ((fact, included),) = factoids
+                assert included  # matched before, should still match now
+                irc.reply('%s is %s' %
+                          (key, ircutils.standardSubstitute(irc, msg, fact)))
+            else:
+                factoidsS = []
+                counter = 1
+                for (fact, included) in factoids:
+                    if included:
+                        factoidsS.append(format('(#%i) %s', counter,
+                                ircutils.standardSubstitute(irc, msg, fact)))
+                    counter += 1
+                irc.replies(factoidsS, prefixer=lambda s: '%s is %s' % (key, s),
+                            joiner=', or ', onlyPrefixFirst=True)
         elif len(results) > 100:
             irc.reply(_('More than 100 keys matched that query; '
                       'please narrow your query.'))
