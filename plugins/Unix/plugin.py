@@ -332,8 +332,8 @@ class Unix(callbacks.Plugin):
                 else:
                     response = result[0].decode('utf8').split("\n");
                     if response[1]:
-                        irc.reply(' '.join(response[1].split()[3:5]).split(':')[0]
-                                  + ': ' + ' '.join(response[-3:]))
+                        irc.reply(' '.join(response[1].split()[3:5]).split(': ')[0]
+                                  + ' ' + ' '.join(response[-3:]))
                     else:
                         irc.reply(' '.join(response[0].split()[1:3])
                                   + ': ' + ' '.join(response[-3:]))
