@@ -84,6 +84,9 @@ class WebTestCase(ChannelPluginTestCase):
             self.assertRegexp(
                 'title https://www.reddit.com/r/irc/',
                 'Internet Relay Chat')
+            self.assertRegexp(
+                'title https://v.redd.it/odhemxo6giud1',
+                'Small Kitty Big Goals : MadeMeSmile')
 
         def testTitleMarcinfo(self):
             # Checks that we don't crash on 'Content-Type: text/html;'

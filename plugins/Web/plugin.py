@@ -150,22 +150,47 @@ class Web(callbacks.PluginRegexp):
     def getTitle(self, irc, url, raiseErrors, msg):
         size = conf.supybot.protocols.http.peekSize()
 
-        parsed_url = utils.web.urlparse(url)
-        if parsed_url.netloc in ('youtube.com', 'youtu.be') \
-                or parsed_url.netloc.endswith(('.youtube.com')):
-            # there is a lot of Javascript before the <title>
-            size = max(819200, size)
-        if parsed_url.netloc in ('reddit.com', 'www.reddit.com', 'new.reddit.com'):
-            # Since 2022-03, New Reddit has 'Reddit - Dive into anything' as
-            # <title> on every page.
-            parsed_url = parsed_url._replace(netloc='old.reddit.com')
-            url = utils.web.urlunparse(parsed_url)
+        def url_workaround(url):
+            """Returns a new URL that should be the target of a new request,
+            or None if the request is fine as it is.
 
+            The returned URL may be the same as the parameter, in case
+            something else was changed by this function through side-effects.
+            """
+            nonlocal size
+            parsed_url = utils.web.urlparse(url)
+            print(repr(parsed_url.netloc))
+            if parsed_url.netloc in ('youtube.com', 'youtu.be') \
+                    or parsed_url.netloc.endswith(('.youtube.com')):
+                # there is a lot of Javascript before the <title>
+                if size < 819200:
+                    size = max(819200, size)
+                    return url
+                else:
+                    return None
+            if parsed_url.netloc in ('reddit.com', 'www.reddit.com', 'new.reddit.com'):
+                # Since 2022-03, New Reddit has 'Reddit - Dive into anything' as
+                # <title> on every page.
+                parsed_url = parsed_url._replace(netloc='old.reddit.com')
+                url = utils.web.urlunparse(parsed_url)
+                self.log.debug("Rewrite URL to %s", url)
+                return url
+
+            return None
+
+        url = url_workaround(url) or url
         timeout = self.registryValue('timeout')
         headers = conf.defaultHttpHeaders(irc.network, msg.channel)
         try:
             fd = utils.web.getUrlFd(url, timeout=timeout, headers=headers)
             target = fd.geturl()
+            fixed_target = url_workaround(target)
+            if fixed_target is not None:
+                # happens when using minification services linking to one of
+                # the websites handled by url_workaround; eg. v.redd.it
+                fd.close()
+                fd = utils.web.getUrlFd(fixed_target, timeout=timeout, headers=headers)
+                target = fd.geturl()
             text = fd.read(size)
             response_headers = fd.headers
             fd.close()
