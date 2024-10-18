@@ -15,8 +15,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - python-version: "3.13.0-alpha.6"
-            with-opt-deps: false  # https://github.com/pyca/cryptography/issues/10806
+          - python-version: "3.14.0-alpha.0"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+
+          - python-version: "3.13.0"
+            with-opt-deps: true
             runs-on: ubuntu-22.04
 
           - python-version: "3.12.0"
