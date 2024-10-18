@@ -1355,12 +1355,8 @@ class CommandProcess(world.SupyProcess):
                                                  pn,
                                                  cn)
         log.debug('Spawning process %s (args: %r)', procName, args)
-        self.__parent = super(CommandProcess, self)
-        self.__parent.__init__(target=target, name=procName,
-                               args=args, kwargs=kwargs)
-
-    def run(self):
-        self.__parent.run()
+        super().__init__(target=target, name=procName,
+                         args=args, kwargs=kwargs)
 
 class CanonicalString(registry.NormalizedString):
     def normalize(self, s):
