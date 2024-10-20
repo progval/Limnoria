@@ -786,9 +786,21 @@ class UsersDictionary(utils.IterableMap):
                 elif len(ids) == 0:
                     raise KeyError(s)
                 else:
-                    log.error('Multiple matches found in user database.  '
-                              'Removing the offending hostmasks.')
+                    # values in 'ids' are strings if user was identified by
+                    # actual hostmask, or True if they were identified by
+                    # a transient authentication (@identify, NickAuth, GPG,
+                    # etc.)
+                    log.error(
+                        'Multiple matches found in user database: [%s].  '
+                        'Removing the offending hostmasks.',
+                        ', '.join(
+                            '<transient>'
+                            if hostmask is True
+                            else repr(hostmask)
+                            for hostmask in ids.values()))
                     for (id, hostmask) in ids.items():
+                        if hostmask is True:
+                            continue
                         log.error('Removing %q from user %s.', hostmask, id)
                         self.users[id].removeHostmask(hostmask)
                     raise DuplicateHostmask('Ids %r matched.' % ids)
