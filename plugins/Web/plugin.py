@@ -159,7 +159,6 @@ class Web(callbacks.PluginRegexp):
             """
             nonlocal size
             parsed_url = utils.web.urlparse(url)
-            print(repr(parsed_url.netloc))
             if parsed_url.netloc in ('youtube.com', 'youtu.be') \
                     or parsed_url.netloc.endswith(('.youtube.com')):
                 # there is a lot of Javascript before the <title>
