@@ -148,7 +148,12 @@ def close(registry, filename, private=True):
                 if value._showDefault:
                     lines.append('#\n')
                     try:
-                        x = value.__class__(value._default, value._help)
+                        # We set setDefault to False and manually call
+                        # Value._setValue, just in case the class inherits
+                        # Value.setValue to set some global state (#1349)
+                        x = value.__class__(value._default, value._help,
+                            setDefault=False)
+                        x._setValue(value._default, inherited=False)
                     except Exception as e:
                         exception('Exception instantiating default for %s:' %
                                   value._name)
