@@ -224,6 +224,24 @@ class ValuesTestCase(SupyTestCase):
             registry.open_registry(filename)
             self.assertEqual(conf.supybot.networks.test.password(), ' foo ')
 
+    def testSetValueUncalledOnClose(self):
+        values_set = 0
+        class StringWithSetLogging(registry.String):
+            def setValue(self, v):
+                nonlocal values_set
+                values_set += 1
+
+                super(StringWithSetLogging, self).setValue(v)
+
+        group = registry.Group()
+        group.setName('group')
+        conf.registerGlobalValue(group, 'string', StringWithSetLogging('test', 'help'))
+        group.string.set('mrrp')
+
+        filename = conf.supybot.directories.conf.dirize('setvaluecalls.conf')
+        registry.close(group, filename)
+        self.assertEqual(values_set, 2)
+
     def testReload(self):
         import supybot.world as world
         with conf.supybot.reply.whenAddressedBy.chars.context('@'):
