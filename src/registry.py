@@ -153,7 +153,7 @@ def close(registry, filename, private=True):
                         # Value.setValue to set some global state (#1349)
                         x = value.__class__(value._default, value._help,
                             setDefault=False)
-                        x._setValue(value._default, inherited=False)
+                        x.value = value._default
                     except Exception as e:
                         exception('Exception instantiating default for %s:' %
                                   value._name)
