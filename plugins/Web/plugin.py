@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
 # Copyright (c) 2009, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2024, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -59,24 +59,24 @@ class Title(utils.web.HtmlToText):
     entitydefs['nbsp'] = ' '
     def __init__(self):
         self.inTitle = False
-        self.inSvg = False
+        self.inSvg = 0 # counter instead of boolean because svg can be nested
         utils.web.HtmlToText.__init__(self)
 
     @property
     def inHtmlTitle(self):
-        return self.inTitle and not self.inSvg
+        return self.inTitle and self.inSvg == 0
 
     def handle_starttag(self, tag, attrs):
         if tag == 'title':
             self.inTitle = True
         elif tag == 'svg':
-            self.inSvg = True
+            self.inSvg += 1
 
     def handle_endtag(self, tag):
         if tag == 'title':
             self.inTitle = False
         elif tag == 'svg':
-            self.inSvg = False
+            self.inSvg = max(0, self.inSvg - 1)
 
     def append(self, data):
         if self.inHtmlTitle:
