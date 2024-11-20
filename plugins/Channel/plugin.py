@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2009-2012, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2023, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -490,6 +490,53 @@ class Channel(callbacks.Plugin):
                          additional(
                              first('hostmask',
                                  ('literal', '--all')))])
+
+    @internationalizeDocstring
+    def redact(self, irc, msg, args, channel, msgid, reason):
+        """[<channel>] [--msgid <msgid>] [<reason>]
+
+        Redacts the message identified by the given <msgid> from the <channel>
+        for <reason>. <msgid> may be omitted if this command is given as a
+        reply to another message (on servers supporting IRCv3 message-tags
+        and +draft/reply).
+        This command requires supybot.protocols.irc.experimentalExtensions and
+        is only available on networks which support IRCv3
+        draft/message-redaction.
+        <channel> is only necessary if the message isn't sent in the channel
+        itself.
+        """
+        if not conf.supybot.protocols.irc.experimentalExtensions():
+            irc.error(
+                _('Experimental IRC extensions are not enabled for this bot.'),
+                Raise=True)
+
+        msgid = msgid or msg.server_tags.get('+draft/reply')
+        if not msgid:
+            irc.error(_('--msgid is required when this command is not a '
+                        'reply to a message'), Raise=True)
+
+        for target_message in reversed(irc.state.history):
+            if target_message.server_tags.get('msgid') == msgid:
+                break
+        else:
+            irc.error(_('Could not find the message in my history'),
+                      Raise=True)
+
+        if target_message.command not in ('PRIVMSG', 'NOTICE', 'TAGMSG'):
+            irc.error(_('This is not a valid message.'),
+                      Raise=True)
+
+        if ircutils.strEqual(target_message.nick, irc.nick):
+            irc.error(_('I cowardly refuse to redact my own messages.'),
+                      Raise=True)
+
+        args = [channel, msgid]
+        if reason:
+            args.append(reason)
+        self._sendMsg(irc, ircmsgs.IrcMsg(command="REDACT", args=args))
+    redact = wrap(redact, ['op', ('haveHalfop+', _('kick someone')),
+                           getopts({'msgid': 'somethingWithoutSpaces'}),
+                           additional('text')])
 
     @internationalizeDocstring
     def listbans(self, irc, msg, args, channel):
