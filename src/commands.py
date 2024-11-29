@@ -88,6 +88,20 @@ def _rlimit_min(a, b):
     else:
         return min(soft, heap_size)
 
+def _process_target(f, q, heap_size, *args, **kwargs):
+    """Called by :func:`process`"""
+    if resource:
+        rsrc = resource.RLIMIT_DATA
+        (soft, hard) = resource.getrlimit(rsrc)
+        soft = _rlimit_min(soft, heap_size)
+        hard = _rlimit_min(hard, heap_size)
+        resource.setrlimit(rsrc, (soft, hard))
+    try:
+        r = f(*args, **kwargs)
+        q.put([False, r])
+    except Exception as e:
+        q.put([True, e])
+
 def process(f, *args, **kwargs):
     """Runs a function <f> in a subprocess.
     
@@ -122,21 +136,9 @@ def process(f, *args, **kwargs):
                 '(See https://github.com/travis-ci/travis-core/issues/187\n'
                 'for more information about this bug.)\n')
         raise
-    def newf(f, q, *args, **kwargs):
-        if resource:
-            rsrc = resource.RLIMIT_DATA
-            (soft, hard) = resource.getrlimit(rsrc)
-            soft = _rlimit_min(soft, heap_size)
-            hard = _rlimit_min(hard, heap_size)
-            resource.setrlimit(rsrc, (soft, hard))
-        try:
-            r = f(*args, **kwargs)
-            q.put([False, r])
-        except Exception as e:
-            q.put([True, e])
-    targetArgs = (f, q,) + args
-    p = callbacks.CommandProcess(target=newf,
-                                args=targetArgs, kwargs=kwargs)
+    targetArgs = (f, q, heap_size) + args
+    p = callbacks.CommandProcess(target=_process_target,
+                                 args=targetArgs, kwargs=kwargs)
     try:
         p.start()
     except OSError as e:

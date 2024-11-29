@@ -307,9 +307,9 @@ def perlReToReplacer(s):
         flags = ''.join(flags)
     r = perlReToPythonRe(sep.join(('', regexp, flags)))
     if g:
-        return lambda s: r.sub(replace, s)
+        return functools.partial(r.sub, replace)
     else:
-        return lambda s: r.sub(replace, s, 1)
+        return functools.partial(r.sub, replace, count=1)
 
 _perlVarSubstituteRe = re.compile(r'\$\{([^}]+)\}|\$([a-zA-Z][a-zA-Z0-9]*)')
 def perlVariableSubstitute(vars, text):
