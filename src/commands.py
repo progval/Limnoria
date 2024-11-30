@@ -1070,7 +1070,17 @@ class getopts(context):
     def __call__(self, irc, msg, args, state):
         if LOG_CONVERTERS:
             log.debug('args before %r: %r', self, args)
-        (optlist, rest) = getopt.getopt(args, self.getoptLs, self.getoptL)
+
+        # look for the first '--' token, it forcefully ends the getopt list,
+        # which allows the next arguments to start with a -
+        try:
+            sep = args.index('--')
+        except ValueError:
+            sep = None
+        else:
+            log.debug('getopt stopping at "--" token at position %d', sep)
+
+        (optlist, rest) = getopt.getopt(args[:sep], self.getoptLs, self.getoptL)
         getopts = []
         for (opt, arg) in optlist:
             if opt.startswith('--'):
@@ -1088,7 +1098,11 @@ class getopts(context):
             else:
                 getopts.append((opt, True))
         state.args.append(getopts)
-        args[:] = rest
+
+        if sep is None:
+            args[:] = rest
+        else:
+            args[:sep+1] = rest
         if LOG_CONVERTERS:
             log.debug('args after %r: %r', self, args)
 
