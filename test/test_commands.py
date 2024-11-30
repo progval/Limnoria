@@ -135,6 +135,26 @@ class GeneralContextTestCase(CommandsTestCase):
         self.assertRaises(getopt.GetoptError, self.assertStateErrored,
                          spec, ['12', '--f', 'baz', '--ba', '13', '15'])
 
+    def testGetoptsMinusInValue(self):
+        spec = ['int', getopts({'foo': None, 'bar': 'int'}), 'int']
+        self.assertState(spec,
+                         ['12', '--foo', 'baz', '--bar', '-13', '15'],
+                         [12, [('foo', 'baz'), ('bar', -13)], 15])
+
+    def testGetoptsMinusInNextArg(self):
+        spec = ['int', getopts({'foo': None, 'bar': 'int'}), 'int']
+
+        with self.assertRaises(
+                getopt.GetoptError, msg='option -1 not recognized'):
+            self.assertState(spec,
+                             ['12', '--foo', 'baz', '--bar', '13', '-15'],
+                             [])
+
+        self.assertState(spec,
+                         ['12', '--foo', 'baz', '--bar', '13', '--', '-15'],
+                         [12, [('foo', 'baz'), ('bar', 13)], -15])
+
+
     def testAny(self):
         self.assertState([any('int')], ['1', '2', '3'], [[1, 2, 3]])
         self.assertState([None, any('int')], ['1', '2', '3'], ['1', [2, 3]])
