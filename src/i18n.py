@@ -264,7 +264,7 @@ class _PluginInternationalization:
 
         This is the function which is called when a plugin runs _()"""
         if untranslated.__class__ is InternationalizedString:
-            untranslated = untranslated._origin
+            untranslated = untranslated._original
 
         normalizedUntranslated = normalize(untranslated, True)
         try:
