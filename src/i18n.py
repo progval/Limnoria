@@ -264,14 +264,16 @@ class _PluginInternationalization:
 
         This is the function which is called when a plugin runs _()"""
         if untranslated.__class__ is InternationalizedString:
-            untranslated = untranslated._original
+            originalUntranslated = untranslated._original
+        else:
+            originalUntranslated = untranslated
 
-        normalizedUntranslated = normalize(untranslated, True)
+        normalizedUntranslated = normalize(originalUntranslated, True)
         try:
             string = self._translate(normalizedUntranslated)
-            return self._addTracker(string, untranslated)
         except KeyError:
-            return untranslated
+            string = untranslated
+        return self._addTracker(string, untranslated)
 
     def _translate(self, string):
         """Translate the string.
