@@ -272,7 +272,7 @@ class _PluginInternationalization:
         try:
             string = self._translate(normalizedUntranslated)
         except KeyError:
-            string = untranslated
+            string = originalUntranslated
         return self._addTracker(string, untranslated)
 
     def _translate(self, string):
