@@ -117,7 +117,7 @@ def getLocalePath(name, localeName, extension):
     return '%s/%s.%s' % (directory, localeName, extension)
 
 i18nClasses = weakref.WeakValueDictionary()
-internationalizedCommands = weakref.WeakValueDictionary()
+internationalizedCommands = weakref.WeakSet()
 
 def reloadLocalesIfRequired():
     global currentLocale
@@ -132,7 +132,7 @@ def reloadLocales():
 
     for pluginClass in i18nClasses.values():
         pluginClass.loadLocale()
-    for command in list(internationalizedCommands.values()):
+    for command in list(internationalizedCommands):
         internationalizeDocstring(command)
     utils.str._relocalizeFunctions(PluginInternationalization())
 
@@ -331,19 +331,10 @@ class _PluginInternationalization:
             return self._l10nFunctions[name]
 
 
-try:
-    class InternationalizedString(str):
-        """Simple subclass to str, that allow to add attributes. Also used to
-        know if a string is already localized"""
-        __slots__ = ('_original', '_internationalizer')
-except TypeError:
-    # Fallback for CPython 2.x:
-    # TypeError: Error when calling the metaclass bases
-    #     nonempty __slots__ not supported for subtype of 'str'
-    class InternationalizedString(str):
-        """Simple subclass to str, that allow to add attributes. Also used to
-        know if a string is already localized"""
-        pass
+class InternationalizedString(str):
+    """Simple subclass to str, that allow to add attributes. Also used to
+    know if a string is already localized"""
+    __slots__ = ('_original', '_internationalizer')
 
 
 def internationalizeDocstring(obj):
@@ -354,7 +345,7 @@ def internationalizeDocstring(obj):
         return obj
     plugin_module = sys.modules[obj.__module__]
     if '_' in plugin_module.__dict__:
-        internationalizedCommands.update({hash(obj): obj})
+        internationalizedCommands.add(obj)
         try:
             obj.__doc__ = plugin_module._.__call__(obj.__doc__)
             # We use _.__call__() instead of _() because of a pygettext warning.
