@@ -111,7 +111,7 @@ def getLocalePath(name, localeName, extension):
     if name != 'supybot':
         base = getPluginDir(name)
     else:
-        from . import ansi # Any Supybot plugin could fit
+        from . import ansi # Any Supybot module works
         base = ansi.__file__[0:-len('ansi.pyc')]
     directory = os.path.join(base, 'locales')
     return '%s/%s.%s' % (directory, localeName, extension)
