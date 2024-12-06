@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,7 +112,7 @@ msgid ""
 "    has op."
 msgstr ""
 
-#: plugin.py:127
+#: plugin.py:128
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -121,11 +121,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:137
+#: plugin.py:138
 msgid "I'm not currently censoring any bad words."
 msgstr ""
 
-#: plugin.py:142
+#: plugin.py:143
 #, docstring
 msgid ""
 "<word> [<word> ...]\n"
@@ -134,7 +134,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:162
+#: plugin.py:163
 #, docstring
 msgid ""
 "<word> [<word> ...]\n"

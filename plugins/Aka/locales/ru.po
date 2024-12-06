@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2024-06-12 21:50+0300\n"
 "Last-Translator: ssdaniel24 <bo7oaonteg2m__at__mailDOTru>\n"
 "Language-Team: \n"
@@ -31,12 +31,12 @@ msgid ""
 "    browsable through the HTTP server."
 msgstr "Определяет, где псевдонимы могут быть просмотрены через HTTP-сервер."
 
-#: plugin.py:141 plugin.py:274 plugin.py:732
+#: plugin.py:141 plugin.py:274 plugin.py:728
 msgid "This Aka already exists."
 msgstr "Этот псевдоним уже существует."
 
 #: plugin.py:170 plugin.py:182 plugin.py:196 plugin.py:301 plugin.py:318
-#: plugin.py:335 plugin.py:912
+#: plugin.py:335 plugin.py:908
 msgid "This Aka does not exist."
 msgstr "Этот псевдоним не существует."
 
@@ -53,10 +53,10 @@ msgid "By %s at %s"
 msgstr "%s %s"
 
 #: plugin.py:501
+#, fuzzy
 msgid ""
 "\n"
-"    This plugin allows users to define aliases to commands and "
-"combinations\n"
+"    This plugin allows users to define aliases to commands and combinations\n"
 "    of commands (via nesting).\n"
 "\n"
 "    Importing from Alias\n"
@@ -89,7 +89,7 @@ msgid ""
 "    Trout\n"
 "    ^^^^^\n"
 "\n"
-"    Add an aka, trout, which expects a word as an argument::\n"
+"    Add an aka, ``trout``, which expects a word as an argument::\n"
 "\n"
 "        <jamessan> @aka add trout \"reply action slaps $1 with a large "
 "trout\"\n"
@@ -100,29 +100,20 @@ msgid ""
 "    This ``trout`` aka requires the plugin ``Reply`` to be loaded since it\n"
 "    provides the ``action`` command.\n"
 "\n"
-"    LastFM\n"
-"    ^^^^^^\n"
+"    Random percentage\n"
+"    ^^^^^^^^^^^^^^^^^\n"
 "\n"
-"    Add an aka, ``lastfm``, which expects a last.fm username and replies "
-"with\n"
-"    their most recently played item::\n"
+"    Add an aka, ``randpercent``, which returns a random percentage value::\n"
 "\n"
-"        @aka add lastfm \"rss [format concat http://ws.audioscrobbler."
-"com/1.0/user/ [format concat [web urlquote $1] /recenttracks.rss]]\"\n"
+"        @aka add randpercent \"squish [dice 1d100]%\"\n"
 "\n"
-"    This ``lastfm`` aka requires the following plugins to be loaded: "
-"``RSS``,\n"
-"    ``Format`` and ``Web``.\n"
+"    This requires the ``Filter`` and ``Games`` plugins to be loaded.\n"
 "\n"
-"    ``RSS`` provides ``rss``, ``Format`` provides ``concat`` and ``Web`` "
-"provides\n"
-"    ``urlquote``.\n"
-"\n"
-"    Note that if the nested commands being aliased hadn't been quoted, "
-"then\n"
-"    those commands would have been run immediately, and ``@lastfm`` would "
-"always\n"
-"    reply with the same information, the result of those commands.\n"
+"    Note that nested commands in an alias should be quoted, or they will "
+"only\n"
+"    run once when you create the alias, and not each time the alias is\n"
+"    called. (In this case, not quoting the nested command would mean that\n"
+"    ``@randpercent`` always responds with the same value!)\n"
 "    "
 msgstr ""
 "\n"
@@ -141,8 +132,8 @@ msgstr ""
 " <jamessan> @load Aka\n"
 " <bot> jamessan: The operation succeeded.\n"
 "\n"
-"После этого импортируем базу данных плагина Alias в Aka, если та "
-"существует, и отключим плагин Alias::\n"
+"После этого импортируем базу данных плагина Alias в Aka, если та существует, "
+"и отключим плагин Alias::\n"
 "\n"
 "<jamessan> @importaliasdatabase\n"
 "<bot> jamessan: The operation succeeded.\n"
@@ -155,8 +146,8 @@ msgstr ""
 "<jamessan> @aka add \"alias\" \"aka $1 $*\"\n"
 "<bot> jamessan: The operation succeeded.\n"
 "\n"
-"Теперь вы можете использовать плагин Aka как вы использовали до этого "
-"плагин Alias.\n"
+"Теперь вы можете использовать плагин Aka как вы использовали до этого плагин "
+"Alias.\n"
 "\n"
 "Дать леща\n"
 "^^^^^^^^^\n"
@@ -181,27 +172,27 @@ msgstr ""
 "Этот псевдоним ``lastfm`` требует для работы следующие плагины: ``RSS``, "
 "``Format`` и ``Web``.\n"
 "\n"
-"``RSS`` предоставляет ``rss``, ``Format`` предоставляет ``concat`` и "
-"``Web`` предоставляет ``urlquote``.\n"
+"``RSS`` предоставляет ``rss``, ``Format`` предоставляет ``concat`` и ``Web`` "
+"предоставляет ``urlquote``.\n"
 "\n"
 "Обратите внимание, что если бы вложенные команды не были бы обозначены "
 "кавычками, то они были бы запущены немедленно, и псевдоним ``@lastfm`` "
 "показывал бы всегда одну и ту же информацию - результат выполнения этих "
 "команд."
 
-#: plugin.py:699
+#: plugin.py:695
 msgid "You've attempted more nesting than is currently allowed on this bot."
 msgstr "Вы попробовали больше вложений, чем сейчас это разрешено в боте."
 
-#: plugin.py:703
+#: plugin.py:699
 msgid " at least"
 msgstr " хотя бы"
 
-#: plugin.py:712
+#: plugin.py:708
 msgid "Locked by %s at %s"
 msgstr "Заблокировано %s %s"
 
-#: plugin.py:717
+#: plugin.py:713
 msgid ""
 "<a global alias,%s %n>\n"
 "\n"
@@ -211,11 +202,11 @@ msgstr ""
 "\n"
 "Псевдоним для %q.%s"
 
-#: plugin.py:718 plugin.py:722
+#: plugin.py:714 plugin.py:718
 msgid "argument"
 msgstr "аргумент"
 
-#: plugin.py:721
+#: plugin.py:717
 msgid ""
 "<an alias on %s,%s %n>\n"
 "\n"
@@ -225,23 +216,23 @@ msgstr ""
 "\n"
 "Псевдоним для %q.%s"
 
-#: plugin.py:729
+#: plugin.py:725
 msgid "You can't overwrite commands in this plugin."
 msgstr "Вы не можете перезаписывать команды в этом плагине."
 
-#: plugin.py:734
+#: plugin.py:730
 msgid "This Aka has too many spaces in its name."
 msgstr "Этот псевдоним содержит слишком много пробелов в имени."
 
-#: plugin.py:739
+#: plugin.py:735
 msgid "Can't mix $* and optional args (@1, etc.)"
 msgstr "Нельзя перемешивать $* и необязательные аргументы (@1 и др.)"
 
-#: plugin.py:746
+#: plugin.py:742
 msgid "This Aka is locked."
 msgstr "Этот псевдоним заблокирован."
 
-#: plugin.py:750
+#: plugin.py:746
 msgid ""
 "[--channel <#channel>] <name> <command>\n"
 "\n"
@@ -267,12 +258,12 @@ msgstr ""
 "заменены с помощью $1, $2 и т.д.\", это включает в себя и необязательные "
 "аргументы тоже."
 
-#: plugin.py:764 plugin.py:796 plugin.py:827 plugin.py:859 plugin.py:882
-#: plugin.py:905 plugin.py:951 plugin.py:994
+#: plugin.py:760 plugin.py:792 plugin.py:823 plugin.py:855 plugin.py:878
+#: plugin.py:901 plugin.py:947 plugin.py:990
 msgid "%r is not a valid channel."
 msgstr "%r не является допустимым каналом."
 
-#: plugin.py:782
+#: plugin.py:778
 msgid ""
 "[--channel <#channel>] <name> <command>\n"
 "\n"
@@ -300,7 +291,7 @@ msgstr ""
 "аргументов; $* означает \"все аргументы, которые не были заменены с помощью "
 "$1, $2 и т.д.\", это включает в себя и необязательные аргументы тоже."
 
-#: plugin.py:819
+#: plugin.py:815
 msgid ""
 "[--channel <#channel>] <name>\n"
 "\n"
@@ -311,7 +302,7 @@ msgstr ""
 "\n"
 "Удаляет данный псевдоним, если тот не заблокирован."
 
-#: plugin.py:841
+#: plugin.py:837
 msgid ""
 "Check if the user has any of the required capabilities to manage\n"
 "        the regexp database."
@@ -319,7 +310,7 @@ msgstr ""
 "Проверяет, есть ли у пользователя необходимые привилегии для управления "
 "базой данных регулярных выражений."
 
-#: plugin.py:851
+#: plugin.py:847
 msgid ""
 "[--channel <#channel>] <alias>\n"
 "\n"
@@ -330,7 +321,7 @@ msgstr ""
 "\n"
 "Блокирует данный псевдоним, чтобы никто не мог его изменить."
 
-#: plugin.py:874
+#: plugin.py:870
 msgid ""
 "[--channel <#channel>] <alias>\n"
 "\n"
@@ -342,7 +333,7 @@ msgstr ""
 "Разблокирует данный псевдоним, чтобы люди могли определять новые псевдонимы "
 "поверх этого."
 
-#: plugin.py:897
+#: plugin.py:893
 msgid ""
 "[--channel <#channel>] <alias>\n"
 "\n"
@@ -353,7 +344,7 @@ msgstr ""
 "\n"
 "Эта команда показывает содержание данного псевдонима."
 
-#: plugin.py:917
+#: plugin.py:913
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -363,22 +354,21 @@ msgstr ""
 "\n"
 "Импортирует базу данных Alias в Aka, и очищает первую."
 
-#: plugin.py:922
+#: plugin.py:918
 msgid "Alias plugin is not loaded."
 msgstr "Плагин Alias не загружен."
 
-#: plugin.py:933
+#: plugin.py:929
 msgid "Error occured when importing the %n: %L"
 msgstr "Произошла ошибка при импорте %n: %L"
 
-#: plugin.py:941
+#: plugin.py:937
 msgid ""
 "[--channel <#channel>] [--keys] [--unlocked|--locked]\n"
 "\n"
 "        Lists all Akas defined for <channel>. If <channel> is not "
 "specified,\n"
-"        lists all global Akas. If --keys is given, lists only the Aka "
-"names\n"
+"        lists all global Akas. If --keys is given, lists only the Aka names\n"
 "        and not their commands."
 msgstr ""
 "[--channel <#канал>] [--keys] [--unlocked|--locked]\n"
@@ -388,20 +378,19 @@ msgstr ""
 "keys, то показывает только названия псевдонимов без соответствующих им "
 "команд."
 
-#: plugin.py:960
+#: plugin.py:956
 msgid "--locked and --unlocked are incompatible options."
 msgstr "--locked и --unlocked – несовместимые параметры."
 
-#: plugin.py:980
+#: plugin.py:976
 msgid "No Akas found."
 msgstr "Не найдено ни одного псевдонима."
 
-#: plugin.py:985
+#: plugin.py:981
 msgid ""
 "[--channel <#channel>] <query>\n"
 "\n"
-"        Searches Akas defined for <channel>. If <channel> is not "
-"specified,\n"
+"        Searches Akas defined for <channel>. If <channel> is not specified,\n"
 "        searches all global Akas."
 msgstr ""
 "[--channel <#канал>] <запрос>\n"
@@ -410,6 +399,6 @@ msgstr ""
 "данному <запросу>. Если <канал> не дан в аргументах, то поиск производится "
 "по всем глобальным псевдонимам."
 
-#: plugin.py:1004
+#: plugin.py:1000
 msgid "No matching Akas were found."
 msgstr "Не найдено ни одного совпадающего псевдонима."

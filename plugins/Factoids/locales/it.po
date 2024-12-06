@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2011-07-18 13:05+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -213,8 +213,8 @@ msgstr ""
 "        <numero> è necessario solo se c'è più di un factoid associato a "
 "<chiave vecchia>.\n"
 "\n"
-"        La stessa cosa può essere ottenuta utilizzando la funzione \"learn"
-"\"\n"
+"        La stessa cosa può essere ottenuta utilizzando la funzione "
+"\"learn\"\n"
 "        con una nuova chiave su un factoid esistente.\n"
 "        "
 
@@ -446,11 +446,11 @@ msgstr ""
 "        specificato, cerca i valori piuttosto che le chiavi.\n"
 "        "
 
-#: plugin.py:854 plugin.py:864
+#: plugin.py:858 plugin.py:868
 msgid "No keys matched that query."
 msgstr "Nessuna chiave corrisponde a questa richiesta."
 
-#: plugin.py:860 plugin.py:870
+#: plugin.py:864 plugin.py:911
 msgid "More than 100 keys matched that query; please narrow your query."
 msgstr ""
 "A questa richiesta corrispondono più di 100 chiavi, restringi la ricerca."

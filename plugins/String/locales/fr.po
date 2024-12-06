@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -57,9 +57,9 @@ msgstr ""
 #: plugin.py:55
 #, fuzzy
 msgid ""
-"<letter>\n"
+"<string>\n"
 "\n"
-"        Returns the unicode codepoint of <letter>.\n"
+"        Returns the unicode codepoint of characters in <string>.\n"
 "        "
 msgstr ""
 "<lettre>\n"
@@ -85,27 +85,28 @@ msgstr "Ce nombre ne correspond pas à un caractère 8 bits."
 
 #: plugin.py:74
 msgid ""
-"<character>\n"
+"<string>\n"
 "\n"
-"        Returns the name of the given unicode <character>."
+"        Returns the name of characters in <string>.\n"
+"        This will error if any character is not a valid Unicode character."
 msgstr ""
 
-#: plugin.py:82
-msgid "No name found for this character."
+#: plugin.py:83
+msgid "No name found for character %r at position %d."
 msgstr ""
 
-#: plugin.py:86
+#: plugin.py:89
 msgid ""
 "<name>\n"
 "\n"
 "        Searches for a unicode character from its <name>."
 msgstr ""
 
-#: plugin.py:92
+#: plugin.py:95
 msgid "No character found with this name."
 msgstr ""
 
-#: plugin.py:96
+#: plugin.py:99
 msgid ""
 "<encoding> <text>\n"
 "\n"
@@ -120,11 +121,11 @@ msgstr ""
 "disponibles dans la documentation du module codec de Python : http://docs."
 "python.org/library/codecs.html#standard-encodings"
 
-#: plugin.py:112 plugin.py:151
+#: plugin.py:115 plugin.py:154
 msgid "encoding"
 msgstr "encodage"
 
-#: plugin.py:133
+#: plugin.py:136
 msgid ""
 "<encoding> <text>\n"
 "\n"
@@ -140,11 +141,11 @@ msgstr ""
 "disponibles dans la documentation du module codec de Python : http://docs."
 "python.org/library/codecs.html#standard-encodings"
 
-#: plugin.py:157
+#: plugin.py:160
 msgid "base64 string"
 msgstr "chaîne base64"
 
-#: plugin.py:158
+#: plugin.py:161
 msgid ""
 "Base64 strings must be a multiple of 4 in length, padded with '=' if "
 "necessary."
@@ -152,12 +153,12 @@ msgstr ""
 "Les chaînes base64 doivent avoir une longueur multiple de 4, entourées de "
 "'=' si nécessaire."
 
-#: plugin.py:176
+#: plugin.py:179
 msgid ""
 "<string1> <string2>\n"
 "\n"
-"        Returns the levenshtein distance (also known as the \"edit distance"
-"\"\n"
+"        Returns the levenshtein distance (also known as the \"edit "
+"distance\"\n"
 "        between <string1> and <string2>)\n"
 "        "
 msgstr ""
@@ -166,7 +167,7 @@ msgstr ""
 "Retourne la distance levenhtein (aussi connue sous le nom de \"distance "
 "d'édition) entre les deux chaînes."
 
-#: plugin.py:183
+#: plugin.py:186
 msgid ""
 "Levenshtein distance is a complicated algorithm, try it with some smaller "
 "inputs."
@@ -174,7 +175,7 @@ msgstr ""
 "La distance levenshtein est un algorithme compliqué ; essayez avec des "
 "données plus petites."
 
-#: plugin.py:190
+#: plugin.py:193
 msgid ""
 "<string> [<length>]\n"
 "\n"
@@ -190,7 +191,7 @@ msgstr ""
 "de 4, c'est le standard pour un hash soundex. Pour une longueur illimitée, "
 "utilisez 0. La longueur maximum est 1024."
 
-#: plugin.py:203
+#: plugin.py:206
 msgid ""
 "<text>\n"
 "\n"
@@ -201,7 +202,7 @@ msgstr ""
 "\n"
 "Retourne la longueur du <texte>."
 
-#: plugin.py:211
+#: plugin.py:214
 msgid ""
 "<regexp> <text>\n"
 "\n"
@@ -218,13 +219,13 @@ msgstr ""
 "régulière> est de la forme de s/regexp/remplacement/flags, retourne le "
 "résultat de l'application de l'expression régulière sur le <texte>."
 
-#: plugin.py:219
+#: plugin.py:223
 msgid "You probably don't want to match the empty string."
 msgstr ""
 "Vous ne voulez probablement appliquer une expression régulière sur une "
 "chaîne vide."
 
-#: plugin.py:236
+#: plugin.py:240
 #, fuzzy
 msgid ""
 "<password> <text>\n"
@@ -236,7 +237,7 @@ msgstr ""
 "\n"
 "Retourne la longueur du <texte>."
 
-#: plugin.py:246
+#: plugin.py:250
 #, fuzzy
 msgid ""
 "<text>\n"
@@ -248,7 +249,7 @@ msgstr ""
 "\n"
 "Retourne la longueur du <texte>."
 
-#: plugin.py:254
+#: plugin.py:258
 #, fuzzy
 msgid ""
 "<text>\n"

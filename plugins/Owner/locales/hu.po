@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria Owner\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2012-04-27 15:13+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -21,7 +21,7 @@ msgid ""
 "    that should not be removed!"
 msgstr ""
 
-#: plugin.py:319
+#: plugin.py:374
 msgid ""
 "If the given message is a command, triggers Limnoria's\n"
 "        command-dispatching for that command.\n"
@@ -38,7 +38,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:372
+#: plugin.py:427
 msgid ""
 "<text>\n"
 "\n"
@@ -52,7 +52,7 @@ msgstr ""
 "Naplózza <szöveg>-et a globális Supybot naplóba kritikus prioritással. "
 "Hasznos a naplófájlok megjelölésére későbbi kereséshez."
 
-#: plugin.py:382
+#: plugin.py:437
 msgid ""
 "<text>\n"
 "\n"
@@ -64,7 +64,7 @@ msgstr ""
 "\n"
 "Elküldi <szöveg>-et minden csatornára, ahol a bot van és nincs némítva."
 
-#: plugin.py:403
+#: plugin.py:458
 msgid ""
 "[--remove] <command> [<plugin>]\n"
 "\n"
@@ -82,7 +82,7 @@ msgstr ""
 "Ha nincs bővítmény megadva, kiírja <parancs> jelenlegi alapértelmezett "
 "bővítményét. Lásd még, supybot.commands.defaultPlugins.importantPlugins."
 
-#: plugin.py:441
+#: plugin.py:496
 msgid ""
 "<string to be sent to the server>\n"
 "\n"
@@ -93,7 +93,7 @@ msgstr ""
 "\n"
 "Elküldi a megadott nyers karakterláncot a szervernek."
 
-#: plugin.py:455
+#: plugin.py:514
 #, fuzzy
 msgid ""
 "[<text>]\n"
@@ -115,7 +115,7 @@ msgstr ""
 "használva. Ha nincs alapértelmezett kilépési üzenet beállítva, a neved lesz "
 "használva."
 
-#: plugin.py:473
+#: plugin.py:532
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -128,7 +128,7 @@ msgstr ""
 "Futtatja az összes időszakos öblítőket world.flushers-ban. Ez magában "
 "foglalja az összes naplófájl és konfigurációs fájl mentését a lemezre."
 
-#: plugin.py:483
+#: plugin.py:542
 msgid ""
 "[<level>]\n"
 "\n"
@@ -147,7 +147,7 @@ msgstr ""
 "az egyetlen témogatott szint a \"high\", amellyel a bot öblít nagyon sok "
 "gyorsítótárat és megcsinálja a normális karbantartási dolgokat."
 
-#: plugin.py:529
+#: plugin.py:588
 msgid ""
 "[--deprecated] <plugin>\n"
 "\n"
@@ -164,7 +164,7 @@ msgstr ""
 "egy 'plugins' a jelenlegi könyvtárban. --deprecated akkor szükséges, ha "
 "elavult bővítményeket szeretnél betölteni."
 
-#: plugin.py:567
+#: plugin.py:626
 msgid ""
 "<plugin>\n"
 "\n"
@@ -177,7 +177,7 @@ msgstr ""
 "Kirakja és aztán újratölti a megadott bővítményt név szerint; használd a "
 "'list' parancsot, hogy lásd a jelenleg betöltött bővítményeket."
 
-#: plugin.py:602
+#: plugin.py:661
 #, fuzzy
 msgid ""
 "<plugin>\n"
@@ -193,7 +193,7 @@ msgstr ""
 "lásd a jelenleg betöltött bővítményeket. Nyilvánvalóan az Owner bővítményt "
 "nem lehet kirakni."
 
-#: plugin.py:631
+#: plugin.py:690
 msgid ""
 "{add|remove} <capability>\n"
 "\n"
@@ -209,7 +209,7 @@ msgstr ""
 "felhasználóknak adott alapértelmezett képességekhez/-ből (a supybot."
 "capabilities konfigurációs változó tárolja ezeket)."
 
-#: plugin.py:656
+#: plugin.py:715
 msgid ""
 "[<plugin>] <command>\n"
 "\n"
@@ -232,7 +232,7 @@ msgstr ""
 "alapértelmezett képességet (ha minden bővítményben le szeretnéd tiltani a "
 "parancsot)."
 
-#: plugin.py:683
+#: plugin.py:742
 msgid ""
 "[<plugin>] <command>\n"
 "\n"
@@ -248,7 +248,7 @@ msgstr ""
 "van adva, csak <bővítmény>-ben engedélyezi <parancs>-ot. Ez a parancs a "
 "fordítottja a disable-nek."
 
-#: plugin.py:702
+#: plugin.py:761
 msgid ""
 "<plugin> <command> <new name>\n"
 "\n"
@@ -259,7 +259,7 @@ msgstr ""
 "\n"
 "Átnevezi <parancs>-ot <bővítmény>-ben az <új név>-re."
 
-#: plugin.py:719
+#: plugin.py:778
 msgid ""
 "<plugin>\n"
 "\n"
@@ -272,7 +272,7 @@ msgstr ""
 "Eltávolítja az összes átnevezést <bővítmény>-ben. A bővítmény újra lesz "
 "töltve miután ez a parancs lefutott."
 
-#: plugin.py:732
+#: plugin.py:791
 msgid ""
 "takes no argument\n"
 "\n"

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2014-03-22 14:39+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -115,7 +115,7 @@ msgid "Run a command from message, as if command was sent over IRC."
 msgstr ""
 "Suorittaa komennon viestistä, kuin jos komento olisi lähetetty IRC:een yli."
 
-#: plugin.py:146
+#: plugin.py:147
 msgid ""
 "Check if the user has any of the required capabilities to manage\n"
 "        the regexp database."
@@ -123,7 +123,7 @@ msgstr ""
 "Tarkista onko käyttäjällä vaadittu oikeus säännöllisen lauseke tietokannan\n"
 "        muokkaamiseen."
 
-#: plugin.py:209
+#: plugin.py:227
 #, fuzzy
 msgid ""
 "[<channel>|global] <regexp> <action>\n"
@@ -140,15 +140,15 @@ msgstr ""
 " toiminto toistetaan säännöllisen lausekkeen täsmätessä muuttujilla $1, $2,\n"
 " jne. tulevat interpolatoiduiksi säännöllisen lausekkeen täsmäysryhmistä."
 
-#: plugin.py:231
+#: plugin.py:249
 msgid "Invalid python regexp: %s"
 msgstr "Viallinen Python säännöllinen lauseke: %s"
 
-#: plugin.py:243
+#: plugin.py:261
 msgid "That trigger is locked."
 msgstr "Tuo liipaisin on lukittu."
 
-#: plugin.py:249
+#: plugin.py:267
 #, fuzzy
 msgid ""
 "[<channel>|global] [--id] <regexp>]\n"
@@ -170,15 +170,15 @@ msgstr ""
 "sisällöllä.\n"
 "        "
 
-#: plugin.py:271 plugin.py:301 plugin.py:324 plugin.py:352 plugin.py:382
+#: plugin.py:289 plugin.py:319 plugin.py:342 plugin.py:370 plugin.py:400
 msgid "There is no such regexp trigger."
 msgstr "Tuollaista säännöllinen lauseke liipaisinta ei ole."
 
-#: plugin.py:275
+#: plugin.py:293
 msgid "This regexp trigger is locked."
 msgstr "Tämä säännöllinen lauseke liipaisin on lukittu."
 
-#: plugin.py:287
+#: plugin.py:305
 #, fuzzy
 msgid ""
 "[<channel>|global] <regexp>\n"
@@ -197,7 +197,7 @@ msgstr ""
 "itsellään.\n"
 "        "
 
-#: plugin.py:310
+#: plugin.py:328
 #, fuzzy
 msgid ""
 "[<channel>|global] <regexp>\n"
@@ -217,7 +217,7 @@ msgstr ""
 "        lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:333
+#: plugin.py:351
 #, fuzzy
 msgid ""
 "[<channel>|global] [--id] <regexp>\n"
@@ -238,7 +238,7 @@ msgstr ""
 "ei sisällön perusteella\n"
 "        "
 
-#: plugin.py:362
+#: plugin.py:380
 #, fuzzy
 msgid ""
 "[<channel>|global] [--id] <regexp>\n"
@@ -260,7 +260,7 @@ msgstr ""
 "sisällön perusteella.\n"
 "        "
 
-#: plugin.py:385
+#: plugin.py:403
 msgid ""
 "The regexp id is %d, regexp is \"%s\", and action is \"%s\". It was added by "
 "user %s on %s, has been triggered %d times, and is %s."
@@ -268,15 +268,15 @@ msgstr ""
 "Säännöllisen lausekkeen id on %d, säännöllinen lauseke on \"%s\", ja "
 "toiminto on \"%s\". Sen lisäsi %s %s:llä, on liipaistu %d kertaa, ja on %s."
 
-#: plugin.py:394
+#: plugin.py:412
 msgid "locked"
 msgstr "lukittu"
 
-#: plugin.py:394
+#: plugin.py:412
 msgid "not locked"
 msgstr "ei lukittu"
 
-#: plugin.py:401
+#: plugin.py:419
 #, fuzzy
 msgid ""
 "[<channel>|global]\n"
@@ -295,11 +295,11 @@ msgstr ""
 "        itsellään. Säännöllinen lauseke ID on luetteloitu suluissa.\n"
 "        "
 
-#: plugin.py:414 plugin.py:440
+#: plugin.py:432 plugin.py:458
 msgid "There are no regexp triggers in the database."
 msgstr "Säännöllinen lauseke tietokannassa ei ole liipaisimia."
 
-#: plugin.py:424
+#: plugin.py:442
 #, fuzzy
 msgid ""
 "[<channel>|global]\n"
@@ -321,7 +321,7 @@ msgstr ""
 "        kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:448
+#: plugin.py:466
 #, fuzzy
 msgid ""
 "[<channel>|global]\n"

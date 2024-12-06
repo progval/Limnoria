@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot BadWords\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -122,6 +122,15 @@ msgstr ""
 "    tekstin värittämistä tai korostamista tekevien lisäosien kanssa."
 
 #: config.py:117
+#, fuzzy
+msgid ""
+"Determines whether the bot will filter its own\n"
+"    messages."
+msgstr ""
+"Määrittää potkiiko botti ihmiset\n"
+"    varoituksella jos he käyttävät pahoja sanoja."
+
+#: config.py:120
 msgid ""
 "Determines whether the bot will kick people with\n"
 "    a warning when they use bad words."
@@ -129,7 +138,7 @@ msgstr ""
 "Määrittää potkiiko botti ihmiset\n"
 "    varoituksella jos he käyttävät pahoja sanoja."
 
-#: config.py:120
+#: config.py:123
 msgid ""
 "You have been kicked for using a word\n"
 "    prohibited in the presence of this bot.  Please use more appropriate\n"
@@ -139,7 +148,7 @@ msgstr ""
 "    käytöstä tämän botin läsnäollessa.  Ole hyvä ja käytä asianmukaisempaa\n"
 "    kieltä tulevaisuudessa."
 
-#: config.py:122
+#: config.py:125
 msgid ""
 "Determines the kick message used by the\n"
 "    bot when kicking users for saying bad words."
@@ -158,7 +167,7 @@ msgstr ""
 "botilla\n"
 "    on opit."
 
-#: plugin.py:127
+#: plugin.py:128
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -170,11 +179,11 @@ msgstr ""
 "        Palauttaa listan sanoista, joita sensuroidaan.\n"
 "        "
 
-#: plugin.py:137
+#: plugin.py:138
 msgid "I'm not currently censoring any bad words."
 msgstr "En ole sensuroimassa yhtään pahaa sanaa juuri nyt."
 
-#: plugin.py:142
+#: plugin.py:143
 msgid ""
 "<word> [<word> ...]\n"
 "\n"
@@ -186,7 +195,7 @@ msgstr ""
 "    Lisää kaikki <sana>(t) sensuroitaviin sanoihin.\n"
 "        "
 
-#: plugin.py:162
+#: plugin.py:163
 msgid ""
 "<word> [<word> ...]\n"
 "\n"

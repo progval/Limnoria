@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2024-06-12 22:10+0300\n"
 "Last-Translator: ssdaniel24 <bo7oaonteg2m__at__mailDOTru>\n"
 "Language-Team: \n"
@@ -16,27 +16,17 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 "X-Generator: Poedit 3.4.2\n"
 
-#: plugin.py:167
+#: plugin.py:152
 msgid ""
-"Plugin is probably not compatible with your Python version (3.x) and could "
-"not be converted because 2to3 is not installed."
+"Plugin installed. However, it may be incompatible with Python 3 and require "
+"manual code changes to work correctly."
 msgstr ""
-"Плагин возможно несовместим с вашей версией Python (3.x) и не может быть "
-"конвертирован, так как 2to3 не установлен."
 
-#: plugin.py:174
-msgid ""
-"Plugin was designed for Python 2, but an attempt to convert it to Python 3 "
-"has been made. There is no guarantee it will work, though."
-msgstr ""
-"Плагин был разработан на Python 2, но была сделана попытка конвертировать "
-"его на Python 3, однако не гарантируется, что плагин будет работать."
-
-#: plugin.py:178
+#: plugin.py:154
 msgid "Plugin successfully installed."
 msgstr "Плагин успешно установлен."
 
-#: plugin.py:323
+#: plugin.py:241
 msgid ""
 "\n"
 "    This plugin allows you to install unofficial plugins from\n"
@@ -140,7 +130,7 @@ msgstr ""
 "< Mikaela> @load Wikipedia\n"
 "< Limnoria> Ok."
 
-#: plugin.py:368
+#: plugin.py:286
 msgid ""
 "[<repository>]\n"
 "\n"
@@ -153,19 +143,19 @@ msgstr ""
 "Показывает список плагинов в данном <репозитории>. Если <репозиторий> не дан "
 "аргументом, то показывает список доступных репозиториев."
 
-#: plugin.py:376 plugin.py:387
+#: plugin.py:294 plugin.py:305
 msgid ", "
 msgstr ""
 
-#: plugin.py:378 plugin.py:400 plugin.py:425
+#: plugin.py:296 plugin.py:318 plugin.py:343
 msgid "This repository does not exist or is not known by this bot."
 msgstr "Этот репозиторий не существует или неизвестен боту."
 
-#: plugin.py:385
+#: plugin.py:303
 msgid "No plugin found in this repository."
 msgstr "В этом репозитории не найдено ни одного плагина."
 
-#: plugin.py:392
+#: plugin.py:310
 msgid ""
 "<repository> <plugin>\n"
 "\n"
@@ -175,18 +165,18 @@ msgstr ""
 "\n"
 "Скачивает и устанавливает данный <плагин> из данного <репозитория>."
 
-#: plugin.py:396
+#: plugin.py:314
 msgid ""
 "This command is not available, because supybot.commands.allowShell is False."
 msgstr ""
 "Эта команда недоступна, так как настройка supybot.command.allowShell "
 "установлена в False."
 
-#: plugin.py:405 plugin.py:430
+#: plugin.py:323 plugin.py:348
 msgid "This plugin does not exist in this repository."
 msgstr "Этого плагина нет в данном репозитории."
 
-#: plugin.py:420
+#: plugin.py:338
 msgid ""
 "<repository> <plugin>\n"
 "\n"
@@ -196,10 +186,24 @@ msgstr ""
 "\n"
 "Показывает информацию о данном <плагине> в этом <репозитории>."
 
-#: plugin.py:434
+#: plugin.py:352
 msgid "No README found for this plugin."
 msgstr "В этом плагине не найдено файла README."
 
-#: plugin.py:437
+#: plugin.py:355
 msgid "This plugin has no description."
 msgstr "Этот плагин не предоставляет описание."
+
+#~ msgid ""
+#~ "Plugin is probably not compatible with your Python version (3.x) and "
+#~ "could not be converted because 2to3 is not installed."
+#~ msgstr ""
+#~ "Плагин возможно несовместим с вашей версией Python (3.x) и не может быть "
+#~ "конвертирован, так как 2to3 не установлен."
+
+#~ msgid ""
+#~ "Plugin was designed for Python 2, but an attempt to convert it to Python "
+#~ "3 has been made. There is no guarantee it will work, though."
+#~ msgstr ""
+#~ "Плагин был разработан на Python 2, но была сделана попытка конвертировать "
+#~ "его на Python 3, однако не гарантируется, что плагин будет работать."

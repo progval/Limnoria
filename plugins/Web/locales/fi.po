@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Web plugin for Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2014-12-20 14:42+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -134,28 +134,43 @@ msgstr "Näytä kiva virheilmoitus ilmoitukset \"Virhe on tapahtunut\" sijaan."
 msgid "Add the help for 'help Web' here."
 msgstr "Lisää ohje komennolle \"help Web\" tähän."
 
-#: plugin.py:171
+#: plugin.py:154
+msgid ""
+"Returns a new URL that should be the target of a new request,\n"
+"            or None if the request is fine as it is.\n"
+"\n"
+"            The returned URL may be the same as the parameter, in case\n"
+"            something else was changed by this function through side-"
+"effects.\n"
+"            "
+msgstr ""
+
+#: plugin.py:198
+msgid "Connection to %s timed out"
+msgstr ""
+
+#: plugin.py:232
 #, fuzzy
 msgid "Could not guess the page's encoding. (Try installing python-charade.)"
 msgstr ""
 "Sivun merkistökoodausta ei pystytty arvaamaan. (Kokeile python-charade:n "
 "asentamista.)"
 
-#: plugin.py:192
+#: plugin.py:253
 msgid "That URL appears to have no HTML title."
 msgstr "Tuolla URL-osoitteella ei vaikuta olevan HTTP otsikkoa."
 
-#: plugin.py:195
+#: plugin.py:256
 msgid "That URL appears to have no HTML title within the first %S."
 msgstr ""
 "Tuolla URL-osoitteella ei vaikuta olevan HTML otsikkoa ensinmäisissä %S."
 
-#: plugin.py:237
+#: plugin.py:298
 #, fuzzy
 msgid " (at %s)"
 msgstr "Otsikko: %s (sivustolla %s)"
 
-#: plugin.py:262
+#: plugin.py:323
 msgid ""
 "<url>\n"
 "\n"
@@ -169,11 +184,11 @@ msgstr ""
 "        HTTP URL-osoitteet ovat kelvollisia.\n"
 "        "
 
-#: plugin.py:273
+#: plugin.py:334
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#: plugin.py:283
+#: plugin.py:344
 msgid ""
 "<url>\n"
 "\n"
@@ -183,7 +198,7 @@ msgid ""
 "        Useful to \"un-tinify\" URLs."
 msgstr ""
 
-#: plugin.py:299
+#: plugin.py:360
 msgid ""
 "<url>\n"
 "\n"
@@ -197,11 +212,11 @@ msgstr ""
 "        vain HTTP URL-osoitteet ovat kelvollisia.\n"
 "        "
 
-#: plugin.py:315
+#: plugin.py:376
 msgid "That URL has no specified doctype."
 msgstr "Tuo URL-osoite ei ole määrittänyt doctypeä."
 
-#: plugin.py:321
+#: plugin.py:382
 msgid ""
 "<url>\n"
 "\n"
@@ -216,17 +231,17 @@ msgstr ""
 "        vain HTTP URL-osoitteet ovat kelvollisia.\n"
 "        "
 
-#: plugin.py:336 plugin.py:341
+#: plugin.py:397 plugin.py:402
 msgid "%u is %S long."
 msgstr "%u on %S pitkä."
 
-#: plugin.py:343
+#: plugin.py:404
 msgid "The server didn't tell me how long %u is but it's longer than %S."
 msgstr ""
 "Palvelin ei kertonut minulle, kuinka pitkä %u on, mutta se on pidempi kuin "
 "%S."
 
-#: plugin.py:353
+#: plugin.py:414
 msgid ""
 "[--no-filter] <url>\n"
 "\n"
@@ -242,7 +257,7 @@ msgstr ""
 "        DCC, ...) ei riisuta.\n"
 "        "
 
-#: plugin.py:374
+#: plugin.py:435
 msgid ""
 "<text>\n"
 "\n"
@@ -254,7 +269,7 @@ msgstr ""
 "        Palauttaa URL lainatun muodon tekstistä.\n"
 "        "
 
-#: plugin.py:382
+#: plugin.py:443
 msgid ""
 "<text>\n"
 "\n"
@@ -266,7 +281,7 @@ msgstr ""
 "        Palauttaa tekstin URL lainaamattomassa muodossa.\n"
 "        "
 
-#: plugin.py:393
+#: plugin.py:454
 msgid ""
 "<url>\n"
 "\n"
@@ -285,7 +300,7 @@ msgstr ""
 "        tämä komento poistetaan käytöstä.\n"
 "        "
 
-#: plugin.py:405
+#: plugin.py:466
 msgid ""
 "This command is disabled (supybot.plugins.Web.fetch.maximum is set to 0)."
 msgstr ""

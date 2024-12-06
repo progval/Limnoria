@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -168,34 +168,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:236
-#, docstring
-msgid ""
-"<url>\n"
-"\n"
-"        Returns a link to the cached version of <url> if it is available.\n"
-"        "
-msgstr ""
-
-#: plugin.py:247
-msgid "Google seems to have no cache for that site."
-msgstr ""
-
-#: plugin.py:253
-#, docstring
-msgid ""
-"<search string> <search string> [<search string> ...]\n"
-"\n"
-"        Returns the results of each search, in order, from greatest number\n"
-"        of results to least.\n"
-"        "
-msgstr ""
-
-#: plugin.py:309
+#: plugin.py:263
 msgid "No translations found."
 msgstr ""
 
-#: plugin.py:313
+#: plugin.py:267
 #, docstring
 msgid ""
 "<source language> [to] <target language> <text>\n"
@@ -207,30 +184,8 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:325
+#: plugin.py:279
 #, docstring
 msgid "^google\\s+(.*)$"
-msgstr ""
-
-#: plugin.py:347
-#, docstring
-msgid ""
-"<expression>\n"
-"\n"
-"        Uses Google's calculator to calculate the value of <expression>.\n"
-"        "
-msgstr ""
-
-#: plugin.py:378
-#, docstring
-msgid ""
-"<phone number>\n"
-"\n"
-"        Looks <phone number> up on Google.\n"
-"        "
-msgstr ""
-
-#: plugin.py:392
-msgid "Google's phonebook didn't come up with anything."
 msgstr ""
 

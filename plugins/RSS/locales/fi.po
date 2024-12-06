@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RSS plugin for Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2014-12-20 12:12+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
@@ -52,7 +52,9 @@ msgid ""
 "    manually. In addition to fields defined by feedparser ($published\n"
 "    (the entry date), $title, $link, $description, $id, etc.), the "
 "following\n"
-"    variables can be used: $feed_name, $date (parsed date, as defined in\n"
+"    variables can be used: $feed_name (the configured name)\n"
+"    $feed_title/$feed_subtitle/$feed_author/$feed_language/$feed_link,\n"
+"    $date (parsed date, as defined in\n"
 "    supybot.reply.format.time)"
 msgstr ""
 "Muoto, jota käytetään manuaalisesti pyydetyn RSS-syltteen otsikoissa.\n"
@@ -62,11 +64,11 @@ msgstr ""
 "$feed_name,\n"
 " $date (parsittu päiväys, jonka määrittää asetus supybot.reply.format.time)"
 
-#: config.py:74
+#: config.py:76
 msgid "News from $feed_name: $title <$link>"
 msgstr "Uutisia lähteestä $feed_name: $title <$link>"
 
-#: config.py:75
+#: config.py:77
 msgid ""
 "The format the bot will use for displaying headlines of a RSS feed\n"
 "    that is announced. See supybot.plugins.RSS.format for the available\n"
@@ -76,7 +78,7 @@ msgstr ""
 "näyttämiseen.\n"
 " Kelvolliset muuttujat näkee asetuksesta supybot.plugins.RSS.format."
 
-#: config.py:83
+#: config.py:85
 msgid ""
 "Determines which RSS feeds\n"
 "    should be announced in the channel; valid input is a list of strings\n"
@@ -87,7 +89,7 @@ msgstr ""
 "syöte\n"
 "-osoitteita) välilyönneillä erotettuina."
 
-#: config.py:87
+#: config.py:89
 msgid ""
 "Indicates how many seconds the bot will\n"
 "    wait between retrieving RSS feeds; requests made within this period "
@@ -99,7 +101,7 @@ msgstr ""
 "ajalla\n"
 "    palauttavat välimuistissa olevia tuloksia."
 
-#: config.py:91
+#: config.py:93
 #, fuzzy
 msgid ""
 "Determines whether feed items should be\n"
@@ -112,19 +114,19 @@ msgstr ""
 "ilmestyvät\n"
 " syötteessä."
 
-#: config.py:95
+#: config.py:97
 msgid ""
 "Determines whether announces will be sent\n"
 "    as notices instead of privmsgs."
 msgstr ""
 
-#: config.py:98
+#: config.py:100
 msgid ""
 "Indicates how many new news entries may\n"
 "    be sent at the same time. Extra entries will be discarded."
 msgstr ""
 
-#: config.py:104
+#: config.py:106
 msgid ""
 "Indicates how many headlines an rss feed\n"
 "    will output by default, if no number is provided."
@@ -132,7 +134,7 @@ msgstr ""
 "Ilmaisee kuinka monta otsikkoa RSS-syötteen ulostulossa on oletuksena,\n"
 " jos määrää ei määritetä komennossa."
 
-#: config.py:107
+#: config.py:109
 msgid ""
 "Indicates how many headlines an rss feed\n"
 "    will output when it is first added to announce for a channel."
@@ -141,7 +143,7 @@ msgstr ""
 "kerralla, kun sen kuuluttaminen\n"
 " lisätään kanavalle."
 
-#: config.py:110
+#: config.py:112
 msgid ""
 "Space separated list of \n"
 "    strings, lets you filter headlines to those containing one or more "
@@ -152,7 +154,7 @@ msgstr ""
 "suodattamisen\n"
 " yhteen tai useampaan kohteeseen, jotka ovat tällä valkoisella listalla."
 
-#: config.py:114
+#: config.py:116
 msgid ""
 "Space separated list of \n"
 "    strings, lets you filter headlines to those not containing any items\n"
@@ -162,14 +164,14 @@ msgstr ""
 " tämä sallii kohteiden, jotka ovat tällä mustalla listalla, suodattamisen "
 "pois."
 
-#: config.py:127
+#: config.py:129
 #, fuzzy
 msgid ""
 "Feed-specific format. Defaults to\n"
 "            supybot.plugins.RSS.format if empty."
 msgstr "Syötekohtainen muoto. Oletuksena supybot.plugins.RSS.format."
 
-#: config.py:130
+#: config.py:132
 #, fuzzy
 msgid ""
 "Feed-specific announce format.\n"
@@ -177,7 +179,7 @@ msgid ""
 msgstr ""
 "Syötekohtainen kuulutusmuoto. Oletuksena supybot.plugins.RSS.announceFormat."
 
-#: config.py:133
+#: config.py:135
 msgid ""
 "If set to a non-zero\n"
 "            value, overrides supybot.plugins.RSS.waitPeriod for this\n"
@@ -213,8 +215,8 @@ msgid ""
 "    This plugin is useful both for announcing updates to RSS feeds in a\n"
 "    channel, and for retrieving the headlines of RSS feeds via command.  "
 "Use\n"
-"    the \"add\" command to add feeds to this plugin, and use the \"announce"
-"\"\n"
+"    the \"add\" command to add feeds to this plugin, and use the "
+"\"announce\"\n"
 "    command to determine what feeds should be announced in a given channel.\n"
 "\n"
 "    Basic usage\n"
@@ -263,7 +265,7 @@ msgstr "Minulla on jo komento %s tässä lisä-osassa."
 msgid "I already have a feed with that URL named %s."
 msgstr "Minulla on jo syöte nimeltä %s."
 
-#: plugin.py:508
+#: plugin.py:565
 msgid ""
 "<name> <url>\n"
 "\n"
@@ -277,7 +279,7 @@ msgstr ""
 "        URL osoitteesta..\n"
 "        "
 
-#: plugin.py:521
+#: plugin.py:578
 msgid ""
 "<name>\n"
 "\n"
@@ -291,11 +293,11 @@ msgstr ""
 "        lisäosasta.\n"
 "        "
 
-#: plugin.py:528
+#: plugin.py:585
 msgid "That's not a valid RSS feed command name."
 msgstr "Tuo ei ole kelvollinen RSS sylte komento nimi."
 
-#: plugin.py:547
+#: plugin.py:604
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -310,11 +312,11 @@ msgstr ""
 "            vaadittu vain jos viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:556
+#: plugin.py:613
 msgid "I am currently not announcing any feeds."
 msgstr "Minä en tällä hetkellä kuuluta yhtään syötettä."
 
-#: plugin.py:561
+#: plugin.py:618
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -336,12 +338,12 @@ msgstr ""
 "            viestiä ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:572
+#: plugin.py:629
 #, fuzzy
 msgid "These feeds are unknown: %L"
 msgstr "Nämä syötteet ovat tuntemattomia: %L"
 
-#: plugin.py:593
+#: plugin.py:650
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -363,7 +365,7 @@ msgstr ""
 "            ei lähetetä kanavalla itsellään.\n"
 "            "
 
-#: plugin.py:618
+#: plugin.py:675
 msgid ""
 "<name|url>\n"
 "\n"
@@ -373,7 +375,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:642
+#: plugin.py:699
 #, fuzzy
 msgid ""
 "<name|url> [<number of headlines>]\n"
@@ -389,15 +391,15 @@ msgstr ""
 "otsikkoa.\n"
 "        "
 
-#: plugin.py:658
+#: plugin.py:715
 msgid "Couldn't get RSS feed."
 msgstr "RSS syötettä ei pystytty hakemaan."
 
-#: plugin.py:661
+#: plugin.py:718
 msgid " Parser error: "
 msgstr ""
 
-#: plugin.py:677
+#: plugin.py:736
 msgid ""
 "<url|feed>\n"
 "\n"
@@ -411,20 +413,20 @@ msgstr ""
 "        URL, kuvauksen, ja viimeisen päivityksen, jos saatavilla.\n"
 "        "
 
-#: plugin.py:692
+#: plugin.py:751
 msgid "I couldn't retrieve that RSS feed."
 msgstr "En voinut noutaa tuota RSS syötettä."
 
-#: plugin.py:700
+#: plugin.py:759
 #, fuzzy
 msgid "time unavailable"
 msgstr "aika ei ole saatavilla"
 
-#: plugin.py:701 plugin.py:702 plugin.py:703
+#: plugin.py:760 plugin.py:761 plugin.py:762
 msgid "unavailable"
 msgstr "ei saatavilla"
 
-#: plugin.py:705
+#: plugin.py:764
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr "Otsikko: %s;  URL: %u;  Kuvaus: %s;  Viimeeksi päivitetty: %s."
 
@@ -441,8 +443,8 @@ msgstr "Otsikko: %s;  URL: %u;  Kuvaus: %s;  Viimeeksi päivitetty: %s."
 #~ "kuuluttamiseen\n"
 #~ "    kanavalla, ja hakemaan RSS syötteen uusimmat otsikot komennon "
 #~ "kautta.  Käytä\n"
-#~ "    \"add\" komentoa lisätäksesi syötteitä tähän lisäosaan ja \"announce"
-#~ "\"\n"
+#~ "    \"add\" komentoa lisätäksesi syötteitä tähän lisäosaan ja "
+#~ "\"announce\"\n"
 #~ "    komentoa määrittämään mitkä syötteet pitäisi kuuluttaa annetulla "
 #~ "kanavalla."
 

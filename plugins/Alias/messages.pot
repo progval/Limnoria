@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,25 +61,27 @@ msgid ""
 "    built-in Aka plugin instead (you can migrate your existing aliases using\n"
 "    the 'importaliasdatabase' command.\n"
 "\n"
-"    To add an alias, `trout`, which expects a word as an argument::\n"
+"    To add an alias, ``trout``, which expects a word as an argument::\n"
 "\n"
 "        <jamessan> @alias add trout \"action slaps $1 with a large trout\"\n"
 "        <bot> jamessan: The operation succeeded.\n"
 "        <jamessan> @trout me\n"
 "        * bot slaps me with a large trout\n"
 "\n"
-"    To add an alias, `lastfm`, which expects a last.fm user and replies with\n"
-"    their recently played items::\n"
+"    Add an alias, ``randpercent``, which returns a random percentage value::\n"
 "\n"
-"        @alias add lastfm \"rss [format concat http://ws.audioscrobbler.com/1.0/user/ [format concat [urlquote $1] /recenttracks.rss]]\"\n"
+"        @alias add randpercent \"squish [dice 1d100]%\"\n"
 "\n"
-"    Note that if the nested commands being aliased hadn't been quoted, then\n"
-"    those commands would have been run immediately, and `@lastfm` would always\n"
-"    reply with the same information, the result of those commands.\n"
+"    This requires the ``Filter`` and ``Games`` plugins to be loaded.\n"
+"\n"
+"    Note that nested commands in an alias should be quoted, or they will only\n"
+"    run once when you create the alias, and not each time the alias is\n"
+"    called. (In this case, not quoting the nested command would mean that\n"
+"    ``@randpercent`` always responds with the same value!)\n"
 "    "
 msgstr ""
 
-#: plugin.py:357
+#: plugin.py:359
 #, docstring
 msgid ""
 "<alias>\n"
@@ -88,11 +90,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:365 plugin.py:378
+#: plugin.py:367 plugin.py:380
 msgid "There is no such alias."
 msgstr ""
 
-#: plugin.py:370
+#: plugin.py:372
 #, docstring
 msgid ""
 "<alias>\n"
@@ -101,11 +103,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:386
+#: plugin.py:388
 msgid "That name isn't valid.  Try %q instead."
 msgstr ""
 
-#: plugin.py:426
+#: plugin.py:428
 #, docstring
 msgid ""
 "<name> <command>\n"
@@ -119,7 +121,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:449
+#: plugin.py:451
 #, docstring
 msgid ""
 "<name>\n"
@@ -128,7 +130,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:463
+#: plugin.py:465
 #, docstring
 msgid ""
 "[--locked|--unlocked]\n"
@@ -138,15 +140,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:470
+#: plugin.py:472
 msgid "Cannot specify --locked and --unlocked simultaneously"
 msgstr ""
 
-#: plugin.py:486
+#: plugin.py:488
 msgid "There are no aliases of that type."
 msgstr ""
 
-#: plugin.py:488
+#: plugin.py:490
 msgid "There are no aliases."
 msgstr ""
 

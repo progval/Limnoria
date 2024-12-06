@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -410,11 +410,11 @@ msgstr ""
 "est donné, recherche parmi les valeurs, plutôt que parmi les clefs. <canal> "
 "n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:854 plugin.py:864
+#: plugin.py:858 plugin.py:868
 msgid "No keys matched that query."
 msgstr "Aucune clef ne correspond à cette requête."
 
-#: plugin.py:860 plugin.py:870
+#: plugin.py:864 plugin.py:911
 msgid "More than 100 keys matched that query; please narrow your query."
 msgstr ""
 "Plus de 100 clefs correspondent à votre requête ; veuillez la préciser."

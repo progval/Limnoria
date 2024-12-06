@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria Math\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2011-08-02 21:06+0200\n"
 "Last-Translator: nyuszika7h <litemininyuszika@gmail.com>\n"
 "Language-Team: \n"
@@ -105,7 +105,7 @@ msgstr ""
 "matematikát, és előidézheti, hogy a bot felszívjon sok CPU-t. Ezért a "
 "'trusted' képesség szükséges a használatához."
 
-#: plugin.py:187
+#: plugin.py:198
 msgid ""
 "<rpn math expression>\n"
 "\n"
@@ -116,19 +116,19 @@ msgstr ""
 "\n"
 "Kiírja egy RPN kifejezés értékét."
 
-#: plugin.py:212
+#: plugin.py:223
 msgid "Not enough arguments for %s"
 msgstr "Nincs elég paraméter %s-hoz."
 
-#: plugin.py:225
+#: plugin.py:236
 msgid "%q is not a defined function."
 msgstr "%q nincs meghatározva függvényként."
 
-#: plugin.py:232
+#: plugin.py:243
 msgid "Stack: [%s]"
 msgstr "Verem: [%s]"
 
-#: plugin.py:236
+#: plugin.py:247
 msgid ""
 "[<number>] <unit> to <other unit>\n"
 "\n"
@@ -142,7 +142,7 @@ msgstr ""
 "alapértelmezett értéke 1. Mértékegység információért lásd az 'units' "
 "parancsot."
 
-#: plugin.py:266
+#: plugin.py:277
 msgid ""
 " [<type>]\n"
 "\n"

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Scheduler plugin for Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2014-12-20 13:38+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -26,16 +26,16 @@ msgstr ""
 msgid "Makes a function suitable for scheduling from command."
 msgstr "Tekee toiminnon sopivaksi komennosta ajastamiseen."
 
-#: plugin.py:155
+#: plugin.py:162
 #, fuzzy
 msgid "Makes a function suitable for scheduling text"
 msgstr "Tekee toiminnon sopivaksi komennosta ajastamiseen."
 
-#: plugin.py:160
+#: plugin.py:167
 msgid "Reminder: %s"
 msgstr ""
 
-#: plugin.py:181
+#: plugin.py:188
 msgid ""
 "<seconds> <command>\n"
 "\n"
@@ -60,28 +60,28 @@ msgstr ""
 "tuossa esimerkissä.\n"
 "        "
 
-#: plugin.py:191
+#: plugin.py:198
 msgid "Event #%i added."
 msgstr "Tapahtuma #%i lisätty."
 
-#: plugin.py:196
+#: plugin.py:203
 msgid ""
 " <seconds> <text>\n"
 "\n"
 "        Sets a reminder with string <text> to run <seconds> seconds in the\n"
-"        future. For example, 'scheduler remind [seconds 30m] \"Hello World"
-"\"'\n"
+"        future. For example, 'scheduler remind [seconds 30m] \"Hello "
+"World\"'\n"
 "        will return '<nick> Reminder: Hello World' 30 minutes after being "
 "set.\n"
 "        "
 msgstr ""
 
-#: plugin.py:204
+#: plugin.py:211
 #, fuzzy
 msgid "Reminder Event #%i added."
 msgstr "Tapahtuma #%i lisätty."
 
-#: plugin.py:209
+#: plugin.py:216
 msgid ""
 "<id>\n"
 "\n"
@@ -93,11 +93,11 @@ msgstr ""
 "        Poistaa ajastetun komennon <id> ajastuksesta.\n"
 "        "
 
-#: plugin.py:223 plugin.py:225
+#: plugin.py:230 plugin.py:232
 msgid "Invalid event id."
 msgstr "Viallinen tapahtuma id."
 
-#: plugin.py:244
+#: plugin.py:251
 #, fuzzy
 msgid ""
 "[--delay <delay>] <name> <seconds> <command>\n"
@@ -118,12 +118,12 @@ msgstr ""
 "        poistaa.\n"
 "        "
 
-#: plugin.py:255
+#: plugin.py:262
 msgid "There is already an event with that name, please choose another name."
 msgstr ""
 "On jo olemassa tapahtuma tuolla nimellä, ole hyvä ja käytä toista nimeä."
 
-#: plugin.py:270
+#: plugin.py:277
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -135,6 +135,6 @@ msgstr ""
 "        Luettelee tällä hetkellä ajastetut komennot.\n"
 "        "
 
-#: plugin.py:290
+#: plugin.py:297
 msgid "There are currently no scheduled commands."
 msgstr "Tällä hetkellä ei ole ajastettuja komentoja."

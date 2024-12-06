@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2011-06-28 23:29+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -79,8 +79,8 @@ msgid ""
 "    length of the bad word); this string is configurable via\n"
 "    supybot.plugins.BadWords.simpleReplacement."
 msgstr ""
-"Determina come verranno sostituite le parole volgari. \"nastyCharacters"
-"\" (predefinito)\n"
+"Determina come verranno sostituite le parole volgari. "
+"\"nastyCharacters\" (predefinito)\n"
 "    rimpiazzerà la parola con lo stesso numero di \"brutti caratteri\" (come "
 "quelli usati\n"
 "    nei fumetti; configurabile da supybot.plugins.BadWords.nastyChars). "
@@ -117,6 +117,15 @@ msgstr ""
 "    con altri plugin che colorano o rendono il testo grassetto."
 
 #: config.py:117
+#, fuzzy
+msgid ""
+"Determines whether the bot will filter its own\n"
+"    messages."
+msgstr ""
+"Determina se il bot caccerà (kick) gli utenti con un avvertimento quando "
+"usano volgarità."
+
+#: config.py:120
 msgid ""
 "Determines whether the bot will kick people with\n"
 "    a warning when they use bad words."
@@ -124,7 +133,7 @@ msgstr ""
 "Determina se il bot caccerà (kick) gli utenti con un avvertimento quando "
 "usano volgarità."
 
-#: config.py:120
+#: config.py:123
 msgid ""
 "You have been kicked for using a word\n"
 "    prohibited in the presence of this bot.  Please use more appropriate\n"
@@ -133,7 +142,7 @@ msgstr ""
 "Sei stato/a cacciato/a per aver usato parole proibite in presenza del bot.\n"
 "    In futuro utilizza un linguaggio più appropriato."
 
-#: config.py:122
+#: config.py:125
 msgid ""
 "Determines the kick message used by the\n"
 "    bot when kicking users for saying bad words."
@@ -151,7 +160,7 @@ msgstr ""
 "    Se il bot ha lo stato di operatore, può essere anche utilizzato\n"
 "    per cacciare (kick) utenti che scrivono queste parole."
 
-#: plugin.py:127
+#: plugin.py:128
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -163,11 +172,11 @@ msgstr ""
 "        Riporta l'elenco delle parole censurate.\n"
 "        "
 
-#: plugin.py:137
+#: plugin.py:138
 msgid "I'm not currently censoring any bad words."
 msgstr "Al momento non ho alcuna parola censurata."
 
-#: plugin.py:142
+#: plugin.py:143
 msgid ""
 "<word> [<word> ...]\n"
 "\n"
@@ -179,7 +188,7 @@ msgstr ""
 "        Aggiunge <parola> all'elenco di quelle da censurare.\n"
 "        "
 
-#: plugin.py:162
+#: plugin.py:163
 msgid ""
 "<word> [<word> ...]\n"
 "\n"

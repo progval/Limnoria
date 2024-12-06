@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: User plugin for Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2014-12-20 12:00+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: suomi <>\n"
@@ -417,7 +417,7 @@ msgstr ""
 "valtuudet.\n"
 "        "
 
-#: plugin.py:459
+#: plugin.py:460
 msgid ""
 "<name> <password>\n"
 "\n"
@@ -435,7 +435,7 @@ msgstr ""
 "        ei kanavalla.\n"
 "        "
 
-#: plugin.py:471
+#: plugin.py:472
 msgid ""
 "Your secure flag is true and your hostmask doesn't match any of your known "
 "hostmasks."
@@ -443,7 +443,7 @@ msgstr ""
 "Sinun 'secure' lippusi on 'true' ja sinun hostmaskisi ei täsmää yhteenkään "
 "sinun tunnettuun hostmaskiisi."
 
-#: plugin.py:481
+#: plugin.py:482
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -464,7 +464,7 @@ msgstr ""
 "        tunnistaa sinut yhä.\n"
 "        "
 
-#: plugin.py:490
+#: plugin.py:491
 msgid ""
 "If you remain recognized after giving this command, you're being recognized "
 "by hostmask, rather than by password.  You must remove whatever hostmask is "
@@ -475,7 +475,7 @@ msgstr ""
 "hostmaski, joka aiheuttaa sinun tunnistamisesi, tullaksesi "
 "tunnistamattomaksi."
 
-#: plugin.py:499
+#: plugin.py:500
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -487,7 +487,7 @@ msgstr ""
 "        Palauttaa komennon antaneen käyttäjän tunnuksen.\n"
 "        "
 
-#: plugin.py:508
+#: plugin.py:509
 #, fuzzy
 msgid ""
 "I don't recognize you. You can message me either of these two commands: "
@@ -498,7 +498,7 @@ msgstr ""
 "komennoista: \"user identify <username> <password>\" kirjautuaksesi sisään "
 "tai rekisteröityäksesi \"user register <username> <password>\"."
 
-#: plugin.py:514
+#: plugin.py:515
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -510,7 +510,7 @@ msgstr ""
 "        Palauttaa joitakin tilastotietoja käyttäjä tietokannasta.\n"
 "        "
 
-#: plugin.py:532
+#: plugin.py:533
 msgid "I have %s registered users with %s registered hostmasks; %n and %n."
 msgstr ""
 "Minulla on %s rekisteröityä käyttäjää %s rekisteröidyllä hostmaskilla; %n ja "

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -273,7 +273,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:459
+#: plugin.py:460
 #, docstring
 msgid ""
 "<name> <password>\n"
@@ -284,11 +284,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:471
+#: plugin.py:472
 msgid "Your secure flag is true and your hostmask doesn't match any of your known hostmasks."
 msgstr ""
 
-#: plugin.py:481
+#: plugin.py:482
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -300,11 +300,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:490
+#: plugin.py:491
 msgid "If you remain recognized after giving this command, you're being recognized by hostmask, rather than by password.  You must remove whatever hostmask is causing you to be recognized in order not to be recognized."
 msgstr ""
 
-#: plugin.py:499
+#: plugin.py:500
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -313,11 +313,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:508
+#: plugin.py:509
 msgid "I don't recognize you. You can message me either of these two commands: \"user identify <username> <password>\" to log in or \"user register <username> <password>\" to register."
 msgstr ""
 
-#: plugin.py:514
+#: plugin.py:515
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -326,7 +326,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:532
+#: plugin.py:533
 msgid "I have %s registered users with %s registered hostmasks; %n and %n."
 msgstr ""
 

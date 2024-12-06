@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2011-06-21 17:27+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -108,7 +108,7 @@ msgstr ""
 "        richiede la capacità \"trusted\" per poterlo utilizzare.\n"
 "        "
 
-#: plugin.py:187
+#: plugin.py:198
 msgid ""
 "<rpn math expression>\n"
 "\n"
@@ -121,19 +121,19 @@ msgstr ""
 "Notation).\n"
 "        "
 
-#: plugin.py:212
+#: plugin.py:223
 msgid "Not enough arguments for %s"
 msgstr "Argomenti per %s insufficienti"
 
-#: plugin.py:225
+#: plugin.py:236
 msgid "%q is not a defined function."
 msgstr "%q non è una funzione definita."
 
-#: plugin.py:232
+#: plugin.py:243
 msgid "Stack: [%s]"
 msgstr "Stack: [%s]"
 
-#: plugin.py:236
+#: plugin.py:247
 msgid ""
 "[<number>] <unit> to <other unit>\n"
 "\n"
@@ -149,7 +149,7 @@ msgstr ""
 "comando \"units\".\n"
 "        "
 
-#: plugin.py:266
+#: plugin.py:277
 msgid ""
 " [<type>]\n"
 "\n"

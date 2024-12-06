@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -78,6 +78,6 @@ msgstr ""
 "seule.        <canal> n'est nécessaire que si la commande n'est pas "
 "envoyée        sur le canal lui-même."
 
-#: plugin.py:147
+#: plugin.py:149
 msgid "No URLs matched that criteria."
 msgstr "Aucune URL ne correspond à ces critères."

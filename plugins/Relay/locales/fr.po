@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -24,7 +24,7 @@ msgstr "Quels canaux ? Séparez-les par des espaces."
 msgid "Would you like to use color to distinguish between nicks?"
 msgstr "Voulez-vous utiliser de la couleur pour distinguer les nicks ?"
 
-#: config.py:60
+#: config.py:62
 msgid ""
 "Determines whether the bot will color relayed\n"
 "    PRIVMSGs so as to make the messages easier to read."
@@ -32,7 +32,7 @@ msgstr ""
 "Détermine si le bot colorera les PRIVMSGs relayez, pour rendre les messages "
 "plus faciles à lire."
 
-#: config.py:63
+#: config.py:65
 msgid ""
 "Determines whether the bot will synchronize\n"
 "    topics between networks in the channels it relays."
@@ -40,7 +40,7 @@ msgstr ""
 "Détermine si le bot synchronisera les topics entre les réseaux sur les "
 "canaux qu'il relaye."
 
-#: config.py:66
+#: config.py:68
 #, fuzzy
 msgid ""
 "Determines whether the bot will relay the\n"
@@ -50,7 +50,7 @@ msgstr ""
 "Détermine si le bot relayera le masque d'hôte d'une personne joignant ou "
 "partant d'un canal."
 
-#: config.py:70
+#: config.py:72
 msgid ""
 "Determines whether the bot will include the\n"
 "    network in relayed PRIVMSGs; if you're only relaying between two "
@@ -61,7 +61,7 @@ msgstr ""
 "ne relayez qu'entre deux réseaux, ce sera quelque chose de redondant que "
 "vous pouvez supprimer pour gagner de la place."
 
-#: config.py:74
+#: config.py:76
 msgid ""
 "Determines whether the bot will detect other\n"
 "    bots relaying and respond by kickbanning them."
@@ -69,13 +69,13 @@ msgstr ""
 "Détermine si le bot détectera d'autres bots relayant et y répondra en les "
 "kickbannissant."
 
-#: config.py:77
+#: config.py:79
 msgid ""
 "Determines which channels the bot\n"
 "    will relay in."
 msgstr "Détermine sur quels canaux le bot relayera."
 
-#: config.py:80
+#: config.py:82
 #, fuzzy
 msgid ""
 "Determines whether the bot\n"
@@ -86,13 +86,13 @@ msgstr ""
 "Détermine si le bot rejoindra toujours le(s) canal(aux) qu'il relaye sur "
 "tous les réseaux auxquels il est connecté."
 
-#: config.py:84
+#: config.py:86
 msgid ""
 "Determines what hostmasks will not be relayed on a\n"
 "    channel."
 msgstr "Détermine quels masques d'hôte ne seront pas relayés sur un canal."
 
-#: config.py:87
+#: config.py:89
 msgid ""
 "Determines whether the bot will used NOTICEs\n"
 "    rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, "

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,58 +27,58 @@ msgstr ""
 msgid "Would you like to use color to distinguish between nicks?"
 msgstr ""
 
-#: config.py:60
+#: config.py:62
 msgid ""
 "Determines whether the bot will color relayed\n"
 "    PRIVMSGs so as to make the messages easier to read."
 msgstr ""
 
-#: config.py:63
+#: config.py:65
 msgid ""
 "Determines whether the bot will synchronize\n"
 "    topics between networks in the channels it relays."
 msgstr ""
 
-#: config.py:66
+#: config.py:68
 msgid ""
 "Determines whether the bot will relay the\n"
 "    hostmask of the person joining or parting the channel when they join\n"
 "    or part."
 msgstr ""
 
-#: config.py:70
+#: config.py:72
 msgid ""
 "Determines whether the bot will include the\n"
 "    network in relayed PRIVMSGs; if you're only relaying between two networks,\n"
 "    it's somewhat redundant, and you may wish to save the space."
 msgstr ""
 
-#: config.py:74
+#: config.py:76
 msgid ""
 "Determines whether the bot will detect other\n"
 "    bots relaying and respond by kickbanning them."
 msgstr ""
 
-#: config.py:77
+#: config.py:79
 msgid ""
 "Determines which channels the bot\n"
 "    will relay in."
 msgstr ""
 
-#: config.py:80
+#: config.py:82
 msgid ""
 "Determines whether the bot\n"
 "    will always join the channel(s) it relays when connecting to any network.\n"
 "    "
 msgstr ""
 
-#: config.py:84
+#: config.py:86
 msgid ""
 "Determines what hostmasks will not be relayed on a\n"
 "    channel."
 msgstr ""
 
-#: config.py:87
+#: config.py:89
 msgid ""
 "Determines whether the bot will used NOTICEs\n"
 "    rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, parts,\n"

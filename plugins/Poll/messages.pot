@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -87,11 +87,11 @@ msgstr ""
 msgid "Duplicate answer identifier(s): %L"
 msgstr ""
 
-#: plugin.py:155
+#: plugin.py:158
 msgid "Poll # %d created."
 msgstr ""
 
-#: plugin.py:159
+#: plugin.py:162
 #, docstring
 msgid ""
 "[<channel>] <poll_id>\n"
@@ -99,11 +99,11 @@ msgid ""
 "        Closes the specified poll."
 msgstr ""
 
-#: plugin.py:167
+#: plugin.py:170
 msgid "This poll was already closed."
 msgstr ""
 
-#: plugin.py:180
+#: plugin.py:183
 #, docstring
 msgid ""
 "[<channel>] <poll_id> <answer_id>\n"
@@ -113,19 +113,19 @@ msgid ""
 "        answer)."
 msgstr ""
 
-#: plugin.py:189
+#: plugin.py:192
 msgid "This poll is closed."
 msgstr ""
 
-#: plugin.py:192
+#: plugin.py:195
 msgid "You already voted on this poll."
 msgstr ""
 
-#: plugin.py:197
+#: plugin.py:202
 msgid "Invalid answer ID. Valid answers are: %L"
 msgstr ""
 
-#: plugin.py:209
+#: plugin.py:214
 #, docstring
 msgid ""
 "[<channel>] <poll_id>\n"
@@ -133,7 +133,27 @@ msgid ""
 "        Returns the results of the specified poll."
 msgstr ""
 
-#: plugin.py:221
+#: plugin.py:226
 msgid "%n for %s"
+msgstr ""
+
+#: plugin.py:226 plugin.py:242
+msgid "vote"
+msgstr ""
+
+#: plugin.py:234
+#, docstring
+msgid ""
+"[<channel>]\n"
+"\n"
+"        Lists open polls in the <channel>."
+msgstr ""
+
+#: plugin.py:239
+msgid "%i: %s (%n)"
+msgstr ""
+
+#: plugin.py:251
+msgid "There are no open polls."
 msgstr ""
 

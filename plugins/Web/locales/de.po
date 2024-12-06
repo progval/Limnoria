@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Supybot\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2012-04-27 15:47+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: German <fbesser@gmail.com>\n"
@@ -119,25 +119,40 @@ msgstr ""
 msgid "Add the help for 'help Web' here."
 msgstr "Füge die Hilfe für \"help Web\" hier hinzu."
 
-#: plugin.py:171
+#: plugin.py:154
+msgid ""
+"Returns a new URL that should be the target of a new request,\n"
+"            or None if the request is fine as it is.\n"
+"\n"
+"            The returned URL may be the same as the parameter, in case\n"
+"            something else was changed by this function through side-"
+"effects.\n"
+"            "
+msgstr ""
+
+#: plugin.py:198
+msgid "Connection to %s timed out"
+msgstr ""
+
+#: plugin.py:232
 msgid "Could not guess the page's encoding. (Try installing python-charade.)"
 msgstr ""
 
-#: plugin.py:192
+#: plugin.py:253
 msgid "That URL appears to have no HTML title."
 msgstr "Es scheint so als habe die URL keinen HTML Titel."
 
-#: plugin.py:195
+#: plugin.py:256
 msgid "That URL appears to have no HTML title within the first %S."
 msgstr ""
 "Es scheint so als habe die URL keinen HTML Titel innerhalb der ersten %S."
 
-#: plugin.py:237
+#: plugin.py:298
 #, fuzzy
 msgid " (at %s)"
 msgstr "Titel: %s (auf %s)"
 
-#: plugin.py:262
+#: plugin.py:323
 msgid ""
 "<url>\n"
 "\n"
@@ -149,11 +164,11 @@ msgstr ""
 "\n"
 "Gibt den HTTP Kopf von <url> aus. Natürlich sind nur HTTP URLS zulässig."
 
-#: plugin.py:273
+#: plugin.py:334
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#: plugin.py:283
+#: plugin.py:344
 msgid ""
 "<url>\n"
 "\n"
@@ -163,7 +178,7 @@ msgid ""
 "        Useful to \"un-tinify\" URLs."
 msgstr ""
 
-#: plugin.py:299
+#: plugin.py:360
 msgid ""
 "<url>\n"
 "\n"
@@ -176,11 +191,11 @@ msgstr ""
 "Gibt die DOCTYPE Zeichenkette von <url> aus. Natürlich sind nur HTTP URLS "
 "zulässig"
 
-#: plugin.py:315
+#: plugin.py:376
 msgid "That URL has no specified doctype."
 msgstr "Diese URL hat doctype nicht spezifiziert."
 
-#: plugin.py:321
+#: plugin.py:382
 msgid ""
 "<url>\n"
 "\n"
@@ -193,17 +208,17 @@ msgstr ""
 "\n"
 "Gibt Content-Length Kopf der <url> aus. Natürlich sind nur HTTP URLs zulässig"
 
-#: plugin.py:336 plugin.py:341
+#: plugin.py:397 plugin.py:402
 msgid "%u is %S long."
 msgstr "%u ist %S lang."
 
-#: plugin.py:343
+#: plugin.py:404
 #, fuzzy
 msgid "The server didn't tell me how long %u is but it's longer than %S."
 msgstr ""
 "Der Server hat mir nicht gesagt wie lang %u ist, aber es ist länger als %S."
 
-#: plugin.py:353
+#: plugin.py:414
 msgid ""
 "[--no-filter] <url>\n"
 "\n"
@@ -213,7 +228,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:374
+#: plugin.py:435
 msgid ""
 "<text>\n"
 "\n"
@@ -224,7 +239,7 @@ msgstr ""
 "\n"
 "Gibt die URL zitierte Form vom gegeben Text aus."
 
-#: plugin.py:382
+#: plugin.py:443
 msgid ""
 "<text>\n"
 "\n"
@@ -235,7 +250,7 @@ msgstr ""
 "\n"
 "Gibt den Text nicht URL zitiert aus."
 
-#: plugin.py:393
+#: plugin.py:454
 msgid ""
 "<url>\n"
 "\n"
@@ -251,7 +266,7 @@ msgstr ""
 "maximum konfiguriert wurde. Falls diese Konfigurationsvariable auf 0 gesetzt "
 "ist, wird der Befehl praktisch deaktiviert."
 
-#: plugin.py:405
+#: plugin.py:466
 msgid ""
 "This command is disabled (supybot.plugins.Web.fetch.maximum is set to 0)."
 msgstr ""

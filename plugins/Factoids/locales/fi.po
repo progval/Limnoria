@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Factoids plugin for Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2014-12-20 14:33+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: Finnish <>\n"
@@ -448,11 +448,11 @@ msgstr ""
 " sijaan.\n"
 "        "
 
-#: plugin.py:854 plugin.py:864
+#: plugin.py:858 plugin.py:868
 msgid "No keys matched that query."
 msgstr "Yksikään avain ei täsmännyt hakuun."
 
-#: plugin.py:860 plugin.py:870
+#: plugin.py:864 plugin.py:911
 msgid "More than 100 keys matched that query; please narrow your query."
 msgstr "Yli 100 avainta täsmäsi tuohon hakuun; ole hyvä ja kavenna hakuasi."
 
