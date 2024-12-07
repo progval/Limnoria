@@ -571,6 +571,12 @@ class RSSTestCase(ChannelPluginTestCase):
             m = self.assertNotError('rss %s 2' % url)
             self.assertEqual(m.args[1].count(' | '), 1)
 
+        def testRssRandom(self):
+            timeFastForward(1.1)
+            self.assertNotError('rss --random %s' % url)
+            m = self.assertNotError('rss --random %s 2' % url)
+            self.assertEqual(m.args[1].count(' | '), 1)
+
         def testRssAdd(self):
             timeFastForward(1.1)
             self.assertNotError('rss add advogato %s' % url)
