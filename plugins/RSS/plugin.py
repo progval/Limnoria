@@ -726,10 +726,10 @@ class RSS(callbacks.Plugin):
             return
         entries = list(filter(lambda e:self.should_send_entry(irc.network, channel, e),
                               feed.entries))
-        upper_sort = 'newestFirst'
-        if [y for x,y in optlist if x == 'random']:
-            upper_sort = 'random'
-        entries = sort_feed_items(entries, upper_sort)
+        order = 'newestFirst'
+        if 'random' in (k for k,v in optlist):
+            order = 'random'
+        entries = sort_feed_items(entries, order)
         n = n or self.registryValue('defaultNumberOfHeadlines', channel, irc.network)
         entries = entries[:n]
         entries = sort_feed_items(entries, self.registryValue('sortFeedItems'))
