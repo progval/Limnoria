@@ -172,7 +172,8 @@ def sort_feed_items(items, order):
     if order == 'asInFeed':
         return items
     elif order == 'random':
-        return random.shuffle(items)
+        random.shuffle(items)
+        return items
     (key, reverse) = _sort_arguments(order)
     try:
         sitems = sorted(items, key=key, reverse=reverse)
