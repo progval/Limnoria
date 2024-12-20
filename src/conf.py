@@ -422,11 +422,15 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
     registerGlobalValue(network, 'vhost',
         registry.String('', _("""Determines what vhost the bot will bind to before
         connecting a server (IRC, HTTP, ...) via IPv4. If empty, defaults to
-        supybot.protocols.irc.vhost""")))
+        supybot.protocols.irc.vhost. It must be (or resolve to) an IP address
+        assigned to one of the network interfaces (see 'ip addr' on Linux).
+        This may differ from the bot's public IP address, if it is behind a NAT.""")))
     registerGlobalValue(network, 'vhostv6',
         registry.String('', _("""Determines what vhost the bot will bind to before
         connecting a server (IRC, HTTP, ...) via IPv6. If empty, defaults to
-        supybot.protocols.irc.vhostv6""")))
+        supybot.protocols.irc.vhostv6. It must be (or resolve to) an IP address
+        assigned to one of the network interfaces (see 'ip addr' on Linux).
+        This may differ from the bot's public IP address, if it is behind a NAT.""")))
 
     sasl = registerGroup(network, 'sasl')
     registerGlobalValue(sasl, 'username', registry.String(sasl_username,
@@ -1363,11 +1367,17 @@ registerGlobalValue(supybot.protocols.irc, 'umodes',
 
 registerGlobalValue(supybot.protocols.irc, 'vhost',
     registry.String('', _("""Determines what vhost the bot will bind to before
-    connecting a server (IRC, HTTP, ...) via IPv4.""")))
+    connecting a server (IRC, HTTP, ...) via IPv4. It must be (or resolve to)
+    an IP address assigned to one of the network interfaces (see 'ip addr' on
+    Linux).
+    This may differ from the bot's public IP address, if it is behind a NAT.""")))
 
 registerGlobalValue(supybot.protocols.irc, 'vhostv6',
     registry.String('', _("""Determines what vhost the bot will bind to before
-    connecting a server (IRC, HTTP, ...) via IPv6.""")))
+    connecting a server (IRC, HTTP, ...) via IPv6. It must be (or resolve to)
+    an IP address assigned to one of the network interfaces (see 'ip -6 addr' on
+    Linux).
+    This may differ from the bot's public IP address, if it is behind a NAT.""")))
 
 registerGlobalValue(supybot.protocols.irc, 'maxHistoryLength',
     registry.Integer(1000, _("""Determines how many old messages the bot will
