@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2024, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -263,16 +263,17 @@ class _PluginInternationalization:
         """Main function.
 
         This is the function which is called when a plugin runs _()"""
-        normalizedUntranslated = normalize(untranslated, True)
+        if untranslated.__class__ is InternationalizedString:
+            originalUntranslated = untranslated._original
+        else:
+            originalUntranslated = untranslated
+
+        normalizedUntranslated = normalize(originalUntranslated, True)
         try:
             string = self._translate(normalizedUntranslated)
-            return self._addTracker(string, untranslated)
         except KeyError:
-            pass
-        if untranslated.__class__ is InternationalizedString:
-            return untranslated._original
-        else:
-            return untranslated
+            string = originalUntranslated
+        return self._addTracker(string, untranslated)
 
     def _translate(self, string):
         """Translate the string.
