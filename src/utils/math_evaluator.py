@@ -154,7 +154,15 @@ class SafeEvalVisitor(ast.NodeVisitor):
         return self.visit(node.body)
 
     def visit_Num(self, node):
+        """Python < 3.14 only"""
         return self._convert_num(node.n)
+
+    def visit_Constant(self, node):
+        """Python >= 3.14 only"""
+        if type(node.value) in (float, complex, int):
+            return self._convert_num(node.value)
+        else:
+            raise InvalidNode('illegal constant %s' % node.value)
 
     def visit_Name(self, node):
         id_ = node.id.lower()
