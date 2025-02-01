@@ -489,10 +489,13 @@ class Web(callbacks.PluginRegexp):
         if not self._checkURLWhitelist(url):
             irc.error("This url is not on the whitelist.")
             return
-        r = self.getTitle(irc, url, True, msg)
-        if not r:
-            return
-        (target, title) = r
+        title = self.getOEmbedTitle(url)
+        target = url
+        if not title:
+            r = self.getTitle(irc, url, True, msg)
+            if not r:
+                return
+            (target, title) = r
         if title:
             if not [y for x,y in optlist if x == 'no-filter']:
                 for i in range(1, 4):
