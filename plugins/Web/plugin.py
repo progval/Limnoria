@@ -144,54 +144,22 @@ class Web(callbacks.PluginRegexp):
     """Add the help for 'help Web' here."""
     regexps = ['titleSnarfer']
     threaded = True
-
-    def __init__(self, irc):
-        self.__parent = super(Web, self)
-        self.__parent.__init__(irc)
-        self.oembed_providers = self._loadOEmbedProviders()
+    _oembed_providers = None
         
     def _loadOEmbedProviders(self):
         """
-        Loads the oEmbed providers JSON.
+        Loads the oEmbed providers JSON if not already loaded.
+        Returns the providers list.
         """
-        try:
-            providers_url = "https://oembed.com/providers.json"
-            response = utils.web.getUrl(providers_url)
-            return json.loads(response)
-        except Exception as e:
-            self.log.debug(f"Failed to load oEmbed providers: {e}")
-            return []
-        
-    def _getOEmbedEndpoint(self, url):
-        """
-        Finds the appropriate oEmbed endpoint for the given URL based on providers.json.
-        """
-        for provider in self.oembed_providers:
-            for pattern in provider.get('endpoints', []):
-                schemes = pattern.get('schemes', [])
-                endpoint = pattern.get('url', '')
-                for scheme in schemes:
-                    regex = re.escape(scheme).replace(r'\*', '.*')  # Convert wildcard to regex
-                    if re.match(regex, url):
-                        return endpoint
-        return None
-
-    def getOEmbedTitle(self, url):
-        """
-        Retrieves the oEmbed title using the providers JSON.
-        """
-        try:
-            oembed_endpoint = self._getOEmbedEndpoint(url)
-            if not oembed_endpoint:
-                return None
- 
-            oembed_url = f"{oembed_endpoint}?format=json&url={url}"
-            response = utils.web.getUrl(oembed_url)
-            oembed_data = json.loads(response)
-            return oembed_data.get('title')
-        except Exception as e:          
-            self.log.debug(f"Failed to retrieve oEmbed title: {e}")
-            return None    
+        if self._oembed_providers is None:
+            try:
+                providers_url = "https://oembed.com/providers.json"
+                response = utils.web.getUrl(providers_url)
+                self._oembed_providers = json.loads(response)
+            except Exception as e:
+                self.log.debug(f"Failed to load oEmbed providers: {e}")
+                self._oembed_providers = []
+        return self._oembed_providers
         
     def noIgnore(self, irc, msg):
         return not self.registryValue('checkIgnored', msg.channel, irc.network)
@@ -312,6 +280,40 @@ class Web(callbacks.PluginRegexp):
                 self.log.debug('Web plugin TitleSnarfer: URL <%s> appears '
                                'to have no HTML title within the first %S.',
                                url, size)
+
+    def _getOEmbedEndpoint(self, url):
+        """
+        Finds the appropriate oEmbed endpoint for the given URL.
+        First tries the providers registry if enabled, then falls back to
+        HTML discovery if needed and enabled.
+        """
+        providers = self._loadOEmbedProviders()
+        for provider in providers:
+            for pattern in provider.get('endpoints', []):
+                schemes = pattern.get('schemes', [])
+                endpoint = pattern.get('url', '')
+                for scheme in schemes:
+                    regex = re.escape(scheme).replace(r'\*', '.*')
+                    if re.match(regex, url):
+                        return endpoint
+        return None
+
+    def getOEmbedTitle(self, url):
+        """
+        Retrieves the oEmbed title using the providers JSON.
+        """
+        try:
+            oembed_endpoint = self._getOEmbedEndpoint(url)
+            if not oembed_endpoint:
+                return None
+ 
+            oembed_url = f"{oembed_endpoint}?format=json&url={url}"
+            response = utils.web.getUrl(oembed_url)
+            oembed_data = json.loads(response)
+            return oembed_data.get('title')
+        except Exception as e:
+            self.log.debug(f"Failed to retrieve oEmbed title: {e}")
+            return None
 
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
