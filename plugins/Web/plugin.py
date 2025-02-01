@@ -287,29 +287,31 @@ class Web(callbacks.PluginRegexp):
         First tries the providers registry if enabled, then falls back to
         HTML discovery if needed and enabled.
         """
-        providers = self._loadOEmbedProviders()
-        for provider in providers:
-            for pattern in provider.get('endpoints', []):
-                schemes = pattern.get('schemes', [])
-                endpoint = pattern.get('url', '')
-                for scheme in schemes:
-                    regex = re.escape(scheme).replace(r'\*', '.*')
-                    if re.match(regex, url):
-                        return endpoint
-        try:
-            timeout = self.registryValue('timeout')
-            response = utils.web.getUrl(url, timeout=timeout)
-            text = response.decode('utf8', errors='replace')
-            match = re.search(
-                r'<link[^>]+?type="application/json\+oembed"[^>]+?href="([^"]+)"',
-                text,
-                re.IGNORECASE)
-            if match:
-                endpoint = match.group(1)
-                endpoint = endpoint.split('?')[0]
-                return endpoint
-        except Exception as e:
-                self.log.debug(f"Failed to discover oEmbed endpoint in HTML: {e}")
+        if self.registryValue('useOembedRegistry'):
+            providers = self._loadOEmbedProviders()
+            for provider in providers:
+                for pattern in provider.get('endpoints', []):
+                    schemes = pattern.get('schemes', [])
+                    endpoint = pattern.get('url', '')
+                    for scheme in schemes:
+                        regex = re.escape(scheme).replace(r'\*', '.*')
+                        if re.match(regex, url):
+                            return endpoint
+        if self.registryValue('useOembedDiscovery'):
+            try:
+                timeout = self.registryValue('timeout')
+                response = utils.web.getUrl(url, timeout=timeout)
+                text = response.decode('utf8', errors='replace')
+                match = re.search(
+                    r'<link[^>]+?type="application/json\+oembed"[^>]+?href="([^"]+)"',
+                    text,
+                    re.IGNORECASE)
+                if match:
+                    endpoint = match.group(1)
+                    endpoint = endpoint.split('?')[0]
+                    return endpoint
+            except Exception as e:
+                    self.log.debug(f"Failed to discover oEmbed endpoint in HTML: {e}")
         return None
 
     def getOEmbedTitle(self, url):
