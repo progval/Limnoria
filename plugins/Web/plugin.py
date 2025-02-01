@@ -296,17 +296,30 @@ class Web(callbacks.PluginRegexp):
                     regex = re.escape(scheme).replace(r'\*', '.*')
                     if re.match(regex, url):
                         return endpoint
+        try:
+            timeout = self.registryValue('timeout')
+            response = utils.web.getUrl(url, timeout=timeout)
+            text = response.decode('utf8', errors='replace')
+            match = re.search(
+                r'<link[^>]+?type="application/json\+oembed"[^>]+?href="([^"]+)"',
+                text,
+                re.IGNORECASE)
+            if match:
+                endpoint = match.group(1)
+                endpoint = endpoint.split('?')[0]
+                return endpoint
+        except Exception as e:
+                self.log.debug(f"Failed to discover oEmbed endpoint in HTML: {e}")
         return None
 
     def getOEmbedTitle(self, url):
         """
-        Retrieves the oEmbed title using the providers JSON.
+        Retrieves the oEmbed title.
         """
         try:
             oembed_endpoint = self._getOEmbedEndpoint(url)
             if not oembed_endpoint:
                 return None
- 
             oembed_url = f"{oembed_endpoint}?format=json&url={url}"
             response = utils.web.getUrl(oembed_url)
             oembed_data = json.loads(response)
