@@ -45,6 +45,10 @@ def configure(advanced):
     conf.registerPlugin('ChannelStats', True)
 
 class Smileys(registry.Value):
+    def __init__(self, *args, **kwargs):
+        self.s = ''
+        super().__init__(*args, **kwargs)
+
     def set(self, s):
         L = s.split()
         self.setValue(L)
