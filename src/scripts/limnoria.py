@@ -76,6 +76,9 @@ from supybot.version import version
 
 def run():
     import supybot.log as log
+
+    log.info("Starting Limnoria %s on Python %s", version, sys.version)
+
     import supybot.conf as conf
     import supybot.world as world
     import supybot.drivers as drivers
