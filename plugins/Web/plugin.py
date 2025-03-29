@@ -274,7 +274,7 @@ class Web(callbacks.PluginRegexp):
             return
         if self.registryValue('titleSnarfer', channel, network):
             url = match.group(0)
-            if not self._checkURLWhitelist(url):
+            if not self._checkURLWhitelist(irc, msg, url):
                 return
             r = self.registryValue('nonSnarfingRegexp', channel, network)
             if r and r.search(url):
@@ -303,11 +303,13 @@ class Web(callbacks.PluginRegexp):
     titleSnarfer = urlSnarfer(titleSnarfer)
     titleSnarfer.__doc__ = utils.web._httpUrlRe
 
-    def _checkURLWhitelist(self, url):
-        if not self.registryValue('urlWhitelist'):
+    def _checkURLWhitelist(self, irc, msg, url):
+        if not self.registryValue('urlWhitelist',
+                                  channel=msg.channel, network=irc.network):
             return True
         passed = False
-        for wu in self.registryValue('urlWhitelist'):
+        for wu in self.registryValue('urlWhitelist',
+                                     channel=msg.channel, network=irc.network):
             if wu.endswith('/') and url.find(wu) == 0:
                 passed = True
                 break
@@ -325,7 +327,7 @@ class Web(callbacks.PluginRegexp):
         Returns the HTTP headers of <url>.  Only HTTP urls are valid, of
         course.
         """
-        if not self._checkURLWhitelist(url):
+        if not self._checkURLWhitelist(irc, msg, url):
             irc.error("This url is not on the whitelist.")
             return
         timeout = self.registryValue('timeout')
@@ -362,7 +364,7 @@ class Web(callbacks.PluginRegexp):
         Returns the DOCTYPE string of <url>.  Only HTTP urls are valid, of
         course.
         """
-        if not self._checkURLWhitelist(url):
+        if not self._checkURLWhitelist(irc, msg, url):
             irc.error("This url is not on the whitelist.")
             return
         size = conf.supybot.protocols.http.peekSize()
@@ -384,7 +386,7 @@ class Web(callbacks.PluginRegexp):
         Returns the Content-Length header of <url>.  Only HTTP urls are valid,
         of course.
         """
-        if not self._checkURLWhitelist(url):
+        if not self._checkURLWhitelist(irc, msg, url):
             irc.error("This url is not on the whitelist.")
             return
         timeout = self.registryValue('timeout')
@@ -417,7 +419,7 @@ class Web(callbacks.PluginRegexp):
         If --no-filter is given, the bot won't strip special chars (action,
         DCC, ...).
         """
-        if not self._checkURLWhitelist(url):
+        if not self._checkURLWhitelist(irc, msg, url):
             irc.error("This url is not on the whitelist.")
             return
         r = self.getTitle(irc, url, True, msg)
@@ -457,7 +459,7 @@ class Web(callbacks.PluginRegexp):
         supybot.plugins.Web.fetch.maximum.  If that configuration variable is
         set to 0, this command will be effectively disabled.
         """
-        if not self._checkURLWhitelist(url):
+        if not self._checkURLWhitelist(irc, msg, url):
             irc.error("This url is not on the whitelist.")
             return
         max = self.registryValue('fetch.maximum')

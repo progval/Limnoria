@@ -74,11 +74,12 @@ conf.registerChannelValue(Web, 'checkIgnored',
     registry.Boolean(True, _("""Determines whether the title snarfer checks
     if the author of a message is ignored.""")))
 
-conf.registerGlobalValue(Web, 'urlWhitelist',
+conf.registerChannelValue(Web, 'urlWhitelist',
     registry.SpaceSeparatedListOfStrings([], """If set, bot will only fetch data
     from urls in the whitelist, i.e. starting with http://domain/optionalpath/. This will
     apply to all commands that retrieve data from user-supplied URLs,
-    including fetch, headers, title, doctype."""))
+    including fetch, headers, title, doctype."""),
+    opSettable=False)
 
 conf.registerGlobalValue(Web, 'timeout',
     registry.NonNegativeInteger(5, """Determines the maximum number of
