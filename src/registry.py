@@ -920,13 +920,11 @@ class TemplatedString(String):
 
 class Json(String):
     __slots__ = ()
-    # Json-serializable data
+
     def set(self, v):
         self.setValue(json.loads(v))
-    def setValue(self, v):
-        super(Json, self).setValue(json.dumps(v))
-    def __call__(self):
-        return json.loads(super(Json, self).__call__())
+    def __str__(self):
+        return json.dumps(self())
 
     class _Context:
         def __init__(self, var):
