@@ -31,6 +31,7 @@
 
 import re
 import os
+import copy
 import time
 import json
 import codecs
@@ -921,6 +922,8 @@ class TemplatedString(String):
 class Json(String):
     __slots__ = ()
 
+    def __call__(self):
+        return copy.deepcopy(super(Json, self).__call__())
     def set(self, v):
         self.setValue(json.loads(v))
     def __str__(self):
