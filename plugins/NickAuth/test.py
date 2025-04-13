@@ -128,7 +128,7 @@ class NickAuthTestCase(PluginTestCase):
 
     def testList(self):
         self.assertNotError('register foobar 123')
-        self.assertRegexp('nick list', 'You have no recognized nick')
+        self.assertRegexp('nick list', 'You have no recognized services accounts')
         self.assertNotError('nick add foo')
         self.assertRegexp('nick list', 'foo')
         self.assertNotError('nick add %s bar' % self.nick)
