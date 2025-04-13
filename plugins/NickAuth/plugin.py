@@ -48,8 +48,8 @@ class NickAuth(callbacks.Plugin):
     This plugin allows users to use their network services account to
     authenticate to the bot.
 
-    They first have to use ``@nickauth nick add <the nick>`` while being
-    identified to the bot and then use ``@auth`` when they want to
+    They first have to use ``@nickauth nick add <services account name>`` while
+    identified to the bot, and then use ``@auth`` when they want to
     identify to the bot.
     """
 
@@ -59,12 +59,12 @@ class NickAuth(callbacks.Plugin):
     class nick(callbacks.Commands):
         def _check_auth(self, irc, msg, user):
             if user is None:
-                irc.error(_('You are not authenticated.'), Raise=True)
+                irc.error(_('You are not logged in to the bot.'), Raise=True)
             if not user.checkHostmask(msg.prefix):
                 try:
                     u = ircdb.users.getUser(msg.prefix)
                 except KeyError:
-                    irc.error(_('You are not authenticated.'),
+                    irc.error(_('You are not logged in to the bot.'),
                               Raise=True)
                 if not u._checkCapability('owner'):
                     irc.error(_('You must be owner to do that.'),
@@ -72,11 +72,11 @@ class NickAuth(callbacks.Plugin):
 
         @internationalizeDocstring
         def add(self, irc, msg, args, network, user, nick):
-            """[<network>] <user> <nick>
+            """[<network>] [<bot username>] <account>
 
-            Add <nick> to the list of nicks owned by the <user> on the
-            <network>. You have to register this nick to the network
-            services to be authenticated.
+            Add <account> to the list of network services accounts owned by
+            <bot username> on <network>. <bot username> is only required if you
+            are not already logged in to Limnoria.
             <network> defaults to the current network.
             """
             network = network.network or irc.network
@@ -85,8 +85,8 @@ class NickAuth(callbacks.Plugin):
             try:
                 user.addNick(network, nick)
             except KeyError:
-                irc.error(_('This nick is already used by someone on this '
-                    'network.'), Raise=True)
+                irc.error(_('This services account is already used by someone '
+                            'on this network.'), Raise=True)
             irc.replySuccess()
         add = wrap(add, [optional('networkIrc'),
                          optional('otherUser'),
@@ -94,10 +94,11 @@ class NickAuth(callbacks.Plugin):
 
         @internationalizeDocstring
         def remove(self, irc, msg, args, network, user, nick):
-            """[<network>] <user> <nick>
+            """[<network>] [<bot username>] <account>
 
-            Remove <nick> from the list of nicks owned by the <user> on the
-            <network>.
+            Remove <account> from the list of network services accounts owned by
+            <bot username> on <network>. <bot username> is only required if you
+            are not already logged in to Limnoria.
             <network> defaults to the current network.
             """
             network = network.network or irc.network
@@ -106,8 +107,8 @@ class NickAuth(callbacks.Plugin):
             try:
                 user.removeNick(network, nick)
             except KeyError:
-                irc.error(_('This nick is not registered to you on this '
-                    'network.'), Raise=True)
+                irc.error(_('This services account is not registered to you on '
+                            'this network.'), Raise=True)
             irc.replySuccess()
         remove = wrap(remove, [optional('networkIrc'),
                                optional('otherUser'),
@@ -115,9 +116,10 @@ class NickAuth(callbacks.Plugin):
 
         @internationalizeDocstring
         def list(self, irc, msg, args, network, user):
-            """[<network>] [<user>]
+            """[<network>] [<bot username>]
 
-            Lists nicks of the <user> on the network.
+            Lists services accounts registered to <bot username> on the network,
+            or your own bot account if no username is given.
             <network> defaults to the current network.
             """
             network = network.network or irc.network
@@ -135,11 +137,11 @@ class NickAuth(callbacks.Plugin):
                     raise KeyError
             except KeyError:
                 if user == ircdb.users.getUser(msg.prefix):
-                    irc.error(_('You have no recognized nick on this '
-                            'network.'), Raise=True)
+                    irc.error(_('You have no recognized services accounts on '
+                                'this network.'), Raise=True)
                 else:
-                    irc.error(_('%s has no recognized nick on this '
-                            'network.') % user.name, Raise=True)
+                    irc.error(_('%s has no recognized services accounts on this '
+                                'network.') % user.name, Raise=True)
         list = wrap(list, [optional('networkIrc'),
                            optional('otherUser')])
 
@@ -148,7 +150,7 @@ class NickAuth(callbacks.Plugin):
         """takes no argument
 
         Tries to authenticate you using network services.
-        If you get no reply, it means you are not authenticated to the
+        If you get no reply, it means you are not authenticated to
         network services."""
         nick = ircutils.toLower(msg.nick)
         self._requests[(irc.network, msg.nick)] = (time.time(), msg.prefix, irc)
@@ -183,7 +185,7 @@ class NickAuth(callbacks.Plugin):
             ircdb.users.setUser(user, flush=False)
             irc.reply(_('You are now authenticated as %s.') % user.name)
         else:
-            irc.error(_('No user claimed the nick %s on this network. '
+            irc.error(_('No user claimed the account %s on this network. '
                         'If this is you, you should connect with an other '
                         'method and use the "nickauth nick add" command, '
                         'or ask the owner of the bot to do it.')
