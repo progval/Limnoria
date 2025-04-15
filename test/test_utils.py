@@ -311,6 +311,10 @@ class StrTest(SupyTestCase):
         self.assertEqual(f('foo'), 'foo/bar')
         f = PRTR('s/^/foo/')
         self.assertEqual(f('bar'), 'foobar')
+        f = PRTR('s/bar/foo\0/')
+        self.assertEqual(f('bar'), 'foobar')
+        f = PRTR(r's/bar/foo\0/')
+        self.assertEqual(f('bar'), 'foobar')
 
     def testMultipleReplacer(self):
         replacer = utils.str.MultipleReplacer({'foo': 'bar', 'a': 'b'})

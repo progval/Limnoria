@@ -298,7 +298,8 @@ def perlReToReplacer(s):
     regexp = regexp.replace('\x08', r'\b')
     replace = replace.replace('\\'+sep, sep)
     for i in range(10):
-        replace = replace.replace(chr(i), r'\%s' % i)
+        replace = replace.replace(chr(i), r'\g<%s>' % i)
+    replace = replace.replace(r'\0', r'\g<0>')
     g = False
     if 'g' in flags:
         g = True
