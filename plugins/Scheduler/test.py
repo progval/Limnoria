@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import datetime
+
 from supybot.test import *
 
 import supybot.schedule as schedule
@@ -106,6 +108,29 @@ class SchedulerTestCase(ChannelPluginTestCase):
         self.assertRegexp('scheduler list', 'no.*commands')
         timeFastForward(5)
         self.assertNoResponse(' ', timeout=1)
+
+    # This test fails if run later
+    def test01Daily(self):
+        self.assertRegexp('scheduler list', 'no.*commands')
+        dt = datetime.datetime.now() + datetime.timedelta(seconds=10)
+        event_time = "{}:{}:{}".format(dt.hour, dt.minute, dt.second)
+
+        self.assertRegexp('scheduler daily dailytask {} echo testDaily'.format(event_time),
+                          'The operation succeeded.')
+
+        self.assertNoResponse(' ', timeout=1)
+        timeFastForward(10)
+        self.assertResponse(' ', 'testDaily')
+
+        timeFastForward(60 * 60 * 24 - 2)  # Two seconds before event time on the following day
+        self.assertNoResponse(' ', timeout=1)
+        timeFastForward(2)
+        self.assertResponse(' ', 'testDaily')
+
+        timeFastForward(60 * 60 * 12)  # Sanity checking that future events also work
+        self.assertNoResponse(' ', timeout=1)
+        timeFastForward(60 * 60 * 12)
+        self.assertResponse(' ', 'testDaily')
 
     def testRepeatDelay(self):
         self.assertNoResponse(
