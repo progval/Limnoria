@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2004-2005, Jeremiah Fincher
 # Copyright (c) 2009, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2025, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -62,5 +62,10 @@ conf.registerChannelValue(Channel, 'partMsg',
         this will be used. If this value is empty, then no part message will
         be used (they are optional in the IRC protocol). The standard
         substitutions ($version, $nick, etc.) are all handled appropriately.""")))
+
+conf.registerGroup(Channel, 'invite')
+conf.registerChannelValue(Channel.invite, 'requireCapability',
+    registry.String('op', _("""Determines what capability (if any) the bot should
+    require people trying to use the 'invite' command to have.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

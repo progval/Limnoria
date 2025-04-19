@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2009, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2025, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -413,6 +413,40 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.assertEqual(m.command, 'PART')
         self.assertEqual(m.args[0], '#foo')
         self.assertEqual(m.args[1], 'reason')
+
+    def testInvite(self):
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        m = self.getMsg('invite foo')
+        self.assertEqual(m.command, 'INVITE')
+        self.assertEqual(m.args, ('foo', self.channel))
+
+    def testInviteNoCapability(self):
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        m = self.assertError('invite foo',
+                             frm='test!user@with__no_testcap__')
+
+    def testInviteCustomCapability(self):
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+
+        self.assertError('invite foo',
+                         frm='test!user@with__no_testcap__')
+
+        with conf.supybot.plugins.Channel.invite.requireCapability.context('freeinvite'):
+            m = self.getMsg('invite foo',
+                            frm='test!user@with__no_testcap__')
+            self.assertEqual(m.command, 'INVITE')
+            self.assertEqual(m.args, ('foo', self.channel))
+
+            self.assertNotError('channel capability set -freeinvite')
+
+            self.assertError('invite foo',
+                             frm='test!user@with__no_testcap__')
+
+        with conf.supybot.plugins.Channel.invite.requireCapability.context(''):
+            m = self.getMsg('invite foo',
+                            frm='test!user@with__no_testcap__')
+            self.assertEqual(m.command, 'INVITE')
+            self.assertEqual(m.args, ('foo', self.channel))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
