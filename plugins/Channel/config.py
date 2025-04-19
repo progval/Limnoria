@@ -66,6 +66,7 @@ conf.registerChannelValue(Channel, 'partMsg',
 conf.registerGroup(Channel, 'invite')
 conf.registerChannelValue(Channel.invite, 'requireCapability',
     registry.String('op', _("""Determines what capability (if any) the bot should
-    require people trying to use the 'invite' command to have.""")))
+    require people trying to use the 'invite' command to have.
+    Leave empty to allow anyone to use it.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
