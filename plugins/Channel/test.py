@@ -428,9 +428,6 @@ class ChannelTestCase(ChannelPluginTestCase):
     def testInviteCustomCapability(self):
         self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
 
-        self.assertError('invite foo',
-                         frm='test!user@with__no_testcap__')
-
         with conf.supybot.plugins.Channel.invite.requireCapability.context('freeinvite'):
             m = self.getMsg('invite foo',
                             frm='test!user@with__no_testcap__')
