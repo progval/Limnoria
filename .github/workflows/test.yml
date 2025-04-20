@@ -62,13 +62,6 @@ jobs:
             with-opt-deps: false
             runs-on: ubuntu-22.04
 
-          - python-version: "3.6"
-            with-opt-deps: false
-            runs-on: ubuntu-20.04
-          - python-version: "pypy-3.6"
-            with-opt-deps: false
-            runs-on: ubuntu-20.04
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
