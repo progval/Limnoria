@@ -36,6 +36,7 @@ import socket
 import random
 
 from . import ircutils, registry, utils
+from .dynamicScope import dynamic
 from .utils import minisix
 from .utils.net import isSocketAddress
 from .version import version

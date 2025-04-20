@@ -45,6 +45,7 @@ import warnings
 
 from . import (conf, ircdb, irclib, ircmsgs, ircutils, log, registry,
         utils, world)
+from .dynamicScope import dynamic
 from .utils import minisix
 from .utils.iter import any, all
 from .i18n import PluginInternationalization

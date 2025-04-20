@@ -42,6 +42,7 @@ import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
+from supybot.dynamicScope import dynamic
 _ = PluginInternationalization('Google')
 
 from .parser import GoogleHTMLParser

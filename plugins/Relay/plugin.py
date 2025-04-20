@@ -42,6 +42,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 from supybot.utils.structures import MultiSet, TimeoutQueue
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
+from supybot.dynamicScope import dynamic
 _ = PluginInternationalization('Relay')
 
 class Relay(callbacks.Plugin):

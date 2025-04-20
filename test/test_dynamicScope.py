@@ -28,6 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+from supybot.dynamicScope import dynamic
 from supybot.test import *
 
 class TestDynamic(SupyTestCase):
