@@ -88,7 +88,7 @@ jobs:
 
       - name: Install
         run: |
-          LIMNORIA_WARN_OLD_PYTHON=0 python3 setup.py install
+          LIMNORIA_WARN_OLD_PYTHON=0 pip install .
 
       - name: Test with unittest
         run: |
