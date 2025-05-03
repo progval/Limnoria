@@ -107,8 +107,8 @@ if version:
     fd.write('    pass\n')
     fd.close()
 
-if sys.version_info < (3, 6, 0):
-    sys.stderr.write("Limnoria requires Python 3.6 or newer.")
+if sys.version_info < (3, 9, 0):
+    sys.stderr.write("Limnoria requires Python 3.9 or newer.")
     sys.stderr.write(os.linesep)
     sys.exit(-1)
 
@@ -201,9 +201,6 @@ setup(
         'Operating System :: OS Independent',
         'Operating System :: POSIX',
         'Operating System :: Microsoft :: Windows',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
