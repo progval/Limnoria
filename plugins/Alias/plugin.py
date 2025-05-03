@@ -36,7 +36,6 @@ import types
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.utils.minisix as minisix
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
@@ -228,8 +227,6 @@ def makeNewAlias(name, alias):
         doc = format(_('<an alias,%s %n>\n\nAlias for %q.'),
                     flexargs, (biggestDollar, _('argument')), alias)
     except UnicodeDecodeError:
-        if minisix.PY2:
-            alias = alias.decode('utf8')
         doc = format(_('<an alias,%s %n>\n\nAlias for %q.'),
                     flexargs, (biggestDollar, _('argument')), alias)
     f = utils.python.changeFunctionName(f, name, doc)

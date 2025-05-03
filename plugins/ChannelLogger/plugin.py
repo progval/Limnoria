@@ -38,16 +38,12 @@ import supybot.world as world
 import supybot.ircdb as ircdb
 import supybot.utils as utils
 import supybot.irclib as irclib
-import supybot.utils.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('ChannelLogger')
-
-if minisix.PY2:
-    from io import open
 
 class FakeLog(object):
     def flush(self):
@@ -157,8 +153,6 @@ class ChannelLogger(callbacks.Plugin):
         format = conf.supybot.log.timestampFormat()
         if format:
             string = time.strftime(format) + '  '
-            if minisix.PY2:
-                string = string.decode('utf8', 'ignore')
             log.write(string)
 
     def normalizeChannel(self, irc, channel):
@@ -174,8 +168,6 @@ class ChannelLogger(callbacks.Plugin):
             self.timestamp(log)
         if self.registryValue('stripFormatting', channel, irc.network):
             s = ircutils.stripFormatting(s)
-        if minisix.PY2:
-            s = s.decode('utf8', 'ignore')
         log.write(s)
         if self.registryValue('flushImmediately'):
             log.flush()

@@ -38,7 +38,6 @@ import supybot.utils as utils
 import supybot.ircdb as ircdb
 from supybot.commands import *
 import supybot.plugins as plugins
-import supybot.utils.minisix as minisix
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 import supybot.httpserver as httpserver
@@ -109,8 +108,6 @@ if sqlite3:
 
         def has_aka(self, channel, name):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             db = self.get_db(channel)
             return self.get_db(channel).cursor() \
                     .execute("""SELECT COUNT() as count
@@ -125,8 +122,6 @@ if sqlite3:
 
         def get_alias(self, channel, name):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             cursor = self.get_db(channel).cursor()
             cursor.execute("""SELECT alias FROM aliases
                               WHERE name = ?;""", (name,))
@@ -140,11 +135,6 @@ if sqlite3:
             name = callbacks.canonicalName(name, preserve_spaces=True)
             if self.has_aka(channel, name):
                 raise AkaError(_('This Aka already exists.'))
-            if minisix.PY2:
-                if isinstance(name, str):
-                    name = name.decode('utf8')
-                if isinstance(alias, str):
-                    alias = alias.decode('utf8')
             db = self.get_db(channel)
             cursor = db.cursor()
             cursor.execute("""INSERT INTO aliases VALUES (
@@ -153,16 +143,12 @@ if sqlite3:
 
         def remove_aka(self, channel, name):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             db = self.get_db(channel)
             db.cursor().execute('DELETE FROM aliases WHERE name = ?', (name,))
             db.commit()
 
         def lock_aka(self, channel, name, by):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             db = self.get_db(channel)
             cursor = db.cursor().execute("""UPDATE aliases
                     SET locked=1, locked_at=?, locked_by=? WHERE name = ?""",
@@ -173,8 +159,6 @@ if sqlite3:
 
         def unlock_aka(self, channel, name, by):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             db = self.get_db(channel)
             cursor = db.cursor()
             cursor.execute("""UPDATE aliases SET locked=0, locked_at=?
@@ -185,8 +169,6 @@ if sqlite3:
 
         def get_aka_lock(self, channel, name):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             cursor = self.get_db(channel).cursor()
             cursor.execute("""SELECT locked, locked_by, locked_at
                               FROM aliases WHERE name = ?;""", (name,))
@@ -249,8 +231,6 @@ elif sqlalchemy:
 
         def has_aka(self, channel, name):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             count = self.get_db(channel).query(SQLAlchemyAlias) \
                     .filter(SQLAlchemyAlias.name == name) \
                     .count()
@@ -261,8 +241,6 @@ elif sqlalchemy:
 
         def get_alias(self, channel, name):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             try:
                 return self.get_db(channel).query(SQLAlchemyAlias.alias) \
                         .filter(SQLAlchemyAlias.name == name).one()[0]
@@ -273,27 +251,18 @@ elif sqlalchemy:
             name = callbacks.canonicalName(name, preserve_spaces=True)
             if self.has_aka(channel, name):
                 raise AkaError(_('This Aka already exists.'))
-            if minisix.PY2:
-                if isinstance(name, str):
-                    name = name.decode('utf8')
-                if isinstance(alias, str):
-                    alias = alias.decode('utf8')
             db = self.get_db(channel)
             db.add(SQLAlchemyAlias(name, alias))
             db.commit()
 
         def remove_aka(self, channel, name):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             db = self.get_db(channel)
             db.query(SQLAlchemyAlias).filter(SQLAlchemyAlias.name == name).delete()
             db.commit()
 
         def lock_aka(self, channel, name, by):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             db = self.get_db(channel)
             try:
                 aka = db.query(SQLAlchemyAlias) \
@@ -309,8 +278,6 @@ elif sqlalchemy:
 
         def unlock_aka(self, channel, name, by):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             db = self.get_db(channel)
             try:
                 aka = db.query(SQLAlchemyAlias) \
@@ -326,8 +293,6 @@ elif sqlalchemy:
 
         def get_aka_lock(self, channel, name):
             name = callbacks.canonicalName(name, preserve_spaces=True)
-            if minisix.PY2 and isinstance(name, str):
-                name = name.decode('utf8')
             try:
                 return self.get_db(channel) \
                         .query(SQLAlchemyAlias.locked, SQLAlchemyAlias.locked_by, SQLAlchemyAlias.locked_at)\
@@ -600,8 +565,6 @@ class Aka(callbacks.Plugin):
             for cb in dynamic.irc.callbacks: # including this plugin
                 if cb.isCommandMethod(' '.join(args[0:-1])):
                     return False
-        if minisix.PY2 and isinstance(name, str):
-            name = name.decode('utf8')
         channel = dynamic.channel or 'global'
         return self._db.has_aka(channel, name) or \
                 self._db.has_aka('global', name) or \

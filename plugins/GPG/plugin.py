@@ -39,15 +39,11 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
 from supybot.commands import *
-import supybot.utils.minisix as minisix
 import supybot.plugins as plugins
 import supybot.commands as commands
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
-if minisix.PY3:
-    import http.client as http_client
-else:
-    import httplib as http_client
+import http.client as http_client
 try:
     from supybot.i18n import PluginInternationalization
     _ = PluginInternationalization('GPG')
@@ -212,7 +208,7 @@ class GPG(callbacks.Plugin):
                 r'-----BEGIN PGP SIGNATURE-----\r?\n.*'
                 r'\r?\n-----END PGP SIGNATURE-----',
                 re.S)
-        
+
         @check_gpg_available
         def auth(self, irc, msg, args, url):
             """<url>
@@ -221,7 +217,7 @@ class GPG(callbacks.Plugin):
             the key used is associated to a user."""
             self._expire_tokens()
             content = safe_getUrl(url)
-            if minisix.PY3 and isinstance(content, bytes):
+            if isinstance(content, bytes):
                 content = content.decode()
             match = self._auth_re.search(content)
             if not match:

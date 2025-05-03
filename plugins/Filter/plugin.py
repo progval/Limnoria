@@ -29,10 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from __future__ import unicode_literals
-
+import io
 import re
-import sys
 import codecs
 import string
 import random
@@ -40,7 +38,6 @@ import random
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.utils.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -152,15 +149,10 @@ class Filter(callbacks.Plugin):
         Returns the binary representation of <text>.
         """
         L = []
-        if minisix.PY3:
-            if isinstance(text, str):
-                bytes_ = text.encode()
-            else:
-                bytes_ = text
+        if isinstance(text, str):
+            bytes_ = text.encode()
         else:
-            if isinstance(text, unicode):
-                text = text.encode()
-            bytes_ = map(ord, text)
+            bytes_ = text
         for i in bytes_:
             LL = []
             assert i<=256
@@ -228,8 +220,6 @@ class Filter(callbacks.Plugin):
         commonly used for text that simply needs to be hidden from inadvertent
         reading by roaming eyes, since it's easily reversible.
         """
-        if minisix.PY2:
-            text = text.decode('utf8')
         irc.reply(self._rot13_encoder(text)[0])
     rot13 = wrap(rot13, ['text'])
 
@@ -395,12 +385,8 @@ class Filter(callbacks.Plugin):
 
         Returns <text> with each character randomly colorized.
         """
-        if minisix.PY2:
-            text = text.decode('utf-8')
         text = ircutils.stripColor(text)
         L = [self._color(c) for c in text]
-        if minisix.PY2:
-            L = [c.encode('utf-8') for c in L]
         irc.reply('%s%s' % (''.join(L), '\x03'))
     colorize = wrap(colorize, ['text'])
 
@@ -410,14 +396,10 @@ class Filter(callbacks.Plugin):
 
         Returns <text> colorized like a rainbow.
         """
-        if minisix.PY2:
-            text = text.decode('utf-8')
         text = ircutils.stripColor(text)
         colors = utils.iter.cycle(['05', '04', '07', '08', '09', '03', '11',
                                    '10', '12', '02', '06', '13'])
         L = [self._color(c, fg=next(colors)) for c in text]
-        if minisix.PY2:
-            L = [c.encode('utf-8') for c in L]
         irc.reply(''.join(L) + '\x03')
     rainbow = wrap(rainbow, ['text'])
 
@@ -607,7 +589,7 @@ class Filter(callbacks.Plugin):
         '~': _('tilde')
     }
     _spellNumbers = {
-        '0': _('zero'), '1': _('one'), '2': _('two'), '3': _('three'), 
+        '0': _('zero'), '1': _('one'), '2': _('two'), '3': _('three'),
         '4': _('four'), '5': _('five'), '6': _('six'), '7': _('seven'),
         '8': _('eight'), '9': _('nine')
     }
@@ -629,7 +611,7 @@ class Filter(callbacks.Plugin):
 ##         for (c, v) in d.items():
 ##             dd[ord(c)] = unicode(v + ' ')
 ##         irc.reply(unicode(text).translate(dd))
-        out = minisix.io.StringIO()
+        out = io.StringIO()
         write = out.write
         for c in text:
             try:

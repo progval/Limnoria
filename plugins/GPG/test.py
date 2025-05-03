@@ -27,9 +27,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 ###
+import io
 
 from supybot.test import *
-import supybot.utils.minisix as minisix
 
 import supybot.gpg as gpg
 
@@ -111,25 +111,25 @@ class GPGTestCase(PluginTestCase):
                 return fd
             (utils.web.getUrlFd, realGetUrlFd) = (fakeGetUrlFd, utils.web.getUrlFd)
 
-            fd = minisix.io.StringIO()
+            fd = io.StringIO()
             fd.write('foo')
             fd.seek(0)
             self.assertResponse('gpg signing auth http://foo.bar/baz.gpg',
                     'Error: Signature or token not found.')
 
-            fd = minisix.io.StringIO()
+            fd = io.StringIO()
             fd.write(token)
             fd.seek(0)
             self.assertResponse('gpg signing auth http://foo.bar/baz.gpg',
                     'Error: Signature or token not found.')
 
-            fd = minisix.io.StringIO()
+            fd = io.StringIO()
             fd.write(WRONG_TOKEN_SIGNATURE)
             fd.seek(0)
             self.assertRegexp('gpg signing auth http://foo.bar/baz.gpg',
                     'Error: Unknown token.*')
 
-            fd = minisix.io.StringIO()
+            fd = io.StringIO()
             fd.write(str(gpg.keyring.sign(token)))
             fd.seek(0)
             self.assertResponse('gpg signing auth http://foo.bar/baz.gpg',

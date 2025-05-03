@@ -34,7 +34,6 @@ from supybot.test import *
 import supybot.conf as conf
 import supybot.plugin as plugin
 import supybot.registry as registry
-from supybot.utils.minisix import u
 
 from . import plugin as Alias
 
@@ -96,7 +95,7 @@ class AliasTestCase(ChannelPluginTestCase):
         self.assertError('moo')
         self.assertResponse('moo foo', 'foo')
         self.assertResponse('moo foo bar', 'foo bar')
-    
+
     def testChannel(self):
         self.assertNotError('alias add channel echo $channel')
         self.assertResponse('alias channel', self.channel)
@@ -130,8 +129,8 @@ class AliasTestCase(ChannelPluginTestCase):
         self.assertResponse('myre foo bar', 's/foo/bar/g')
 
     def testUnicode(self):
-        self.assertNotError(u('alias add \u200b echo foo'))
-        self.assertResponse(u('\u200b'), 'foo')
+        self.assertNotError('alias add \u200b echo foo')
+        self.assertResponse('\u200b', 'foo')
 
         self.assertNotError('alias add café echo bar')
         self.assertResponse('café', 'bar')
