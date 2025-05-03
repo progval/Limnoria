@@ -11,25 +11,9 @@ Accesses Google for various things.
 Usage
 -----
 
-This is a simple plugin to provide access to the Google services we
-all know and love from our favorite IRC bot.
+This plugin provides access to Google services:
 
-1. google
-
-   Searches for a string and gives you 3 results from Google search
-   ``!google something``
-
-2. lucky
-
-   Return the first result (Google's "I'm Feeling Lucky" search)
-   ``!lucky something``
-
-3. calc
-
-   Does mathematic calculations
-   ``!calc 5+4``
-
-4. translate
+1. translate
 
    Translates a string
    ``!translate en ar test``
@@ -42,16 +26,6 @@ Check: `Supported language codes`_
 
 Commands
 --------
-
-.. _command-google-google:
-
-``google <search> [--{filter,language} <value>]``
-  Searches google.com for the given string. As many results as can fit are included. --language accepts a language abbreviation; --filter accepts a filtering level ('active', 'moderate', 'off').
-
-.. _command-google-lucky:
-
-``lucky [--snippet] <search>``
-  Does a google search, but only returns the first result. If option --snippet is given, returns also the page text snippet.
 
 .. _command-google-translate:
 
