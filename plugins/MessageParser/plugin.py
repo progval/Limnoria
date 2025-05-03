@@ -31,7 +31,6 @@
 
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.utils.minisix as minisix
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -83,12 +82,8 @@ class MessageParser(callbacks.Plugin, plugins.ChannelDBHandler):
         """Create the database and connect to it."""
         if os.path.exists(filename):
             db = sqlite3.connect(filename)
-            if minisix.PY2:
-                db.text_factory = str
             return db
         db = sqlite3.connect(filename)
-        if minisix.PY2:
-            db.text_factory = str
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE triggers (
                           id INTEGER PRIMARY KEY,

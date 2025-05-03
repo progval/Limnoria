@@ -99,11 +99,9 @@ class MathTestCase(PluginTestCase):
         self.assertResponse('calc 5*0.06', str(5*0.06))
         self.assertResponse('calc 2.0-7.0', str(2-7))
         self.assertResponse('calc e**(i*pi)+1', '0')
-        if minisix.PY3:
-            # Python 2 has bad handling of exponentiation of negative numbers
-            self.assertResponse('calc (-1)**.5', 'i')
-            self.assertRegexp('calc (-5)**.5', '2.236067977[0-9]+i')
-            self.assertRegexp('calc -((-5)**.5)', '-2.236067977[0-9]+i')
+        self.assertResponse('calc (-1)**.5', 'i')
+        self.assertRegexp('calc (-5)**.5', '2.236067977[0-9]+i')
+        self.assertRegexp('calc -((-5)**.5)', '-2.236067977[0-9]+i')
         self.assertNotRegexp('calc [9, 5] + [9, 10]', 'TypeError')
         self.assertError('calc [9, 5] + [9, 10]')
         self.assertNotError('calc degrees(2)')

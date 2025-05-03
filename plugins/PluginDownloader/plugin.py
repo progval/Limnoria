@@ -30,7 +30,6 @@
 
 import os
 import io
-import sys
 import json
 import shutil
 import tarfile
@@ -39,7 +38,6 @@ import supybot.log as log
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.utils.minisix as minisix
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -101,11 +99,8 @@ class GithubRepository(GitRepository):
     def _download(self, plugin):
         try:
             response = utils.web.getUrlFd(self._downloadUrl)
-            if minisix.PY2:
-                assert response.getcode() == 200, response.getcode()
-            else:
-                assert response.status == 200, response.status
-            fileObject = minisix.io.BytesIO()
+            assert response.status == 200, response.status
+            fileObject = io.BytesIO()
             fileObject.write(response.read())
         finally: # urllib does not handle 'with' statements :(
             response.close()
@@ -161,8 +156,7 @@ class GithubRepository(GitRepository):
             if file.name.startswith(prefix + dirname + '/README'):
                 extractedFile = archive.extractfile(file)
                 content = extractedFile.read()
-                if minisix.PY3:
-                    content = content.decode()
+                content = content.decode()
                 return content
 
     def _getWritableDirectoryFromList(self, directories):

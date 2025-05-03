@@ -36,7 +36,6 @@ import csv
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.utils.minisix as minisix
 import supybot.plugins as plugins
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
@@ -66,13 +65,9 @@ class SqliteKarmaDB(object):
             return self.dbs[filename]
         if os.path.exists(filename):
             db = sqlite3.connect(filename, check_same_thread=False)
-            if minisix.PY2:
-                db.text_factory = str
             self.dbs[filename] = db
             return db
         db = sqlite3.connect(filename, check_same_thread=False)
-        if minisix.PY2:
-            db.text_factory = str
         self.dbs[filename] = db
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE karma (

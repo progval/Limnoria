@@ -28,17 +28,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import io
 import os
-import sys
 import time
-import string
 
 import supybot.conf as conf
 import supybot.ircdb as ircdb
 import supybot.utils as utils
 import supybot.shlex as shlex
 from supybot.commands import *
-import supybot.utils.minisix as minisix
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -69,7 +67,7 @@ class OptionList(object):
                 ret.append(token)
 
     def tokenize(self, s):
-        lexer = shlex.shlex(minisix.io.StringIO(s))
+        lexer = shlex.shlex(io.StringIO(s))
         lexer.commenters = ''
         lexer.quotes = ''
         lexer.whitespace = ''
@@ -104,16 +102,12 @@ class SqliteMoobotDB(object):
         if channel in self.dbs:
             return self.dbs[channel]
         filename = plugins.makeChannelFilename(self.filename, channel)
-        
+
         if os.path.exists(filename):
             db = sqlite3.connect(filename, check_same_thread=False)
-            if minisix.PY2:
-                db.text_factory = str
             self.dbs[channel] = db
             return db
         db = sqlite3.connect(filename, check_same_thread=False)
-        if minisix.PY2:
-            db.text_factory = str
         self.dbs[channel] = db
         cursor = db.cursor()
         cursor.execute("""CREATE TABLE factoids (
@@ -303,13 +297,13 @@ class MoobotFactoids(callbacks.Plugin):
     If you want the factoid to have random answers say (for example):
     ``@fruit is <reply> (orange|apple|banana)``. So when ``@fruit`` is called
     the bot will reply with one of the listed fruits (random): ``orange``.
-    
+
     If you want to replace the value of the factoid, for example:
     ``@no Hi is <reply> Hey`` when you call ``@hi`` the bot says ``Hey``.
 
     If you want to append to the current value of a factoid say:
     ``@Hi is also Hello``, so that when you call ``@hi`` the
-    bot says ``Hey, or Hello.`` 
+    bot says ``Hey, or Hello.``
     """
     callBefore = ['Dunno']
     def __init__(self, irc):

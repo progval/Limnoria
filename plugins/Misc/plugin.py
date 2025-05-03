@@ -48,7 +48,6 @@ from supybot.commands import *
 from supybot.commands import ProcessTimeoutError
 import supybot.ircdb as ircdb
 import supybot.irclib as irclib
-import supybot.utils.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
@@ -57,9 +56,6 @@ from supybot import commands
 
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Misc')
-
-if minisix.PY2:
-    from itertools import ifilter as filter
 
 def getPluginsInDirectory(directory):
     # get modules in a given directory

@@ -49,7 +49,6 @@ import supybot.irclib as irclib
 import supybot.plugin as plugin
 import supybot.plugins as plugins
 import supybot.drivers as drivers
-import supybot.utils.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
@@ -569,8 +568,6 @@ class Owner(callbacks.Plugin):
             L.append(format('linecache line cache flushed: %n cleared.',
                             (len(linecache.cache), 'line')))
             linecache.clearcache()
-            if minisix.PY2:
-                sys.exc_clear()
         collected = world.upkeep()
         if gc.garbage:
             L.append('Garbage!  %r.' % gc.garbage)
