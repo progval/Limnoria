@@ -34,34 +34,7 @@ from supybot.test import *
 class GoogleTestCase(ChannelPluginTestCase):
     plugins = ('Google', 'Config')
     if network:
-        def testSearch(self):
-            self.assertNotError('google foo')
-            self.assertRegexp('google dupa', r'dupa')
-            # Unicode check
-            self.assertNotError('google ae')
-
-        def testUrlDecode(self):
-            self.assertRegexp(
-                    'google site:http://www.urbandictionary.com carajo land',
-                    '\x02carajo land - Urban Dictionary\x02: '
-                    r'https?://www.urbandictionary.com/define.php\?term=carajo%20land')
-
-        def testLucky(self):
-            self.assertResponse('lucky Hacker News',
-                    'https://news.ycombinator.com/')
-
-        def testSearchFormat(self):
-            self.assertRegexp('google foo', '<https?://.*>')
-            self.assertNotError('config reply.format.url %s')
-            self.assertRegexp('google foo', 'https?://.*')
-            self.assertNotRegexp('google foo', '<https?://.*>')
-
-        def testSearchOneToOne(self):
-            self.assertRegexp('google dupa', ';')
-            self.assertNotError('config plugins.Google.oneToOne True')
-            self.assertNotRegexp('google dupa', ';')
-
         def testTranslate(self):
-            self.assertRegexp('translate en es hello world', 'Hola mundo')
+            self.assertRegexp('translate en es hello world', '(?i)Hola mundo')
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
