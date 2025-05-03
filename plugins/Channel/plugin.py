@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2009-2012, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2025, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -508,10 +508,17 @@ class Channel(callbacks.Plugin):
         to join <channel>. <channel> is only necessary if the message isn't
         sent in the channel itself.
         """
+        capability = self.registryValue('invite.requireCapability',
+                                        channel, irc.network)
+        if capability:
+            capability = ircdb.makeChannelCapability(channel, capability)
+            if not ircdb.checkCapability(msg.prefix, capability):
+                irc.errorNoCapability(capability, Raise=True)
+
         nick = nick or msg.nick
         self._sendMsg(irc, ircmsgs.invite(nick, channel))
         self.invites[(irc.getRealIrc(), ircutils.toLower(nick))] = irc
-    invite = wrap(invite, ['op', ('haveHalfop+', _('invite someone')),
+    invite = wrap(invite, [('haveHalfop+', _('invite someone')),
                            additional('nick')])
 
     def do341(self, irc, msg):
