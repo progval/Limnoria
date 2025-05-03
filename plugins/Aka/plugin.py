@@ -43,6 +43,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 import supybot.httpserver as httpserver
 from supybot.i18n import PluginInternationalization
+from supybot.dynamicScope import dynamic
 _ = PluginInternationalization('Aka')
 
 try:

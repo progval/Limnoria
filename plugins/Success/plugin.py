@@ -33,6 +33,7 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
+from supybot.dynamicScope import dynamic
 _ = PluginInternationalization('Success')
 
 class Success(plugins.ChannelIdDatabasePlugin):

@@ -46,6 +46,7 @@ except ImportError: # Windows!
 
 from . import callbacks, conf, ircdb, ircmsgs, ircutils, log, \
         utils, world
+from .dynamicScope import dynamic
 from .utils import minisix
 from .i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()

@@ -44,6 +44,7 @@ import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
 import supybot.httpserver as httpserver
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
+from supybot.dynamicScope import dynamic
 _ = PluginInternationalization('Factoids')
 
 import sqlite3

@@ -28,6 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import logging
 import sys
 
 class DynamicScope(object):
@@ -48,6 +49,18 @@ class DynamicScope(object):
     def __setattr__(self, name, value):
         self._getLocals(name)[name] = value
 
-(__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['dynamic'] = DynamicScope()
+class _DynamicScopeBuiltinsWrapper(DynamicScope):
+    def __getattr__(self, name):
+        _logger = logging.getLogger('supybot')
+        _logger.warning('Using DynamicScope without an explicit import is '
+                        'deprecated and will be removed in a future Limnoria '
+                        'version. Use instead: '
+                        'from supybot.dynamicScope import dynamic',
+                        stacklevel=2, stack_info=True)
+        return super().__getattr__(name)
+
+dynamic = DynamicScope()
+(__builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__)['dynamic'] = \
+    _DynamicScopeBuiltinsWrapper()
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
