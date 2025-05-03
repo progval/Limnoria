@@ -62,15 +62,14 @@ class Google(callbacks.Plugin):
 
         text = utils.web.urlquote(text)
 
-        result = utils.web.getUrlFd('http://translate.googleapis.com/translate_a/single'
-                                    '?client=gtx&dt=t&sl=%s&tl=%s&q='
-                                    '%s' % (sourceLang, targetLang, text),
-                                    headers).read().decode('utf8')
-
-        while ',,' in result:
-            result = result.replace(',,', ',null,')
-        while '[,' in result:
-            result = result.replace('[,', '[')
+        url = 'https://translate.googleapis.com/translate_a/single?' + \
+            utils.web.urlencode({
+                'client': 'gtx',
+                'dt': 't',
+                'sl': sourceLang,
+                'tl': targetLang,
+                'q': text})
+        result = utils.web.getUrlFd(url, headers).read().decode('utf8')
         data = json.loads(result)
 
         try:
