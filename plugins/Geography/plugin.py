@@ -49,15 +49,6 @@ def timezone_from_uri(irc, uri):
             format(_("Could not understand timezone: %s"), e.args[0]),
             Raise=True,
         )
-    except utils.time.MissingTimezoneLibrary:
-        irc.error(
-            _(
-                "Timezone-related commands are not available. "
-                "Your administrator need to either upgrade Python to "
-                "version 3.9 or greater, or install pytz."
-            ),
-            Raise=True,
-        )
     except utils.time.TimezoneException as e:
         irc.error(e.args[0], Raise=True)
 
@@ -159,10 +150,6 @@ class Geography(callbacks.Plugin):
             if hasattr(timezone, "key"):
                 # instance of zoneinfo.ZoneInfo
                 irc.reply(format("%s (currently %s)", timezone.key, offset))
-                return
-            elif hasattr(timezone, "zone"):
-                # instance of pytz.timezone
-                irc.reply(format("%s (currently %s)", timezone.zone, offset))
                 return
             else:
                 # probably datetime.timezone built from a constant offset

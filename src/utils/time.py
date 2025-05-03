@@ -29,24 +29,11 @@
 ###
 
 import re
-import sys
-
-if sys.version_info >= (3, 9):
-    import zoneinfo
-else:
-    zoneinfo = None
-
-try:
-    import pytz
-except ImportError:
-    pytz = None
+import zoneinfo
 
 _IANA_TZ_RE = re.compile(r"([\w_-]+/)*[\w_-]+")
 
 class TimezoneException(Exception):
-    pass
-
-class MissingTimezoneLibrary(TimezoneException):
     pass
 
 class UnknownTimeZone(TimezoneException):
@@ -56,26 +43,14 @@ def iana_timezone(name):
     """Returns a :class:datetime.tzinfo object, given an IANA timezone name,
     eg. ``"Europe/Paris"``.
 
-    This uses :class:``zoneinfo.ZoneInfo`` if available,
-    :func:``pytz.timezone`` otherwise.
+    This uses :class:``zoneinfo.ZoneInfo`.
 
     May raise instances of :exc:`TimezoneException`.
     """
     if not _IANA_TZ_RE.match(name):
         raise UnknownTimeZone(name)
 
-    if zoneinfo:
-        try:
-            return zoneinfo.ZoneInfo(name)
-        except zoneinfo.ZoneInfoNotFoundError as e:
-            raise UnknownTimeZone(e.args[0]) from None
-    elif pytz:
-        try:
-            return pytz.timezone(name)
-        except pytz.UnknownTimeZoneError as e:
-            raise UnknownTimeZone(e.args[0]) from None
-    else:
-        raise MissingTimezoneLibrary(
-            "Could not find a timezone library. "
-            "Update Python to version 3.9 or newer, or install pytz."
-        )
+    try:
+        return zoneinfo.ZoneInfo(name)
+    except zoneinfo.ZoneInfoNotFoundError as e:
+        raise UnknownTimeZone(e.args[0]) from None

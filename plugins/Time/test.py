@@ -31,16 +31,6 @@
 import sys
 from supybot.test import *
 
-if sys.version_info >= (3, 9):
-    has_tz_lib = True
-else:
-    try:
-        import pytz
-    except ImportError:
-        has_tz_lib = False
-    else:
-        has_tz_lib = True
-
 try:
     import dateutil
 except ImportError:
@@ -55,20 +45,7 @@ except ImportError:
 else:
     has_ddate = True
 
-try:
-    from unittest import skipIf
-except ImportError: # Python 2.6
-    def skipIf(cond, reason):
-        if cond:
-            print('Skipped: %s' % reason)
-            def decorator(f):
-                return None
-        else:
-            def decorator(f):
-                return f
-        return decorator
-
-
+from unittest import skipIf
 
 class TimeTestCase(PluginTestCase):
     plugins = ('Time','Utilities')
@@ -88,9 +65,6 @@ class TimeTestCase(PluginTestCase):
         self.assertResponse('seconds 1y 1s', '31536001')
         self.assertResponse('seconds 1w 1s', '604801')
 
-    @skipIf(sys.version_info < (3, 7, 0),
-            "Python 3.6 does not support empty pattern matches, see: "
-            "https://docs.python.org/3/library/re.html#re.split")
     def testSecondsNoSpace(self):
         self.assertResponse('seconds 1m1s', '61')
         self.assertResponse('seconds 1h1s', '3601')
@@ -103,7 +77,6 @@ class TimeTestCase(PluginTestCase):
         self.assertNotError('ctime')
         self.assertNotError('time %Y')
 
-    @skipIf(not has_tz_lib, 'python version is older than 3.9 and pytz is missing')
     def testTztime(self):
         self.assertNotError('tztime Europe/Paris')
         self.assertNotError('tztime America/Indiana/Knox')

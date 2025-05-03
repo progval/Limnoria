@@ -222,12 +222,6 @@ class Time(callbacks.Plugin):
                 tz = utils.time.iana_timezone(tz)
             except utils.time.UnknownTimeZone:
                 irc.error(_('Unknown timezone'), Raise=True)
-            except utils.time.MissingTimezoneLibrary:
-                irc.error(_(
-                    'Timezone-related commands are not available. '
-                    'Your administrator need to either upgrade Python to '
-                    'version 3.9 or greater, or install pytz.'),
-                    Raise=True)
             except utils.time.TimezoneException as e:
                 irc.error(e.args[0], Raise=True)
 
