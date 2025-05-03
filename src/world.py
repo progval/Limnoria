@@ -65,7 +65,7 @@ class SupyThread(threading.Thread, object):
         log.debug('Spawning thread %q.', self.getName())
 
 processesSpawned = 1 # Starts at one for the initial process.
-class SupyProcess(multiprocessing.Process):
+class SupyProcess(multiprocessing.get_context('fork').Process):
     def __init__(self, *args, **kwargs):
         global processesSpawned
         processesSpawned += 1

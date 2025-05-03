@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2012-07-04 19:51+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -243,6 +243,23 @@ msgstr ""
 "        Riporta da quanto tempo è connesso il bot.\n"
 "        "
 
+#: plugin.py:310
+#, fuzzy
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Manually initiate SASL authentication.\n"
+"        "
+msgstr ""
+"non necessita argomenti\n"
+"\n"
+"        Restituisce le reti alle quali è attualmente connesso il bot.\n"
+"        "
+
+#: plugin.py:318
+msgid "SASL not supported"
+msgstr ""
+
 #~ msgid "is an op on %L"
 #~ msgstr "è un op su %L"
 
@@ -269,14 +286,3 @@ msgstr ""
 
 #~ msgid "%s (%s) has been%s on server %s since %s (idle for %s) and %s.%s"
 #~ msgstr "%s (%s) è%s sul server %s dalle %s (inattivo da %s) ed %s.%s"
-
-#~ msgid ""
-#~ "takes no arguments\n"
-#~ "\n"
-#~ "        Returns the networks to which the bot is currently connected.\n"
-#~ "        "
-#~ msgstr ""
-#~ "non necessita argomenti\n"
-#~ "\n"
-#~ "        Restituisce le reti alle quali è attualmente connesso il bot.\n"
-#~ "        "

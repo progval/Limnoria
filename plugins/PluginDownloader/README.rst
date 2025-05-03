@@ -58,17 +58,17 @@ Commands
 
 .. _command-plugindownloader-info:
 
-info <repository> <plugin>
+``info <repository> <plugin>``
   Displays informations on the <plugin> in the <repository>.
 
 .. _command-plugindownloader-install:
 
-install <repository> <plugin>
+``install <repository> <plugin>``
   Downloads and installs the <plugin> from the <repository>.
 
 .. _command-plugindownloader-repolist:
 
-repolist [<repository>]
+``repolist [<repository>]``
   Displays the list of plugins in the <repository>. If <repository> is not given, returns a list of available repositories.
 
 .. _conf-PluginDownloader:

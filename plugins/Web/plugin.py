@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2005, Jeremiah Fincher
 # Copyright (c) 2009, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2024, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -59,24 +59,24 @@ class Title(utils.web.HtmlToText):
     entitydefs['nbsp'] = ' '
     def __init__(self):
         self.inTitle = False
-        self.inSvg = False
+        self.inSvg = 0 # counter instead of boolean because svg can be nested
         utils.web.HtmlToText.__init__(self)
 
     @property
     def inHtmlTitle(self):
-        return self.inTitle and not self.inSvg
+        return self.inTitle and self.inSvg == 0
 
     def handle_starttag(self, tag, attrs):
         if tag == 'title':
             self.inTitle = True
         elif tag == 'svg':
-            self.inSvg = True
+            self.inSvg += 1
 
     def handle_endtag(self, tag):
         if tag == 'title':
             self.inTitle = False
         elif tag == 'svg':
-            self.inSvg = False
+            self.inSvg = max(0, self.inSvg - 1)
 
     def append(self, data):
         if self.inHtmlTitle:
@@ -150,22 +150,46 @@ class Web(callbacks.PluginRegexp):
     def getTitle(self, irc, url, raiseErrors, msg):
         size = conf.supybot.protocols.http.peekSize()
 
-        parsed_url = utils.web.urlparse(url)
-        if parsed_url.netloc == 'youtube.com' \
-                or parsed_url.netloc.endswith(('.youtube.com')):
-            # there is a lot of Javascript before the <title>
-            size = max(819200, size)
-        if parsed_url.netloc in ('reddit.com', 'www.reddit.com', 'new.reddit.com'):
-            # Since 2022-03, New Reddit has 'Reddit - Dive into anything' as
-            # <title> on every page.
-            parsed_url = parsed_url._replace(netloc='old.reddit.com')
-            url = utils.web.urlunparse(parsed_url)
+        def url_workaround(url):
+            """Returns a new URL that should be the target of a new request,
+            or None if the request is fine as it is.
 
+            The returned URL may be the same as the parameter, in case
+            something else was changed by this function through side-effects.
+            """
+            nonlocal size
+            parsed_url = utils.web.urlparse(url)
+            if parsed_url.netloc in ('youtube.com', 'youtu.be') \
+                    or parsed_url.netloc.endswith(('.youtube.com')):
+                # there is a lot of Javascript before the <title>
+                if size < 819200:
+                    size = max(819200, size)
+                    return url
+                else:
+                    return None
+            if parsed_url.netloc in ('reddit.com', 'www.reddit.com', 'new.reddit.com'):
+                # Since 2022-03, New Reddit has 'Reddit - Dive into anything' as
+                # <title> on every page.
+                parsed_url = parsed_url._replace(netloc='old.reddit.com')
+                url = utils.web.urlunparse(parsed_url)
+                self.log.debug("Rewrite URL to %s", url)
+                return url
+
+            return None
+
+        url = url_workaround(url) or url
         timeout = self.registryValue('timeout')
         headers = conf.defaultHttpHeaders(irc.network, msg.channel)
         try:
             fd = utils.web.getUrlFd(url, timeout=timeout, headers=headers)
             target = fd.geturl()
+            fixed_target = url_workaround(target)
+            if fixed_target is not None:
+                # happens when using minification services linking to one of
+                # the websites handled by url_workaround; eg. v.redd.it
+                fd.close()
+                fd = utils.web.getUrlFd(fixed_target, timeout=timeout, headers=headers)
+                target = fd.geturl()
             text = fd.read(size)
             response_headers = fd.headers
             fd.close()
@@ -250,7 +274,7 @@ class Web(callbacks.PluginRegexp):
             return
         if self.registryValue('titleSnarfer', channel, network):
             url = match.group(0)
-            if not self._checkURLWhitelist(url):
+            if not self._checkURLWhitelist(irc, msg, url):
                 return
             r = self.registryValue('nonSnarfingRegexp', channel, network)
             if r and r.search(url):
@@ -279,11 +303,13 @@ class Web(callbacks.PluginRegexp):
     titleSnarfer = urlSnarfer(titleSnarfer)
     titleSnarfer.__doc__ = utils.web._httpUrlRe
 
-    def _checkURLWhitelist(self, url):
-        if not self.registryValue('urlWhitelist'):
+    def _checkURLWhitelist(self, irc, msg, url):
+        if not self.registryValue('urlWhitelist',
+                                  channel=msg.channel, network=irc.network):
             return True
         passed = False
-        for wu in self.registryValue('urlWhitelist'):
+        for wu in self.registryValue('urlWhitelist',
+                                     channel=msg.channel, network=irc.network):
             if wu.endswith('/') and url.find(wu) == 0:
                 passed = True
                 break
@@ -301,7 +327,7 @@ class Web(callbacks.PluginRegexp):
         Returns the HTTP headers of <url>.  Only HTTP urls are valid, of
         course.
         """
-        if not self._checkURLWhitelist(url):
+        if not self._checkURLWhitelist(irc, msg, url):
             irc.error("This url is not on the whitelist.")
             return
         timeout = self.registryValue('timeout')
@@ -338,7 +364,7 @@ class Web(callbacks.PluginRegexp):
         Returns the DOCTYPE string of <url>.  Only HTTP urls are valid, of
         course.
         """
-        if not self._checkURLWhitelist(url):
+        if not self._checkURLWhitelist(irc, msg, url):
             irc.error("This url is not on the whitelist.")
             return
         size = conf.supybot.protocols.http.peekSize()
@@ -360,7 +386,7 @@ class Web(callbacks.PluginRegexp):
         Returns the Content-Length header of <url>.  Only HTTP urls are valid,
         of course.
         """
-        if not self._checkURLWhitelist(url):
+        if not self._checkURLWhitelist(irc, msg, url):
             irc.error("This url is not on the whitelist.")
             return
         timeout = self.registryValue('timeout')
@@ -393,7 +419,7 @@ class Web(callbacks.PluginRegexp):
         If --no-filter is given, the bot won't strip special chars (action,
         DCC, ...).
         """
-        if not self._checkURLWhitelist(url):
+        if not self._checkURLWhitelist(irc, msg, url):
             irc.error("This url is not on the whitelist.")
             return
         r = self.getTitle(irc, url, True, msg)
@@ -433,7 +459,7 @@ class Web(callbacks.PluginRegexp):
         supybot.plugins.Web.fetch.maximum.  If that configuration variable is
         set to 0, this command will be effectively disabled.
         """
-        if not self._checkURLWhitelist(url):
+        if not self._checkURLWhitelist(irc, msg, url):
             irc.error("This url is not on the whitelist.")
             return
         max = self.registryValue('fetch.maximum')

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -26,11 +26,11 @@ msgstr ""
 "Si vous définissez cette variable à une chaîne vide, le timestamp ne sera "
 "pas affiché."
 
-#: plugin.py:75
+#: plugin.py:82
 msgid "This plugin allows you to use different time-related functions."
 msgstr ""
 
-#: plugin.py:78
+#: plugin.py:85
 msgid ""
 "[<years>y] [<weeks>w] [<days>d] [<hours>h] [<minutes>m] [<seconds>s]\n"
 "\n"
@@ -49,7 +49,7 @@ msgstr ""
 "est \"seconds 2h 30m\", ce qui retournera 9000. Utile pour planifier des "
 "évènement à un certain nombre de secondes dans le futur."
 
-#: plugin.py:113
+#: plugin.py:123
 msgid ""
 "[<time string>]\n"
 "\n"
@@ -66,7 +66,7 @@ msgstr ""
 "n'importe lequel des formats naturels, essayez seulement, et voyez si ça "
 "marche.<moment> vaut l’instant actuel par défaut."
 
-#: plugin.py:124 plugin.py:141
+#: plugin.py:134 plugin.py:151
 msgid ""
 "This command is not available on this bot, ask the owner to install the "
 "python-dateutil library."
@@ -74,11 +74,11 @@ msgstr ""
 "Cette commande n’est pas disponible sur ce bot, demandez au/à la "
 "propriétaire d’installer la bibliothèque python-dateutil."
 
-#: plugin.py:131 plugin.py:150
+#: plugin.py:141 plugin.py:160
 msgid "That's right now!"
 msgstr "C'est maintenant !"
 
-#: plugin.py:136
+#: plugin.py:146
 msgid ""
 "<time string>\n"
 "\n"
@@ -89,7 +89,7 @@ msgstr ""
 "\n"
 "Retourne le nombre de secondes depuis le <moment>."
 
-#: plugin.py:155
+#: plugin.py:165
 msgid ""
 "[<seconds since epoch>]\n"
 "\n"
@@ -103,11 +103,11 @@ msgstr ""
 "        Renvoie le ctime pour le moment il y a <temps> secondes, ou le "
 "ctime        courant, si aucun <temps> n'est donné."
 
-#: plugin.py:161
+#: plugin.py:171
 msgid "number of seconds since epoch"
 msgstr "nombre de secondes depuis une époque"
 
-#: plugin.py:166
+#: plugin.py:176
 #, fuzzy
 msgid ""
 "[<channel>] [<format>] [<seconds since epoch>]\n"
@@ -124,7 +124,7 @@ msgstr ""
 "donné, utilise le format actuellement configuré pour le canal. Si le <temps> "
 "n'est pas donné, le temps actuel est utilisé."
 
-#: plugin.py:188
+#: plugin.py:198
 msgid ""
 "<seconds>\n"
 "\n"
@@ -136,7 +136,7 @@ msgstr ""
 "\n"
 "Retourne le nombre de <secondes>, joliement formatté."
 
-#: plugin.py:198
+#: plugin.py:208
 #, fuzzy
 msgid ""
 "<region>/<city> (or <region>/<state>/<city>)\n"
@@ -148,23 +148,23 @@ msgstr ""
 "\n"
 "Prend en argument une ville et sa zone, et retourne le temps local."
 
-#: plugin.py:205
+#: plugin.py:224
 msgid "Unknown timezone"
 msgstr "Timezone inconnue"
 
-#: plugin.py:207
+#: plugin.py:226
 msgid ""
 "Timezone-related commands are not available. Your administrator need to "
 "either upgrade Python to version 3.9 or greater, or install pytz."
 msgstr ""
 
-#: plugin.py:219
+#: plugin.py:239
 msgid ""
 "[<year> <month> <day>]\n"
 "        Returns a the Discordian date today, or an optional different date."
 msgstr ""
 
-#: plugin.py:230
+#: plugin.py:250
 msgid ""
 "The 'ddate' module is not installed. Use '%s -m pip install --user ddate' or "
 "see %u for more information."

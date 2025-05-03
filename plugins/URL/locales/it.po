@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2011-08-10 02:43+0200\n"
 "Last-Translator: skizzhg <skizzhg@gmx.com>\n"
 "Language-Team: Italian <skizzhg@gmx.com>\n"
@@ -81,6 +81,6 @@ msgstr ""
 "        messaggio non viene inviato nel canale stesso.\n"
 "        "
 
-#: plugin.py:147
+#: plugin.py:149
 msgid "No URLs matched that criteria."
 msgstr "Nessun URL corrisponde a questo criterio."

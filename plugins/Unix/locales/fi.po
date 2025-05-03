@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Unix plugin for Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2014-12-20 13:10+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -119,16 +119,16 @@ msgstr ""
 "Määrittää minkä komennon\n"
 "    'wtf' komento kutsuu."
 
-#: plugin.py:57
+#: plugin.py:62
 msgid ""
 "This command is not available, because supybot.commands.allowShell is False."
 msgstr ""
 
-#: plugin.py:82
+#: plugin.py:87
 msgid "Provides Utilities for Unix-like systems."
 msgstr "Tarjoaa työkaluja Unixin kaltaisille järjestelmille."
 
-#: plugin.py:86
+#: plugin.py:91
 msgid ""
 "<error number or code>\n"
 "\n"
@@ -140,19 +140,19 @@ msgstr ""
 "        Palauttaa virhenumeron , tai virhekoodin virhenumeron.\n"
 "        "
 
-#: plugin.py:98
+#: plugin.py:103
 msgid "I can't find the errno number for that code."
 msgstr "En voi löytää virhenumeroa tuolle koodille."
 
-#: plugin.py:101
+#: plugin.py:106
 msgid "(unknown)"
 msgstr "(tuntematon)"
 
-#: plugin.py:102
+#: plugin.py:107
 msgid "%s (#%i): %s"
 msgstr "%s (#%i): %s"
 
-#: plugin.py:107
+#: plugin.py:112
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -165,7 +165,7 @@ msgstr ""
 "prosessista.\n"
 "        "
 
-#: plugin.py:115
+#: plugin.py:120
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -177,16 +177,18 @@ msgstr ""
 "        Palauttaa tämän Supybot prosessin nykyisen pidin.\n"
 "        "
 
-#: plugin.py:125
+#: plugin.py:131
+#, fuzzy
 msgid ""
 "<password> [<salt>]\n"
 "\n"
-"        Returns the resulting of doing a crypt() on <password>.  If <salt> "
-"is\n"
-"        not given, uses a random salt.  If running on a glibc2 system,\n"
-"        prepending '$1$' to your salt will cause crypt to return an MD5sum\n"
-"        based crypt rather than the standard DES based crypt.\n"
-"        "
+"            Returns the resulting of doing a crypt() on <password>.  If "
+"<salt> is\n"
+"            not given, uses a random salt.  If running on a glibc2 system,\n"
+"            prepending '$1$' to your salt will cause crypt to return an "
+"MD5sum\n"
+"            based crypt rather than the standard DES based crypt.\n"
+"            "
 msgstr ""
 "<salasana> [<suola>]\n"
 "\n"
@@ -198,7 +200,7 @@ msgstr ""
 "        normaalin DES pohjaisen kryptin.\n"
 "        "
 
-#: plugin.py:144
+#: plugin.py:150
 msgid ""
 "<word>\n"
 "\n"
@@ -217,7 +219,7 @@ msgstr ""
 "        <sanoja>.\n"
 "        "
 
-#: plugin.py:153
+#: plugin.py:159
 msgid ""
 "The spell checking command is not configured.  If one is installed, "
 "reconfigure supybot.plugins.Unix.spell.command appropriately."
@@ -225,31 +227,31 @@ msgstr ""
 "Oikeinkirjoituksen tarkistusohjelma ei ole säädetty.  Jos sellainen on "
 "asennttu, säädä supybot.plugins.Unix.spell.command sopivaksi."
 
-#: plugin.py:159
+#: plugin.py:165
 msgid "<word> must begin with an alphabet character."
 msgstr "<Sanan> täytyy alkaa aakkosellisella merkillä."
 
-#: plugin.py:181
+#: plugin.py:187
 msgid "No results found."
 msgstr "Tuloksia ei löytynyt."
 
-#: plugin.py:192
+#: plugin.py:198
 msgid "%q may be spelled correctly."
 msgstr "%q saattaa olla kirjoitettu oikein."
 
-#: plugin.py:194
+#: plugin.py:200
 msgid "I could not find an alternate spelling for %q"
 msgstr "En löytänyt vaihtoehtoista kirjoitustapaa sanalle %q"
 
-#: plugin.py:198
+#: plugin.py:204
 msgid "Possible spellings for %q: %L."
 msgstr "Mahdolliset kirjoitustavat sanalle %q ovat: %L."
 
-#: plugin.py:201
+#: plugin.py:207
 msgid "Something unexpected was seen in the [ai]spell output."
 msgstr "Jotakin odottamatonta nähtiin [ai]spellin ulostulossa."
 
-#: plugin.py:207
+#: plugin.py:213
 #, fuzzy
 msgid ""
 "takes no arguments\n"
@@ -262,11 +264,11 @@ msgstr ""
 "        Palauttaa ennustuksen *nix ennustusohjelmalta.\n"
 "        "
 
-#: plugin.py:230
+#: plugin.py:236
 msgid "It seems the configured fortune command was not available."
 msgstr "Näyttää siltä, että määritetty ennustusohjelma ei ollut saatavilla."
 
-#: plugin.py:243
+#: plugin.py:249
 msgid ""
 "The fortune command is not configured. If fortune is installed on this "
 "system, reconfigure the supybot.plugins.Unix.fortune.command configuration "
@@ -276,7 +278,7 @@ msgstr ""
 "järjestelmään, määritä uudelleen asetusarvo supybot.plugins.Unix.fortune."
 "command oikein."
 
-#: plugin.py:250
+#: plugin.py:256
 #, fuzzy
 msgid ""
 "[is] <something>\n"
@@ -296,11 +298,11 @@ msgstr ""
 "        'bsdgames' paketissa.\n"
 "        "
 
-#: plugin.py:266
+#: plugin.py:272
 msgid "It seems the configured wtf command was not available."
 msgstr "Vaikuttaa siltä, ettei määritetty wtf komento ollut saatavilla."
 
-#: plugin.py:275
+#: plugin.py:281
 msgid ""
 "The wtf command is not configured.  If it is installed on this system, "
 "reconfigure the supybot.plugins.Unix.wtf.command configuration variable "
@@ -309,7 +311,7 @@ msgstr ""
 "Wtf komento ei ole määritetty.  Jos se on asennettu tähän järjestelmään, "
 "määritä supybot.plugins.Unix.wtf.command asetusarvo oikein."
 
-#: plugin.py:346
+#: plugin.py:352
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -320,7 +322,7 @@ msgstr ""
 "        Palauttaa järjestelmän, jolla botti on ylläoloajan.\n"
 "        "
 
-#: plugin.py:375
+#: plugin.py:381
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -333,7 +335,7 @@ msgstr ""
 "on.\n"
 "        "
 
-#: plugin.py:404
+#: plugin.py:410
 msgid ""
 "<command to call with any arguments>\n"
 "        Calls any command available on the system, and returns its output.\n"
@@ -355,7 +357,7 @@ msgstr ""
 "laittaa koneesi polvilleen. \n"
 "        "
 
-#: plugin.py:435
+#: plugin.py:441
 msgid ""
 "<command to call with any arguments>\n"
 "        Calls any command available on the system using the shell\n"

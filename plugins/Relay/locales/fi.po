@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Relay plugin for Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2014-12-20 12:17+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -29,7 +29,7 @@ msgstr "Minkä kanavien?  Erota ne välilyönnillä."
 msgid "Would you like to use color to distinguish between nicks?"
 msgstr "Haluaisitko botin käyttävän värejä erottamaan nimimerkit toisistaan?"
 
-#: config.py:60
+#: config.py:62
 msgid ""
 "Determines whether the bot will color relayed\n"
 "    PRIVMSGs so as to make the messages easier to read."
@@ -37,7 +37,7 @@ msgstr ""
 "Määrittää värjääkö botti välitetyt\n"
 "    PRIVMSG:eet, jotta viestit olisivat helpommin luettavia."
 
-#: config.py:63
+#: config.py:65
 msgid ""
 "Determines whether the bot will synchronize\n"
 "    topics between networks in the channels it relays."
@@ -45,7 +45,7 @@ msgstr ""
 "Määrittää synkronoiko botti\n"
 "    aiheet kanavilla, joita se välittää kaikkiin verkkoihin."
 
-#: config.py:66
+#: config.py:68
 msgid ""
 "Determines whether the bot will relay the\n"
 "    hostmask of the person joining or parting the channel when they join\n"
@@ -55,7 +55,7 @@ msgstr ""
 " liittyvän tai poistuvan henkilön hostmaskin, hänen liittyessään/"
 "poistuessaan."
 
-#: config.py:70
+#: config.py:72
 msgid ""
 "Determines whether the bot will include the\n"
 "    network in relayed PRIVMSGs; if you're only relaying between two "
@@ -66,7 +66,7 @@ msgstr ""
 "    verkon välitetyissä PRIVMSG:issä; jos välität vain kahta verkkoa,\n"
 "    se on aika tarpeeton, ja saatat tahtoa säästää tilaa."
 
-#: config.py:74
+#: config.py:76
 msgid ""
 "Determines whether the bot will detect other\n"
 "    bots relaying and respond by kickbanning them."
@@ -75,7 +75,7 @@ msgstr ""
 "    välittävät botit ja vastaa potkimalla ne ja antamalla niille "
 "porttikiellon."
 
-#: config.py:77
+#: config.py:79
 msgid ""
 "Determines which channels the bot\n"
 "    will relay in."
@@ -83,7 +83,7 @@ msgstr ""
 "Määrittää mitä kanavia botti\n"
 "    välittää."
 
-#: config.py:80
+#: config.py:82
 #, fuzzy
 msgid ""
 "Determines whether the bot\n"
@@ -96,7 +96,7 @@ msgstr ""
 "joihin\n"
 "    botti on yhdistänyt."
 
-#: config.py:84
+#: config.py:86
 msgid ""
 "Determines what hostmasks will not be relayed on a\n"
 "    channel."
@@ -104,7 +104,7 @@ msgstr ""
 "Määrittää mitä hostmaskeja ei välitetä\n"
 "    kanavalla."
 
-#: config.py:87
+#: config.py:89
 msgid ""
 "Determines whether the bot will used NOTICEs\n"
 "    rather than PRIVMSGs for non-PRIVMSG relay messages (i.e., joins, "

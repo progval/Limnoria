@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,30 +65,30 @@ msgid ""
 "    command"
 msgstr ""
 
-#: plugin.py:76
+#: plugin.py:79
 #, docstring
 msgid ""
 "Miscellaneous commands to access Supybot core. This is a core\n"
 "    Supybot plugin that should not be removed!"
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:117
 msgid "You've given me %s invalid commands within the last %i seconds; I'm now ignoring you for %s."
 msgstr ""
 
-#: plugin.py:157
+#: plugin.py:160
 msgid "The %q plugin is loaded, but there is no command named %q in it.  Try \"list %s\" to see the commands in the %q plugin."
 msgstr ""
 
-#: plugin.py:163 plugin.py:166
+#: plugin.py:166 plugin.py:169
 msgid "command"
 msgstr ""
 
-#: plugin.py:172
+#: plugin.py:175
 msgid "private"
 msgstr ""
 
-#: plugin.py:188
+#: plugin.py:191
 #, docstring
 msgid ""
 "[--private] [--unloaded] [<plugin>]\n"
@@ -100,23 +100,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:209
+#: plugin.py:212
 msgid "--private and --unloaded are incompatible options."
 msgstr ""
 
-#: plugin.py:237
+#: plugin.py:240
 msgid "There are no private plugins."
 msgstr ""
 
-#: plugin.py:239
+#: plugin.py:242
 msgid "There are no public plugins."
 msgstr ""
 
-#: plugin.py:246
+#: plugin.py:249
 msgid "That plugin exists, but has no commands.  This probably means that it has some configuration variables that can be changed in order to modify its behavior.  Try \"config list supybot.plugins.%s\" to see what configuration variables it has."
 msgstr ""
 
-#: plugin.py:258
+#: plugin.py:261
 #, docstring
 msgid ""
 "<string>\n"
@@ -126,11 +126,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:277
+#: plugin.py:280
 msgid "No appropriate commands were found."
 msgstr ""
 
-#: plugin.py:282
+#: plugin.py:285
 #, docstring
 msgid ""
 "[<plugin>] [<command>]\n"
@@ -143,27 +143,27 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:295
+#: plugin.py:298
 msgid "Use the 'list' command to list all plugins, and 'list <plugin>' to list all commands in a plugin. To show the help of a command, use 'help <command>'. "
 msgstr ""
 
-#: plugin.py:306
+#: plugin.py:309
 msgid "That command exists in the %L plugins.  Please specify exactly which plugin command you want help with."
 msgstr ""
 
-#: plugin.py:315
+#: plugin.py:318
 msgid "There is no command %q."
 msgstr ""
 
-#: plugin.py:319
+#: plugin.py:322
 msgid " However, '{0}' is the name of a loaded plugin, and you may be able to find its help using 'plugin help {0}' and its provided commands using 'list {0}'."
 msgstr ""
 
-#: plugin.py:326
+#: plugin.py:329
 msgid " However, '{0}' is the name of a loaded plugin, and you may be able to find its provided commands using 'list {0}'."
 msgstr ""
 
-#: plugin.py:337
+#: plugin.py:340
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -172,23 +172,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:354
-msgid "The newest versions available online are %s."
+#: plugin.py:366
+msgid "The newest version available online is %(release_version)s, or %(git_version)s in Git"
 msgstr ""
 
-#: plugin.py:355
-msgid "%s (in %s)"
-msgstr ""
-
-#: plugin.py:359
+#: plugin.py:372
 msgid "I couldn't fetch the newest version from the Limnoria repository."
 msgstr ""
 
-#: plugin.py:361
+#: plugin.py:374
 msgid "The current (running) version of this Limnoria is %s, running on Python %s.  %s"
 msgstr ""
 
-#: plugin.py:369
+#: plugin.py:382
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -197,11 +193,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:373
+#: plugin.py:386
 msgid "My source is at https://github.com/progval/Limnoria"
 msgstr ""
 
-#: plugin.py:378
+#: plugin.py:391
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -213,23 +209,23 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:395
+#: plugin.py:408
 msgid "%s has no public mores."
 msgstr ""
 
-#: plugin.py:398
+#: plugin.py:411
 msgid "Sorry, I can't find any mores for %s"
 msgstr ""
 
-#: plugin.py:403
+#: plugin.py:416
 msgid "You haven't asked me a command; perhaps you want to see someone else's more.  To do so, call this command with that person's nick."
 msgstr ""
 
-#: plugin.py:433
+#: plugin.py:446
 msgid "That's all, there is no more."
 msgstr ""
 
-#: plugin.py:443
+#: plugin.py:456
 #, docstring
 msgid ""
 "[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
@@ -244,31 +240,27 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:540
-msgid "The regular expression timed out."
-msgstr ""
-
-#: plugin.py:553
+#: plugin.py:589
 msgid "I couldn't find a message matching that criteria in my history of %s messages."
 msgstr ""
 
-#: plugin.py:572
+#: plugin.py:608
 msgid "Hey, just give the command.  No need for the tell."
 msgstr ""
 
-#: plugin.py:577
+#: plugin.py:613
 msgid "You just told me, why should I tell myself?"
 msgstr ""
 
-#: plugin.py:582
+#: plugin.py:618
 msgid "I haven't seen %s, I'll let you do the telling."
 msgstr ""
 
-#: plugin.py:587
+#: plugin.py:623
 msgid "%s wants me to tell you: %s"
 msgstr ""
 
-#: plugin.py:593
+#: plugin.py:629
 #, docstring
 msgid ""
 "<nick> <text>\n"
@@ -278,7 +270,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:603
+#: plugin.py:639
 #, docstring
 msgid ""
 "<nick> <text>\n"
@@ -288,7 +280,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:613
+#: plugin.py:649
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -297,11 +289,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:617
+#: plugin.py:653
 msgid "pong"
 msgstr ""
 
-#: plugin.py:621
+#: plugin.py:657
 #, docstring
 msgid ""
 "[<channel>] <beginning> [--match-case]\n"
@@ -311,15 +303,15 @@ msgid ""
 "        <channel> defaults to the current channel."
 msgstr ""
 
-#: plugin.py:627
+#: plugin.py:663
 msgid "I'm not even in %s."
 msgstr ""
 
-#: plugin.py:639
+#: plugin.py:675
 msgid "No such nick."
 msgstr ""
 
-#: plugin.py:645
+#: plugin.py:681
 #, docstring
 msgid ""
 "takes no arguments\n"

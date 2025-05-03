@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2012-03-15 08:28+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -23,7 +23,7 @@ msgid ""
 "    that should not be removed!"
 msgstr ""
 
-#: plugin.py:319
+#: plugin.py:374
 msgid ""
 "If the given message is a command, triggers Limnoria's\n"
 "        command-dispatching for that command.\n"
@@ -40,7 +40,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:372
+#: plugin.py:427
 msgid ""
 "<text>\n"
 "\n"
@@ -50,7 +50,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:382
+#: plugin.py:437
 msgid ""
 "<text>\n"
 "\n"
@@ -59,7 +59,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:403
+#: plugin.py:458
 msgid ""
 "[--remove] <command> [<plugin>]\n"
 "\n"
@@ -72,7 +72,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:441
+#: plugin.py:496
 msgid ""
 "<string to be sent to the server>\n"
 "\n"
@@ -80,7 +80,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:455
+#: plugin.py:514
 msgid ""
 "[<text>]\n"
 "\n"
@@ -95,7 +95,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:473
+#: plugin.py:532
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -104,7 +104,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:483
+#: plugin.py:542
 msgid ""
 "[<level>]\n"
 "\n"
@@ -117,7 +117,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:529
+#: plugin.py:588
 msgid ""
 "[--deprecated] <plugin>\n"
 "\n"
@@ -128,7 +128,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:567
+#: plugin.py:626
 msgid ""
 "<plugin>\n"
 "\n"
@@ -137,7 +137,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:602
+#: plugin.py:661
 msgid ""
 "<plugin>\n"
 "\n"
@@ -147,7 +147,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:631
+#: plugin.py:690
 msgid ""
 "{add|remove} <capability>\n"
 "\n"
@@ -158,7 +158,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:656
+#: plugin.py:715
 msgid ""
 "[<plugin>] <command>\n"
 "\n"
@@ -173,7 +173,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:683
+#: plugin.py:742
 msgid ""
 "[<plugin>] <command>\n"
 "\n"
@@ -184,7 +184,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:702
+#: plugin.py:761
 msgid ""
 "<plugin> <command> <new name>\n"
 "\n"
@@ -192,7 +192,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:719
+#: plugin.py:778
 msgid ""
 "<plugin>\n"
 "\n"
@@ -201,7 +201,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:732
+#: plugin.py:791
 msgid ""
 "takes no argument\n"
 "\n"

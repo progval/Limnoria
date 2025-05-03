@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Internet plugin for Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2014-12-20 13:25+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: plugin.py:45
+#: plugin.py:44
 #, fuzzy
 msgid ""
 "Provides commands to query DNS, search WHOIS databases,\n"
@@ -27,7 +27,7 @@ msgstr ""
 "muuttamaan\n"
 " IP-osoitteet hexoiksi."
 
-#: plugin.py:50
+#: plugin.py:49
 msgid ""
 "<host|ip>\n"
 "\n"
@@ -39,11 +39,11 @@ msgstr ""
 "        Palauttaa <isännän> ip:een tai <ip:een> käänteisen isäntänimen.\n"
 "        "
 
-#: plugin.py:57 plugin.py:72
+#: plugin.py:56 plugin.py:71
 msgid "Host not found."
 msgstr "Isäntää ei löytynyt."
 
-#: plugin.py:87
+#: plugin.py:86
 msgid ""
 "<domain>\n"
 "\n"
@@ -55,35 +55,35 @@ msgstr ""
 "        Palauttaa WHOIS tiedot <verkkotunnusten> rekisteröimisestä.\n"
 "        "
 
-#: plugin.py:149
+#: plugin.py:148
 msgid "updated %s"
 msgstr "päivitetty %s"
 
-#: plugin.py:152
+#: plugin.py:151
 msgid "registered %s"
 msgstr "rekisteröity %s"
 
-#: plugin.py:155
+#: plugin.py:154
 msgid "expires %s"
 msgstr "vanhenee %s"
 
-#: plugin.py:175
+#: plugin.py:174
 msgid " <registered at %s>"
 msgstr " <rekisteröity aikaan %s>"
 
-#: plugin.py:177
+#: plugin.py:176
 msgid " <registered by %s>"
 msgstr " <rekisteröinyt %s>"
 
-#: plugin.py:184
+#: plugin.py:183
 msgid "%s%s is %L."
 msgstr "%s%s on %L."
 
-#: plugin.py:187
+#: plugin.py:186
 msgid "I couldn't find such a domain."
 msgstr "En voi löytää sellaista verkkotunnusta."
 
-#: plugin.py:192
+#: plugin.py:191
 msgid ""
 "<ip>\n"
 "\n"

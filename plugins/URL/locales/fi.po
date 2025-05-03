@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: URL plugin for Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2014-12-20 14:41+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -93,6 +93,6 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:147
+#: plugin.py:149
 msgid "No URLs matched that criteria."
 msgstr "Yksikään URL-osoite ei täsmännyt noihin kriteereihin."

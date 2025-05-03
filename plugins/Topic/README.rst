@@ -21,112 +21,112 @@ Commands
 
 .. _command-topic-add:
 
-add [<channel>] <topic>
+``add [<channel>] <topic>``
   Adds <topic> to the topics for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-change:
 
-change [<channel>] <number> <regexp>
+``change [<channel>] <number> <regexp>``
   Changes the topic number <number> on <channel> according to the regular expression <regexp>. <number> is the one-based index into the topics; <regexp> is a regular expression of the form s/regexp/replacement/flags. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-default:
 
-default [<channel>]
+``default [<channel>]``
   Sets the topic in <channel> to the default topic for <channel>. The default topic for a channel may be configured via the configuration variable supybot.plugins.Topic.default.
 
 .. _command-topic-fit:
 
-fit [<channel>] <topic>
+``fit [<channel>] <topic>``
   Adds <topic> to the topics for <channel>. If the topic is too long for the server, topics will be popped until there is enough room. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-get:
 
-get [<channel>] <number>
+``get [<channel>] <number>``
   Returns topic number <number> from <channel>. <number> is a one-based index into the topics. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-insert:
 
-insert [<channel>] <topic>
+``insert [<channel>] <topic>``
   Adds <topic> to the topics for <channel> at the beginning of the topics currently on <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-list:
 
-list [<channel>]
+``list [<channel>]``
   Returns a list of the topics in <channel>, prefixed by their indexes. Mostly useful for topic reordering. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-lock:
 
-lock [<channel>]
+``lock [<channel>]``
   Locks the topic (sets the mode +t) in <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-redo:
 
-redo [<channel>]
+``redo [<channel>]``
   Undoes the last undo. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-refresh:
 
-refresh [<channel>]
+``refresh [<channel>]``
   Refreshes current topic set by anyone. Restores topic if empty. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-remove:
 
-remove [<channel>] <number1> [<number2> <number3>...]
+``remove [<channel>] <number1> [<number2> <number3>...]``
   Removes topics <numbers> from the topic for <channel> Topics are numbered starting from 1; you can also use negative indexes to refer to topics starting the from the end of the topic. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-reorder:
 
-reorder [<channel>] <number> [<number> ...]
+``reorder [<channel>] <number> [<number> ...]``
   Reorders the topics from <channel> in the order of the specified <number> arguments. <number> is a one-based index into the topics. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-replace:
 
-replace [<channel>] <number> <topic>
+``replace [<channel>] <number> <topic>``
   Replaces topic <number> with <topic>.
 
 .. _command-topic-restore:
 
-restore [<channel>]
+``restore [<channel>]``
   Restores the topic to the last topic set by the bot. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-save:
 
-save [<channel>]
+``save [<channel>]``
   Saves the topic in <channel> to be restored with 'topic default' later. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-separator:
 
-separator [<channel>] <separator>
+``separator [<channel>] <separator>``
   Sets the topic separator for <channel> to <separator> Converts the current topic appropriately.
 
 .. _command-topic-set:
 
-set [<channel>] [<number>] <topic>
+``set [<channel>] [<number>] <topic>``
   Sets the topic <number> to be <text>. If no <number> is given, this sets the entire topic. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-shuffle:
 
-shuffle [<channel>]
+``shuffle [<channel>]``
   Shuffles the topics in <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-swap:
 
-swap [<channel>] <first topic number> <second topic number>
+``swap [<channel>] <first topic number> <second topic number>``
   Swaps the order of the first topic number and the second topic number. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-topic:
 
-topic [<channel>]
+``topic [<channel>]``
   Returns the topic for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-undo:
 
-undo [<channel>]
+``undo [<channel>]``
   Restores the topic to the one previous to the last topic command that set it. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-topic-unlock:
 
-unlock [<channel>]
+``unlock [<channel>]``
   Unlocks the topic (sets the mode -t) in <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _conf-Topic:

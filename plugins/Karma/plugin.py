@@ -272,7 +272,7 @@ class Karma(callbacks.Plugin):
         karma = ''
         for s in inc:
             if thing.endswith(s):
-                thing = thing[:-len(s)]
+                thing = thing[:-len(s)].rstrip(",:\t ")
                 # Don't reply if the target isn't a nick
                 if onlynicks and thing.lower() not in map(ircutils.toLower,
                         irc.state.channels[channel].users):
@@ -286,7 +286,7 @@ class Karma(callbacks.Plugin):
                 karma = self.db.get(channel, self._normalizeThing(thing))
         for s in dec:
             if thing.endswith(s):
-                thing = thing[:-len(s)]
+                thing = thing[:-len(s)].rstrip(",:\t ")
                 if onlynicks and thing.lower() not in map(ircutils.toLower,
                         irc.state.channels[channel].users):
                     return

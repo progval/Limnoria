@@ -29,37 +29,37 @@ Commands
 
 .. _command-praise-add:
 
-add [<channel>] <text>
+``add [<channel>] <text>``
   Adds <text> to the praise database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-praise-change:
 
-change [<channel>] <id> <regexp>
+``change [<channel>] <id> <regexp>``
   Changes the praise with id <id> according to the regular expression <regexp>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-praise-get:
 
-get [<channel>] <id>
+``get [<channel>] <id>``
   Gets the praise with id <id> from the praise database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-praise-praise:
 
-praise [<channel>] [<id>] <who|what> [for <reason>]
+``praise [<channel>] [<id>] <who|what> [for <reason>]``
   Praises <who|what> (for <reason>, if given). If <id> is given, uses that specific praise. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-praise-remove:
 
-remove [<channel>] <id>
+``remove [<channel>] <id>``
   Removes the praise with id <id> from the praise database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-praise-search:
 
-search [<channel>] [--{regexp,by} <value>] [<glob>]
+``search [<channel>] [--{regexp,by} <value>] [<glob>]``
   Searches for praises matching the criteria given.
 
 .. _command-praise-stats:
 
-stats [<channel>]
+``stats [<channel>]``
   Returns the number of praises in the database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _conf-Praise:

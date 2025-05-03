@@ -1,0 +1,2107 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
+"PO-Revision-Date: 2024-08-25 11:06+0300\n"
+"Last-Translator: ssdaniel24 <bo7oaonteg2m__at__mailDOTru>\n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: src/callbacks.py:217
+msgid "Error: "
+msgstr "Ошибка: "
+
+#: src/callbacks.py:233
+msgid "Error: I tried to send you an empty message."
+msgstr "Ошибка: я пытался отправить вам пустое сообщение."
+
+#: src/callbacks.py:365
+msgid ""
+"Missing \"%s\".  You may want to quote your arguments with double quotes in "
+"order to prevent extra brackets from being evaluated as nested commands."
+msgstr ""
+"Отсутствует \"%s\". Возможно вы захотите заключить аргументы в двойные "
+"кавычки, чтобы предотвратить считывание дополнительных скобок как вложенных "
+"команд."
+
+#: src/callbacks.py:394
+msgid ""
+"\"|\" with nothing preceding.  I obviously can't do a pipe with nothing "
+"before the |."
+msgstr ""
+"\"I\", перед которым ничего не стоит. Я не могу создать конвейер, если перед "
+"этим символом ничего не написано."
+
+#: src/callbacks.py:402
+msgid ""
+"Spurious \"%s\".  You may want to quote your arguments with double quotes in "
+"order to prevent extra brackets from being evaluated as nested commands."
+msgstr ""
+"Ложный \"%s\". Возможно вы захотите заключить аргументы в двойные кавычки, "
+"чтобы предотвратить считывание дополнительных скобок как вложенных команд."
+
+#: src/callbacks.py:411
+msgid ""
+"\"|\" with nothing following.  I obviously can't do a pipe with nothing "
+"after the |."
+msgstr ""
+"\"I\", за которым ничего не стоит. Я не могу создать конвейер, если после "
+"этого символом ничего не написано."
+
+#: src/callbacks.py:630
+msgid "%s is not a valid %s."
+msgstr "%s не является допустимым %s."
+
+#: src/callbacks.py:632
+msgid "That's not a valid %s."
+msgstr "Это не является допустимым %s."
+
+#: src/callbacks.py:812
+msgid "(XX more messages)"
+msgstr "(XX сообщений осталось)"
+
+#: src/callbacks.py:873
+msgid "more message"
+msgstr "сообщение осталось"
+
+#: src/callbacks.py:875
+msgid "more messages"
+msgstr "сообщений осталось"
+
+#: src/callbacks.py:1011
+msgid "You've attempted more nesting than is currently allowed on this bot."
+msgstr "Вы попробовали вложить больше команд, чем это дозволено в боте сейчас."
+
+#: src/callbacks.py:1198
+msgid ""
+"The command %q is available in the %L plugins.  Please specify the plugin "
+"whose command you wish to call by using its name as a command before %q."
+msgstr ""
+"Команда %q доступна в плагинах %L. Уточните из какого плагина вы пытаетесь "
+"вызвать команду, указав его название как команду перед %q."
+
+#: src/callbacks.py:1383
+msgid ""
+"Determines what commands are currently disabled.  Such\n"
+"    commands will not appear in command lists, etc.  They will appear not "
+"even\n"
+"    to exist."
+msgstr ""
+"Определяет, какие команды сейчас отключены. Эти команды не будут появляться "
+"в списках команд. Будет казаться, что их даже не существует."
+
+#: src/callbacks.py:1622
+msgid "Invalid arguments for %s."
+msgstr "Недопустимые аргументы для %s."
+
+#: src/callbacks.py:1654
+msgid "The %q command has no help."
+msgstr "Команда %q не имеет справки."
+
+#: src/commands.py:291
+msgid "integer"
+msgstr "целое число"
+
+#: src/commands.py:302
+msgid "non-integer value"
+msgstr "нецелое значение"
+
+#: src/commands.py:313
+msgid "floating point number"
+msgstr "дробное число"
+
+#: src/commands.py:322
+msgid "positive integer"
+msgstr "положительное целое число"
+
+#: src/commands.py:326
+msgid "non-negative integer"
+msgstr "неотрицательное целое число"
+
+#: src/commands.py:329
+msgid "index"
+msgstr "индекс"
+
+#: src/commands.py:354
+msgid "number of seconds"
+msgstr "число секунд"
+
+#: src/commands.py:361
+msgid "boolean"
+msgstr "логический тип"
+
+#: src/commands.py:375 src/commands.py:382 src/commands.py:391
+#: src/commands.py:398 src/commands.py:407
+msgid "do that"
+msgstr "сделайте это"
+
+#: src/commands.py:378 src/commands.py:385 src/commands.py:394
+#: src/commands.py:401 src/commands.py:410
+msgid "I'm not even in %s."
+msgstr "Я даже не присутствую в %s."
+
+#: src/commands.py:380
+msgid "I need to be voiced to %s."
+msgstr "Мне требуется голос (voice) в %s."
+
+#: src/commands.py:388
+msgid "I need to be at least voiced to %s."
+msgstr "Мне требуется хотя бы голос (voice) в %s."
+
+#: src/commands.py:396
+msgid "I need to be halfopped to %s."
+msgstr "Мне требуется быть полуоператором в %s."
+
+#: src/commands.py:404
+msgid "I need to be at least halfopped to %s."
+msgstr "Мне требуется хотя бы быть полуоператором в %s."
+
+#: src/commands.py:412
+msgid "I need to be opped to %s."
+msgstr "Мне требуется быть оператором в %s."
+
+#: src/commands.py:418 src/commands.py:585
+msgid "channel"
+msgstr "канал"
+
+#: src/commands.py:431
+msgid "nick or hostmask"
+msgstr "ник или маска хоста"
+
+#: src/commands.py:492
+msgid "regular expression"
+msgstr "регулярное выражение"
+
+#: src/commands.py:503 src/commands.py:507
+msgid "nick"
+msgstr "ник"
+
+#: src/commands.py:504
+msgid "That nick is too long for this server."
+msgstr "Данный ник слишком длинный для этого сервера."
+
+#: src/commands.py:515
+msgid "I haven't seen %s."
+msgstr "Я ещё не видел %s."
+
+#: src/commands.py:564 src/commands.py:583
+msgid "I'm not in %s."
+msgstr "Меня нет в %s."
+
+#: src/commands.py:568
+msgid "This command may only be given in a channel that I am in."
+msgstr ""
+"Данная команда может быть отправлена только в канал, в котором присутствую я."
+
+#: src/commands.py:581
+msgid "You must be in %s."
+msgstr "Вы должны быть в %s."
+
+#: src/commands.py:592
+msgid "%s is not in %s."
+msgstr "%s отсутствует в %s."
+
+#: src/commands.py:640
+msgid "You must not give the empty string as an argument."
+msgstr "Вы не можете передавать пустую строку как аргумент."
+
+#: src/commands.py:648
+msgid "You must not give a string containing spaces as an argument."
+msgstr "Вы не можете передавать строку с пробелами как аргумент."
+
+#: src/commands.py:658
+msgid "This message must be sent in a channel."
+msgstr "Это сообщение должно быть отправлено в канале."
+
+#: src/commands.py:690 src/commands.py:697
+msgid "url"
+msgstr "url"
+
+#: src/commands.py:703
+msgid "IRI"
+msgstr "IRI"
+
+#: src/commands.py:709
+msgid "email"
+msgstr "э. почта"
+
+#: src/commands.py:719 src/commands.py:727
+msgid "http url"
+msgstr "http url"
+
+#: src/commands.py:734
+msgid "command name"
+msgstr "название команды"
+
+#: src/commands.py:742
+msgid "ip"
+msgstr "ip"
+
+#: src/commands.py:748
+msgid "letter"
+msgstr "буква"
+
+#: src/commands.py:780
+msgid "plugin"
+msgstr "плагин"
+
+#: src/commands.py:788
+msgid "irc color"
+msgstr "irc-цвет"
+
+#: src/conf.py:130
+msgid ""
+"Determines whether this plugin is loaded\n"
+"         by default."
+msgstr "Определяет, будет ли этот плагин загружаться по умолчанию."
+
+#: src/conf.py:134
+msgid ""
+"Determines whether this plugin is\n"
+"        publicly visible."
+msgstr "Определяет, будет ли этот плагин виден всем."
+
+#: src/conf.py:231
+msgid "Determines the bot's default nick."
+msgstr "Определяет ник бота по умолчанию."
+
+#: src/conf.py:234
+msgid ""
+"Determines what alternative\n"
+"   nicks will be used if the primary nick (supybot.nick) isn't available.  "
+"A\n"
+"   %s in this nick is replaced by the value of supybot.nick when used. If "
+"no\n"
+"   alternates are given, or if all are used, the supybot.nick will be "
+"perturbed\n"
+"   appropriately until an unused nick is found."
+msgstr ""
+"Определяет альтернативные ники, которые будут использованы, если основной "
+"ник (supybot.nick) недоступен. %s в этих никах заменяется на значение "
+"supybot.nick. Если альтернатив не дано, или все они заняты, то будет "
+"использоваться изменённый supybot.nick, пока не освободится хотя бы один "
+"альтернативный или основной ник."
+
+#: src/conf.py:241
+msgid ""
+"Determines the bot's ident string, if the server\n"
+"    doesn't provide one by default."
+msgstr "Определяет ident-строку, если сервер не предоставляет её по умолчанию."
+
+#: src/conf.py:258
+msgid ""
+"Determines the real name which the bot sends to\n"
+"    the server. A standard real name using the current version of the bot\n"
+"    will be generated if this is left empty."
+msgstr ""
+"Определяет настоящее имя (real name), которое бот отсылает серверу. Если не "
+"указано, то бот использует номер своей версии."
+
+#: src/conf.py:267
+msgid "Determines what networks the bot will connect to."
+msgstr "Определяет, к каким сетям подключится бот."
+
+#: src/conf.py:377
+msgid ""
+"Determines what password will be used on %s.  Yes, we know that\n"
+"        technically passwords are server-specific and not network-specific,\n"
+"        but this is the best we can do right now."
+msgstr ""
+"Определяет, какой пароль будет использован в %s. Да, мы понимаем, что "
+"технически пароли задаются для серверов, а не сетей, но это лучшее, что мы "
+"можем сейчас сделать."
+
+#: src/conf.py:381
+msgid ""
+"Space-separated list of servers the bot will connect to for %s.\n"
+"        Each will be tried in order, wrapping back to the first when the "
+"cycle\n"
+"        is completed."
+msgstr ""
+"Список серверов %s, разделённых пробелами, к которым бот будет подключаться. "
+"Каждый из них будет опробован по порядку, возвращаясь к первому, когда цикл "
+"будет завершен."
+
+#: src/conf.py:385
+msgid "Space-separated list of channels the bot will join only on %s."
+msgstr ""
+"Список каналов, разделённых пробелами, к которым бот присоединится в %s."
+
+#: src/conf.py:389
+msgid ""
+"Determines whether the bot will attempt to connect with SSL\n"
+"        sockets to %s."
+msgstr "Определяет, будет ли бот подключаться с помощью SSL к %s."
+
+#: src/conf.py:392
+msgid ""
+"Space-separated list\n"
+"        of fingerprints of trusted certificates for this network.\n"
+"        Supported hash algorithms are: %L.\n"
+"        If non-empty, Certification Authority signatures will not be used "
+"to\n"
+"        verify certificates."
+msgstr ""
+"Список отпечатков доверенных сертификатов через пробел. Поддерживаемые "
+"алгоритмы хэширования: %L. Если эта настройка указана, то подписи центра "
+"сертификации не будут учитываться для проверки сертификатов."
+
+#: src/conf.py:398
+msgid ""
+"A certificate that is trusted to verify\n"
+"        certificates of this network (aka. Certificate Authority)."
+msgstr ""
+"Доверенный сертификат, который используют для проверки сертификатов данной "
+"сети (как центр сертификации)."
+
+#: src/conf.py:401
+msgid "Deprecated config value, keep it to False."
+msgstr "Устаревшая настройка, оставьте её False."
+
+#: src/conf.py:404
+msgid ""
+"Determines what certificate file (if any) the bot will use to\n"
+"        connect with SSL sockets to %s."
+msgstr ""
+"Определяет файл сертификата (если такой есть), который бот будет "
+"использовать для подключения к %s по SSL."
+
+#: src/conf.py:407
+msgid ""
+"Determines what key (if any) will be used to join the\n"
+"        channel."
+msgstr ""
+"Определяет какой ключ (если есть) будет использован для присоединения к "
+"каналу."
+
+#: src/conf.py:409
+msgid ""
+"Determines\n"
+"        what nick the bot will use on this network. If empty, defaults to\n"
+"        supybot.nick."
+msgstr ""
+"Определяет, какой ник будет использовать бот в этой сети. Если не указано, "
+"то используется supybot.nick."
+
+#: src/conf.py:412
+msgid ""
+"Determines\n"
+"        the bot's ident string, if the server doesn't provide one by "
+"default.\n"
+"        If empty, defaults to supybot.ident."
+msgstr ""
+"Определяет ident-строку для бота, если сервер не предоставляет её по "
+"умолчанию. Если не указано, то используется supybot.ident."
+
+#: src/conf.py:415
+msgid ""
+"Determines\n"
+"        the real name which the bot sends to the server. If empty, defaults "
+"to\n"
+"        supybot.user"
+msgstr ""
+"Определяет настоящее имя (real name), которое бот отсылает серверу. Если не "
+"указано, то используется supybot.user."
+
+#: src/conf.py:419
+msgid ""
+"Determines what user modes the bot will request\n"
+"        from the server when it first connects. If empty, defaults to\n"
+"        supybot.protocols.irc.umodes"
+msgstr ""
+"Определяет, какие режимы пользователя бот будет запрашивать у сервера, когда "
+"впервые присоединится. Если не указано, то используется supybot.protocols."
+"irc.umodes."
+
+#: src/conf.py:423
+#, fuzzy
+msgid ""
+"Determines what vhost the bot will bind to before\n"
+"        connecting a server (IRC, HTTP, ...) via IPv4. If empty, defaults "
+"to\n"
+"        supybot.protocols.irc.vhost"
+msgstr ""
+"Определяет, к какому виртуальному хосту будет привязан бот перед "
+"подключением к серверу (IRC, HTTP, ...) через IPv4."
+
+#: src/conf.py:427
+#, fuzzy
+msgid ""
+"Determines what vhost the bot will bind to before\n"
+"        connecting a server (IRC, HTTP, ...) via IPv6. If empty, defaults "
+"to\n"
+"        supybot.protocols.irc.vhostv6"
+msgstr ""
+"Определяет, к какому виртуальному хосту будет привязан бот перед "
+"подключением к серверу (IRC, HTTP, ...) через IPv6."
+
+#: src/conf.py:433
+msgid ""
+"Determines what SASL username will be used on %s. This should\n"
+"        be the bot's account name."
+msgstr ""
+"Определяет имя пользователя для SASL, которое будет использоваться в %s. Это "
+"должно быть именем аккаунта бота."
+
+#: src/conf.py:436
+msgid "Determines what SASL password will be used on %s."
+msgstr "Определяет пароль SASL, который будет использован в %s."
+
+#: src/conf.py:439
+msgid ""
+"Determines what SASL ECDSA key (if any) will be used on %s.\n"
+"        The public key must be registered with NickServ for SASL\n"
+"        ECDSA-NIST256P-CHALLENGE to work."
+msgstr ""
+"Определяет, какой SASL ECDSA ключ (если существует) будет использован в %s. "
+"Публичный ключ должен быть зарегистрирован с помощью NickServ для SASL ECDSA-"
+"NIST256P-CHALLENGE, чтобы это работало."
+
+#: src/conf.py:444
+msgid ""
+"Determines what SASL mechanisms will be tried and in which order.\n"
+"        "
+msgstr ""
+"Определяет, в каком порядке и какие механизмы SASL должны быть опробованы."
+
+#: src/conf.py:447
+msgid ""
+"Determines whether the bot will abort the connection if the\n"
+"        none of the enabled SASL mechanism succeeded."
+msgstr ""
+"Определяет, будет ли бот разрывать соединение, если ни один из включённых "
+"механизмов SASL не сработал успешно."
+
+#: src/conf.py:450
+msgid ""
+"If not empty, determines the hostname:port of the socks proxy that\n"
+"        will be used to connect to this network."
+msgstr ""
+"Если указано, то определяет хост:порт socks-прокси, которое будет "
+"использовать для подключения к этой сети."
+
+#: src/conf.py:470
+msgid "Determines how urls should be formatted."
+msgstr "Определяет форматирование url-адресов."
+
+#: src/conf.py:478
+msgid ""
+"Determines how timestamps\n"
+"    printed for human reading should be formatted. Refer to the Python\n"
+"    documentation for the time module to see valid formatting characters "
+"for\n"
+"    time formats."
+msgstr ""
+"Определяет формат временных меток, чтобы быть понятными людям. Обратитесь к "
+"модулю time в документации Python, чтобы увидеть допустимые символы для "
+"форматирования."
+
+#: src/conf.py:493
+msgid ""
+"Determines whether elapsed times will be given\n"
+"    as \"1 day, 2 hours, 3 minutes, and 15 seconds\" or as \"1d 2h 3m 15s\"."
+msgstr ""
+"Определяет, как будет указано прошедшее время: \"1 день, 2 часа, 3 минуты, и "
+"15 секунд\" или \"1д 2ч 3м 15с\"."
+
+#: src/conf.py:504
+msgid ""
+"Maximum number of items in a list\n"
+"    before the end is replaced with 'and others'. Set to 0 to always\n"
+"    show the entire list."
+msgstr ""
+"Максимальное число позиций в списке, которые показываются до надписи 'и "
+"другие'. При установке значения в 0 всегда будет показываться весь список."
+
+#: src/conf.py:521
+#, fuzzy
+msgid "other"
+msgstr "другие"
+
+#: src/conf.py:526
+msgid ""
+"Determines the absolute maximum length of\n"
+"    the bot's reply -- no reply will be passed through the bot with a "
+"length\n"
+"    greater than this."
+msgstr ""
+"Определяет абсолютный максимум длины ответа бота -- ботом не будут "
+"отправлены ответы длиннее указанного значения."
+
+#: src/conf.py:531
+msgid ""
+"Determines whether the bot will break up long\n"
+"    messages into chunks and allow users to use  the 'more' command to get "
+"the\n"
+"    remaining chunks."
+msgstr ""
+"Определяет, будет ли бот разбивать длинные сообщения на части и позволять "
+"пользователям использовать команду 'more', чтобы получить оставшиеся части "
+"сообщения."
+
+#: src/conf.py:536
+msgid ""
+"Determines what the maximum number of\n"
+"    chunks (for use with the 'more' command) will be."
+msgstr ""
+"Определяет максимальное число частей сообщения (для использования команды "
+"'more')."
+
+#: src/conf.py:540
+msgid ""
+"Determines how long individual chunks\n"
+"    will be.  If set to 0, uses our super-tweaked,\n"
+"    get-the-most-out-of-an-individual-message default."
+msgstr ""
+"Определяет длину отдельных частей сообщения. Если установлено в 0, то "
+"используется наше значение по умолчанию."
+
+#: src/conf.py:545
+msgid ""
+"Determines how many mores will be sent\n"
+"    instantly (i.e., without the use of the more command, immediately when\n"
+"    they are formed).  Defaults to 1, which means that a more command will "
+"be\n"
+"    required for all but the first chunk."
+msgstr ""
+"Определяет сколько ещё частей сообщения будет отправлено сразу, т.е. без "
+"использования команды 'more', сразу после того, как команда выполнилась. По "
+"умолчанию задано 1, что означает, что для получения каждой части сообщения "
+"нужен будет вызов команды 'more'."
+
+#: src/conf.py:552
+#, fuzzy
+msgid ""
+"Determines how many mores will be sent\n"
+"    instantly (i.e., without the use of the more command, immediately when\n"
+"    they are formed) when sending messages in private.  Defaults to 0, which "
+"means\n"
+"    that it defaults to the generic supybot.reply.mores.instant value."
+msgstr ""
+"Определяет сколько ещё частей сообщения будет отправлено сразу, т.е. без "
+"использования команды 'more', сразу после того, как команда выполнилась. По "
+"умолчанию задано 1, что означает, что для получения каждой части сообщения "
+"нужен будет вызов команды 'more'."
+
+#: src/conf.py:558
+msgid ""
+"Determines whether the bot will send\n"
+"    multi-message replies in a single message. This defaults to True \n"
+"    in order to prevent the bot from flooding. If this is set to False\n"
+"    the bot will send multi-message replies on multiple lines."
+msgstr ""
+"Определяет, будет ли бот отправлять ответы сразу на несколько сообщений в "
+"одном сообщении. По умолчанию установлено в True для предотвращения "
+"переполнения бота. Если установлено в False, то бот будет отправлять ответы "
+"в отдельных сообщениях."
+
+#: src/conf.py:564
+msgid ""
+"Determines whether the bot will reply with an\n"
+"    error message when it is addressed but not given a valid command.  If "
+"this\n"
+"    value is False, the bot will remain silent, as long as no other plugins\n"
+"    override the normal behavior."
+msgstr ""
+"Определяет, будет ли бот отвечать сообщением об ошибке, если ему дали "
+"неправильную команду. Если указано False, то в этих случаях бот будет "
+"молчать, если другие плагины не изменят это поведение."
+
+#: src/conf.py:571
+msgid ""
+"Determines whether error messages that result\n"
+"    from bugs in the bot will show a detailed error message (the uncaught\n"
+"    exception) or a generic error message."
+msgstr ""
+"Определяет, будут ли сообщения об ошибках в результате багов содержать "
+"подробное сообщение об ошибке (не перехваченное исключение)."
+
+#: src/conf.py:575
+msgid ""
+"Determines whether the bot will send error\n"
+"    messages to users in private.  You might want to do this in order to "
+"keep\n"
+"    channel traffic to minimum.  This can be used in combination with\n"
+"    supybot.reply.error.withNotice."
+msgstr ""
+"Определяет, будет ли бот отправлять сообщения об ошибках в личные сообщения "
+"пользователям. Возможно вы захотите использовать эту настройку, чтобы свести "
+"сообщения в канале к минимуму. Это может быть использовано в сочетании с "
+"supybot.reply.error.withNotice."
+
+#: src/conf.py:580
+msgid ""
+"Determines whether the bot will send error\n"
+"    messages to users via NOTICE instead of PRIVMSG.  You might want to do "
+"this\n"
+"    so users can ignore NOTICEs from the bot and not have to see error\n"
+"    messages; or you might want to use it in combination with\n"
+"    supybot.reply.error.inPrivate so private errors don't open a query "
+"window\n"
+"    in most IRC clients."
+msgstr ""
+"Определяет, будет ли бот отправлять сообщение об ошибке пользователям через "
+"NOTICE вместо PRIVMSG. Эта настройка полезна, чтобы пользователи просто "
+"могли игнорировать NOTICE от бота и не видеть сообщение об ошибке; а также "
+"полезно при использовании в комбинации supybot.reply.error.inPrivate, тогда "
+"ошибки в личных сообщениях не будут создавать новое окно переписки в "
+"большинстве IRC-клиентов."
+
+#: src/conf.py:587
+msgid ""
+"Determines whether the bot will *not* provide\n"
+"    details in the error\n"
+"    message to users who attempt to call a command for which they do not "
+"have\n"
+"    the necessary capability.  You may wish to make this True if you don't "
+"want\n"
+"    users to understand the underlying security system preventing them from\n"
+"    running certain commands."
+msgstr ""
+"Определяет, будет ли бот *НЕ* предоставлять подробную информацию об ошибке "
+"пользователям, попытавшимся вызвать команду, для которой у них отсутствуют "
+"нужные привилегии. Возможно вы захотите указать True, чтобы пользователи не "
+"смогли понять устройство системы безопасности, не позволяющую им выполнять "
+"привилегированные команды."
+
+#: src/conf.py:595
+msgid ""
+"Determines whether the bot will reply\n"
+"     privately when replying in a channel, rather than replying to the "
+"whole\n"
+"     channel."
+msgstr ""
+"Определяет, будет ли бот отвечать в личный диалог на сообщение, а не в самом "
+"канале."
+
+#: src/conf.py:600
+msgid ""
+"Determines whether the bot will reply with a\n"
+"    notice when replying in a channel, rather than replying with a privmsg "
+"as\n"
+"    normal."
+msgstr ""
+"Определяет, будет ли бот отвечать на сообщение в канале через NOTICE, нежели "
+"через PRIVMSG как обычно."
+
+#: src/conf.py:606
+msgid ""
+"Determines whether the bot will reply with a\n"
+"    notice when it is sending a private message, in order not to open a /"
+"query\n"
+"    window in clients."
+msgstr ""
+"Определяет, будет ли бот отвечать на личное сообщение через NOTICE, чтобы не "
+"открывать /query окно на клиентах."
+
+#: src/conf.py:611
+msgid ""
+"Determines whether the bot will always prefix\n"
+"     the user's nick to its reply to that user's command."
+msgstr ""
+"Определяет, будет ли бот использовать ник пользователя в качестве префикса к "
+"своему ответу на команду пользователя."
+
+#: src/conf.py:615
+msgid ""
+"Determines whether the bot should attempt to\n"
+"    reply to all messages even if they don't address it (either via its "
+"nick\n"
+"    or a prefix character).  If you set this to True, you almost certainly "
+"want\n"
+"    to set supybot.reply.whenNotCommand to False."
+msgstr ""
+"Определяет, должен ли бот отвечать на любое сообщение независимо от того, "
+"адресовано ли оно ему (либо с помощью ника, либо с помощью символ-префикса). "
+"Если вы укажите True, то вы точно захотите установить и supybot.reply."
+"whenNotCommand в False."
+
+#: src/conf.py:621
+msgid ""
+"Determines whether the bot will allow you to\n"
+"    send channel-related commands outside of that channel.  Sometimes "
+"people\n"
+"    find it confusing if a channel-related command (like Filter.outfilter)\n"
+"    changes the behavior of the channel but was sent outside the channel\n"
+"    itself."
+msgstr ""
+"Определяет, будет ли бот позволять вам отправлять команды, относящиеся к "
+"каналу, за его пределами. Людей может вводить в заблуждение, если какая-то "
+"команда, которая меняет поведение канала (например, Filter.outfilter), была "
+"отправлена вне этого самого канала."
+
+#: src/conf.py:628
+msgid ""
+"Determines whether the bot will unidentify\n"
+"    someone when that person changes their nick.  Setting this to True\n"
+"    will cause the bot to track such changes.  It defaults to False for a\n"
+"    little greater security."
+msgstr ""
+"Определяет, будет ли бот идентифицировать пользователя при смене его ника. "
+"Если установить значение в True, то бот будет отслеживать такие изменения. "
+"По умолчанию для большей безопасности значение - False."
+
+#: src/conf.py:634
+msgid ""
+"Determines whether the bot will always join a\n"
+"    channel when it's invited.  If this value is False, the bot will only "
+"join\n"
+"    a channel if the user inviting it has the 'admin' capability (or if "
+"it's\n"
+"    explicitly told to join the channel using the Admin.join command)."
+msgstr ""
+"Определяет, будет ли бот всегда присоединятся к каналу, куда он был "
+"приглашён. Если указано False, то бот будет присоединяться к каналам по "
+"приглашению только, если приглашающий пользователь имеет привилегию "
+"'admin' (или если боту явно дана команда присоединиться к каналу с помощью "
+"Admin.join)."
+
+#: src/conf.py:640
+msgid ""
+"Supybot normally replies with the full help\n"
+"    whenever a user misuses a command.  If this value is set to True, the "
+"bot\n"
+"    will only reply with the syntax of the command (the first line of the\n"
+"    help) rather than the full help."
+msgstr ""
+"Обычно Supybot отвечает полной справкой в случае неправильного использования "
+"команды пользователем. Если указано True, то бот ответит только справкой о "
+"синтаксисе команды (первая строка справки) вместо полной справки."
+
+#: src/conf.py:655
+msgid ""
+"Determines what prefix characters the bot will\n"
+"    reply to.  A prefix character is a single character that the bot will "
+"use\n"
+"    to determine what messages are addressed to it; when there are no "
+"prefix\n"
+"    characters set, it just uses its nick.  Each character in this string "
+"is\n"
+"    interpreted individually; you can have multiple prefix chars\n"
+"    simultaneously, and if any one of them is used as a prefix the bot will\n"
+"    assume it is being addressed."
+msgstr ""
+"Определяет символ-префиксы, на которые бот будет отзываться. Символ-префикс "
+"- это символ, который бот будет использовать для определения сообщений, "
+"адресованных ему, а если символов-префиксов не указано, то бот использует "
+"свой ник. Каждый символ в строке считывается как символ-префикс, поэтому у "
+"бота их может быть несколько, и на все он будет отзываться."
+
+#: src/conf.py:664
+msgid ""
+"Determines what strings the\n"
+"    bot will reply to when they are at the beginning of the message.  "
+"Whereas\n"
+"    prefix.chars can only be one character (although there can be many of\n"
+"    them), this variable is a space-separated list of strings, so you can\n"
+"    set something like '@@ ??' and the bot will reply when a message is\n"
+"    prefixed by either @@ or ??."
+msgstr ""
+"Определяет строки, на которые бот будет отзываться, если те находятся в "
+"начале сообщения. Если prefix.chars может быть только одним символом (хотя "
+"их может быть несколько), то эта настройка является списком строк через "
+"пробел, поэтому вы можете указать что-то вроде '@@ ??', и бот будет отвечать "
+"на все сообщения, если у них будет в начале @@ или ??."
+
+#: src/conf.py:671
+msgid ""
+"Determines whether the bot will reply when\n"
+"    people address it by its nick, rather than with a prefix character."
+msgstr ""
+"Определяет, будет ли бот отвечать людям, если те вызывают его через его ник, "
+"а не через символ-префикс."
+
+#: src/conf.py:674
+msgid ""
+"Determines whether the bot will reply when\n"
+"    people address it by its nick at the end of the message, rather than at\n"
+"    the beginning."
+msgstr ""
+"Определяет, будет ли бот отвечать, когда люди вызывают его по нику в конце "
+"сообщения, а не в начале."
+
+#: src/conf.py:678
+msgid ""
+"Determines what extra nicks\n"
+"    the bot will always respond to when addressed by, even if its current "
+"nick\n"
+"    is something else."
+msgstr ""
+"Определяет дополнительные ники, на которые бот всегда будет отзываться, даже "
+"если его текущий ник отличается."
+
+#: src/conf.py:688
+msgid "The operation succeeded."
+msgstr "Операция прошла успешно."
+
+#: src/conf.py:689
+msgid ""
+"Determines what message the bot replies with when a command succeeded.\n"
+"    If this configuration variable is empty, no success message will be\n"
+"    sent."
+msgstr ""
+"Определяет содержание сообщения, которым бот отвечает в случае успешного "
+"выполнения команды. Если эта настройка пуста, то сообщение не будет "
+"отправлено."
+
+#: src/conf.py:694
+#, fuzzy
+msgid ""
+"An error has occurred and has been logged.\n"
+"    Please contact this bot's administrator for more information.\n"
+"    If this configuration variable is empty, no generic error message will "
+"be sent."
+msgstr ""
+"Произошла ошибка, записана в журнал. Пожалуйста, свяжитесь с админом этого "
+"бота для получения доп. информации."
+
+#: src/conf.py:697
+#, fuzzy
+msgid ""
+"Determines what error message the bot gives when it wants to be\n"
+"    ambiguous."
+msgstr ""
+"Определяет содержание общего сообщения об ошибке, которым бот отвечает на не "
+"выполнившиеся команды."
+
+#: src/conf.py:701
+msgid ""
+"An error has occurred and has been logged.\n"
+"    Check the logs for more information."
+msgstr ""
+"Произошла ошибка, записана в журнал. Проверьте его для дополнительной "
+"информации."
+
+#: src/conf.py:702
+msgid ""
+"Determines what error\n"
+"    message the bot gives to the owner when it wants to be ambiguous."
+msgstr ""
+"Определяет, какое сообщение об ошибке бот выдает владельцу, если оно "
+"неоднозначное."
+
+#: src/conf.py:706
+msgid ""
+"Your hostmask doesn't match or your password\n"
+"    is wrong."
+msgstr "Ваша маска хоста не совпадает, или ваш пароль неверный."
+
+#: src/conf.py:707
+#, fuzzy
+msgid ""
+"Determines what message the bot replies with when\n"
+"     someone tries to use a command that requires being identified or having "
+"a\n"
+"    password and neither credential is correct."
+msgstr ""
+"Определяет содержание сообщения, которым бот отвечает, когда кто-то пытается "
+"использовать команду, требующую идентификации или наличия пароля."
+
+#: src/conf.py:713
+msgid ""
+"I can't find %s in my user\n"
+"    database.  If you didn't give a user name, then I might not know what "
+"your\n"
+"    user is, and you'll need to identify before this command might work."
+msgstr ""
+"Я не могу найти %s в мой базе данных пользователей. Если вы не указали имя "
+"пользователя, то возможно я вас не знаю, и вам необходимо "
+"идентифицироваться, прежде чем эта команда сможет быть выполнена."
+
+#: src/conf.py:716
+msgid ""
+"Determines what error message the bot replies with when someone tries\n"
+"    to accessing some information on a user the bot doesn't know about."
+msgstr ""
+"Определяет содержание сообщения об ошибке, которым бот отвечает, если кто-то "
+"пытается получить какую-либо информацию о пользователе, неизвестном боту."
+
+#: src/conf.py:720
+msgid ""
+"You must be registered to use this command.\n"
+"    If you are already registered, you must either identify (using the "
+"identify\n"
+"    command) or add a hostmask matching your current hostmask (using the\n"
+"    \"hostmask add\" command)."
+msgstr ""
+"Вы должны быть зарегистрированы для использования этой команды. Если вы уже "
+"зарегистрированы, то вы должны идентифицироваться, используя команду "
+"identify, или добавить хост-маску, совпадающую с вашей текущей, используя "
+"команду \"hostmask add\"."
+
+#: src/conf.py:723
+msgid ""
+"Determines what error message the bot\n"
+"    replies with when someone tries to do something that requires them to "
+"be\n"
+"    registered but they're not currently recognized."
+msgstr ""
+"Определяет содержание сообщение об ошибке, которым бот отвечает, когда кто-"
+"то пытается выполнить команду, требующую регистрации, но бот его не помнит."
+
+#: src/conf.py:728
+msgid ""
+"You don't have the %s capability.  If you\n"
+"    think that you should have this capability, be sure that you are "
+"identified\n"
+"    before trying again.  The 'whoami' command can tell you if you're\n"
+"    identified."
+msgstr ""
+"У вас нет привилегии %s.  Если вы считаете, что у вас должна быть такая "
+"привилегия, убедитесь, что в своей идентификации, прежде чем повторить "
+"попытку.  Команда 'whoami' может сказать вам, идентифицированы ли вы."
+
+#: src/conf.py:731
+#, fuzzy
+msgid ""
+"Determines what error message is given when the bot\n"
+"    is telling someone they aren't cool enough to use the command they tried "
+"to\n"
+"    use."
+msgstr ""
+"Определяет содержание сообщения об ошибке, которым бот отвечает, если кто-то "
+"недостаточно крут для использования команды, которую тот пытался запустить."
+
+#: src/conf.py:736
+msgid ""
+"You're missing some capability you need.\n"
+"    This could be because you actually possess the anti-capability for the\n"
+"    capability that's required of you, or because the channel provides that\n"
+"    anti-capability by default, or because the global capabilities include\n"
+"    that anti-capability.  Or, it could be because the channel or\n"
+"    supybot.capabilities.default is set to False, meaning that no commands "
+"are\n"
+"    allowed unless explicitly in your capabilities.  Either way, you can't "
+"do\n"
+"    what you want to do."
+msgstr ""
+"Вам не хватает некоторых необходимых вам привилегий. Это может быть вызвано "
+"тем, что у вас есть антипривилегия к требуемой, или потому, что канал "
+"предоставляет эту антипривилегию по умолчанию, или потому, что глобальные "
+"привилегии предоставляют эту антипривилегию. Или это может быть связано с "
+"тем, что для канала или supybot.capabilities.default установлено значение "
+"False, что означает, что никакие команды не разрешены, если это явно не "
+"соответствует вашим возможностям. В любом случае вы не можете делать то, что "
+"хотите."
+
+#: src/conf.py:744
+msgid ""
+"Determines what generic error message is given when the bot is telling\n"
+"    someone that they aren't cool enough to use the command they tried to "
+"use,\n"
+"    and the author of the code calling errorNoCapability didn't provide an\n"
+"    explicit capability for whatever reason."
+msgstr ""
+"Определяет содержание общего сообщения об ошибке, когда бот сообщает кому-"
+"либо, что он недостаточно крут, чтобы использовать эту команду, а автор "
+"кода, вызвавшего ошибку errorNoCapability, не предоставил явную информацию "
+"по какой-либо причине."
+
+#: src/conf.py:750
+msgid ""
+"That operation cannot be done in a\n"
+"    channel."
+msgstr "Эта операция не может быть выполнена в канале."
+
+#: src/conf.py:751
+msgid ""
+"Determines what error messages the bot sends to people\n"
+"    who try to do things in a channel that really should be done in\n"
+"    private."
+msgstr ""
+"Определяет содержание сообщения об ошибке, которое бот отправляет людям, "
+"пытающимся сделать то, что должны делать в личной переписке."
+
+#: src/conf.py:756
+msgid ""
+"This may be a bug.  If you think it is,\n"
+"    please file a bug report at\n"
+"    <https://github.com/progval/Limnoria/issues>."
+msgstr ""
+"Возможно, что вы столкнулись ошибкой. Если это так, то, пожалуйста, сообщите "
+"о ней в <https://github.com/progval/Limnoria/issues>."
+
+#: src/conf.py:759
+msgid ""
+"Determines what message the bot sends when it thinks you've\n"
+"    encountered a bug that the developers don't know about."
+msgstr ""
+"Определяет содержание сообщения, которое отправит бот, если он посчитает, "
+"что вы столкнулись с ошибкой, неизвестной разработчикам."
+
+#: src/conf.py:766
+msgid "$Type #$id: $text (added by $username at $at)"
+msgstr "$Type #$id: $text (добавлено пользователем $username в $at)"
+
+#: src/conf.py:767
+msgid ""
+"Format used by generic database plugins (Lart, Dunno, Prase, Success,\n"
+"    Quote, ...) to show an entry. You can use the following variables:\n"
+"    $type/$types/$Type/$Types (plugin name and variants), $id, $text,\n"
+"    $at (creation time), $userid/$username/$nick (author)."
+msgstr ""
+"Формат, используемый плагинами с генерируемыми базами данных, (Lart, Dunno, "
+"Prase, Success, Quote) для показа записей. Вы можете использовать следующие "
+"поля: $type/$types/$Type/$Types (название плагина и его варианты), $id, "
+"$text, $at (время создания), $userid/$username/$nick (автор)."
+
+#: src/conf.py:777
+#, fuzzy
+msgid ""
+"A floating point number of seconds to throttle\n"
+"    snarfed URLs, in order to prevent loops between two bots snarfing the "
+"same\n"
+"    URLs and having the snarfed URL in the output of the snarf message."
+msgstr ""
+"Дробное число секунд, которое используется для контроля скорости обработки "
+"перехваченных URL-адресов, чтобы избежать зацикливания между двумя ботами, "
+"перехватывающих одни и те же URL-адреса, и включения перехваченного URL-"
+"адреса в результат сообщения о перехвате."
+
+#: src/conf.py:782
+msgid ""
+"Determines the number of seconds\n"
+"    between running the upkeep function that flushes (commits) open "
+"databases,\n"
+"    collects garbage, and records some useful statistics at the debugging\n"
+"     level."
+msgstr ""
+"Определяет количество секунд между запусками функции поддержки, которая "
+"записывает открытые базы данных, собирает мусор и журналирует некоторую "
+"полезную статистику на отладочном уровне."
+
+#: src/conf.py:788
+msgid ""
+"Determines whether the bot will periodically\n"
+"    flush data and configuration files to disk.  Generally, the only time\n"
+"    you'll want to set this to False is when you want to modify those\n"
+"    configuration files by hand and don't want the bot to flush its current\n"
+"    version over your modifications.  Do note that if you change this to "
+"False\n"
+"    inside the bot, your changes won't be flushed.  To make this change\n"
+"    permanent, you must edit the registry yourself."
+msgstr ""
+"Определяет, будет ли бот периодически записывать данные и файлы настроек на "
+"диск. Как правило, вы захотите установить это значение в False, если вам "
+"нужно изменять настройки вручную без помех со стороны бота, записывающего "
+"свои настройки поверх ваших изменений. Однако, если вы вы измените это "
+"значение в False в самом боте, то вам придётся изменить конфиг "
+"самостоятельно, чтобы сделать это изменения постоянным."
+
+#: src/conf.py:814
+msgid ""
+"Determines what characters are valid for quoting\n"
+"    arguments to commands in order to prevent them from being tokenized.\n"
+"    "
+msgstr ""
+"Определяет, какие символы допустимы для изолирования аргументов команд, "
+"чтобы предотвратить их токенизацию."
+
+#: src/conf.py:821
+msgid ""
+"Determines whether the bot will allow nested\n"
+"    commands, which rule.  You definitely should keep this on."
+msgstr ""
+"Определяет, будет ли бот разрешать использование вложенных команд. Это "
+"определённо стоит оставить включённым."
+
+#: src/conf.py:824
+msgid ""
+"Determines what the maximum number of\n"
+"    nested commands will be; users will receive an error if they attempt\n"
+"    commands more nested than this."
+msgstr ""
+"Определяет максимальное количество вложенных команд. Пользователи получат "
+"сообщение об ошибке, если попытаются выполнить больше вложенных команд, чем "
+"в этой настройке."
+
+#: src/conf.py:833
+msgid ""
+"Supybot allows you to specify what brackets\n"
+"    are used for your nested commands.  Valid sets of brackets include\n"
+"    [], <>, {}, and ().  [] has strong historical motivation, but <> or\n"
+"    () might be slightly superior because they cannot occur in a nick.\n"
+"    If this string is empty, nested commands will not be allowed in this\n"
+"    channel."
+msgstr ""
+"Supybot позволяет вам указать, какие именно скобки будут использоваться для "
+"указания вложенных команд. Допустимые наборы скобок включают [], <>, {} и "
+"(). [] имеет историческое значение, но <> или () могут быть лучше, так как "
+"они не могут использоваться в никах. Если эта строка пуста, то в этом канале "
+"вложенные команды будут запрещены."
+
+#: src/conf.py:840
+msgid ""
+"Supybot allows nested commands. Enabling this\n"
+"    option will allow nested commands with a syntax similar to UNIX pipes, "
+"for\n"
+"    example: 'bot: foo | bar'."
+msgstr ""
+"Supybot поддерживает вложенные команды. Включение этой настройки позволит "
+"вам использовать команды с синтаксисом, похожим на конвейеры UNIX, например: "
+"'bot: foo | bar'."
+
+#: src/conf.py:845
+msgid ""
+"Determines what commands have default\n"
+"    plugins set, and which plugins are set to be the default for each of "
+"those\n"
+"    commands."
+msgstr ""
+"Определяет, для каких команд установлены плагины по умолчанию, и какие "
+"плагины будут установлены по умолчанию для каждой из этих команд."
+
+#: src/conf.py:851
+msgid ""
+"Determines what plugins automatically get precedence over all\n"
+"        other plugins when selecting a default plugin for a command.  By\n"
+"        default, this includes the standard loaded plugins.  You probably\n"
+"        shouldn't change this if you don't know what you're doing; if you "
+"do\n"
+"        know what you're doing, then also know that this set is\n"
+"        case-sensitive."
+msgstr ""
+"Определяет приоритет плагинов над другими при выборе плагина по умолчанию "
+"для команды. По умолчанию включает в себя стандартные загружаемые плагины. "
+"Не стоит менять это, если вы не знаете, что пытаетесь сделать. Иначе "
+"учитывайте, что эта настройка чувствительна к регистру."
+
+#: src/conf.py:861
+msgid ""
+"Allows this bot's owner user to use commands\n"
+"    that grants them shell access. This config variable exists in case you "
+"want\n"
+"    to prevent MITM from the IRC network itself (vulnerable IRCd or IRCops)\n"
+"    from gaining shell access to the bot's server by impersonating the "
+"owner.\n"
+"    Setting this to False also disables plugins and commands that can be\n"
+"    used to indirectly gain shell access."
+msgstr ""
+"Позволяет владельцу бота использовать команды, предоставляющие доступ к "
+"командной строке. Эта настройка существует на случай, если вы хотите "
+"предотвратить MITM-атаку из самой IRC-сети (уязвимость IRCd или IRCops) для "
+"получения доступа к командной строке сервера бота, выдавая себя за "
+"владельца. Установка значения в False также отключит плагины и команды, "
+"которые могут быть использованы для получения доступа к командной строке."
+
+#: src/conf.py:876
+msgid ""
+"Determines the interval used for\n"
+"    the history storage."
+msgstr "Определяет интервал для хранения истории."
+
+#: src/conf.py:879
+msgid ""
+"Determines whether the bot will defend itself\n"
+"    against command-flooding."
+msgstr "Определяет, будет ли бот защищать себя от массовой отправки команд."
+
+#: src/conf.py:882
+msgid ""
+"Determines how many commands users are\n"
+"    allowed per minute.  If a user sends more than this many commands in "
+"any\n"
+"    60 second period, they will be ignored for\n"
+"    supybot.abuse.flood.command.punishment seconds."
+msgstr ""
+"Определяет, сколько команд в минуту разрешено отправлять пользователям. Если "
+"пользователь отправит больше указанного количества команд за 60 секунд, то "
+"их будут игнорировать в течение некоторого количества секунд, указанного в "
+"supybot.abuse.flood.command.punishment."
+
+#: src/conf.py:887
+msgid ""
+"Determines how many seconds the bot\n"
+"    will ignore users who flood it with commands."
+msgstr ""
+"Определяет количество секунд, в течение которых бот будет игнорировать "
+"пользователей, засыпающих его командами."
+
+#: src/conf.py:890
+msgid ""
+"Determines whether the bot will notify people\n"
+"    that they're being ignored for command flooding."
+msgstr ""
+"Определяет, будет ли бот уведомлять пользователей о том, что их игнорируют "
+"из-за слишком большого количества отправленных ими команд."
+
+#: src/conf.py:894
+msgid ""
+"Determines whether the bot will defend itself\n"
+"    against invalid command-flooding."
+msgstr ""
+"Определяет, будет ли бот защищать себя от массовой отправки ему недопустимых "
+"команд."
+
+#: src/conf.py:897
+msgid ""
+"Determines how many invalid commands users\n"
+"    are allowed per minute.  If a user sends more than this many invalid\n"
+"    commands in any 60 second period, they will be ignored for\n"
+"    supybot.abuse.flood.command.invalid.punishment seconds.  Typically, "
+"this\n"
+"    value is lower than supybot.abuse.flood.command.maximum, since it's far\n"
+"    less likely (and far more annoying) for users to flood with invalid\n"
+"    commands than for them to flood with valid commands."
+msgstr ""
+"Определяет, сколько пользователи могут отправить недопустимых команд в "
+"минуту. Если пользователь отправляет больше этого количества недопустимых "
+"команд в любой 60-секундный период, они будут игнорироваться на протяжении "
+"supybot.abuse.flood.command.invalid.punishment секунд. Обычно это значение "
+"ниже, чем supybot.abuse.flood.command.maximum, поскольку гораздо менее "
+"вероятно (но гораздо более раздражающе), что пользователи будут засорять "
+"каналы недопустимыми командами, чем правильными командами."
+
+#: src/conf.py:905
+msgid ""
+"Determines how many seconds the bot\n"
+"    will ignore users who flood it with invalid commands.  Typically, this\n"
+"    value is higher than supybot.abuse.flood.command.punishment, since it's "
+"far\n"
+"    less likely (and far more annoying) for users to flood with invalid\n"
+"    commands than for them to flood with valid commands."
+msgstr ""
+"Определяет, сколько пользователи могут отправить недопустимых команд в "
+"минуту. Обычно это значение ниже, чем supybot.abuse.flood.command.maximum, "
+"поскольку гораздо менее вероятно (но гораздо более раздражающе), что "
+"пользователи будут засорять каналы недопустимыми командами, чем правильными "
+"командами."
+
+#: src/conf.py:911
+msgid ""
+"Determines whether the bot will notify people\n"
+"    that they're being ignored for invalid command flooding."
+msgstr ""
+"Определяет, будет ли бот уведомлять пользователей о том, что их игнорируют "
+"из-за слишком большого количества отправленных ими команд."
+
+#: src/conf.py:920
+msgid ""
+"Determines the default length of time a\n"
+"    driver should block waiting for input."
+msgstr ""
+"Определяет продолжительность времени по умолчанию, в течение которой драйвер "
+"должен блокироваться в ожидании ввода."
+
+#: src/conf.py:928
+msgid ""
+"Determines what driver module the \n"
+"    bot will use. Current, the only (and default) driver is Socket."
+msgstr ""
+"Определяет, какой модуль драйвера будет использовать бот. Текущим и "
+"единственным (и по умолчанию) драйвером является Socket."
+
+#: src/conf.py:932
+#, fuzzy
+msgid ""
+"Determines the minimum time the bot will\n"
+"    wait before attempting to reconnect to an IRC server."
+msgstr ""
+"Определяет максимальное время, которое бот будет ждать перед попыткой "
+"переподключения к IRC-серверу.  Конечно, бот может переподключиться раньше, "
+"если это возможно."
+
+#: src/conf.py:936
+msgid ""
+"Determines the maximum time the bot will\n"
+"    wait before attempting to reconnect to an IRC server.  The bot may, of\n"
+"    course, reconnect earlier if possible."
+msgstr ""
+"Определяет максимальное время, которое бот будет ждать перед попыткой "
+"переподключения к IRC-серверу.  Конечно, бот может переподключиться раньше, "
+"если это возможно."
+
+#: src/conf.py:988
+msgid ""
+"Determines what directory configuration data is\n"
+"    put into."
+msgstr "Определяет, в какой каталог помещаются данные настроек."
+
+#: src/conf.py:991
+msgid "Determines what directory data is put into."
+msgstr "Определяет, в какой каталог помещаются данные."
+
+#: src/conf.py:993
+msgid ""
+"Determines what directory backup data is put\n"
+"    into. Set it to /dev/null to disable backup (it is a special value,\n"
+"    so it also works on Windows and systems without /dev/null)."
+msgstr ""
+"Определяет, в какой каталог помещаются данные резервной копии. Установите "
+"его в /dev/null, чтобы отключить резервное копирование (это специальное "
+"значение, поэтому оно также работает на Windows и системах без /dev/null)."
+
+#: src/conf.py:1000
+msgid ""
+"Determines what directory temporary files\n"
+"    are put into."
+msgstr "Определяет, в какой каталог будут помещены временные файлы."
+
+#: src/conf.py:1003
+msgid ""
+"Determines what directory files of the\n"
+"    web server (templates, custom images, ...) are put into."
+msgstr ""
+"Определяет, в какую директорию будут помещены файлы веб-сервера (шаблоны, "
+"пользовательские изображения, ...)."
+
+#: src/conf.py:1016
+msgid ""
+"Determines what directories\n"
+"    the bot will look for plugins in.  Accepts a comma-separated list of\n"
+"    strings.\n"
+"    This means that to add another directory, you can nest the former value "
+"and\n"
+"    add a new one.  E.g. you can say: bot: 'config supybot.directories."
+"plugins\n"
+"    [config supybot.directories.plugins], newPluginDirectory'."
+msgstr ""
+"Определяет, в каких каталогах бот будет искать плагины. Принимает список "
+"строк, разделенных запятыми. Это означает, что для добавления другой "
+"директории вы можете вложить предыдущее значение и добавить новое. Например, "
+"вы можете сделать так: bot: 'config supybot.directories.plugins [config "
+"supybot.directories.plugins], newPluginDirectory'."
+
+#: src/conf.py:1024
+msgid ""
+"List of all plugins that were\n"
+"    ever loaded. Currently has no effect whatsoever. You probably want to "
+"use\n"
+"    the 'load' or 'unload' commands, or edit supybot.plugins.<pluginname>\n"
+"    instead of this."
+msgstr ""
+"Список всех плагинов, которые были когда-либо загружены. В настоящее время "
+"не имеет никакого эффекта. Вы, вероятно, захотите использовать команды "
+"'load' или 'unload', или изменить supybot.plugins.<pluginname> вместо этого."
+
+#: src/conf.py:1029
+msgid ""
+"Determines whether the bot will always load\n"
+"    important plugins (Admin, Channel, Config, Misc, Owner, and User)\n"
+"    regardless of what their configured state is.  Generally, if these "
+"plugins\n"
+"    are configured not to load, you didn't do it on purpose, and you still\n"
+"    want them to load.  Users who don't want to load these plugins are "
+"smart\n"
+"    enough to change the value of this variable appropriately :)"
+msgstr ""
+"Определяет, будет ли бот всегда загружать важные плагины (Admin, Channel, "
+"Config, Misc, Owner и User) независимо от их настроенного состояния. Как "
+"правило, если эти плагины настроены не загружаться, вы сделали это не "
+"специально, и вы все равно хотите, чтобы они загружались. Пользователи, "
+"которые не хотят загружать эти плагины, достаточно умны, чтобы изменить "
+"значение этой переменной соответствующим образом :)"
+
+#: src/conf.py:1063
+msgid ""
+"Determines what databases are available for use. If this\n"
+"    value is not configured (that is, if its value is empty) then sane "
+"defaults\n"
+"    will be provided."
+msgstr ""
+"Определяет, какие базы данных доступны для использования. Если это значение "
+"не задано (т.е. если его значение пустое), то будут предоставлены значения "
+"по умолчанию."
+
+#: src/conf.py:1069
+msgid ""
+"Determines what filename will be used\n"
+"    for the users database.  This file will go into the directory specified "
+"by\n"
+"    the supybot.directories.conf variable."
+msgstr ""
+"Определяет, какое имя файла будет использоваться для базы данных "
+"пользователей. Этот файл будет находиться в каталоге, указанном в supybot."
+"directories.conf."
+
+#: src/conf.py:1073
+msgid ""
+"Determines how long it takes identification to\n"
+"    time out.  If the value is less than or equal to zero, identification "
+"never\n"
+"    times out."
+msgstr ""
+"Определяет, через какое время идентификация истекает. Если значение меньше "
+"или равно нулю, идентификация никогда не истечёт."
+
+#: src/conf.py:1077
+msgid ""
+"Determines whether the bot will allow users to\n"
+"    unregister their users.  This can wreak havoc with already-existing\n"
+"    databases, so by default we don't allow it.  Enable this at your own "
+"risk.\n"
+"    (Do also note that this does not prevent the owner of the bot from "
+"using\n"
+"    the unregister command.)\n"
+"    "
+msgstr ""
+"Определяет, будет ли бот позволять пользователям отменять свою регистрацию. "
+"Это может сломать уже существующие базы данных, поэтому по умолчанию мы не "
+"разрешаем это делать. Включите эту опцию на свой страх и риск. (Также "
+"обратите внимание, что это не мешает владельцу бота использовать команду "
+"unregister)."
+
+#: src/conf.py:1086
+msgid ""
+"Determines what filename will be used\n"
+"    for the ignores database.  This file will go into the directory "
+"specified\n"
+"    by the supybot.directories.conf variable."
+msgstr ""
+"Определяет, какое имя файла будет использоваться для базы данных игноров.  "
+"Этот файл будет находиться в каталоге, указанном в supybot.directories.conf."
+
+#: src/conf.py:1092
+msgid ""
+"Determines what filename will be used\n"
+"    for the channels database.  This file will go into the directory "
+"specified\n"
+"    by the supybot.directories.conf variable."
+msgstr ""
+"Определяет, какое имя файла будет использоваться для базы данных каналов.  "
+"Этот файл будет находиться в каталоге, указанном в supybot.directories.conf."
+
+#: src/conf.py:1098
+msgid ""
+"Determines what filename will be used\n"
+"    for the networks database.  This file will go into the directory "
+"specified\n"
+"    by the supybot.directories.conf variable."
+msgstr ""
+"Определяет, какое имя файла будет использоваться для базы данных сетей.  "
+"Этот файл будет находиться в каталоге, указанном в supybot.directories.conf."
+
+#: src/conf.py:1130
+msgid ""
+"Determines whether the bot will require user\n"
+"    registration to use 'add' commands in database-based Supybot\n"
+"    plugins."
+msgstr ""
+"Определяет, будет ли бот требовать регистрации пользователя для "
+"использования команд 'add' в плагинах Supybot, основанных на базах данных."
+
+#: src/conf.py:1134
+msgid ""
+"Determines whether database-based plugins that\n"
+"    can be channel-specific will be so.  This can be overridden by "
+"individual\n"
+"    channels.  Do note that the bot needs to be restarted immediately after\n"
+"    changing this variable or your db plugins may not work for your "
+"channel;\n"
+"    also note that you may wish to set\n"
+"    supybot.databases.plugins.channelSpecific.link appropriately if you "
+"wish\n"
+"    to share a certain channel's databases globally."
+msgstr ""
+"Определяет, будут ли плагины на основе баз данных могут быть привязаны к "
+"конкретному каналу. Это может быть переопределено отдельными каналами. "
+"Обратите внимание, что бота необходимо перезапустить сразу после изменения "
+"этой переменной, иначе плагины с базами данных могут не работать на вашем "
+"канале; также обратите внимание, что вы можете установить supybot.databases."
+"plugins.channelSpecific.link соответствующим образом, если вы хотите "
+"использовать базы данных определенного канала глобально."
+
+#: src/conf.py:1142
+#, fuzzy
+msgid ""
+"Determines what channel global\n"
+"    (non-channel-specific) databases will be considered a part of.  This is\n"
+"    helpful if you've been running channel-specific for awhile and want to "
+"turn\n"
+"    the databases for your primary channel into global databases.  If\n"
+"    supybot.databases.plugins.channelSpecific.link.allow prevents linking, "
+"the\n"
+"    current channel will be used.  Do note that the bot needs to be "
+"restarted\n"
+"    immediately after changing this variable or your db plugins may not "
+"work\n"
+"    for your channel."
+msgstr ""
+"Определяет, к какому каналу будут относиться глобальные (не специфические "
+"для канала) базы данных. Это полезно, если вы долгое время использовали "
+"специфические для канала базы данных и хотите превратить базы данных вашего "
+"основного канала в глобальные. Если supybot.databases.plugins."
+"channelSpecific.link.allow запрещает связывание, будет использоваться "
+"текущий канал. Обратите внимание, что бот должен быть перезапущен немедленно "
+"после изменения этой переменной, иначе ваши плагины баз данных могут не "
+"работать для вашего канала."
+
+#: src/conf.py:1151
+msgid ""
+"Determines whether another channel's global\n"
+"    (non-channel-specific) databases will be allowed to link to this "
+"channel's\n"
+"    databases.  Do note that the bot needs to be restarted immediately "
+"after\n"
+"    changing this variable or your db plugins may not work for your "
+"channel.\n"
+"    "
+msgstr ""
+"Определяет, будут ли глобальные (не специфичные для канала) базы данных "
+"другого канала разрешены для связи с базами данных этого канала.  Обратите "
+"внимание, что бот должен быть перезапущен сразу после изменения этой "
+"переменной, иначе ваши БД-плагины могут не работать на вашем канале."
+
+#: src/conf.py:1169
+msgid ""
+"Determines\n"
+"    whether CDB databases will be allowed as a database implementation."
+msgstr ""
+"Определяет, будут ли разрешены базы данных CDB в качестве реализации баз "
+"данных."
+
+#: src/conf.py:1172
+msgid ""
+"Determines how often CDB databases will have\n"
+"    their modifications flushed to disk.  When the number of modified "
+"records\n"
+"    is greater than this fraction of the total number of records, the "
+"database\n"
+"    will be entirely flushed to disk."
+msgstr ""
+"Определяет, как часто изменения баз данных CDB будут сбрасываться на диск. "
+"Когда число измененных записей превышает эту долю от общего числа записей, "
+"база данных будет полностью сброшена на диск."
+
+#: src/conf.py:1337
+#, fuzzy
+msgid ""
+"Determines what will be used as the\n"
+"    default banmask style."
+msgstr ""
+"Определяет, что будет использоваться в качестве стиля маски бана по "
+"умолчанию."
+
+#: src/conf.py:1341
+msgid ""
+"Determines whether the bot will strictly\n"
+"    follow the RFC; currently this only affects what strings are\n"
+"    considered to be nicks. If you're using a server or a network that\n"
+"    requires you to message a nick such as services@this.network.server\n"
+"    then you you should set this to False."
+msgstr ""
+"Определяет, будет ли бот строго следовать RFC; в настоящее время это влияет "
+"только на то, какие строки считаются никами. Если вы используете сервер или "
+"сеть, которая требует от вас сообщения с таким ником, как services@this."
+"network.server, то вам следует установить значение False."
+
+#: src/conf.py:1348
+msgid ""
+"Determines whether the bot will enable\n"
+"    draft/experimental extensions of the IRC protocol. Setting this to True\n"
+"    may break your bot at any time without warning and/or break your\n"
+"    configuration irreversibly. So keep it False unless you know what you "
+"are\n"
+"    doing."
+msgstr ""
+"Определяет, будет ли бот включать черновые/экспериментальные расширения "
+"протокола IRC. Установка этого значения в True может привести к поломке "
+"вашего бота в любое время без предупреждения и/или необратимо нарушить ваши "
+"настройки. Поэтому держите значение в False, если вы не знаете, что делаете."
+
+#: src/conf.py:1355
+msgid ""
+"Determines what certificate file (if any) the bot\n"
+"    will use connect with SSL sockets by default."
+msgstr ""
+"Определяет, какой файл сертификата (если таковой есть) бот будет "
+"использовать для соединения с SSL-сокетами по умолчанию."
+
+#: src/conf.py:1359
+msgid ""
+"Determines what user modes the bot will request\n"
+"    from the server when it first connects.  Many people might choose +i; "
+"some\n"
+"    networks allow +x, which indicates to the auth services on those "
+"networks\n"
+"    that you should be given a fake host."
+msgstr ""
+"Определяет, какие режимы пользователя бот будет запрашивать у сервера при "
+"первом подключении. Многие люди могут выбрать +i; некоторые сети разрешают "
+"+x, указывающий службам аутентификации в этих сетях, что вам должен быть "
+"предоставлен фальшивый хост."
+
+#: src/conf.py:1365
+msgid ""
+"Determines what vhost the bot will bind to before\n"
+"    connecting a server (IRC, HTTP, ...) via IPv4."
+msgstr ""
+"Определяет, к какому виртуальному хосту будет привязан бот перед "
+"подключением к серверу (IRC, HTTP, ...) через IPv4."
+
+#: src/conf.py:1369
+msgid ""
+"Determines what vhost the bot will bind to before\n"
+"    connecting a server (IRC, HTTP, ...) via IPv6."
+msgstr ""
+"Определяет, к какому виртуальному хосту будет привязан бот перед "
+"подключением к серверу (IRC, HTTP, ...) через IPv6."
+
+#: src/conf.py:1373
+msgid ""
+"Determines how many old messages the bot will\n"
+"    keep around in its history.  Changing this variable will not take "
+"effect\n"
+"    on a network until it is reconnected."
+msgstr ""
+"Определяет, сколько старых сообщений бот будет сохранять в своей истории.  "
+"Изменение этой переменной не будет действовать в сети до тех пор, пока к ней "
+"не будет выполнено переподключение."
+
+#: src/conf.py:1378
+msgid ""
+"A floating point number of seconds to throttle\n"
+"    queued messages -- that is, messages will not be sent faster than once "
+"per\n"
+"    throttleTime seconds."
+msgstr ""
+"Дробное число секунд для регулирования сообщений в очереди, то есть "
+"сообщения не будут отправляться быстрее, чем один раз за throttleTime секунд."
+
+#: src/conf.py:1383
+msgid ""
+"Determines whether the bot will send PINGs to\n"
+"    the server it's connected to in order to keep the connection alive and\n"
+"    discover earlier when it breaks.  Really, this option only exists for\n"
+"    debugging purposes: you always should make it True unless you're "
+"testing\n"
+"    some strange server issues."
+msgstr ""
+"Определяет, будет ли бот посылать PING'и на сервер, к которому он подключен, "
+"чтобы сохранить соединение и обнаружить его разрыв раньше, чем оно "
+"потеряется. На самом деле, эта опция существует только в целях отладки: вы "
+"всегда должны ставить его в True, если только вы не исследуете (тестируете) "
+"загадочные проблемы с сервером."
+
+#: src/conf.py:1390
+msgid ""
+"Determines the number of seconds between sending\n"
+"    pings to the server, if pings are being sent to the server."
+msgstr ""
+"Определяет количество секунд между отправкой пингов на сервер, если таковые "
+"отправляются на сервер."
+
+#: src/conf.py:1395
+msgid ""
+"Determines whether the bot will refuse\n"
+"    duplicated messages to be queued for delivery to the server.  This is a\n"
+"    safety mechanism put in place to prevent plugins from sending the same\n"
+"    message multiple times; most of the time it doesn't matter, unless "
+"you're\n"
+"    doing certain kinds of plugin hacking."
+msgstr ""
+"Определяет, будет ли бот отклонять дублирующиеся сообщения в очереди на "
+"отправку на сервер.  Это механизм безопасности, созданный для того, чтобы "
+"плагины не отправляли одно и то же сообщение несколько раз; в большинстве "
+"случаев это не имеет значения, если только вы не занимаетесь "
+"экспериментальной разработкой плагинов."
+
+#: src/conf.py:1403
+msgid ""
+"Determines how many seconds must elapse between\n"
+"    JOINs sent to the server."
+msgstr ""
+"Определяет, сколько секунд должно пройти между JOIN, отправленными на сервер."
+
+#: src/conf.py:1411
+msgid ""
+"Determines how many bytes the bot will\n"
+"    'peek' at when looking through a URL for a doctype or title or "
+"something\n"
+"    similar.  It'll give up after it reads this many bytes, even if it "
+"hasn't\n"
+"    found what it was looking for."
+msgstr ""
+"Определяет, сколько байт будет просматривать бот при открытии URL-адреса в "
+"поисках типа документа, заголовка или чего-то подобного. Он сдастся после "
+"того, как прочитает указанное количество байт, даже если не нашел того, что "
+"искал."
+
+#: src/conf.py:1435
+msgid ""
+"Determines what HTTP proxy all HTTP requests should go\n"
+"    through.  The value should be of the form 'host:port'."
+msgstr ""
+"Определяет, через какой HTTP-прокси должны проходить все HTTP-запросы.  "
+"Значение должно иметь вид 'host:port'."
+
+#: src/conf.py:1475
+msgid ""
+"If set, the Accept-Language HTTP header will be set to this\n"
+"    value for requests. Useful for overriding the auto-detected language "
+"based on\n"
+"    the server's location."
+msgstr ""
+"Если задано, то в HTTP-заголовке Accept-Language для запросов будет "
+"использоваться это значение. Полезно для переопределения автоматически "
+"определяемого языка на основе местоположения сервера."
+
+#: src/conf.py:1481
+msgid ""
+"If set, the User-Agent HTTP header will be set to a randomly\n"
+"    selected value from this comma-separated list of strings for requests."
+msgstr ""
+"Если определено, то в HTTP-заголовке User-Agent для запросов будет "
+"установлено случайно выбранное значение из этого списка строк, разделенных "
+"запятыми."
+
+#: src/conf.py:1489
+msgid ""
+"Determines whether server certificates\n"
+"    will be verified, which checks whether the server certificate is signed\n"
+"    by a known certificate authority, and aborts the connection if it is "
+"not.\n"
+"    This is assumed to be True of serverFingerprints or "
+"authorityCertificate\n"
+"    is set."
+msgstr ""
+"Определяет, будут ли проверяться сертификаты сервера. При этом выявляется, "
+"подписан ли сертификат сервера известным удостоверяющим центром, и "
+"соединение будет прервано, если это не так. Предполагается, что если эта "
+"настройка установлена в true, то также определены serverFingerprints или "
+"authorityCertificate."
+
+#: src/conf.py:1516
+msgid ""
+"If true, uses IPV6_V6ONLY to disable\n"
+"    forwaring of IPv4 traffic to IPv6 sockets. On *nix, has the same\n"
+"    effect as setting kernel variable net.ipv6.bindv6only to 1."
+msgstr ""
+"Если true, то будет использоваться IPV6_V6ONLY для отключения пересылки IPv4-"
+"трафика на IPv6-сокеты. На *nix имеет тот же эффект, что и установка "
+"переменной ядра net.ipv6.bindv6only в 1."
+
+#: src/conf.py:1520
+msgid ""
+"Space-separated list of IPv4 hosts the HTTP server\n"
+"    will bind."
+msgstr ""
+"Список IPv4-хостов, разделенных пробелами, к которым будет привязан HTTP-"
+"сервер."
+
+#: src/conf.py:1523
+msgid ""
+"Space-separated list of IPv6 hosts the HTTP server will\n"
+"    bind."
+msgstr ""
+"Список IPv6-хостов, разделенных пробелами, к которым будет привязан HTTP-"
+"сервер."
+
+#: src/conf.py:1526
+msgid ""
+"Determines what port the HTTP server will\n"
+"    bind."
+msgstr "Определяет, к какому порту будет привязан HTTP-сервер."
+
+#: src/conf.py:1529
+msgid ""
+"Determines whether the server will stay\n"
+"    alive if no plugin is using it. This also means that the server will\n"
+"    start even if it is not used."
+msgstr ""
+"Определяет, будет ли сервер оставаться запущенным, если ни один плагин его "
+"не использует. Это также означает, что сервер будет запущен, даже если он не "
+"используется."
+
+#: src/conf.py:1533
+msgid ""
+"Determines the path of the file served as\n"
+"    favicon to browsers."
+msgstr "Определяет путь к файлу, передаваемому браузерам в качестве favicon."
+
+#: src/conf.py:1536
+msgid ""
+"Determines the public URL of the server.\n"
+"    By default it is http://<hostname>:<port>/, but you will want to change\n"
+"    this if there is a reverse proxy (nginx, apache, ...) in front of\n"
+"    the bot."
+msgstr ""
+"Определяет публичный URL-адрес сервера. По умолчанию это http://<hostname>:"
+"<port>/, но вы захотите изменить, если перед ботом стоит обратный прокси "
+"(nginx, apache, ...)."
+
+#: src/conf.py:1546
+msgid ""
+"Determines whether the bot will ignore\n"
+"    unidentified users by default.  Of course, that'll make it\n"
+"    particularly hard for those users to register or identify with the bot\n"
+"    without adding their hostmasks, but that's your problem to solve."
+msgstr ""
+"Определяет, будет ли бот по умолчанию игнорировать неидентифицированных "
+"пользователей. Конечно, это сделает особенно сложным регистрацию или "
+"идентификацию этих пользователей в боте без добавления их масок хоста, но "
+"это уже ваша проблема."
+
+#: src/conf.py:1553
+#, fuzzy
+msgid ""
+"A string that is the external IP of the bot.  If this is the\n"
+"   empty string, the bot will attempt to find out its IP dynamically "
+"(though\n"
+"   sometimes that doesn't work, hence this variable). This variable is not "
+"used\n"
+"   by Limnoria and its built-in plugins: see supybot.protocols.irc.vhost /\n"
+"   supybot.protocols.irc.vhostv6 to set the IRC bind host, and\n"
+"   supybot.servers.http.hosts4 / supybot.servers.http.hosts6 to set the "
+"HTTP\n"
+"   server bind host."
+msgstr ""
+"Строка, которая является внешним IP-адресом бота. Если это пустая строка, "
+"бот попытается узнать свой IP динамически (хотя иногда это не работает, "
+"отсюда и эта переменная). Эта переменная не используется Limnoria и ее "
+"встроенными плагинами: см. supybot.protocols.irc.vhost / supybot.protocols."
+"irc.vhost6 для установки хоста IRC, и supybot.servers.http.hosts4 / supybot."
+"servers.http.hosts6 для установки хоста HTTP-сервера."
+
+#: src/conf.py:1572
+msgid ""
+"Determines what the default timeout for socket\n"
+"    objects will be.  This means that *all* sockets will timeout when this "
+"many\n"
+"    seconds has gone by (unless otherwise modified by the author of the "
+"code\n"
+"    that uses the sockets)."
+msgstr ""
+"Определяет время ожидания по умолчанию для сокетов. Это означает, что *все* "
+"сокеты будут отключаться по истечении указанного количества секунд (если это "
+"поведение не изменено автором кода, использующего сокеты)."
+
+#: src/conf.py:1578
+msgid ""
+"Determines what file the bot should write its PID\n"
+"    (Process ID) to, so you can kill it more easily.  If it's left unset (as "
+"is\n"
+"    the default) then no PID file will be written.  A restart is required "
+"for\n"
+"    changes to this variable to take effect."
+msgstr ""
+"Определяет, в какой файл бот должен записывать свой PID (Process ID), чтобы "
+"завершить его было проще. Если переменная не установлена (как и происходит "
+"по умолчанию), то PID-файл записываться не будет.  Чтобы изменения в этой "
+"переменной вступили в силу, потребуется перезагрузка."
+
+#: src/conf.py:1588
+msgid ""
+"Determines whether the bot will automatically\n"
+"    thread all commands."
+msgstr ""
+"Определяет, будет ли бот автоматически выполнять все команды в отдельных "
+"потоках."
+
+#: src/conf.py:1591
+msgid ""
+"Determines whether the bot will automatically\n"
+"    flush all flushers *very* often.  Useful for debugging when you don't "
+"know\n"
+"    what's breaking or when, but think that it might be logged."
+msgstr ""
+"Определяет, будет ли бот автоматически очищать память *очень* часто.  "
+"Полезно для отладки, когда вы не знаете, что и когда ломается, но думаете, "
+"что это может быть занесено в журнал."
+
+#: src/httpserver.py:62
+#, fuzzy
+msgid "Supybot Web server index"
+msgstr "Индекс веб-сервера Supybot"
+
+#: src/httpserver.py:67
+msgid "Here is a list of the plugins that have a Web interface:"
+msgstr "Вот список плагинов, имеющих веб-интерфейс:"
+
+#: src/httpserver.py:352
+msgid ""
+"\n"
+"    This is a default response of the Supybot HTTP server. If you see this\n"
+"    message, it probably means you are developing a plugin, and you have\n"
+"    neither overriden this message or defined an handler for this query."
+msgstr ""
+"\n"
+"Это стандартный ответ HTTP-сервера Supybot. Если вы видите это сообщение, "
+"возможно вы занимаетесь разработкой плагина и не задали это сообщение или не "
+"задали обработчик для этого запроса."
+
+#: src/httpserver.py:398
+msgid ""
+"\n"
+"    I am a pretty clever IRC bot, but I suck at serving Web pages, "
+"particulary\n"
+"    if I don't know what to serve.\n"
+"    What I'm saying is you just triggered a 404 Not Found, and I am not\n"
+"    trained to help you in such a case."
+msgstr ""
+"\n"
+"Я довольно умный IRC-бот, но у меня плохо получается работать с веб-"
+"страницами, особенно, если я не знаю, что именно нужно пользователю. То есть "
+"вы только что спровоцировали ошибку 404 (Not Found), а я не способен помочь "
+"вам в этом случае."
+
+#: src/httpserver.py:417
+msgid "Request not handled."
+msgstr "Запрос не обработан."
+
+#: src/httpserver.py:424
+msgid "No plugins available."
+msgstr "Нет доступных плагинов."
+
+#: src/httpserver.py:442 src/httpserver.py:460 src/httpserver.py:498
+msgid "Request not handled"
+msgstr "Запрос не обработан"
+
+#: src/httpserver.py:485
+msgid "No favicon set."
+msgstr "Нет установленного favicon."
+
+#: src/ircutils.py:592
+msgid "is an op on %L"
+msgstr "является оператором в %L"
+
+#: src/ircutils.py:594
+msgid "is a halfop on %L"
+msgstr "является полуоператором в %L"
+
+#: src/ircutils.py:596
+msgid "is voiced on %L"
+msgstr "имеет voice в %L"
+
+#: src/ircutils.py:599
+msgid "is also on %L"
+msgstr "также есть в %L"
+
+#: src/ircutils.py:601
+msgid "is on %L"
+msgstr "находится в %L"
+
+#: src/ircutils.py:604
+msgid "isn't on any publicly visible channels"
+msgstr "нет ни в одном общедоступном канале"
+
+#: src/ircutils.py:612 src/ircutils.py:613 src/ircutils.py:619
+msgid "<unknown>"
+msgstr "<неизвестный>"
+
+#: src/ircutils.py:621
+msgid " %s is away: %s."
+msgstr " %s отсутствует: %s."
+
+#: src/ircutils.py:626
+msgid " identified"
+msgstr " идентифицированный"
+
+#: src/ircutils.py:632
+#, fuzzy
+msgid "%s (%s) has been%s on server %s since %s (idle for %s). %s %s.%s"
+msgstr ""
+"%s (%s) находится%s на сервере %s с %s (простаивает в течение %s). %s %s.%s"
+
+#: src/ircutils.py:636
+#, fuzzy
+msgid "%s (%s) has been%s on server %s and disconnected on %s."
+msgstr "%s (%s) был %s на сервере %s и отключен на %s."
+
+#: src/questions.py:61
+#, fuzzy
+msgid "Sorry, that response was not an option."
+msgstr "Извините, но такой ответ не подходит."
+
+#: src/questions.py:110
+msgid "Sorry, you must enter a value."
+msgstr "Извините, но вы должны ввести значение."
+
+#: src/questions.py:130
+msgid "Enter password: "
+msgstr "Введите пароль: "
+
+#: src/questions.py:132
+msgid "Re-enter password: "
+msgstr "Повторите пароль: "
+
+#: src/questions.py:145
+msgid "Passwords don't match."
+msgstr "Пароли не совпадают."
+
+#: src/registry.py:224
+#, fuzzy
+msgid "%r is not a valid entry in %r"
+msgstr "%r не является действительной записью в %r"
+
+#: src/registry.py:573
+msgid "Value must be either True or False (or On or Off), not %r."
+msgstr "Значение должно быть либо True, либо False (или On, или Off), а не %r."
+
+#: src/registry.py:590
+msgid "Value must be an integer, not %r."
+msgstr "Значение должно быть целым числом, а не %r."
+
+#: src/registry.py:600
+msgid "Value must be a non-negative integer, not %r."
+msgstr "Значение должно быть целым неотрицательным числом, а не %r."
+
+#: src/registry.py:609
+msgid "Value must be positive (non-zero) integer, not %r."
+msgstr "Значение должно быть положительным (ненулевым) целым числом, а не %r."
+
+#: src/registry.py:618
+msgid "Value must be a floating-point number, not %r."
+msgstr "Значение должно быть числом с плавающей точкой, а не %r."
+
+#: src/registry.py:634
+msgid "Value must be a floating-point number greater than zero, not %r."
+msgstr "Значение должно быть числом с плавающей точкой больше нуля, а не %r."
+
+#: src/registry.py:645
+msgid "Value must be a floating point number in the range [0, 1], not %r."
+msgstr ""
+"Значение должно быть числом с плавающей точкой в диапазоне [0, 1], а не %r."
+
+#: src/registry.py:660
+msgid "Value should be a valid Python string, not %r."
+msgstr "Значение должно быть допустимой Python-строкой, а не %r."
+
+#: src/registry.py:698
+msgid "Valid values include %L."
+msgstr "Допустимые значения включают %L."
+
+#: src/registry.py:700
+msgid "Valid values include %L, not %%r."
+msgstr "Допустимые значения включают в себя %L, а не %%r."
+
+#: src/registry.py:777
+msgid "Value must be a valid regular expression, not %r."
+msgstr "Значение должно быть допустимым регулярным выражением, а не %r."
+
+#: src/utils/gen.py:115
+msgid "year"
+msgstr "год"
+
+#: src/utils/gen.py:118
+msgid "week"
+msgstr "неделя"
+
+#: src/utils/gen.py:121
+msgid "day"
+msgstr "день"
+
+#: src/utils/gen.py:124
+msgid "hour"
+msgstr "час"
+
+#: src/utils/gen.py:128
+msgid "minute"
+msgstr "минута"
+
+#: src/utils/gen.py:131
+msgid "second"
+msgstr "секунда"
+
+#: src/utils/gen.py:140
+msgid "%s ago"
+msgstr "%s назад"
+
+#: src/utils/str.py:375
+msgid "and"
+msgstr "и"

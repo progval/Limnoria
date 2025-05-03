@@ -419,6 +419,19 @@ def registerNetwork(name, password='', ssl=True, sasl_username='',
         registry.String('', _("""Determines what user modes the bot will request
         from the server when it first connects. If empty, defaults to
         supybot.protocols.irc.umodes""")))
+    registerGlobalValue(network, 'vhost',
+        registry.String('', _("""Determines what vhost the bot will bind to before
+        connecting a server (IRC, HTTP, ...) via IPv4. If empty, defaults to
+        supybot.protocols.irc.vhost. It must be (or resolve to) an IP address
+        assigned to one of the network interfaces (see 'ip addr' on Linux).
+        This may differ from the bot's public IP address, if it is behind a NAT.""")))
+    registerGlobalValue(network, 'vhostv6',
+        registry.String('', _("""Determines what vhost the bot will bind to before
+        connecting a server (IRC, HTTP, ...) via IPv6. If empty, defaults to
+        supybot.protocols.irc.vhostv6. It must be (or resolve to) an IP address
+        assigned to one of the network interfaces (see 'ip addr' on Linux).
+        This may differ from the bot's public IP address, if it is behind a NAT.""")))
+
     sasl = registerGroup(network, 'sasl')
     registerGlobalValue(sasl, 'username', registry.String(sasl_username,
         _("""Determines what SASL username will be used on %s. This should
@@ -537,6 +550,13 @@ registerChannelValue(supybot.reply.mores, 'instant',
     instantly (i.e., without the use of the more command, immediately when
     they are formed).  Defaults to 1, which means that a more command will be
     required for all but the first chunk.""")))
+
+# XXX: User value.
+registerNetworkValue(supybot.reply.mores.instant, 'whenPrivate',
+    registry.NonNegativeInteger(0, _("""Determines how many mores will be sent
+    instantly (i.e., without the use of the more command, immediately when
+    they are formed) when sending messages in private.  Defaults to 0, which means
+    that it defaults to the generic supybot.reply.mores.instant value.""")))
 
 registerChannelValue(supybot.reply, 'oneToOne',
     registry.Boolean(True, _("""Determines whether the bot will send
@@ -1182,7 +1202,7 @@ registerGroup(supybot.protocols, 'irc')
 
 class Banmask(registry.SpaceSeparatedSetOfStrings):
     __slots__ = ('__parent', '__dict__') # __dict__ is needed to set __doc__
-    validStrings = ('exact', 'nick', 'user', 'host')
+    validStrings = ('exact', 'nick', 'user', 'host', 'account')
     def __init__(self, *args, **kwargs):
         assert self.validStrings, 'There must be some valid strings.  ' \
                                   'This is a bug.'
@@ -1216,13 +1236,43 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         isn't specified via options, the value of
         conf.supybot.protocols.irc.banmask is used.
 
+        Unlike :meth:`makeExtBanmasks`, this is guaranteed to return an
+        RFC1459-like mask, suitable for ircdb's ignore lists.
+
         options - A list specifying which parts of the hostmask should
         explicitly be matched: nick, user, host.  If 'exact' is given, then
-        only the exact hostmask will be used."""
-        if not channel:
-            channel = dynamic.channel
+        only the exact hostmask will be used.
+        """
         if not network:
             network = dynamic.irc.network
+        if not options:
+            options = supybot.protocols.irc.banmask.getSpecific(
+                network, channel)()
+        options = [option for option in options if option != 'account']
+        masks = self.makeExtBanmasks(
+            hostmask, options, channel, network=network)
+        assert len(masks) == 1, 'Unexpected number of banmasks: %r' % masks
+        return masks[0]
+
+    def makeExtBanmasks(self, hostmask, options=None, channel=None, *, network):
+        """Create banmasks from the given hostmask.  If a style of banmask
+        isn't specified via options, the value of
+        conf.supybot.protocols.irc.banmask is used.
+
+        Depending on the options and configuration, this may return a mask
+        in the format of an extban (eg. "~account:foobar" on UnrealIRCd).
+        If this is unwanted (eg. to pass to ircdb's ignore lists), use
+        :meth:`makeBanmask` instead.
+
+        options - A list specifying which parts of the hostmask should
+        explicitly be matched: nick, user, host.  If 'exact' is given, then
+        only the exact hostmask will be used.
+        If 'account' is given (and not after 'exact') and the user is
+        logged in and the server supports account extbans, then an account
+        extban is returned instead.
+        """
+        if not channel:
+            channel = dynamic.channel
         (nick, user, host) = ircutils.splitHostmask(hostmask)
         bnick = '*'
         buser = '*'
@@ -1230,19 +1280,62 @@ class Banmask(registry.SpaceSeparatedSetOfStrings):
         if not options:
             options = supybot.protocols.irc.banmask.getSpecific(
                 network, channel)()
+
+        add_star_mask = False
+        masks = []
+
         for option in options:
             if option == 'nick':
                 bnick = nick
+                add_star_mask = True
             elif option == 'user':
                 buser = user
+                add_star_mask = True
             elif option == 'host':
                 bhost = host
+                add_star_mask = True
             elif option == 'exact':
-                return hostmask
+                masks.append(hostmask)
+            elif option == 'account':
+                import supybot.world as world
+                irc = world.getIrc(network)
+                if irc is None:
+                    continue
+                extban = ircutils.accountExtban(irc, nick)
+                if extban is not None:
+                    masks.append(extban)
+            else:
+                from . import log
+                log.warning(
+                    "Unknown mask option passed to makeExtBanmasks: %r",
+                    option)
+
+        if add_star_mask and (bnick, buser, bhost) != ('*', '*', '*'):
+            masks.append(ircutils.joinHostmask(bnick, buser, bhost))
+
         if (bnick, buser, bhost) == ('*', '*', '*') and \
-                ircutils.isUserHostmask(hostmask):
-            return hostmask
-        return ircutils.joinHostmask(bnick, buser, bhost)
+                options == ['account'] and \
+                not masks:
+            # found no ban mask to set (because options == ['account'] and user
+            # is logged out?), try again with the default ban mask
+            options = supybot.protocols.irc.banmask.getSpecific(
+                    network, channel)()
+            options = [option for option in options if option != 'account']
+            return self.makeExtBanmasks(
+                hostmask, options=options, channel=channel, network=network)
+
+        if (bnick, buser, bhost) == ('*', '*', '*') and \
+                ircutils.isUserHostmask(hostmask) and \
+                not masks:
+            # still no ban mask found, fallback to the host, if any
+            if host != '*':
+                masks.append(ircutils.joinHostmask('*', '*', host))
+            else:
+                # if no host, fall back to the exact mask provided
+                masks.append(hostmask)
+
+        return masks
+
 
 registerChannelValue(supybot.protocols.irc, 'banmask',
     Banmask(['host'], _("""Determines what will be used as the
@@ -1274,11 +1367,17 @@ registerGlobalValue(supybot.protocols.irc, 'umodes',
 
 registerGlobalValue(supybot.protocols.irc, 'vhost',
     registry.String('', _("""Determines what vhost the bot will bind to before
-    connecting a server (IRC, HTTP, ...) via IPv4.""")))
+    connecting a server (IRC, HTTP, ...) via IPv4. It must be (or resolve to)
+    an IP address assigned to one of the network interfaces (see 'ip addr' on
+    Linux).
+    This may differ from the bot's public IP address, if it is behind a NAT.""")))
 
 registerGlobalValue(supybot.protocols.irc, 'vhostv6',
     registry.String('', _("""Determines what vhost the bot will bind to before
-    connecting a server (IRC, HTTP, ...) via IPv6.""")))
+    connecting a server (IRC, HTTP, ...) via IPv6. It must be (or resolve to)
+    an IP address assigned to one of the network interfaces (see 'ip -6 addr' on
+    Linux).
+    This may differ from the bot's public IP address, if it is behind a NAT.""")))
 
 registerGlobalValue(supybot.protocols.irc, 'maxHistoryLength',
     registry.Integer(1000, _("""Determines how many old messages the bot will

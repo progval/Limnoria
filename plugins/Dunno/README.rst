@@ -29,32 +29,32 @@ Commands
 
 .. _command-dunno-add:
 
-add [<channel>] <text>
+``add [<channel>] <text>``
   Adds <text> to the dunno database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-dunno-change:
 
-change [<channel>] <id> <regexp>
+``change [<channel>] <id> <regexp>``
   Changes the dunno with id <id> according to the regular expression <regexp>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-dunno-get:
 
-get [<channel>] <id>
+``get [<channel>] <id>``
   Gets the dunno with id <id> from the dunno database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-dunno-remove:
 
-remove [<channel>] <id>
+``remove [<channel>] <id>``
   Removes the dunno with id <id> from the dunno database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-dunno-search:
 
-search [<channel>] [--{regexp,by} <value>] [<glob>]
+``search [<channel>] [--{regexp,by} <value>] [<glob>]``
   Searches for dunnos matching the criteria given.
 
 .. _command-dunno-stats:
 
-stats [<channel>]
+``stats [<channel>]``
   Returns the number of dunnos in the database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _conf-Dunno:

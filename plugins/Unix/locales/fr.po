@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2012-07-29 11:58+0100\n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: French <kde-i18n-doc@kde.org>\n"
@@ -101,16 +101,16 @@ msgid ""
 "    command will be called for the wtf command."
 msgstr "Détermine quelle commande sera appelée par la commande 'wtf'."
 
-#: plugin.py:57
+#: plugin.py:62
 msgid ""
 "This command is not available, because supybot.commands.allowShell is False."
 msgstr ""
 
-#: plugin.py:82
+#: plugin.py:87
 msgid "Provides Utilities for Unix-like systems."
 msgstr ""
 
-#: plugin.py:86
+#: plugin.py:91
 msgid ""
 "<error number or code>\n"
 "\n"
@@ -121,19 +121,19 @@ msgstr ""
 "\n"
 "Retourne le code du numéro d'erreur, ou le numéro d'erreur du code."
 
-#: plugin.py:98
+#: plugin.py:103
 msgid "I can't find the errno number for that code."
 msgstr "Je ne peux trouver le numéro d'erreur pour ce code."
 
-#: plugin.py:101
+#: plugin.py:106
 msgid "(unknown)"
 msgstr "(inconnu)"
 
-#: plugin.py:102
+#: plugin.py:107
 msgid "%s (#%i): %s"
 msgstr "%s (#%i) : %s"
 
-#: plugin.py:107
+#: plugin.py:112
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -144,7 +144,7 @@ msgstr ""
 "\n"
 "Retourn différentes informations unix-y à propos du processus de supybot."
 
-#: plugin.py:115
+#: plugin.py:120
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -155,16 +155,18 @@ msgstr ""
 "\n"
 "Retourne le pid du processus de Supybot."
 
-#: plugin.py:125
+#: plugin.py:131
+#, fuzzy
 msgid ""
 "<password> [<salt>]\n"
 "\n"
-"        Returns the resulting of doing a crypt() on <password>.  If <salt> "
-"is\n"
-"        not given, uses a random salt.  If running on a glibc2 system,\n"
-"        prepending '$1$' to your salt will cause crypt to return an MD5sum\n"
-"        based crypt rather than the standard DES based crypt.\n"
-"        "
+"            Returns the resulting of doing a crypt() on <password>.  If "
+"<salt> is\n"
+"            not given, uses a random salt.  If running on a glibc2 system,\n"
+"            prepending '$1$' to your salt will cause crypt to return an "
+"MD5sum\n"
+"            based crypt rather than the standard DES based crypt.\n"
+"            "
 msgstr ""
 "<mot de passe> [<sel>]\n"
 "\n"
@@ -173,7 +175,7 @@ msgstr ""
 "ajouter '$1$' au début de votre sel fera que crypt retournera un crypt basé "
 "sur MD5sum plutôt que sur le crypt basé sur DES standard."
 
-#: plugin.py:144
+#: plugin.py:150
 msgid ""
 "<word>\n"
 "\n"
@@ -189,7 +191,7 @@ msgstr ""
 "affichés sont triés du meilleur au pire en fonction de comment ils "
 "correspondent au <mot>."
 
-#: plugin.py:153
+#: plugin.py:159
 msgid ""
 "The spell checking command is not configured.  If one is installed, "
 "reconfigure supybot.plugins.Unix.spell.command appropriately."
@@ -198,31 +200,31 @@ msgstr ""
 "il y en a une, configurez supybot.plugins.Unix.spell.command de façon "
 "appropriée."
 
-#: plugin.py:159
+#: plugin.py:165
 msgid "<word> must begin with an alphabet character."
 msgstr "<mo> doit commencer par une lettre de l'alphabet."
 
-#: plugin.py:181
+#: plugin.py:187
 msgid "No results found."
 msgstr "Aucun résultat trouvé."
 
-#: plugin.py:192
+#: plugin.py:198
 msgid "%q may be spelled correctly."
 msgstr "%q semble être orthographié correctement."
 
-#: plugin.py:194
+#: plugin.py:200
 msgid "I could not find an alternate spelling for %q"
 msgstr "Je ne peux pas trouver d'orthographe alternative pour %q"
 
-#: plugin.py:198
+#: plugin.py:204
 msgid "Possible spellings for %q: %L."
 msgstr "Orthographes possibles pour %q : %L"
 
-#: plugin.py:201
+#: plugin.py:207
 msgid "Something unexpected was seen in the [ai]spell output."
 msgstr "Quelque chose d'imprévu a été trouvé dans la sortie de [ai]spell."
 
-#: plugin.py:207
+#: plugin.py:213
 #, fuzzy
 msgid ""
 "takes no arguments\n"
@@ -234,11 +236,11 @@ msgstr ""
 "\n"
 "Retourne une fortune depuis le programme fortune de *nix."
 
-#: plugin.py:230
+#: plugin.py:236
 msgid "It seems the configured fortune command was not available."
 msgstr "Il semble que la commande fortune configurée ne soit pas disponible."
 
-#: plugin.py:243
+#: plugin.py:249
 msgid ""
 "The fortune command is not configured. If fortune is installed on this "
 "system, reconfigure the supybot.plugins.Unix.fortune.command configuration "
@@ -247,7 +249,7 @@ msgstr ""
 "La commande fortune n'est pas configurée. Si fortune est installé sur ce "
 "système, configurez supybot.plugins.Unix.fortune.command de façon appropriée."
 
-#: plugin.py:250
+#: plugin.py:256
 #, fuzzy
 msgid ""
 "[is] <something>\n"
@@ -264,11 +266,11 @@ msgstr ""
 "qui est apparue dans NetBSD 1.5. Dans la plupart des machines unices, elle "
 "fait partie du paquet 'bsdgames'."
 
-#: plugin.py:266
+#: plugin.py:272
 msgid "It seems the configured wtf command was not available."
 msgstr "Il semble que la commande wtf ne soit pas disponible."
 
-#: plugin.py:275
+#: plugin.py:281
 msgid ""
 "The wtf command is not configured.  If it is installed on this system, "
 "reconfigure the supybot.plugins.Unix.wtf.command configuration variable "
@@ -277,7 +279,7 @@ msgstr ""
 "La commande wtf n'est pas configurée. Si elle est installée sur ce système, "
 "veuillez configurer supybot.plugins.Unix.wtf.command de façon appropriée."
 
-#: plugin.py:346
+#: plugin.py:352
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -288,7 +290,7 @@ msgstr ""
 "\n"
 "Retourne l'uptime du système sur lequel fonctionne le bot."
 
-#: plugin.py:375
+#: plugin.py:381
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -299,7 +301,7 @@ msgstr ""
 "\n"
 "Retourne le \"uname -a\" du système sur lequel le bot fonctionne."
 
-#: plugin.py:404
+#: plugin.py:410
 #, fuzzy
 msgid ""
 "<command to call with any arguments>\n"
@@ -319,7 +321,7 @@ msgstr ""
 "sorties. Donc, c'est à vous de vous assurez que ça ne fera rien qui spammera "
 "le canal ou que ça ne va pas faire tomber votre machine à genoux."
 
-#: plugin.py:435
+#: plugin.py:441
 #, fuzzy
 msgid ""
 "<command to call with any arguments>\n"

@@ -253,7 +253,7 @@ class FlatfileMapping(MappingInterface):
                 fd.close()
 
     def __iter__(self):
-        fd = open(self.filename)
+        fd = open(self.filename, encoding='utf8')
         fd.readline() # First line, nextId.
         for line in fd:
             (id, s) = self._splitLine(line)

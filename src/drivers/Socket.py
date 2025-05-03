@@ -312,8 +312,10 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                     address,
                     port=self.currentServer.port,
                     socks_proxy=socks_proxy,
-                    vhost=conf.supybot.protocols.irc.vhost(),
-                    vhostv6=conf.supybot.protocols.irc.vhostv6(),
+                    vhost=self.networkGroup.get('vhost')()
+                        or conf.supybot.protocols.irc.vhost(),
+                    vhostv6=self.networkGroup.get('vhostv6')()
+                        or conf.supybot.protocols.irc.vhostv6(),
                     )
         except socket.error as e:
             drivers.log.connectError(self.currentServer, e)

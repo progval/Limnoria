@@ -28,37 +28,37 @@ Commands
 
 .. _command-lart-add:
 
-add [<channel>] <text>
+``add [<channel>] <text>``
   Adds <text> to the lart database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-lart-change:
 
-change [<channel>] <id> <regexp>
+``change [<channel>] <id> <regexp>``
   Changes the lart with id <id> according to the regular expression <regexp>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-lart-get:
 
-get [<channel>] <id>
+``get [<channel>] <id>``
   Gets the lart with id <id> from the lart database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-lart-lart:
 
-lart [<channel>] [<id>] <who|what> [for <reason>]
+``lart [<channel>] [<id>] <who|what> [for <reason>]``
   Uses the Luser Attitude Readjustment Tool on <who|what> (for <reason>, if given). If <id> is given, uses that specific lart. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-lart-remove:
 
-remove [<channel>] <id>
+``remove [<channel>] <id>``
   Removes the lart with id <id> from the lart database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-lart-search:
 
-search [<channel>] [--{regexp,by} <value>] [<glob>]
+``search [<channel>] [--{regexp,by} <value>] [<glob>]``
   Searches for larts matching the criteria given.
 
 .. _command-lart-stats:
 
-stats [<channel>]
+``stats [<channel>]``
   Returns the number of larts in the database for <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _conf-Lart:

@@ -141,9 +141,10 @@ class MathTestCase(PluginTestCase):
 
     def testCalcMemoryError(self):
         self.assertRegexp('calc ' + '('*10000,
-            '(too much recursion'  # cpython < 3.10
-            '|too many nested parentheses'  # cpython >= 3.10
-            '|parenthesis is never closed)'  # pypy
+            r"(too much recursion"  # cpython < 3.10
+            r"|too many nested parentheses"  # cpython >= 3.10
+            r"|parenthesis is never closed"  # pypy for python < 3.10
+            r"|'\(' was never closed)"  # pypy for python >= 3.10
         )
 
     def testICalc(self):
@@ -186,6 +187,13 @@ class MathTestCase(PluginTestCase):
         self.assertError('convert 1 gram to meatballs')
         self.assertError('convert 1 mol to grams')
         self.assertError('convert 1 m to kpa')
+
+    def testConvertSignificantDigits(self):
+        self.assertResponse('convert 1 s to ns', '1000000000')
+        self.assertResponse('convert 0.9999999999999999 s to ns',
+                            '999999999.9999999')
+        self.assertResponse('convert 1000000000 ns to s', '1')
+        self.assertResponse('convert 999999999.9999999 ns to s', '1')
 
     def testConvertSingularPlural(self):
         self.assertResponse('convert [calc 2*pi] rads to degrees', '360')

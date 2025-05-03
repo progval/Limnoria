@@ -118,6 +118,18 @@ class FactoidsTestCase(ChannelPluginTestCase):
         self.assertRegexp('factoids search --author blahblah j*',
                           'No keys matched that query.')
 
+    def testSearchMultiFactoids(self):
+        self.assertNotError('learn water is wet')
+        self.assertResponse('factoids search --values we', 'water is wet')
+        self.assertNotError('learn water is H2O')
+        self.assertNotError('learn fire is hot')
+        self.assertResponse('factoids search --values we', 'water is (#1) wet')
+        self.assertResponse('factoids search --values H2', 'water is (#2) H2O')
+
+        self.assertNotError('learn water is very wet')
+        self.assertResponse('factoids search --values we',
+                            'water is (#1) wet, or (#3) very wet')
+
     def testWhatisOnNumbers(self):
         self.assertNotError('learn 911 is emergency number')
         self.assertRegexp('whatis 911', 'emergency number')

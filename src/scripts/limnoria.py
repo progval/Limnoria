@@ -76,6 +76,9 @@ from supybot.version import version
 
 def run():
     import supybot.log as log
+
+    log.info("Starting Limnoria %s on Python %s", version, sys.version)
+
     import supybot.conf as conf
     import supybot.world as world
     import supybot.drivers as drivers
@@ -361,9 +364,11 @@ def main():
     owner = Owner.Class()
 
     if options.profile:
-        import profile
+        import cProfile
         world.profiling = True
-        profile.run('run()', '%s-%i.prof' % (nick, time.time()))
+        cProfile.runctx('run()',
+                        globals=globals(), locals={**locals(), "run": run},
+                        filename='%s-%i.prof' % (nick, time.time()))
     else:
         run()
 

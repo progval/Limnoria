@@ -342,21 +342,31 @@ class Misc(callbacks.Plugin):
         Returns the version of the current bot.
         """
         try:
-            newestUrl = 'https://api.github.com/repos/progval/Limnoria/' + \
-                    'commits/%s'
-            versions = {}
-            for branch in ('master', 'testing'):
-                data = json.loads(utils.web.getUrl(newestUrl % branch)
-                        .decode('utf8'))
-                version = data['commit']['committer']['date']
-                # Strip the last 'Z':
-                version = version.rsplit('T', 1)[0].replace('-', '.')
-                if minisix.PY2 and isinstance(version, unicode):
-                    version = version.encode('utf8')
-                versions[branch] = version
-            newest = _('The newest versions available online are %s.') % \
-                    ', '.join([_('%s (in %s)') % (y,x)
-                               for x,y in versions.items()])
+            versions = []
+
+            # fetch from PyPI
+            data = json.loads(utils.web.getUrl(
+                'https://pypi.org/pypi/limnoria/json'
+            ).decode('utf8'))
+            release_version = data['info']['version']
+            # zero-left-pad months and days
+            release_version = re.sub(
+                r'\.([0-9])\b', lambda m: '.0' + m.group(1), release_version
+            )
+
+            # fetch from Git
+            data = json.loads(utils.web.getUrl(
+                'https://api.github.com/repos/progval/Limnoria/'
+                'commits/master'
+            ).decode('utf8'))
+            git_version = data['commit']['committer']['date']
+            # Strip the last 'Z':
+            git_version = git_version.rsplit('T', 1)[0].replace('-', '.')
+
+            newest = _(
+                'The newest version available online is %(release_version)s, '
+                'or %(git_version)s in Git'
+            ) % {'release_version': release_version, 'git_version': git_version}
         except utils.web.Error as e:
             self.log.info('Couldn\'t get website version: %s', e)
             newest = _('I couldn\'t fetch the newest version '

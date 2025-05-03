@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Status plugin for Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2014-12-20 11:37+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -61,19 +61,21 @@ msgstr ""
 "        Palauttaa botin tilan.\n"
 "        "
 
-#: plugin.py:83
-msgid "%s as %L"
-msgstr "%s verkossa %L"
+#: plugin.py:109
+msgid ""
+"I am connected to %s as %s: Channels: %s, Ops: %s, Half-Ops: %s, Voiced: %s, "
+"Regular: %s"
+msgstr ""
 
-#: plugin.py:84
-msgid "I am connected to %L."
-msgstr "Olen yhdistänyt verkkoon %L"
-
-#: plugin.py:86
+#: plugin.py:121
 msgid "I am currently in code profiling mode."
 msgstr "Olen tällä hetkellä koodin profilointi tilassa."
 
-#: plugin.py:92
+#: plugin.py:122
+msgid "%L"
+msgstr ""
+
+#: plugin.py:128
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -85,11 +87,11 @@ msgstr ""
 "        Palauttaa botin tämänhetkiset ketjut, jotka ovat aktiivisia.\n"
 "        "
 
-#: plugin.py:98
+#: plugin.py:134
 msgid "I have spawned %n; %n %b still currently active: %L."
 msgstr "Minä olen ilmestyttänyt %n; %n %b yhä aktiivinen: %L."
 
-#: plugin.py:105
+#: plugin.py:141
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -104,7 +106,7 @@ msgstr ""
 " aktiivisia..\n"
 "        "
 
-#: plugin.py:120
+#: plugin.py:156
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -117,11 +119,11 @@ msgstr ""
 "tilastotietoja.\n"
 "        "
 
-#: plugin.py:128
+#: plugin.py:164
 msgid "an indeterminate amount of time"
 msgstr "määrittämätön määrä aikaa"
 
-#: plugin.py:129
+#: plugin.py:165
 msgid ""
 "I have received %s messages for a total of %S.  I have sent %s messages for "
 "a total of %S.  I have been connected to %s for %s."
@@ -130,7 +132,7 @@ msgstr ""
 "lähettänyt %s viestiä määrän %S edestä.  Olen ollut yhdistettynä palvelimeen "
 "%s ajan %s."
 
-#: plugin.py:138
+#: plugin.py:174
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -143,7 +145,7 @@ msgstr ""
 "tilastotietoja botista.\n"
 "        "
 
-#: plugin.py:148
+#: plugin.py:184
 msgid ""
 "My children have taken %.2f seconds of user time and %.2f seconds of system "
 "time for a total of %.2f seconds of CPU time."
@@ -151,7 +153,7 @@ msgstr ""
 "Minun lapseni ovat vieneet %.2f käyttäjän aikaa ja %.2f sekuntia "
 "järjestelmän aikaa. Lapseni ovat ottaneet yhteensä %.2f sekuntia CPU aikaa."
 
-#: plugin.py:155
+#: plugin.py:191
 msgid ""
 "I have taken %.2f seconds of user time and %.2f seconds of system time, for "
 "a total of %.2f seconds of CPU time.  %s"
@@ -159,20 +161,20 @@ msgstr ""
 "Olen ottanut %.2f sekuntia käyttäjän aikaa %.2f sekuntia järjestelmän aikaa. "
 "Olen ottanut yhteensä %.2f sekuntia CPU ajasta.  %s"
 
-#: plugin.py:177
+#: plugin.py:213
 msgid "Unable to run ps command."
 msgstr "ps komentoa ei pystytä suorittamaan."
 
-#: plugin.py:184
+#: plugin.py:220
 msgid "  I'm taking up %S of memory."
 msgstr "  Muistinkäyttöni on yhteensä %S."
 
-#: plugin.py:187
+#: plugin.py:223
 #, fuzzy
 msgid "  I'm taking up an unknown amount of memory."
 msgstr "  Muistinkäyttöni on yhteensä %S."
 
-#: plugin.py:195
+#: plugin.py:231
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -185,11 +187,11 @@ msgstr ""
 "tilastotietoja.\n"
 "        "
 
-#: plugin.py:205
+#: plugin.py:241
 msgid "I offer a total of %n in %n.  I have processed %n."
 msgstr "Tarjoan yhteensä %n määrän %n sisässä.  Olen käsitellyt %n."
 
-#: plugin.py:214
+#: plugin.py:250
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -201,7 +203,7 @@ msgstr ""
 "        Palauttaa listan komennoista, jotka botti tarjoaa.\n"
 "        "
 
-#: plugin.py:228
+#: plugin.py:264
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -213,11 +215,11 @@ msgstr ""
 "        Palauttaa ajan, jonka botti on ollut käynnissä.\n"
 "        "
 
-#: plugin.py:232
+#: plugin.py:268
 msgid "I have been running for %s."
 msgstr "Olen ollut käynnissä ajan %s."
 
-#: plugin.py:239
+#: plugin.py:275
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -229,7 +231,7 @@ msgstr ""
 "        Palauttaa palvelimen, jolla botti on.\n"
 "        "
 
-#: plugin.py:248
+#: plugin.py:284
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -240,3 +242,9 @@ msgstr ""
 "\n"
 "        Palauttaa verkon, jossa botti on.\n"
 "        "
+
+#~ msgid "%s as %L"
+#~ msgstr "%s verkossa %L"
+
+#~ msgid "I am connected to %L."
+#~ msgstr "Olen yhdistänyt verkkoon %L"

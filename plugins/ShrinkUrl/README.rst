@@ -21,17 +21,17 @@ Commands
 
 .. _command-shrinkurl-tiny:
 
-tiny <url>
+``tiny <url>``
   Returns a TinyURL.com version of <url>
 
 .. _command-shrinkurl-ur1:
 
-ur1 <url>
+``ur1 <url>``
   Returns an ur1 version of <url>.
 
 .. _command-shrinkurl-x0:
 
-x0 <url>
+``x0 <url>``
   Returns an x0.no version of <url>.
 
 .. _conf-ShrinkUrl:

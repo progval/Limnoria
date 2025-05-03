@@ -36,6 +36,7 @@ import json
 import time
 import types
 import string
+import random
 import socket
 import threading
 import feedparser
@@ -169,6 +170,9 @@ def _sort_arguments(order):
 def sort_feed_items(items, order):
     """Return feed items, sorted according to sortFeedItems."""
     if order == 'asInFeed':
+        return items
+    elif order == 'random':
+        random.shuffle(items)
         return items
     (key, reverse) = _sort_arguments(order)
     try:
@@ -695,11 +699,12 @@ class RSS(callbacks.Plugin):
         channels = wrap(channels, ['feedName'])
 
     @internationalizeDocstring
-    def rss(self, irc, msg, args, url, n):
-        """<name|url> [<number of headlines>]
+    def rss(self, irc, msg, args, optlist, url, n):
+        """[--random] <name|url> [<number of headlines>]
 
         Gets the title components of the given RSS feed.
         If <number of headlines> is given, return only that many headlines.
+        Use --random flag for random sorting of entries.
         """
         self.log.debug('Fetching %u', url)
         try:
@@ -719,17 +724,22 @@ class RSS(callbacks.Plugin):
                 s += str(feed.last_exception)
             irc.error(s)
             return
-        n = n or self.registryValue('defaultNumberOfHeadlines', channel, irc.network)
         entries = list(filter(lambda e:self.should_send_entry(irc.network, channel, e),
                               feed.entries))
-        entries = sort_feed_items(entries, 'newestFirst')
+        order = 'newestFirst'
+        if 'random' in (k for k,v in optlist):
+            order = 'random'
+        entries = sort_feed_items(entries, order)
+        n = n or self.registryValue('defaultNumberOfHeadlines', channel, irc.network)
         entries = entries[:n]
         entries = sort_feed_items(entries, self.registryValue('sortFeedItems'))
         headlines = map(lambda e:self.format_entry(irc.network, channel, feed, e, False),
                         entries)
         sep = self.registryValue('headlineSeparator', channel, irc.network)
         irc.replies(headlines, joiner=sep)
-    rss = wrap(rss, [first('url', 'feedName'), additional('int')])
+    rss = wrap(rss, [getopts({ 'random': '', }),
+                     first('url', 'feedName'),
+                     additional('int')])
 
     @internationalizeDocstring
     def info(self, irc, msg, args, url):

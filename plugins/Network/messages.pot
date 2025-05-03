@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -178,5 +178,18 @@ msgid ""
 "\n"
 "        Returns the list of IRCv3 capabilities available on the network.\n"
 "        "
+msgstr ""
+
+#: plugin.py:310
+#, docstring
+msgid ""
+"takes no arguments\n"
+"\n"
+"        Manually initiate SASL authentication.\n"
+"        "
+msgstr ""
+
+#: plugin.py:318
+msgid "SASL not supported"
 msgstr ""
 

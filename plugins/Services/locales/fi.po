@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2011-08-13 23:02+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -38,15 +38,16 @@ msgstr "Minkä niminen ChanServisi on?"
 msgid "What is your NickServ named?"
 msgstr "Minkä niminen NickServisi on?"
 
-#: config.py:70
+#: config.py:71
+#, fuzzy
 msgid ""
-"Determines what nicks the bot will use with\n"
+"Space-separated list of nicks the bot will use with\n"
 "    services."
 msgstr ""
 "Määrittää mitä nimimerkkiä botti käyttää\n"
 "    palvelujen kanssa."
 
-#: config.py:77
+#: config.py:78
 msgid ""
 "Determines what networks this plugin\n"
 "    will be disabled on."
@@ -54,11 +55,11 @@ msgstr ""
 "Määrittää missä verkoissa tämä\n"
 "    lisäosa on poistettu käytöstä."
 
-#: config.py:77
+#: config.py:78
 msgid "QuakeNet"
 msgstr "QuakeNet"
 
-#: config.py:81
+#: config.py:82
 msgid ""
 "Determines whether the bot will not join any\n"
 "    channels until it is identified.  This may be useful, for instances, if\n"
@@ -71,7 +72,7 @@ msgstr ""
 "    liittymässä +r kanaville, jotka eivät salli sinun liittyvän, paitsi jos "
 "olet tunnistautunut."
 
-#: config.py:86
+#: config.py:87
 #, fuzzy
 msgid ""
 "Determines how many seconds the bot will\n"
@@ -80,7 +81,15 @@ msgstr ""
 "Määrittää monta sekuntia botti odottaa\n"
 "    GHOSTaus yritysten välillä."
 
-#: config.py:89
+#: config.py:90
+msgid ""
+"Determines the NickServ command to use for GHOST. If the network\n"
+"    you're using runs Anope, set this to \"RECOVER\". If the network you're "
+"using runs Atheme,\n"
+"    set this to \"GHOST\" or \"REGAIN\"."
+msgstr ""
+
+#: config.py:94
 msgid ""
 "Determines what nick the 'NickServ' service\n"
 "    has."
@@ -88,7 +97,7 @@ msgstr ""
 "Määrittää mikä nimimerkki 'NickServ' palvelulla\n"
 "    on."
 
-#: config.py:93
+#: config.py:98
 msgid ""
 "Determines what nick the 'ChanServ' service\n"
 "    has."
@@ -96,7 +105,7 @@ msgstr ""
 "Määrittää mikä nimimerkki 'ChanServ' palvelulla\n"
 "    on."
 
-#: config.py:96
+#: config.py:101
 msgid ""
 "Determines what password the bot will use with\n"
 "    ChanServ."
@@ -104,7 +113,7 @@ msgstr ""
 "Määrittää mitä salasanaa botti käyttää\n"
 "    ChanServin kanssa."
 
-#: config.py:99
+#: config.py:104
 msgid ""
 "Determines whether the bot will request to get\n"
 "    opped by the ChanServ when it joins the channel."
@@ -112,7 +121,7 @@ msgstr ""
 "Määrittää pyytääkö botti ChanServin oppaamaksi\n"
 "    tulemista, kun se liittyy kanavalle."
 
-#: config.py:102
+#: config.py:107
 msgid ""
 "Determines whether the bot will request to get\n"
 "    half-opped by the ChanServ when it joins the channel."
@@ -120,7 +129,7 @@ msgstr ""
 "Määrittää pyytääkö botti tulla ChanServin puolioppaamaksi, kun\n"
 "    se liittyy kanavalle."
 
-#: config.py:105
+#: config.py:110
 msgid ""
 "Determines whether the bot will request to get\n"
 "    voiced by the ChanServ when it joins the channel."
@@ -128,7 +137,7 @@ msgstr ""
 "Määrittää pyytääkö botti ChanServiltä äänen, kun\n"
 "    se liittyy kanavalle."
 
-#: plugin.py:54
+#: plugin.py:55
 msgid ""
 "This plugin handles dealing with Services on networks that provide them.\n"
 "    Basically, you should use the \"password\" command to tell the bot a "
@@ -152,7 +161,7 @@ msgstr ""
 "    Muiden komentojen, kuten identify, op, jne. ei\n"
 "    pitäisi olla vaadittuja, jos botti on määritetty hyvin."
 
-#: plugin.py:441
+#: plugin.py:472
 msgid ""
 "You must set supybot.plugins.Services.ChanServ before I'm able to send the "
 "%s command."
@@ -160,7 +169,7 @@ msgstr ""
 "Sinun täytyy asettaa supybot.plugins.Services.ChanServ ennen kuin pystyn "
 "lähettämään komennon %s."
 
-#: plugin.py:447
+#: plugin.py:478
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -175,11 +184,11 @@ msgstr ""
 "        jos viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:453
+#: plugin.py:484
 msgid "I'm already opped in %s."
 msgstr "Minut on jo opattu kanavalla %s."
 
-#: plugin.py:460
+#: plugin.py:491
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -194,11 +203,11 @@ msgstr ""
 "        viestiä ei lähetetä kanavalla itsellään.\n"
 "        "
 
-#: plugin.py:466
+#: plugin.py:497
 msgid "I'm already voiced in %s."
 msgstr "Minulla on jo ääni kanavalla %s."
 
-#: plugin.py:483
+#: plugin.py:514
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -219,7 +228,7 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:504
+#: plugin.py:535
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -240,7 +249,7 @@ msgstr ""
 "        itsellään.\n"
 "        "
 
-#: plugin.py:526
+#: plugin.py:557
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -252,11 +261,11 @@ msgstr ""
 "        Tunnistautuu NickServille käyttämällä nykyistä nimimerkkiä.\n"
 "        "
 
-#: plugin.py:535
+#: plugin.py:566
 msgid "I don't have a configured password for my current nick."
 msgstr "Minulla ei ole määritettyä salasanaa nimimerkilleni."
 
-#: plugin.py:538
+#: plugin.py:569
 msgid ""
 "You must set supybot.plugins.Services.NickServ before I'm able to do "
 "identify."
@@ -264,7 +273,7 @@ msgstr ""
 "Sinun täytyy asettaa supybot.plugins.Services.NickServ ennen kuin pystyn "
 "tunnistautumaan."
 
-#: plugin.py:544
+#: plugin.py:575
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -279,11 +288,11 @@ msgstr ""
 "        ghostaa botin määritetyn nimimerkin ja ottaa sen.\n"
 "        "
 
-#: plugin.py:553
+#: plugin.py:584
 msgid "I cowardly refuse to ghost myself."
 msgstr "Minä pelkurimaisesti kieltäydyn ghostaamasta itseäni."
 
-#: plugin.py:558
+#: plugin.py:589
 msgid ""
 "You must set supybot.plugins.Services.NickServ before I'm able to ghost a "
 "nick."
@@ -291,7 +300,7 @@ msgstr ""
 "Sinun täytyy asettaa supybot.plugins.Services.NickServ ennen kuin pystyn "
 "ghostaamaan nimimerkin."
 
-#: plugin.py:563
+#: plugin.py:594
 msgid ""
 "<text>\n"
 "\n"
@@ -299,7 +308,7 @@ msgid ""
 "        on Atheme, use: @nickserv REGISTER <password> <email-address>."
 msgstr ""
 
-#: plugin.py:572
+#: plugin.py:603
 #, fuzzy
 msgid ""
 "You must set supybot.plugins.Services.NickServ before I'm able to message "
@@ -308,7 +317,7 @@ msgstr ""
 "Sinun täytyy asettaa supybot.plugins.Services.NickServ ennen kuin pystyn "
 "ghostaamaan nimimerkin."
 
-#: plugin.py:577
+#: plugin.py:608
 msgid ""
 "<text>\n"
 "\n"
@@ -316,7 +325,7 @@ msgid ""
 "        on Atheme, use: @chanserv REGISTER <#channel>."
 msgstr ""
 
-#: plugin.py:586
+#: plugin.py:617
 #, fuzzy
 msgid ""
 "You must set supybot.plugins.Services.ChanServ before I'm able to message "
@@ -325,7 +334,7 @@ msgstr ""
 "Sinun täytyy asettaa supybot.plugins.Services.ChanServ ennen kuin pystyn "
 "lähettämään komennon %s."
 
-#: plugin.py:593
+#: plugin.py:624
 msgid ""
 "<nick> [<password>]\n"
 "\n"
@@ -341,11 +350,11 @@ msgstr ""
 "        ole annettu, poistaa <nimimerkin> määritetyistä nimimerkeistä.\n"
 "        "
 
-#: plugin.py:605
+#: plugin.py:636
 msgid "That nick was not configured with a password."
 msgstr "Tuota nimimerkkiä ei ole määritetty salasanan kanssa."
 
-#: plugin.py:618
+#: plugin.py:649
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -361,27 +370,27 @@ msgstr ""
 "        ghostaamaan.\n"
 "        "
 
-#: plugin.py:628
+#: plugin.py:659
 msgid "I'm not currently configured for any nicks."
 msgstr "Minulle ei ole tällä hetkellä määritetty yhtään nimimerkkiä."
 
-#: plugin.py:635
+#: plugin.py:666
 msgid "Experimental IRC extensions are not enabled for this bot."
 msgstr ""
 
-#: plugin.py:641
+#: plugin.py:672
 msgid "This network does not support draft/account-registration."
 msgstr ""
 
-#: plugin.py:647
+#: plugin.py:678
 msgid "This network does not support labeled-response."
 msgstr ""
 
-#: plugin.py:653
+#: plugin.py:684
 msgid "This bot is already authenticated on the network."
 msgstr ""
 
-#: plugin.py:658
+#: plugin.py:689
 msgid ""
 "[<network>] <password> [<email>]\n"
 "\n"
@@ -394,11 +403,11 @@ msgid ""
 "        your email address."
 msgstr ""
 
-#: plugin.py:672
+#: plugin.py:703
 msgid "This network requires an email address to register."
 msgstr ""
 
-#: plugin.py:686
+#: plugin.py:717
 msgid ""
 "[<network>] <account> <code>\n"
 "\n"

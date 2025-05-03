@@ -15,8 +15,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - python-version: "3.13.0-alpha.6"
-            with-opt-deps: false  # https://github.com/pyca/cryptography/issues/10806
+          - python-version: "3.14.0-alpha.1"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+
+          - python-version: "3.13.0"
+            with-opt-deps: true
             runs-on: ubuntu-22.04
 
           - python-version: "3.12.0"
@@ -33,6 +37,9 @@ jobs:
           - python-version: "3.10"
             with-opt-deps: false
             runs-on: ubuntu-22.04
+          - python-version: "pypy-3.10"
+            with-opt-deps: false
+            runs-on: ubuntu-22.04
 
           - python-version: "3.9"
             with-opt-deps: true
@@ -40,27 +47,6 @@ jobs:
           - python-version: "pypy-3.9"
             with-opt-deps: true
             runs-on: ubuntu-22.04
-
-          - python-version: "3.8"
-            with-opt-deps: true
-            runs-on: ubuntu-22.04
-
-          - python-version: "3.7"
-            with-opt-deps: true
-            runs-on: ubuntu-22.04
-          - python-version: "3.7"
-            with-opt-deps: false
-            runs-on: ubuntu-22.04
-          - python-version: "pypy-3.7"
-            with-opt-deps: false
-            runs-on: ubuntu-22.04
-
-          - python-version: "3.6"
-            with-opt-deps: false
-            runs-on: ubuntu-20.04
-          - python-version: "pypy-3.6"
-            with-opt-deps: false
-            runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v2
@@ -81,7 +67,7 @@ jobs:
 
       - name: Install
         run: |
-          LIMNORIA_WARN_OLD_PYTHON=0 python3 setup.py install
+          LIMNORIA_WARN_OLD_PYTHON=0 pip install .
 
       - name: Test with unittest
         run: |

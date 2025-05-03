@@ -23,67 +23,67 @@ Commands
 
 .. _command-network-authenticate:
 
-authenticate takes no arguments
+``authenticate takes no arguments``
   Manually initiate SASL authentication.
 
 .. _command-network-capabilities:
 
-capabilities [<network>]
+``capabilities [<network>]``
   Returns the list of IRCv3 capabilities available on the network.
 
 .. _command-network-cmdall:
 
-cmdall <command> [<arg> ...]
+``cmdall <command> [<arg> ...]``
   Perform <command> (with its associated <arg>s) on all networks.
 
 .. _command-network-command:
 
-command <network> <command> [<arg> ...]
+``command <network> <command> [<arg> ...]``
   Gives the bot <command> (with its associated <arg>s) on <network>.
 
 .. _command-network-connect:
 
-connect [--nossl] <network> [<host[:port]>] [<password>]
+``connect [--nossl] <network> [<host[:port]>] [<password>]``
   Connects to another network (which will be represented by the name provided in <network>) at <host:port>. If port is not provided, it defaults to 6697, the default port for IRC with SSL. If password is provided, it will be sent to the server in a PASS command. If --nossl is provided, an SSL connection will not be attempted, and the port will default to 6667.
 
 .. _command-network-disconnect:
 
-disconnect <network> [<quit message>]
+``disconnect <network> [<quit message>]``
   Disconnects from the network represented by the network <network>. If <quit message> is given, quits the network with the given quit message.
 
 .. _command-network-driver:
 
-driver [<network>]
+``driver [<network>]``
   Returns the current network driver for <network>. <network> is only necessary if the message isn't sent on the network to which this command is to apply.
 
 .. _command-network-latency:
 
-latency [<network>]
+``latency [<network>]``
   Returns the current latency to <network>. <network> is only necessary if the message isn't sent on the network to which this command is to apply.
 
 .. _command-network-networks:
 
-networks [--all]
+``networks [--all]``
   Returns the networks to which the bot is currently connected. If --all is given, also includes networks known by the bot, but not connected to.
 
 .. _command-network-reconnect:
 
-reconnect [<network>] [<quit message>]
+``reconnect [<network>] [<quit message>]``
   Disconnects and then reconnects to <network>. If no network is given, disconnects and then reconnects to the network the command was given on. If no quit message is given, uses the configured one (supybot.plugins.Owner.quitMsg) or the nick of the person giving the command.
 
 .. _command-network-uptime:
 
-uptime [<network>]
+``uptime [<network>]``
   Returns the time duration since the connection was established.
 
 .. _command-network-whois:
 
-whois [<network>] <nick>
+``whois [<network>] <nick>``
   Returns the WHOIS response <network> gives for <nick>. <network> is only necessary if the network is different than the network the command is sent on.
 
 .. _command-network-whowas:
 
-whowas [<network>] <nick>
+``whowas [<network>] <nick>``
   Returns the WHOIS response <network> gives for <nick>. <network> is only necessary if the network is different than the network the command is sent on.
 
 .. _conf-Network:

@@ -26,92 +26,92 @@ Commands
 
 .. _command-conditional-cand:
 
-cand <cond1> [<cond2> ... <condN>]
+``cand <cond1> [<cond2> ... <condN>]``
   Returns true if all conditions supplied evaluate to true.
 
 .. _command-conditional-ceq:
 
-ceq <item1> <item2>
+``ceq <item1> <item2>``
   Does a string comparison on <item1> and <item2>. Returns true if they are equal.
 
 .. _command-conditional-cerror:
 
-cerror <testcommand>
+``cerror <testcommand>``
   Runs <testcommand> and returns true if it raises an error; false otherwise.
 
 .. _command-conditional-cif:
 
-cif <condition> <ifcommand> <elsecommand>
+``cif <condition> <ifcommand> <elsecommand>``
   Runs <ifcommand> if <condition> evaluates to true, runs <elsecommand> if it evaluates to false. Use other logical operators defined in this plugin and command nesting to your advantage here.
 
 .. _command-conditional-cor:
 
-cor <cond1> [<cond2> ... <condN>]
+``cor <cond1> [<cond2> ... <condN>]``
   Returns true if any one of conditions supplied evaluates to true.
 
 .. _command-conditional-cxor:
 
-cxor <cond1> [<cond2> ... <condN>]
+``cxor <cond1> [<cond2> ... <condN>]``
   Returns true if only one of conditions supplied evaluates to true.
 
 .. _command-conditional-ge:
 
-ge <item1> <item2>
+``ge <item1> <item2>``
   Does a string comparison on <item1> and <item2>. Returns true if <item1> is greater than or equal to <item2>.
 
 .. _command-conditional-gt:
 
-gt <item1> <item2>
+``gt <item1> <item2>``
   Does a string comparison on <item1> and <item2>. Returns true if <item1> is greater than <item2>.
 
 .. _command-conditional-le:
 
-le <item1> <item2>
+``le <item1> <item2>``
   Does a string comparison on <item1> and <item2>. Returns true if <item1> is less than or equal to <item2>.
 
 .. _command-conditional-lt:
 
-lt <item1> <item2>
+``lt <item1> <item2>``
   Does a string comparison on <item1> and <item2>. Returns true if <item1> is less than <item2>.
 
 .. _command-conditional-match:
 
-match [--case-insensitive] <item1> <item2>
+``match [--case-insensitive] <item1> <item2>``
   Determines if <item1> is a substring of <item2>. Returns true if <item1> is contained in <item2>. Will only match case if --case-insensitive is not given.
 
 .. _command-conditional-nceq:
 
-nceq <item1> <item2>
+``nceq <item1> <item2>``
   Does a numeric comparison on <item1> and <item2>. Returns true if they are equal.
 
 .. _command-conditional-ne:
 
-ne <item1> <item2>
+``ne <item1> <item2>``
   Does a string comparison on <item1> and <item2>. Returns true if they are not equal.
 
 .. _command-conditional-nge:
 
-nge <item1> <item2>
+``nge <item1> <item2>``
   Does a numeric comparison on <item1> and <item2>. Returns true if <item1> is greater than or equal to <item2>.
 
 .. _command-conditional-ngt:
 
-ngt <item1> <item2>
+``ngt <item1> <item2>``
   Does a numeric comparison on <item1> and <item2>. Returns true if <item1> is greater than <item2>.
 
 .. _command-conditional-nle:
 
-nle <item1> <item2>
+``nle <item1> <item2>``
   Does a numeric comparison on <item1> and <item2>. Returns true if <item1> is less than or equal to <item2>.
 
 .. _command-conditional-nlt:
 
-nlt <item1> <item2>
+``nlt <item1> <item2>``
   Does a numeric comparison on <item1> and <item2>. Returns true if <item1> is less than <item2>.
 
 .. _command-conditional-nne:
 
-nne <item1> <item2>
+``nne <item1> <item2>``
   Does a numeric comparison on <item1> and <item2>. Returns true if they are not equal.
 
 .. _conf-Conditional:

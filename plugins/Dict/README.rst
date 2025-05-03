@@ -26,22 +26,22 @@ Commands
 
 .. _command-dict-dict:
 
-dict [<dictionary>] <word>
+``dict [<dictionary>] <word>``
   Looks up the definition of <word> on the dictd server specified by the supybot.plugins.Dict.server config variable.
 
 .. _command-dict-dictionaries:
 
-dictionaries takes no arguments
+``dictionaries takes no arguments``
   Returns the dictionaries valid for the dict command.
 
 .. _command-dict-random:
 
-random takes no arguments
+``random takes no arguments``
   Returns a random valid dictionary.
 
 .. _command-dict-synonym:
 
-synonym <word> [<word> ...]
+``synonym <word> [<word> ...]``
   Gets a random synonym from the Moby Thesaurus (moby-thesaurus) database. If given many words, gets a random synonym for each of them. Quote phrases to have them treated as one lookup word.
 
 .. _conf-Dict:

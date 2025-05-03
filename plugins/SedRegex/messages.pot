@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,6 +36,31 @@ msgid ""
 msgstr ""
 
 #: config.py:61
+msgid "$nick meant to say: $replacement"
+msgstr ""
+
+#: config.py:61
+msgid ""
+"Sets the format\n"
+"                                    string for a message edited by the original\n"
+"                                    author. Required fields: $nick (nick of the\n"
+"                                    author), $replacement (edited message)"
+msgstr ""
+
+#: config.py:66
+msgid ""
+"\n"
+"                                    Sets the format string for a message edited by\n"
+"                                    another author. Required fields: $nick (nick\n"
+"                                    of the original author), $otherNick (nick of\n"
+"                                    the editor), $replacement (edited message)"
+msgstr ""
+
+#: config.py:66
+msgid "$otherNick thinks $nick meant to say: $replacement"
+msgstr ""
+
+#: config.py:72
 msgid ""
 "Sets the timeout when processing a single\n"
 "                                   regexp. The default should be adequate unless\n"
@@ -95,15 +120,11 @@ msgstr ""
 msgid "SedRegex replacer error: %s"
 msgstr ""
 
-#: plugin.py:242
-msgid "%s meant to say: %s"
-msgstr ""
-
-#: plugin.py:245
+#: plugin.py:248
 msgid "SedRegex error: %s"
 msgstr ""
 
-#: plugin.py:248
+#: plugin.py:251
 msgid "SedRegex: Search %r not found in the last %i messages of %s."
 msgstr ""
 

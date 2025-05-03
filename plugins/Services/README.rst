@@ -28,62 +28,62 @@ Commands
 
 .. _command-services-chanserv:
 
-chanserv <text>
+``chanserv <text>``
   Sends the <text> to ChanServ. For example, to register a channel on Atheme, use: @chanserv REGISTER <#channel>.
 
 .. _command-services-ghost:
 
-ghost [<nick>]
+``ghost [<nick>]``
   Ghosts the bot's given nick and takes it. If no nick is given, ghosts the bot's configured nick and takes it.
 
 .. _command-services-identify:
 
-identify takes no arguments
+``identify takes no arguments``
   Identifies with NickServ using the current nick.
 
 .. _command-services-invite:
 
-invite [<channel>]
+``invite [<channel>]``
   Attempts to get invited by ChanServ to <channel>. <channel> is only necessary if the message isn't sent in the channel itself, but chances are, if you need this command, you're not sending it in the channel itself.
 
 .. _command-services-nicks:
 
-nicks takes no arguments
+``nicks takes no arguments``
   Returns the nicks that this plugin is configured to identify and ghost with.
 
 .. _command-services-nickserv:
 
-nickserv <text>
+``nickserv <text>``
   Sends the <text> to NickServ. For example, to register to NickServ on Atheme, use: @nickserv REGISTER <password> <email-address>.
 
 .. _command-services-op:
 
-op [<channel>]
+``op [<channel>]``
   Attempts to get opped by ChanServ in <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-services-password:
 
-password <nick> [<password>]
+``password <nick> [<password>]``
   Sets the NickServ password for <nick> to <password>. If <password> is not given, removes <nick> from the configured nicks.
 
 .. _command-services-register:
 
-register [<network>] <password> [<email>]
+``register [<network>] <password> [<email>]``
   Uses the experimental REGISTER command to create an account for the bot on the <network>, using the <password> and the <email> if provided. Some networks may require the email. You may need to use the 'services verify' command afterward to confirm your email address.
 
 .. _command-services-unban:
 
-unban [<channel>]
+``unban [<channel>]``
   Attempts to get unbanned by ChanServ in <channel>. <channel> is only necessary if the message isn't sent in the channel itself, but chances are, if you need this command, you're not sending it in the channel itself.
 
 .. _command-services-verify:
 
-verify [<network>] <account> <code>
+``verify [<network>] <account> <code>``
   If the <network> requires a verification code, you need to call this command with the code the server gave you to finish the registration.
 
 .. _command-services-voice:
 
-voice [<channel>]
+``voice [<channel>]``
   Attempts to get voiced by ChanServ in <channel>. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _conf-Services:

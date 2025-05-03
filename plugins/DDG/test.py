@@ -39,7 +39,7 @@ class DDGTestCase(PluginTestCase):
 
         def testSearch(self):
             self.assertRegexp(
-                r'ddg search wikipedia', 'Wikipedia.*? - .*?https?\:\/\/')
+                'ddg search wikipedia', r'Wikipedia.*? - .*?https?\:\/\/')
             self.assertRegexp(
                 'ddg search en.wikipedia.org',
                 'Wikipedia, the free encyclopedia\x02 - '

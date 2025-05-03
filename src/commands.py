@@ -88,6 +88,20 @@ def _rlimit_min(a, b):
     else:
         return min(soft, heap_size)
 
+def _process_target(f, q, heap_size, *args, **kwargs):
+    """Called by :func:`process`"""
+    if resource:
+        rsrc = resource.RLIMIT_DATA
+        (soft, hard) = resource.getrlimit(rsrc)
+        soft = _rlimit_min(soft, heap_size)
+        hard = _rlimit_min(hard, heap_size)
+        resource.setrlimit(rsrc, (soft, hard))
+    try:
+        r = f(*args, **kwargs)
+        q.put([False, r])
+    except Exception as e:
+        q.put([True, e])
+
 def process(f, *args, **kwargs):
     """Runs a function <f> in a subprocess.
     
@@ -122,21 +136,9 @@ def process(f, *args, **kwargs):
                 '(See https://github.com/travis-ci/travis-core/issues/187\n'
                 'for more information about this bug.)\n')
         raise
-    def newf(f, q, *args, **kwargs):
-        if resource:
-            rsrc = resource.RLIMIT_DATA
-            (soft, hard) = resource.getrlimit(rsrc)
-            soft = _rlimit_min(soft, heap_size)
-            hard = _rlimit_min(hard, heap_size)
-            resource.setrlimit(rsrc, (soft, hard))
-        try:
-            r = f(*args, **kwargs)
-            q.put([False, r])
-        except Exception as e:
-            q.put([True, e])
-    targetArgs = (f, q,) + args
-    p = callbacks.CommandProcess(target=newf,
-                                args=targetArgs, kwargs=kwargs)
+    targetArgs = (f, q, heap_size) + args
+    p = callbacks.CommandProcess(target=_process_target,
+                                 args=targetArgs, kwargs=kwargs)
     try:
         p.start()
     except OSError as e:
@@ -435,7 +437,14 @@ def getBanmask(irc, msg, args, state):
     getChannel(irc, msg, args, state)
     banmaskstyle = conf.supybot.protocols.irc.banmask
     state.args[-1] = banmaskstyle.makeBanmask(state.args[-1],
-            channel=state.channel)
+            channel=state.channel, network=irc.network)
+
+def getExtBanmasks(irc, msg, args, state):
+    getHostmask(irc, msg, args, state)
+    getChannel(irc, msg, args, state)
+    banmaskstyle = conf.supybot.protocols.irc.extbanmask
+    state.args[-1] = banmaskstyle.makeExtBanmasks(state.args[-1],
+            channel=state.channel, network=irc.network)
 
 def getUser(irc, msg, args, state):
     try:
@@ -806,6 +815,7 @@ wrappers = ircutils.IrcDict({
     'commandName': getCommandName,
     'email': getEmail,
     'expiry': getExpiry,
+    'extbanmasks': getExtBanmasks,
     'filename': getSomething, # XXX Check for validity.
     'float': getFloat,
     'glob': getGlob,
@@ -1062,7 +1072,17 @@ class getopts(context):
     def __call__(self, irc, msg, args, state):
         if LOG_CONVERTERS:
             log.debug('args before %r: %r', self, args)
-        (optlist, rest) = getopt.getopt(args, self.getoptLs, self.getoptL)
+
+        # look for the first '--' token, it forcefully ends the getopt list,
+        # which allows the next arguments to start with a -
+        try:
+            sep = args.index('--')
+        except ValueError:
+            sep = None
+        else:
+            log.debug('getopt stopping at "--" token at position %d', sep)
+
+        (optlist, rest) = getopt.getopt(args[:sep], self.getoptLs, self.getoptL)
         getopts = []
         for (opt, arg) in optlist:
             if opt.startswith('--'):
@@ -1080,7 +1100,11 @@ class getopts(context):
             else:
                 getopts.append((opt, True))
         state.args.append(getopts)
-        args[:] = rest
+
+        if sep is None:
+            args[:] = rest
+        else:
+            args[:sep+1] = rest
         if LOG_CONVERTERS:
             log.debug('args after %r: %r', self, args)
 

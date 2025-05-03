@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -19,7 +19,7 @@ msgid ""
 "    given channel."
 msgstr "Détermine si le plugin est activé sur un canal donné."
 
-#: config.py:55
+#: config.py:56
 msgid ""
 "Determines what nicks the bot will consider to\n"
 "    be immune from enforcement.  These nicks will not even have their "

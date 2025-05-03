@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,16 +25,16 @@ msgstr ""
 msgid "Makes a function suitable for scheduling from command."
 msgstr ""
 
-#: plugin.py:155
+#: plugin.py:162
 #, docstring
 msgid "Makes a function suitable for scheduling text"
 msgstr ""
 
-#: plugin.py:160
+#: plugin.py:167
 msgid "Reminder: %s"
 msgstr ""
 
-#: plugin.py:181
+#: plugin.py:188
 #, docstring
 msgid ""
 "<seconds> <command>\n"
@@ -47,11 +47,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:191
+#: plugin.py:198
 msgid "Event #%i added."
 msgstr ""
 
-#: plugin.py:196
+#: plugin.py:203
 #, docstring
 msgid ""
 " <seconds> <text>\n"
@@ -62,11 +62,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:204
+#: plugin.py:211
 msgid "Reminder Event #%i added."
 msgstr ""
 
-#: plugin.py:209
+#: plugin.py:216
 #, docstring
 msgid ""
 "<id>\n"
@@ -75,11 +75,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:223 plugin.py:225
+#: plugin.py:230 plugin.py:232
 msgid "Invalid event id."
 msgstr ""
 
-#: plugin.py:244
+#: plugin.py:251
 #, docstring
 msgid ""
 "[--delay <delay>] <name> <seconds> <command>\n"
@@ -92,11 +92,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:255
+#: plugin.py:262
 msgid "There is already an event with that name, please choose another name."
 msgstr ""
 
-#: plugin.py:270
+#: plugin.py:277
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -105,7 +105,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:290
+#: plugin.py:297
 msgid "There are currently no scheduled commands."
 msgstr ""
 

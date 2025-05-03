@@ -147,7 +147,7 @@ class PluginDoc(object):
                     args = args.split('(', 1)[1]
                     args = args[len(' '.join(command)):].strip()
                     help = help.split('--', 1)[1].strip()
-                    self.appendLine(line + args)
+                    self.appendLine('``' + line + args + '``')
                     self.appendLine(help, 1)
                 else:
                     self.appendLine('No help associated with this command')
@@ -259,10 +259,10 @@ class PluginDoc(object):
 
 def genDoc(m, options):
     Plugin = PluginDoc(m, options.titleTemplate)
-    print('Generating documentation for %s...' % Plugin.name)
     outputFilename = string.Template(options.outputFilename).substitute(
         name=Plugin.name, format=options.format)
     path = os.path.join(options.outputDir, outputFilename)
+    print('Generating documentation for %s to %s...' % (Plugin.name, path))
     try:
         fd = open(path, 'w')
     except EnvironmentError as e:

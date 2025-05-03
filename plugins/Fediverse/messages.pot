@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,14 +39,14 @@ msgid ""
 "            when the status has a Content Warning."
 msgstr ""
 
-#: plugin.py:54
+#: plugin.py:59
 msgid ""
 "\n"
 "    You shouldn't be here, this subfolder is not for you. Go back to the\n"
 "    index and try out other plugins (if any)."
 msgstr ""
 
-#: plugin.py:119
+#: plugin.py:124
 #, docstring
 msgid ""
 "Fetches information from ActivityPub servers.\n"
@@ -75,23 +75,27 @@ msgid ""
 "    "
 msgstr ""
 
-#: plugin.py:233
+#: plugin.py:242
 msgid "<error: %s>"
 msgstr ""
 
-#: plugin.py:245
+#: plugin.py:278
 msgid "%s: \002[CW %s]\002 %s"
 msgstr ""
 
-#: plugin.py:254
+#: plugin.py:287
 msgid "%s: CW %s"
 msgstr ""
 
-#: plugin.py:258 plugin.py:292 plugin.py:300
+#: plugin.py:291 plugin.py:336 plugin.py:344
 msgid "%s: %s"
 msgstr ""
 
-#: plugin.py:286
+#: plugin.py:316
+msgid "\002%s\002 (%T) by %s: %s"
+msgstr ""
+
+#: plugin.py:330
 #, docstring
 msgid ""
 "<@user@instance>\n"
@@ -99,7 +103,7 @@ msgid ""
 "        Returns generic information on the account @user@instance."
 msgstr ""
 
-#: plugin.py:376
+#: plugin.py:420
 #, docstring
 msgid ""
 "<@user@instance>\n"
@@ -108,11 +112,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:382 plugin.py:388
+#: plugin.py:426 plugin.py:432
 msgid "No featured statuses."
 msgstr ""
 
-#: plugin.py:399
+#: plugin.py:443
 #, docstring
 msgid ""
 "<@user@instance>\n"
@@ -121,11 +125,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:405
+#: plugin.py:449
 msgid "No status."
 msgstr ""
 
-#: plugin.py:422
+#: plugin.py:466
 #, docstring
 msgid ""
 "<url>\n"
@@ -134,7 +138,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:429
+#: plugin.py:473
 msgid "Could not get status: %s"
 msgstr ""
 

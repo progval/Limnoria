@@ -31,147 +31,147 @@ Commands
 
 .. _command-filter-aol:
 
-aol <text>
+``aol <text>``
   Returns <text> as if an AOL user had said it.
 
 .. _command-filter-binary:
 
-binary <text>
+``binary <text>``
   Returns the binary representation of <text>.
 
 .. _command-filter-caps:
 
-caps <text>
+``caps <text>``
   EVERYONE LOVES CAPS LOCK.
 
 .. _command-filter-capwords:
 
-capwords <text>
+``capwords <text>``
   Capitalises the first letter of each word.
 
 .. _command-filter-colorize:
 
-colorize <text>
+``colorize <text>``
   Returns <text> with each character randomly colorized.
 
 .. _command-filter-gnu:
 
-gnu <text>
+``gnu <text>``
   Returns <text> as GNU/RMS would say it.
 
 .. _command-filter-hebrew:
 
-hebrew <text>
+``hebrew <text>``
   Removes all the vowels from <text>. (If you're curious why this is named 'hebrew' it's because I (jemfinch) thought of it in Hebrew class, and printed Hebrew often elides the vowels.)
 
 .. _command-filter-hexlify:
 
-hexlify <text>
+``hexlify <text>``
   Returns a hexstring from the given string; a hexstring is a string composed of the hexadecimal value of each character in the string
 
 .. _command-filter-jeffk:
 
-jeffk <text>
+``jeffk <text>``
   Returns <text> as if JeffK had said it himself.
 
 .. _command-filter-leet:
 
-leet <text>
+``leet <text>``
   Returns the l33tspeak version of <text>
 
 .. _command-filter-morse:
 
-morse <text>
+``morse <text>``
   Gives the Morse code equivalent of a given string.
 
 .. _command-filter-outfilter:
 
-outfilter [<channel>] [<command>]
+``outfilter [<channel>] [<command>]``
   Sets the outFilter of this plugin to be <command>. If no command is given, unsets the outFilter. <channel> is only necessary if the message isn't sent in the channel itself.
 
 .. _command-filter-rainbow:
 
-rainbow <text>
+``rainbow <text>``
   Returns <text> colorized like a rainbow.
 
 .. _command-filter-reverse:
 
-reverse <text>
+``reverse <text>``
   Reverses <text>.
 
 .. _command-filter-rot13:
 
-rot13 <text>
+``rot13 <text>``
   Rotates <text> 13 characters to the right in the alphabet. Rot13 is commonly used for text that simply needs to be hidden from inadvertent reading by roaming eyes, since it's easily reversible.
 
 .. _command-filter-scramble:
 
-scramble <text>
+``scramble <text>``
   Replies with a string where each word is scrambled; i.e., each internal letter (that is, all letters but the first and last) are shuffled.
 
 .. _command-filter-shrink:
 
-shrink <text>
+``shrink <text>``
   Returns <text> with each word longer than supybot.plugins.Filter.shrink.minimum being shrunken (i.e., like "internationalization" becomes "i18n").
 
 .. _command-filter-spellit:
 
-spellit <text>
+``spellit <text>``
   Returns <text>, phonetically spelled out.
 
 .. _command-filter-squish:
 
-squish <text>
+``squish <text>``
   Removes all the spaces from <text>.
 
 .. _command-filter-stripcolor:
 
-stripcolor <text>
+``stripcolor <text>``
   Returns <text> stripped of all color codes.
 
 .. _command-filter-stripformatting:
 
-stripformatting <text>
+``stripformatting <text>``
   Strips bold, underline, and colors from <text>.
 
 .. _command-filter-supa1337:
 
-supa1337 <text>
+``supa1337 <text>``
   Replies with an especially k-rad translation of <text>.
 
 .. _command-filter-unbinary:
 
-unbinary <text>
+``unbinary <text>``
   Returns the character representation of binary <text>. Assumes ASCII, 8 digits per character.
 
 .. _command-filter-undup:
 
-undup <text>
+``undup <text>``
   Returns <text>, with all consecutive duplicated letters removed.
 
 .. _command-filter-unhexlify:
 
-unhexlify <hexstring>
+``unhexlify <hexstring>``
   Returns the string corresponding to <hexstring>. Obviously, <hexstring> must be a string of hexadecimal digits.
 
 .. _command-filter-uniud:
 
-uniud <text>
+``uniud <text>``
   Returns <text> rotated 180 degrees. Only really works for ASCII printable characters.
 
 .. _command-filter-unmorse:
 
-unmorse <Morse code text>
+``unmorse <Morse code text>``
   Does the reverse of the morse command.
 
 .. _command-filter-uwu:
 
-uwu <text>
+``uwu <text>``
   Returns <text> in uwu-speak.
 
 .. _command-filter-vowelrot:
 
-vowelrot <text>
+``vowelrot <text>``
   Returns <text> with vowels rotated
 
 .. _conf-Filter:

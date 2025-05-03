@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -88,7 +88,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:187
+#: plugin.py:198
 #, docstring
 msgid ""
 "<rpn math expression>\n"
@@ -97,19 +97,19 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:212
+#: plugin.py:223
 msgid "Not enough arguments for %s"
 msgstr ""
 
-#: plugin.py:225
+#: plugin.py:236
 msgid "%q is not a defined function."
 msgstr ""
 
-#: plugin.py:232
+#: plugin.py:243
 msgid "Stack: [%s]"
 msgstr ""
 
-#: plugin.py:236
+#: plugin.py:247
 #, docstring
 msgid ""
 "[<number>] <unit> to <other unit>\n"
@@ -119,7 +119,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:266
+#: plugin.py:277
 #, docstring
 msgid ""
 " [<type>]\n"

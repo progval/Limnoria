@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Valentin Lorentz <progval@gmail.com>\n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -22,17 +22,17 @@ msgid "Makes a function suitable for scheduling from command."
 msgstr ""
 "Crée une fonction utilisable pour la programmation à partir d'une commande."
 
-#: plugin.py:155
+#: plugin.py:162
 #, fuzzy
 msgid "Makes a function suitable for scheduling text"
 msgstr ""
 "Crée une fonction utilisable pour la programmation à partir d'une commande."
 
-#: plugin.py:160
+#: plugin.py:167
 msgid "Reminder: %s"
 msgstr ""
 
-#: plugin.py:181
+#: plugin.py:188
 msgid ""
 "<seconds> <command>\n"
 "\n"
@@ -53,28 +53,28 @@ msgstr ""
 "pour être envoyée sur le canal. Faites attention à l'utilisateur des "
 "guillemets dans cet exemple."
 
-#: plugin.py:191
+#: plugin.py:198
 msgid "Event #%i added."
 msgstr "Évènement #%i ajouté."
 
-#: plugin.py:196
+#: plugin.py:203
 msgid ""
 " <seconds> <text>\n"
 "\n"
 "        Sets a reminder with string <text> to run <seconds> seconds in the\n"
-"        future. For example, 'scheduler remind [seconds 30m] \"Hello World"
-"\"'\n"
+"        future. For example, 'scheduler remind [seconds 30m] \"Hello "
+"World\"'\n"
 "        will return '<nick> Reminder: Hello World' 30 minutes after being "
 "set.\n"
 "        "
 msgstr ""
 
-#: plugin.py:204
+#: plugin.py:211
 #, fuzzy
 msgid "Reminder Event #%i added."
 msgstr "Évènement #%i ajouté."
 
-#: plugin.py:209
+#: plugin.py:216
 msgid ""
 "<id>\n"
 "\n"
@@ -85,11 +85,11 @@ msgstr ""
 "\n"
 "Déprogramme l'évènement programmé d'<id> donné."
 
-#: plugin.py:223 plugin.py:225
+#: plugin.py:230 plugin.py:232
 msgid "Invalid event id."
 msgstr "Id d'évènement invalide."
 
-#: plugin.py:244
+#: plugin.py:251
 #, fuzzy
 msgid ""
 "[--delay <delay>] <name> <seconds> <command>\n"
@@ -109,11 +109,11 @@ msgstr ""
 "certain nombres de <secondes>, puis dans deux fois ce temps, etc). Le <nom> "
 "est utilisé pour déprogrammer la commande."
 
-#: plugin.py:255
+#: plugin.py:262
 msgid "There is already an event with that name, please choose another name."
 msgstr "Il y a déjà un évènement avec ce nom, veuillez en choisir un autre."
 
-#: plugin.py:270
+#: plugin.py:277
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -124,6 +124,6 @@ msgstr ""
 "\n"
 "Liste tous les évènement actuellement programmés"
 
-#: plugin.py:290
+#: plugin.py:297
 msgid "There are currently no scheduled commands."
 msgstr "Il n'y a actuellement aucune commande programmée."

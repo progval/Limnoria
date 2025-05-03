@@ -31,6 +31,7 @@
 
 import re
 import os
+import copy
 import time
 import json
 import codecs
@@ -148,7 +149,12 @@ def close(registry, filename, private=True):
                 if value._showDefault:
                     lines.append('#\n')
                     try:
-                        x = value.__class__(value._default, value._help)
+                        # We set setDefault to False and manually call
+                        # Value._setValue, just in case the class inherits
+                        # Value.setValue to set some global state (#1349)
+                        x = value.__class__(value._default, value._help,
+                            setDefault=False)
+                        x.value = value._default
                     except Exception as e:
                         exception('Exception instantiating default for %s:' %
                                   value._name)
@@ -737,7 +743,10 @@ class NormalizedString(String):
     def serialize(self):
         s = self.__parent.serialize()
         prefixLen = len(self._name) + 2
-        lines = textwrap.wrap(s, width=76-prefixLen)
+        # break_long_words=False so we don't split in the middle of a
+        # unicode_escape sequence when there are multiple escape sequences in a
+        # row.
+        lines = textwrap.wrap(s, width=76-prefixLen, break_long_words=False)
         last = len(lines)-1
         for (i, line) in enumerate(lines):
             if i != 0:
@@ -912,13 +921,13 @@ class TemplatedString(String):
 
 class Json(String):
     __slots__ = ()
-    # Json-serializable data
+
+    def __call__(self):
+        return copy.deepcopy(super(Json, self).__call__())
     def set(self, v):
         self.setValue(json.loads(v))
-    def setValue(self, v):
-        super(Json, self).setValue(json.dumps(v))
-    def __call__(self):
-        return json.loads(super(Json, self).__call__())
+    def __str__(self):
+        return json.dumps(self())
 
     class _Context:
         def __init__(self, var):

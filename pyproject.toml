@@ -47,7 +47,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-requires-python = ">= 3.6.0"
+requires-python = ">= 3.9.0"
 
 [project.urls]
 "Homepage" = "https://limnoria.net/"

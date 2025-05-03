@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,23 +35,23 @@ msgstr ""
 msgid "What is your NickServ named?"
 msgstr ""
 
-#: config.py:70
+#: config.py:71
 msgid ""
-"Determines what nicks the bot will use with\n"
+"Space-separated list of nicks the bot will use with\n"
 "    services."
 msgstr ""
 
-#: config.py:77
+#: config.py:78
 msgid ""
 "Determines what networks this plugin\n"
 "    will be disabled on."
 msgstr ""
 
-#: config.py:77
+#: config.py:78
 msgid "QuakeNet"
 msgstr ""
 
-#: config.py:81
+#: config.py:82
 msgid ""
 "Determines whether the bot will not join any\n"
 "    channels until it is identified.  This may be useful, for instances, if\n"
@@ -59,49 +59,56 @@ msgid ""
 "    joining +r channels that won't allow you to join unless you identify."
 msgstr ""
 
-#: config.py:86
+#: config.py:87
 msgid ""
 "Determines how many seconds the bot will\n"
 "    wait between successive GHOST attempts. Set this to 0 to disable GHOST."
 msgstr ""
 
-#: config.py:89
+#: config.py:90
+msgid ""
+"Determines the NickServ command to use for GHOST. If the network\n"
+"    you're using runs Anope, set this to \"RECOVER\". If the network you're using runs Atheme,\n"
+"    set this to \"GHOST\" or \"REGAIN\"."
+msgstr ""
+
+#: config.py:94
 msgid ""
 "Determines what nick the 'NickServ' service\n"
 "    has."
 msgstr ""
 
-#: config.py:93
+#: config.py:98
 msgid ""
 "Determines what nick the 'ChanServ' service\n"
 "    has."
 msgstr ""
 
-#: config.py:96
+#: config.py:101
 msgid ""
 "Determines what password the bot will use with\n"
 "    ChanServ."
 msgstr ""
 
-#: config.py:99
+#: config.py:104
 msgid ""
 "Determines whether the bot will request to get\n"
 "    opped by the ChanServ when it joins the channel."
 msgstr ""
 
-#: config.py:102
+#: config.py:107
 msgid ""
 "Determines whether the bot will request to get\n"
 "    half-opped by the ChanServ when it joins the channel."
 msgstr ""
 
-#: config.py:105
+#: config.py:110
 msgid ""
 "Determines whether the bot will request to get\n"
 "    voiced by the ChanServ when it joins the channel."
 msgstr ""
 
-#: plugin.py:54
+#: plugin.py:55
 #, docstring
 msgid ""
 "This plugin handles dealing with Services on networks that provide them.\n"
@@ -114,11 +121,11 @@ msgid ""
 "    necessary if the bot is properly configured."
 msgstr ""
 
-#: plugin.py:441
+#: plugin.py:472
 msgid "You must set supybot.plugins.Services.ChanServ before I'm able to send the %s command."
 msgstr ""
 
-#: plugin.py:447
+#: plugin.py:478
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -128,11 +135,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:453
+#: plugin.py:484
 msgid "I'm already opped in %s."
 msgstr ""
 
-#: plugin.py:460
+#: plugin.py:491
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -142,11 +149,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:466
+#: plugin.py:497
 msgid "I'm already voiced in %s."
 msgstr ""
 
-#: plugin.py:483
+#: plugin.py:514
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -158,7 +165,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:504
+#: plugin.py:535
 #, docstring
 msgid ""
 "[<channel>]\n"
@@ -170,7 +177,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:526
+#: plugin.py:557
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -179,15 +186,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:535
+#: plugin.py:566
 msgid "I don't have a configured password for my current nick."
 msgstr ""
 
-#: plugin.py:538
+#: plugin.py:569
 msgid "You must set supybot.plugins.Services.NickServ before I'm able to do identify."
 msgstr ""
 
-#: plugin.py:544
+#: plugin.py:575
 #, docstring
 msgid ""
 "[<nick>]\n"
@@ -197,15 +204,15 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:553
+#: plugin.py:584
 msgid "I cowardly refuse to ghost myself."
 msgstr ""
 
-#: plugin.py:558
+#: plugin.py:589
 msgid "You must set supybot.plugins.Services.NickServ before I'm able to ghost a nick."
 msgstr ""
 
-#: plugin.py:563
+#: plugin.py:594
 #, docstring
 msgid ""
 "<text>\n"
@@ -214,11 +221,11 @@ msgid ""
 "        on Atheme, use: @nickserv REGISTER <password> <email-address>."
 msgstr ""
 
-#: plugin.py:572
+#: plugin.py:603
 msgid "You must set supybot.plugins.Services.NickServ before I'm able to message NickServ"
 msgstr ""
 
-#: plugin.py:577
+#: plugin.py:608
 #, docstring
 msgid ""
 "<text>\n"
@@ -227,11 +234,11 @@ msgid ""
 "        on Atheme, use: @chanserv REGISTER <#channel>."
 msgstr ""
 
-#: plugin.py:586
+#: plugin.py:617
 msgid "You must set supybot.plugins.Services.ChanServ before I'm able to message ChanServ"
 msgstr ""
 
-#: plugin.py:593
+#: plugin.py:624
 #, docstring
 msgid ""
 "<nick> [<password>]\n"
@@ -241,11 +248,11 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:605
+#: plugin.py:636
 msgid "That nick was not configured with a password."
 msgstr ""
 
-#: plugin.py:618
+#: plugin.py:649
 #, docstring
 msgid ""
 "takes no arguments\n"
@@ -255,27 +262,27 @@ msgid ""
 "        "
 msgstr ""
 
-#: plugin.py:628
+#: plugin.py:659
 msgid "I'm not currently configured for any nicks."
 msgstr ""
 
-#: plugin.py:635
+#: plugin.py:666
 msgid "Experimental IRC extensions are not enabled for this bot."
 msgstr ""
 
-#: plugin.py:641
+#: plugin.py:672
 msgid "This network does not support draft/account-registration."
 msgstr ""
 
-#: plugin.py:647
+#: plugin.py:678
 msgid "This network does not support labeled-response."
 msgstr ""
 
-#: plugin.py:653
+#: plugin.py:684
 msgid "This bot is already authenticated on the network."
 msgstr ""
 
-#: plugin.py:658
+#: plugin.py:689
 #, docstring
 msgid ""
 "[<network>] <password> [<email>]\n"
@@ -287,11 +294,11 @@ msgid ""
 "        your email address."
 msgstr ""
 
-#: plugin.py:672
+#: plugin.py:703
 msgid "This network requires an email address to register."
 msgstr ""
 
-#: plugin.py:686
+#: plugin.py:717
 #, docstring
 msgid ""
 "[<network>] <account> <code>\n"

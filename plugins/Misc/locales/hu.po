@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria Misc\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: 2012-04-27 15:15+0200\n"
 "Last-Translator: Mikaela Suomalainen <mikaela.suomalainen@outlook.com>\n"
 "Language-Team: \n"
@@ -85,13 +85,13 @@ msgstr ""
 "Meghatározza, hogy a last kimenete tartalmazza-e a nevet, ha az egy "
 "beágyazott parancs része."
 
-#: plugin.py:76
+#: plugin.py:79
 msgid ""
 "Miscellaneous commands to access Supybot core. This is a core\n"
 "    Supybot plugin that should not be removed!"
 msgstr ""
 
-#: plugin.py:114
+#: plugin.py:117
 #, fuzzy
 msgid ""
 "You've given me %s invalid commands within the last %i seconds; I'm now "
@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "%s érvénytelen parancsot adtál nekem az utolsó percben; most mellőzlek %s-ig."
 
-#: plugin.py:157
+#: plugin.py:160
 msgid ""
 "The %q plugin is loaded, but there is no command named %q in it.  Try \"list "
 "%s\" to see the commands in the %q plugin."
@@ -107,15 +107,15 @@ msgstr ""
 "A %q bővítmény be van töltve, de nincs benne parancs %q névvel. Próbáld meg "
 "a \"list %s\"-t, hogy lásd a parancsokat a %q bővítményben."
 
-#: plugin.py:163 plugin.py:166
+#: plugin.py:166 plugin.py:169
 msgid "command"
 msgstr ""
 
-#: plugin.py:172
+#: plugin.py:175
 msgid "private"
 msgstr ""
 
-#: plugin.py:188
+#: plugin.py:191
 #, fuzzy
 msgid ""
 "[--private] [--unloaded] [<plugin>]\n"
@@ -132,19 +132,19 @@ msgstr ""
 "bővítmény, kiírja az elérhető publikus bővítményeket. Ha --private meg van "
 "adva, kiírja a privát bővítményeket."
 
-#: plugin.py:209
+#: plugin.py:212
 msgid "--private and --unloaded are incompatible options."
 msgstr ""
 
-#: plugin.py:237
+#: plugin.py:240
 msgid "There are no private plugins."
 msgstr "Nincsenek privát bővítmények."
 
-#: plugin.py:239
+#: plugin.py:242
 msgid "There are no public plugins."
 msgstr "Nincsenek publikus bővítmények."
 
-#: plugin.py:246
+#: plugin.py:249
 msgid ""
 "That plugin exists, but has no commands.  This probably means that it has "
 "some configuration variables that can be changed in order to modify its "
@@ -156,7 +156,7 @@ msgstr ""
 "módosítsd a viselkedését. Próbáld meg a \"config list supybot.plugins.%s\"-"
 "t, hogy lásd, milyen konfigurációs változói vannak."
 
-#: plugin.py:258
+#: plugin.py:261
 msgid ""
 "<string>\n"
 "\n"
@@ -169,11 +169,11 @@ msgstr ""
 "<karakterlánc>-ra keres a parancsokban, amelyeket a bot kínál, és kiírja a "
 "parancsokat, amelyek tartalmazzák a karakterláncot."
 
-#: plugin.py:277
+#: plugin.py:280
 msgid "No appropriate commands were found."
 msgstr "Nem található megfelelő parancs."
 
-#: plugin.py:282
+#: plugin.py:285
 #, fuzzy
 msgid ""
 "[<plugin>] [<command>]\n"
@@ -191,13 +191,13 @@ msgstr ""
 "Ez a parancs egy hasznos leírást ad arról, hogy mit csinál <parancs>. "
 "<bővítmény> csak akkor szükséges, ha a parancs egynél több bővítményben van."
 
-#: plugin.py:295
+#: plugin.py:298
 msgid ""
 "Use the 'list' command to list all plugins, and 'list <plugin>' to list all "
 "commands in a plugin. To show the help of a command, use 'help <command>'. "
 msgstr ""
 
-#: plugin.py:306
+#: plugin.py:309
 msgid ""
 "That command exists in the %L plugins.  Please specify exactly which plugin "
 "command you want help with."
@@ -205,23 +205,23 @@ msgstr ""
 "Ez a parancs a(z) %L bővítményekben létezik. Kérlek pontosan határozd meg, "
 "hogy melyik bővítmény parancsának akarod látni a segítségét."
 
-#: plugin.py:315
+#: plugin.py:318
 msgid "There is no command %q."
 msgstr "Nincs %q parancs."
 
-#: plugin.py:319
+#: plugin.py:322
 msgid ""
 " However, '{0}' is the name of a loaded plugin, and you may be able to find "
 "its help using 'plugin help {0}' and its provided commands using 'list {0}'."
 msgstr ""
 
-#: plugin.py:326
+#: plugin.py:329
 msgid ""
 " However, '{0}' is the name of a loaded plugin, and you may be able to find "
 "its provided commands using 'list {0}'."
 msgstr ""
 
-#: plugin.py:337
+#: plugin.py:340
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -232,26 +232,25 @@ msgstr ""
 "\n"
 "Kiírja a bot verzióját."
 
-#: plugin.py:354
-msgid "The newest versions available online are %s."
+#: plugin.py:366
+#, fuzzy
+msgid ""
+"The newest version available online is %(release_version)s, or "
+"%(git_version)s in Git"
 msgstr "A legújabb elérhető verziók az interneten: %s."
 
-#: plugin.py:355
-msgid "%s (in %s)"
-msgstr "%s (%s-ban)"
-
-#: plugin.py:359
+#: plugin.py:372
 msgid "I couldn't fetch the newest version from the Limnoria repository."
 msgstr "Nem tudtam lekérdezni a legújabb verziót a Limnoria gyűjteményből."
 
-#: plugin.py:361
+#: plugin.py:374
 #, fuzzy
 msgid ""
 "The current (running) version of this Limnoria is %s, running on Python %s.  "
 "%s"
 msgstr "Az aktuális (futó) verziója ennek a Supybot-nak %s. %s"
 
-#: plugin.py:369
+#: plugin.py:382
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -261,12 +260,12 @@ msgstr ""
 "paraméter nélküli\n"
 "Kiír egy linket, ami megmondja, honnan lehet a Limnoria-t megszerezni."
 
-#: plugin.py:373
+#: plugin.py:386
 #, fuzzy
 msgid "My source is at https://github.com/progval/Limnoria"
 msgstr "A forrásom https://github.com/ProgVal/Limnoria -ban van."
 
-#: plugin.py:378
+#: plugin.py:391
 msgid ""
 "[<nick>]\n"
 "\n"
@@ -284,15 +283,15 @@ msgstr ""
 "miatt, kiírja a következő részét az utolsó parancs eredményének. Ha <név> "
 "meg van adva, <név> utolsó parancsának a folytatását írja ki."
 
-#: plugin.py:395
+#: plugin.py:408
 msgid "%s has no public mores."
 msgstr "%s-nek nincsenek publikus folytatásai."
 
-#: plugin.py:398
+#: plugin.py:411
 msgid "Sorry, I can't find any mores for %s"
 msgstr "Sajnálom, nem találok folytatásokat %s-hoz."
 
-#: plugin.py:403
+#: plugin.py:416
 msgid ""
 "You haven't asked me a command; perhaps you want to see someone else's "
 "more.  To do so, call this command with that person's nick."
@@ -300,11 +299,11 @@ msgstr ""
 "Nem adtál nekem parancsot; talán valaki más folyatását szeretnéd látni. Ha "
 "ezt szeretnéd tenni, hívd meg ezt a parancsot az adott ember nevével."
 
-#: plugin.py:433
+#: plugin.py:446
 msgid "That's all, there is no more."
 msgstr "Ez minden, nincs több."
 
-#: plugin.py:443
+#: plugin.py:456
 msgid ""
 "[--{from,in,on,with,without,regexp} <value>] [--nolimit]\n"
 "\n"
@@ -331,11 +330,7 @@ msgstr ""
 "kiírja az összes talált üzenetet. Alapértelmezésben abban a csatornában "
 "keres, ahol ez a parancs végre lett hajtva."
 
-#: plugin.py:540
-msgid "The regular expression timed out."
-msgstr ""
-
-#: plugin.py:553
+#: plugin.py:589
 msgid ""
 "I couldn't find a message matching that criteria in my history of %s "
 "messages."
@@ -343,23 +338,23 @@ msgstr ""
 "Nem találtam a kritériumra illeszkedő üzenetet a(z) %s üzenetes "
 "előzményeimben."
 
-#: plugin.py:572
+#: plugin.py:608
 msgid "Hey, just give the command.  No need for the tell."
 msgstr "Haver, csak add meg a parancsot. Nem kell mondani."
 
-#: plugin.py:577
+#: plugin.py:613
 msgid "You just told me, why should I tell myself?"
 msgstr "Most mondtad el nekem, miért mondjam el magamnak?"
 
-#: plugin.py:582
+#: plugin.py:618
 msgid "I haven't seen %s, I'll let you do the telling."
 msgstr "Nem láttam %s-t, rád hagyom a mondást."
 
-#: plugin.py:587
+#: plugin.py:623
 msgid "%s wants me to tell you: %s"
 msgstr "%s szeretné, hogy megmondjam neked: %s"
 
-#: plugin.py:593
+#: plugin.py:629
 msgid ""
 "<nick> <text>\n"
 "\n"
@@ -370,7 +365,7 @@ msgstr ""
 "<név> <szöveg>Megmondja <név>-nek szöveget. Itt az előnyödre használhatod a "
 "beágyazott parancsokat."
 
-#: plugin.py:603
+#: plugin.py:639
 #, fuzzy
 msgid ""
 "<nick> <text>\n"
@@ -382,7 +377,7 @@ msgstr ""
 "<név> <szöveg>Megmondja <név>-nek szöveget. Itt az előnyödre használhatod a "
 "beágyazott parancsokat."
 
-#: plugin.py:613
+#: plugin.py:649
 msgid ""
 "takes no arguments\n"
 "\n"
@@ -393,11 +388,11 @@ msgstr ""
 "\n"
 "Ellenőrzi, hogy a bot él-e."
 
-#: plugin.py:617
+#: plugin.py:653
 msgid "pong"
 msgstr "pong"
 
-#: plugin.py:621
+#: plugin.py:657
 msgid ""
 "[<channel>] <beginning> [--match-case]\n"
 "\n"
@@ -407,15 +402,15 @@ msgid ""
 "        <channel> defaults to the current channel."
 msgstr ""
 
-#: plugin.py:627
+#: plugin.py:663
 msgid "I'm not even in %s."
 msgstr ""
 
-#: plugin.py:639
+#: plugin.py:675
 msgid "No such nick."
 msgstr ""
 
-#: plugin.py:645
+#: plugin.py:681
 #, fuzzy
 msgid ""
 "takes no arguments\n"
@@ -425,6 +420,9 @@ msgstr ""
 "paraméter nélküli\n"
 "\n"
 "Kiírja a bot verzióját."
+
+#~ msgid "%s (in %s)"
+#~ msgstr "%s (%s-ban)"
 
 #, fuzzy
 #~ msgid "1 more message"

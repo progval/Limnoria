@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,15 +44,15 @@ msgid ""
 "        This uses data from Wikidata and Nominatim."
 msgstr ""
 
-#: plugin.py:84 plugin.py:122
+#: plugin.py:84 plugin.py:137
 msgid "Could not find the location"
 msgstr ""
 
-#: plugin.py:110 plugin.py:167
+#: plugin.py:110 plugin.py:178
 msgid "Could not find the timezone of this location."
 msgstr ""
 
-#: plugin.py:115
+#: plugin.py:130
 #, docstring
 msgid ""
 "<location name to search>\n"

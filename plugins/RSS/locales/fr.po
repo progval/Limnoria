@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -41,22 +41,24 @@ msgid ""
 "    manually. In addition to fields defined by feedparser ($published\n"
 "    (the entry date), $title, $link, $description, $id, etc.), the "
 "following\n"
-"    variables can be used: $feed_name, $date (parsed date, as defined in\n"
+"    variables can be used: $feed_name (the configured name)\n"
+"    $feed_title/$feed_subtitle/$feed_author/$feed_language/$feed_link,\n"
+"    $date (parsed date, as defined in\n"
 "    supybot.reply.format.time)"
 msgstr ""
 
-#: config.py:74
+#: config.py:76
 msgid "News from $feed_name: $title <$link>"
 msgstr ""
 
-#: config.py:75
+#: config.py:77
 msgid ""
 "The format the bot will use for displaying headlines of a RSS feed\n"
 "    that is announced. See supybot.plugins.RSS.format for the available\n"
 "    variables."
 msgstr ""
 
-#: config.py:83
+#: config.py:85
 msgid ""
 "Determines which RSS feeds\n"
 "    should be announced in the channel; valid input is a list of strings\n"
@@ -66,7 +68,7 @@ msgstr ""
 "est une liste de chaînes (des flux enregistrés ou des URLs de flux RSS), "
 "séparées par des espaces."
 
-#: config.py:87
+#: config.py:89
 msgid ""
 "Indicates how many seconds the bot will\n"
 "    wait between retrieving RSS feeds; requests made within this period "
@@ -76,7 +78,7 @@ msgstr ""
 "Détermine le temps (en secondes) entre deux rafraichissement des flux RSS. "
 "Durant cette période, les flux seront mis en cache."
 
-#: config.py:91
+#: config.py:93
 #, fuzzy
 msgid ""
 "Determines whether feed items should be\n"
@@ -87,19 +89,19 @@ msgstr ""
 "Détermine si les éléments du flux doivent être triés selon la date de leur "
 "mise à jour ou si ils doivent être conservés dans l'ordre original du flux."
 
-#: config.py:95
+#: config.py:97
 msgid ""
 "Determines whether announces will be sent\n"
 "    as notices instead of privmsgs."
 msgstr ""
 
-#: config.py:98
+#: config.py:100
 msgid ""
 "Indicates how many new news entries may\n"
 "    be sent at the same time. Extra entries will be discarded."
 msgstr ""
 
-#: config.py:104
+#: config.py:106
 msgid ""
 "Indicates how many headlines an rss feed\n"
 "    will output by default, if no number is provided."
@@ -107,7 +109,7 @@ msgstr ""
 "Indique combien d'éléments un flux rss affichera par défaut, si aucun nombre "
 "n'est donné."
 
-#: config.py:107
+#: config.py:109
 msgid ""
 "Indicates how many headlines an rss feed\n"
 "    will output when it is first added to announce for a channel."
@@ -115,7 +117,7 @@ msgstr ""
 "Indique combien d'éléments un flux rss affichera lorsque qu'il vient d'être "
 "configuré pour être annoncé sur le salon."
 
-#: config.py:110
+#: config.py:112
 msgid ""
 "Space separated list of \n"
 "    strings, lets you filter headlines to those containing one or more "
@@ -125,7 +127,7 @@ msgstr ""
 "Liste séparée par des espaces de chaînes, qui vous permet de filtrer les "
 "éléments par liste blanche."
 
-#: config.py:114
+#: config.py:116
 msgid ""
 "Space separated list of \n"
 "    strings, lets you filter headlines to those not containing any items\n"
@@ -134,19 +136,19 @@ msgstr ""
 "Liste séparée par des espaces de chaînes, qui vous permet de filtrer les "
 "éléments par liste noire."
 
-#: config.py:127
+#: config.py:129
 msgid ""
 "Feed-specific format. Defaults to\n"
 "            supybot.plugins.RSS.format if empty."
 msgstr ""
 
-#: config.py:130
+#: config.py:132
 msgid ""
 "Feed-specific announce format.\n"
 "            Defaults to supybot.plugins.RSS.announceFormat if empty."
 msgstr ""
 
-#: config.py:133
+#: config.py:135
 msgid ""
 "If set to a non-zero\n"
 "            value, overrides supybot.plugins.RSS.waitPeriod for this\n"
@@ -174,8 +176,8 @@ msgid ""
 "    This plugin is useful both for announcing updates to RSS feeds in a\n"
 "    channel, and for retrieving the headlines of RSS feeds via command.  "
 "Use\n"
-"    the \"add\" command to add feeds to this plugin, and use the \"announce"
-"\"\n"
+"    the \"add\" command to add feeds to this plugin, and use the "
+"\"announce\"\n"
 "    command to determine what feeds should be announced in a given channel.\n"
 "\n"
 "    Basic usage\n"
@@ -224,7 +226,7 @@ msgstr ""
 msgid "I already have a feed with that URL named %s."
 msgstr ""
 
-#: plugin.py:508
+#: plugin.py:565
 msgid ""
 "<name> <url>\n"
 "\n"
@@ -237,7 +239,7 @@ msgstr ""
 "Ajoute un commande à ce plugin qui permet de regarder le flux situé à "
 "l'<url>."
 
-#: plugin.py:521
+#: plugin.py:578
 msgid ""
 "<name>\n"
 "\n"
@@ -249,11 +251,11 @@ msgstr ""
 "\n"
 "Supprime le flux des flux qui peuvent être lus grâce à une commande."
 
-#: plugin.py:528
+#: plugin.py:585
 msgid "That's not a valid RSS feed command name."
 msgstr "Ce n'est pas une commande de flux RSS valide"
 
-#: plugin.py:547
+#: plugin.py:604
 msgid ""
 "[<channel>]\n"
 "\n"
@@ -266,11 +268,11 @@ msgstr ""
 "Retourne la liste des flux annoncés sur le <canal>. <canal> n'est nécessaire "
 "que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:556
+#: plugin.py:613
 msgid "I am currently not announcing any feeds."
 msgstr "Je n'annonce actuellement aucun flux."
 
-#: plugin.py:561
+#: plugin.py:618
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -289,11 +291,11 @@ msgstr ""
 "l'<url> dans le cas contraire. <canal> n'est nécessaire que si le message "
 "n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:572
+#: plugin.py:629
 msgid "These feeds are unknown: %L"
 msgstr ""
 
-#: plugin.py:593
+#: plugin.py:650
 msgid ""
 "[<channel>] <name|url> [<name|url> ...]\n"
 "\n"
@@ -312,7 +314,7 @@ msgstr ""
 "l'<url> dans le cas contraire. <canal> n'est nécessaire que si le message "
 "n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:618
+#: plugin.py:675
 msgid ""
 "<name|url>\n"
 "\n"
@@ -322,7 +324,7 @@ msgid ""
 "            "
 msgstr ""
 
-#: plugin.py:642
+#: plugin.py:699
 #, fuzzy
 msgid ""
 "<name|url> [<number of headlines>]\n"
@@ -336,15 +338,15 @@ msgstr ""
 "Récupère le titre des éléments du flux RSS donné. si le <nombre de lignes> "
 "est donné, ne retourne que ce nombre de lignes d'en-tête."
 
-#: plugin.py:658
+#: plugin.py:715
 msgid "Couldn't get RSS feed."
 msgstr "Ne peut récupérer le flux RSS."
 
-#: plugin.py:661
+#: plugin.py:718
 msgid " Parser error: "
 msgstr ""
 
-#: plugin.py:677
+#: plugin.py:736
 msgid ""
 "<url|feed>\n"
 "\n"
@@ -357,19 +359,19 @@ msgstr ""
 "Retourne des informations sur le flux RSS donné : le titre, l'URL, la "
 "description, et la dernière mise à jour."
 
-#: plugin.py:692
+#: plugin.py:751
 msgid "I couldn't retrieve that RSS feed."
 msgstr "Je ne peux récupérer ce flux RSS."
 
-#: plugin.py:700
+#: plugin.py:759
 msgid "time unavailable"
 msgstr ""
 
-#: plugin.py:701 plugin.py:702 plugin.py:703
+#: plugin.py:760 plugin.py:761 plugin.py:762
 msgid "unavailable"
 msgstr ""
 
-#: plugin.py:705
+#: plugin.py:764
 msgid "Title: %s;  URL: %u;  Description: %s;  Last updated: %s."
 msgstr "Titre : %s , URL : %u ; description : %s ; dernière mise à jour : %s."
 
@@ -431,5 +433,6 @@ msgstr "Titre : %s , URL : %u ; description : %s ; dernière mise à jour : %s."
 #~ msgstr ""
 #~ "Ce plugin est utile pour annoncer des flux RSS sur un canal, et pour "
 #~ "récupérer les en-tête des flux RSS via une commande. Utilisez la commande "
-#~ "\"add\" pour ajouter des flux au plugin, et utilisez la commande \"annonce"
-#~ "\" pour détermine quels flux pourront être annoncés sur un canal donné."
+#~ "\"add\" pour ajouter des flux au plugin, et utilisez la commande "
+#~ "\"annonce\" pour détermine quels flux pourront être annoncés sur un canal "
+#~ "donné."

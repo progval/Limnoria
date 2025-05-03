@@ -24,27 +24,27 @@ Commands
 
 .. _command-plugin-author:
 
-author <plugin>
+``author <plugin>``
   Returns the author of <plugin>. This is the person you should talk to if you have ideas, suggestions, or other comments about a given plugin.
 
 .. _command-plugin-contributors:
 
-contributors <plugin> [<name>]
+``contributors <plugin> [<name>]``
   Replies with a list of people who made contributions to a given plugin. If <name> is specified, that person's specific contributions will be listed. You can specify a person's name by their full name or their nick, which is shown inside brackets if available.
 
 .. _command-plugin-help:
 
-help <plugin>
+``help <plugin>``
   Returns a useful description of how to use <plugin>, if the plugin has one.
 
 .. _command-plugin-plugin:
 
-plugin <command>
+``plugin <command>``
   Returns the name of the plugin that would be used to call <command>. If it is not uniquely determined, returns list of all plugins that contain <command>.
 
 .. _command-plugin-plugins:
 
-plugins <command>
+``plugins <command>``
   Returns the names of all plugins that contain <command>.
 
 .. _conf-Plugin:

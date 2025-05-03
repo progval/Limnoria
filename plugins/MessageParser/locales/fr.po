@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Limnoria\n"
-"POT-Creation-Date: 2022-02-06 00:12+0100\n"
+"POT-Creation-Date: 2024-12-06 11:00+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: Limnoria <progval@gmail.com>\n"
@@ -101,13 +101,13 @@ msgstr "."
 msgid "Run a command from message, as if command was sent over IRC."
 msgstr "."
 
-#: plugin.py:146
+#: plugin.py:147
 msgid ""
 "Check if the user has any of the required capabilities to manage\n"
 "        the regexp database."
 msgstr "."
 
-#: plugin.py:209
+#: plugin.py:227
 msgid ""
 "[<channel>|global] <regexp> <action>\n"
 "\n"
@@ -124,15 +124,15 @@ msgstr ""
 "régulière>.<canal> n'est nécessaire que si le message n'est pas envoyé sur "
 "le canal lui-même."
 
-#: plugin.py:231
+#: plugin.py:249
 msgid "Invalid python regexp: %s"
 msgstr "Expression régulière Python invalide : %s"
 
-#: plugin.py:243
+#: plugin.py:261
 msgid "That trigger is locked."
 msgstr "Ce trigger est bloqué."
 
-#: plugin.py:249
+#: plugin.py:267
 msgid ""
 "[<channel>|global] [--id] <regexp>]\n"
 "\n"
@@ -148,15 +148,15 @@ msgstr ""
 "des déclencheurs. Si l'option --id est spécifiée, l'id de l'<expression "
 "régulière> sera récupéré, et non le contenu."
 
-#: plugin.py:271 plugin.py:301 plugin.py:324 plugin.py:352 plugin.py:382
+#: plugin.py:289 plugin.py:319 plugin.py:342 plugin.py:370 plugin.py:400
 msgid "There is no such regexp trigger."
 msgstr "Cette expression régulière n'existe pas."
 
-#: plugin.py:275
+#: plugin.py:293
 msgid "This regexp trigger is locked."
 msgstr "Cette expression régulière est verrouillée"
 
-#: plugin.py:287
+#: plugin.py:305
 msgid ""
 "[<channel>|global] <regexp>\n"
 "\n"
@@ -172,7 +172,7 @@ msgstr ""
 "supprimer ou la modifier. <canal> n'est nécessaire que si le message n'est "
 "pas envoyé sur le canal lui-même."
 
-#: plugin.py:310
+#: plugin.py:328
 msgid ""
 "[<channel>|global] <regexp>\n"
 "\n"
@@ -188,7 +188,7 @@ msgstr ""
 "la supprimer ou la modifier. <canal> n'est nécessaire que si le message "
 "n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:333
+#: plugin.py:351
 msgid ""
 "[<channel>|global] [--id] <regexp>\n"
 "\n"
@@ -205,7 +205,7 @@ msgstr ""
 "déclencheurs. Si l'option --id est spécifiée, l'id de l'<expression "
 "régulière> sera récupéré, et non le contenu."
 
-#: plugin.py:362
+#: plugin.py:380
 msgid ""
 "[<channel>|global] [--id] <regexp>\n"
 "\n"
@@ -222,7 +222,7 @@ msgstr ""
 "données des déclencheurs. Si l'option --id est spécifiée, l'id de "
 "l'<expression régulière> sera récupéré, et non le contenu."
 
-#: plugin.py:385
+#: plugin.py:403
 msgid ""
 "The regexp id is %d, regexp is \"%s\", and action is \"%s\". It was added by "
 "user %s on %s, has been triggered %d times, and is %s."
@@ -231,15 +231,15 @@ msgstr ""
 "l'action est \"%s\". Elle a été ajoutée par l'utilisateur %s le %s, et a été "
 "utilisée %d fois, et est %s"
 
-#: plugin.py:394
+#: plugin.py:412
 msgid "locked"
 msgstr "verouillée"
 
-#: plugin.py:394
+#: plugin.py:412
 msgid "not locked"
 msgstr "non verrouillée"
 
-#: plugin.py:401
+#: plugin.py:419
 msgid ""
 "[<channel>|global]\n"
 "\n"
@@ -254,11 +254,11 @@ msgstr ""
 "Liste les expressions régulières présentes dans la base de données. <canal> "
 "n'est nécessaire que si le message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:414 plugin.py:440
+#: plugin.py:432 plugin.py:458
 msgid "There are no regexp triggers in the database."
 msgstr "Il n'y a pas d'expression régulière dans ma base de données."
 
-#: plugin.py:424
+#: plugin.py:442
 msgid ""
 "[<channel>|global]\n"
 "\n"
@@ -275,7 +275,7 @@ msgstr ""
 "plugins.MessageParser.rankListLength. <canal> n'est nécessaire que si le "
 "message n'est pas envoyé sur le canal lui-même."
 
-#: plugin.py:448
+#: plugin.py:466
 msgid ""
 "[<channel>|global]\n"
 "\n"
