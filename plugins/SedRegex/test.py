@@ -120,7 +120,6 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg(' ')
         self.assertIn('couch', str(m))
 
-    @unittest.skipUnless(sys.version_info[0] >= 3, 'Test fails on Python 2.')
     def testBoldReplacement(self):
         with conf.supybot.plugins.sedregex.boldReplacementText.context(True):
             self.feedMsg('hahahaha', frm=self.__class__.other)
