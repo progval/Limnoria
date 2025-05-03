@@ -39,17 +39,12 @@ class FirewallTestCase(SupyTestCase):
     def tearDown(self):
         log.testing = True
 
-    # Python 3's syntax for metaclasses is incompatible with Python 3 so
-    # using Python 3's syntax directly will raise a SyntaxError on Python 2.
-    exec("""
-class C(%s
-    __firewalled__ = {'foo': None}
-    class MyException(Exception):
-        pass
-    def foo(self):
-        raise self.MyException()""" %
-        ('metaclass=log.MetaFirewall):\n' if minisix.PY3 else
-            'object):\n    __metaclass__ = log.MetaFirewall'))
+    class C(metaclass=log.MetaFirewall):
+        __firewalled__ = {'foo': None}
+        class MyException(Exception):
+            pass
+        def foo(self):
+            raise self.MyException()
 
     def testCFooDoesNotRaise(self):
         c = self.C()
