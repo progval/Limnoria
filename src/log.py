@@ -199,17 +199,10 @@ except EnvironmentError as e:
           'error was: %s' % (messagesLogFilename, utils.gen.exnToString(e)))
 
 # These are public.
-if sys.version_info >= (3, 8):
-    formatter = Formatter(
-            'NEVER SEEN; IF YOU SEE THIS, FILE A BUG!', validate=False)
-    pluginFormatter = PluginFormatter(
-            'NEVER SEEN; IF YOU SEE THIS, FILE A BUG!', validate=False)
-
-else:
-    formatter = Formatter(
-            'NEVER SEEN; IF YOU SEE THIS, FILE A BUG!')
-    pluginFormatter = PluginFormatter(
-            'NEVER SEEN; IF YOU SEE THIS, FILE A BUG!')
+formatter = Formatter(
+    'NEVER SEEN; IF YOU SEE THIS, FILE A BUG!', validate=False)
+pluginFormatter = PluginFormatter(
+    'NEVER SEEN; IF YOU SEE THIS, FILE A BUG!', validate=False)
 
 # These are not.
 logging.setLoggerClass(Logger)
@@ -420,12 +413,8 @@ _handler.setLevel(conf.supybot.log.level())
 _logger.addHandler(_handler)
 _logger.setLevel(-1)
 
-if sys.version_info >= (3, 8):
-    _stdoutFormatter = ColorizedFormatter(
-            'IF YOU SEE THIS, FILE A BUG!', validate=False)
-else:
-    _stdoutFormatter = ColorizedFormatter(
-            'IF YOU SEE THIS, FILE A BUG!')
+_stdoutFormatter = ColorizedFormatter(
+    'IF YOU SEE THIS, FILE A BUG!', validate=False)
 _stdoutHandler.setFormatter(_stdoutFormatter)
 _stdoutHandler.setLevel(conf.supybot.log.stdout.level())
 if not conf.daemonized:
