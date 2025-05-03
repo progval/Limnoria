@@ -157,6 +157,16 @@ class OwnerTestCase(PluginTestCase):
         self.assertRegexp('list Admin', 'capability remove')
         self.assertNotRegexp('list Admin', 'rmcap')
 
+    def testIgnoreStaleRenames(self):
+        """
+        Test that stale renames in the config don't cause loading a plugin
+        to fail, if a command ever gets removed.
+        https://github.com/progval/Limnoria/issues/1619
+        """
+        plugin.registerRename(
+            'Utilities', command='nonexistent', newName='test')
+        self.assertNotError('load Utilities')
+
     def testDefaultPluginErrorsWhenCommandNotInPlugin(self):
         self.assertError('defaultplugin foobar owner')
 

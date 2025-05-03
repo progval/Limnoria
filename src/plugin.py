@@ -130,7 +130,11 @@ def renameCommand(cb, name, newName):
     assert newName == callbacks.canonicalName(newName), \
            'newName must already be normalized.'
     if name != newName:
-        method = getattr(cb.__class__, name)
+        method = getattr(cb.__class__, name, None)
+        if method is None:
+            log.debug('Ignoring rename of command %s.%s that no longer exists',
+                      cb.__class__.__name__, name)
+            return
         setattr(cb.__class__, newName, method)
         delattr(cb.__class__, name)
 
