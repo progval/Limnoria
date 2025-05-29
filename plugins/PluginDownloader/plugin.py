@@ -218,8 +218,8 @@ repositories = utils.InsensitivePreservingDict({
                                                    'supybot-plugins',
                                                    ),
                'oddluck':          GithubRepository(
-                                                   'oddluck',
-                                                   'limnoria-plugins',
+                                                   'progval',
+                                                   'oddluck-limnoria-plugins',
                                                    ),
                'appas':            GithubRepository(
                                                    'matiasw',
