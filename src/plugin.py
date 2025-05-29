@@ -67,7 +67,7 @@ class Deprecated(ImportError):
 def loadPluginFromEntrypoint(name):
     if iter_entry_points is not None:
         for entrypoint_group in ENTRYPOINT_GROUPS:
-            for entrypoint in iter_entry_points(group=entrypoint_group):
+            for entrypoint in iter_entry_points()[entrypoint_group]:
                 if entrypoint.name.lower() == name.lower():
                     return entrypoint.load()
 
