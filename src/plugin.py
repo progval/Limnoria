@@ -46,7 +46,9 @@ except ImportError:
     else:
         iter_entry_points = pkg_resources.iter_entry_points
 else:
-    iter_entry_points = importlib.metadata.entry_points
+    def iter_entry_points(group):
+        # Python 3.9 did not support the group= kwarg
+        return importlib.metadata.entry_points()[group]
 
 if not hasattr(importlib.util, 'module_from_spec'):
     # Python < 3.5
@@ -67,7 +69,7 @@ class Deprecated(ImportError):
 def loadPluginFromEntrypoint(name):
     if iter_entry_points is not None:
         for entrypoint_group in ENTRYPOINT_GROUPS:
-            for entrypoint in iter_entry_points()[entrypoint_group]:
+            for entrypoint in iter_entry_points(group=entrypoint_group):
                 if entrypoint.name.lower() == name.lower():
                     return entrypoint.load()
 
