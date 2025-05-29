@@ -37,9 +37,16 @@ import linecache
 import importlib.util
 
 try:
-    import pkg_resources
+    import importlib.metadata
 except ImportError:
-    pkg_resources = None
+    try:
+        import pkg_resources
+    except ImportError:
+        iter_entry_points = None
+    else:
+        iter_entry_points = pkg_resources.iter_entry_points
+else:
+    iter_entry_points = importlib.metadata.entry_points
 
 if not hasattr(importlib.util, 'module_from_spec'):
     # Python < 3.5
@@ -58,9 +65,9 @@ class Deprecated(ImportError):
     pass
 
 def loadPluginFromEntrypoint(name):
-    if pkg_resources:
+    if iter_entry_points is not None:
         for entrypoint_group in ENTRYPOINT_GROUPS:
-            for entrypoint in pkg_resources.iter_entry_points(entrypoint_group):
+            for entrypoint in iter_entry_points(group=entrypoint_group):
                 if entrypoint.name.lower() == name.lower():
                     return entrypoint.load()
 
