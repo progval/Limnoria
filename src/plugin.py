@@ -46,9 +46,12 @@ except ImportError:
     else:
         iter_entry_points = pkg_resources.iter_entry_points
 else:
-    def iter_entry_points(group):
-        # Python 3.9 did not support the group= kwarg
-        return importlib.metadata.entry_points().get(group, [])
+    if sys.version_info >= (3, 10):
+        iter_entry_points = importlib.metadata.entry_points
+    else:
+        # works with Python 3.10 and 3.11 too, but not 3.12
+        def iter_entry_points(group):
+            return importlib.metadata.entry_points().get(group, [])
 
 if not hasattr(importlib.util, 'module_from_spec'):
     # Python < 3.5
