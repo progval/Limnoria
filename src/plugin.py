@@ -48,7 +48,7 @@ except ImportError:
 else:
     def iter_entry_points(group):
         # Python 3.9 did not support the group= kwarg
-        return importlib.metadata.entry_points()[group]
+        return importlib.metadata.entry_points().get(group, [])
 
 if not hasattr(importlib.util, 'module_from_spec'):
     # Python < 3.5
