@@ -72,11 +72,10 @@ class NickAuth(callbacks.Plugin):
 
         @internationalizeDocstring
         def add(self, irc, msg, args, network, user, nick):
-            """[<network>] [<bot username>] <account>
+            """[<network>] <bot username> <account>
 
             Add <account> to the list of network services accounts owned by
-            <bot username> on <network>. <bot username> is only required if you
-            are not already logged in to Limnoria.
+            <bot username> on <network>.
             <network> defaults to the current network.
             """
             network = network.network or irc.network
@@ -89,7 +88,7 @@ class NickAuth(callbacks.Plugin):
                             'on this network.'), Raise=True)
             irc.replySuccess()
         add = wrap(add, [optional('networkIrc'),
-                         optional('otherUser'),
+                         'otherUser',
                          'nick'])
 
         @internationalizeDocstring
