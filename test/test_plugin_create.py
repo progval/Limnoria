@@ -37,10 +37,7 @@ import os
 import shutil
 import compileall
 
-try:
-    from shutil import which
-except ImportError:  # Python < 3.3
-    from distutils.spawn import find_executable as which
+from shutil import which
 
 TEST_PLUGIN_NAME = "TestPlugin"
 
