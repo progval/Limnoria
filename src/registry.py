@@ -39,7 +39,6 @@ import string
 import textwrap
 
 from . import utils, i18n, ircutils
-from .utils import minisix
 _ = i18n.PluginInternationalization()
 
 def error(s):
@@ -68,15 +67,11 @@ class NonExistentRegistryEntry(RegistryException, AttributeError):
     # raise an AttributeError if a registry entry does not exist.
     pass
 
-ENCODING = 'string_escape' if minisix.PY2 else 'unicode_escape'
+ENCODING = 'unicode_escape'
 decoder = codecs.getdecoder(ENCODING)
 encoder = codecs.getencoder(ENCODING)
 
-if hasattr(time, 'monotonic'):
-    monotonic_time = time.monotonic
-else:
-    # fallback for python < 3.3
-    monotonic_time = time.time
+monotonic_time = time.monotonic
 
 _cache = utils.InsensitivePreservingDict()
 _lastModified = 0
@@ -667,7 +662,7 @@ class String(Value):
             v = repr(v)
         try:
             v = utils.safeEval(v)
-            if not isinstance(v, minisix.string_types):
+            if not isinstance(v, str):
                 raise ValueError
             self.setValue(v)
         except ValueError: # This catches utils.safeEval(s) errors too.
