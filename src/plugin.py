@@ -35,11 +35,14 @@ import time
 import os.path
 import linecache
 import importlib.util
+import importlib.metadata
 
-try:
-    import pkg_resources
-except ImportError:
-    pkg_resources = None
+if sys.version_info >= (3, 10):
+    iter_entry_points = importlib.metadata.entry_points
+else:
+    # works with Python 3.10 and 3.11 too, but not 3.12
+    def iter_entry_points(group):
+        return importlib.metadata.entry_points().get(group, [])
 
 if not hasattr(importlib.util, 'module_from_spec'):
     # Python < 3.5
@@ -58,9 +61,9 @@ class Deprecated(ImportError):
     pass
 
 def loadPluginFromEntrypoint(name):
-    if pkg_resources:
+    if iter_entry_points is not None:
         for entrypoint_group in ENTRYPOINT_GROUPS:
-            for entrypoint in pkg_resources.iter_entry_points(entrypoint_group):
+            for entrypoint in iter_entry_points(group=entrypoint_group):
                 if entrypoint.name.lower() == name.lower():
                     return entrypoint.load()
 
