@@ -30,16 +30,12 @@
 ###
 
 import re
-import sys
-import types
 import codecs
-import base64
 import binascii
 import unicodedata
 
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.utils.minisix as minisix
 import supybot.plugins as plugins
 import supybot.commands as commands
 import supybot.ircutils as ircutils
@@ -120,9 +116,7 @@ class String(callbacks.Plugin):
             text = codecs.getencoder('base64_codec')(text)[0].decode()
 
         # Change result into a string
-        if minisix.PY2 and isinstance(text, unicode):
-            text = text.encode('utf-8')
-        elif minisix.PY3 and isinstance(text, bytes):
+        if isinstance(text, bytes):
             text = text.decode()
 
         if encoding in ('base64', 'base64_codec'):
@@ -152,7 +146,7 @@ class String(callbacks.Plugin):
             decoder = codecs.getdecoder(encoding)
         except LookupError:
             irc.errorInvalid(_('encoding'), encoding)
-        if minisix.PY3 and not isinstance(text, bytes):
+        if not isinstance(text, bytes):
             text = text.encode()
         try:
             text = decoder(text)[0]
@@ -163,9 +157,7 @@ class String(callbacks.Plugin):
             return
 
         # Change result into a string
-        if minisix.PY2 and isinstance(text, unicode):
-            text = text.encode('utf-8')
-        elif minisix.PY3 and isinstance(text, bytes):
+        if isinstance(text, bytes):
             try:
                 text = text.decode()
             except UnicodeDecodeError:

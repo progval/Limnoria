@@ -30,14 +30,11 @@
 ###
 
 import re
-import sys
-import string
 import socket
 
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.commands import *
-import supybot.utils.minisix as minisix
 import supybot.plugins as plugins
 import supybot.commands as commands
 import supybot.ircutils as ircutils
@@ -45,14 +42,9 @@ import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Web')
 
-if minisix.PY3:
-    from html.parser import HTMLParser
-    from html.entities import entitydefs
-    import http.client as http_client
-else:
-    from HTMLParser import HTMLParser
-    from htmlentitydefs import entitydefs
-    import httplib as http_client
+from html.parser import HTMLParser
+from html.entities import entitydefs
+import http.client as http_client
 
 class Title(utils.web.HtmlToText):
     entitydefs = entitydefs.copy()
@@ -227,15 +219,14 @@ class Web(callbacks.PluginRegexp):
         try:
             text = text.decode(encoding, 'replace')
         except UnicodeDecodeError:
-            if minisix.PY3:
-                if raiseErrors:
-                    irc.error(_('Could not guess the page\'s encoding. (Try '
-                                'installing python-charade.)'), Raise=True)
-                else:
-                    self.log.info('Web plugin TitleSnarfer: URL <%s> Could '
-                                  'not guess the page\'s encoding. (Try '
-                                  'installing python-charade.)', url)
-                    return
+            if raiseErrors:
+                irc.error(_('Could not guess the page\'s encoding. (Try '
+                            'installing python-charade.)'), Raise=True)
+            else:
+                self.log.info('Web plugin TitleSnarfer: URL <%s> Could '
+                              'not guess the page\'s encoding. (Try '
+                              'installing python-charade.)', url)
+                return
         try:
             parser = Title()
             parser.feed(text)

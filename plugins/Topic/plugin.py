@@ -30,6 +30,7 @@
 
 import os
 import re
+import pickle
 import random
 import shutil
 import tempfile
@@ -47,9 +48,6 @@ from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization('Topic')
 
 import supybot.ircdb as ircdb
-
-import supybot.utils.minisix as minisix
-pickle = minisix.pickle
 
 def canChangeTopic(irc, msg, args, state):
     assert not state.channel

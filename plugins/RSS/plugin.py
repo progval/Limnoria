@@ -46,7 +46,6 @@ import supybot.conf as conf
 import supybot.utils as utils
 import supybot.world as world
 from supybot.commands import *
-import supybot.utils.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
 import supybot.registry as registry
@@ -59,10 +58,7 @@ if world.testing:
 else:
     INIT_DELAY = 10
 
-if minisix.PY2:
-    from urllib2 import ProxyHandler
-else:
-    from urllib.request import ProxyHandler
+from urllib.request import ProxyHandler
 
 from .config import register_feed_config
 

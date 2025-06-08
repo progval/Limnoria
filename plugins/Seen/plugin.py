@@ -40,7 +40,6 @@ import supybot.world as world
 import supybot.ircdb as ircdb
 from supybot.commands import *
 import supybot.irclib as irclib
-import supybot.utils.minisix as minisix
 import supybot.ircmsgs as ircmsgs
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
@@ -204,8 +203,6 @@ class Seen(callbacks.Plugin):
                                      nick, channel,
                                      utils.timeElapsed(time.time()-when))
                 if self.registryValue('showLastMessage', channel, irc.network):
-                    if minisix.PY2:
-                        said = said.decode('utf8')
                     reply = _('%s: %s') % (reply, said)
                 irc.reply(reply)
             elif len(results) > 1:
