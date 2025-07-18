@@ -387,7 +387,9 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
         with self.mockRequests(expected_requests):
             self.assertResponse(
                 "status https://example.org/users/someuser/statuses/1234",
-                "Error: Could not get status: blah",
+                "Error: Could not get status: "
+                "Could not get https://example.org/users/someuser/statuses/1234: "
+                "blah",
             )
 
         expected_requests = [
@@ -398,7 +400,8 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
         with self.mockRequests(expected_requests):
             self.assertResponse(
                 "status https://example.org/users/someuser/statuses/1234",
-                "<error: blah>: " + "@FirstAuthor I am replying to you",
+                "<error: Could not get https://example.org/users/someuser: blah>: "
+                "@FirstAuthor I am replying to you",
             )
 
     def testStatuses(self):
@@ -534,7 +537,8 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
             ):
                 self.assertSnarfResponse(
                     "aaa https://example.org/users/someuser/statuses/1234 bbb",
-                    "<error: blah>: @FirstAuthor I am replying to you",
+                    "<error: Could not get https://example.org/users/someuser: blah>: "
+                    "@FirstAuthor I am replying to you",
                 )
 
     def testSnarferType(self):
