@@ -74,9 +74,10 @@ class ActorNotFound(ActivityPubError):
 
 
 def sandbox(f):
-    """Runs a function in a process with limited memory to prevent
-    XML memory bombs
-    <https://docs.python.org/3/library/xml.html#xml-vulnerabilities>
+    """Runs a function in a process with limited memory and a timeout
+    to prevent XML memory bombs
+    <https://docs.python.org/3/library/xml.html#xml-vulnerabilities>,
+    or exhausting resources on excessively long files, slow servers etc.
     """
 
     @functools.wraps(f)
@@ -105,7 +106,7 @@ def convert_exceptions(to_class, msg="", from_none=False):
     try:
         yield
     except Exception as e:
-        arg = msg + str(e)
+        arg = msg + (str(e) or repr(e))
         if from_none:
             raise to_class(arg) from None
         else:
@@ -172,7 +173,11 @@ def webfinger(hostname, uri):
     template = _get_webfinger_url(hostname)
     assert template, "missing webfinger url template for %s" % hostname
 
-    with convert_exceptions(ActorNotFound):
+    return _webfinger_from_template(template, uri)
+
+@sandbox
+def _webfinger_from_template(template, uri):
+    with convert_exceptions(ActorNotFound, f"Could not get actor {uri}: "):
         content = web.getUrlContent(
             template.replace("{uri}", uri),
             headers={"Accept": "application/json"},
@@ -226,6 +231,7 @@ def get_public_key_pem():
     )
 
 
+@sandbox
 def signed_request(url, headers=None, data=None):
     method = "get" if data is None else "post"
     instance_actor_url = get_instance_actor_url()
@@ -257,7 +263,7 @@ def signed_request(url, headers=None, data=None):
             + 'signature="%s"' % base64.b64encode(signature).decode()
         )
 
-    with convert_exceptions(ActivityPubProtocolError):
+    with convert_exceptions(ActivityPubProtocolError, f"Could not get {url}: "):
         return web.getUrlContent(url, headers=headers, data=data)
 
 
