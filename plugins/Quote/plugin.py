@@ -34,7 +34,9 @@ from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Quote')
 
 class Quote(plugins.ChannelIdDatabasePlugin):
-    """This plugin allows you to add quotes to the database for a channel."""
+    """This plugin allows you to add quotes to the database for a channel.
+
+    Configuration variables in ``supybot.databases.plugins`` affect this plugin."""
     @internationalizeDocstring
     def random(self, irc, msg, args, channel):
         """[<channel>]

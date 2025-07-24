@@ -46,6 +46,8 @@ class Lart(plugins.ChannelIdDatabasePlugin):
     * If you add ``slaps $who``.
     * And Someone says ``@lart ChanServ``.
     * ``* bot slaps ChanServ``.
+
+    Configuration variables in ``supybot.databases.plugins`` affect this plugin.
     """
     _meRe = re.compile(r'\bme\b', re.I)
     _myRe = re.compile(r'\bmy\b', re.I)

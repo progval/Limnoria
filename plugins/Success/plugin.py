@@ -41,7 +41,9 @@ class Success(plugins.ChannelIdDatabasePlugin):
     of them to provide a similar-to-moobot-and-blootbot interface for factoids.
     Basically, it replaces the standard 'The operation succeeded.' messages
     with messages kept in a database, able to give more personable
-    responses."""
+    responses.
+
+    Configuration variables in ``supybot.databases.plugins`` affect this plugin."""
 
     def __init__(self, irc):
         self.__parent = super(Success, self)

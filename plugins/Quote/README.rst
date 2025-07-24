@@ -13,6 +13,8 @@ Usage
 
 This plugin allows you to add quotes to the database for a channel.
 
+Configuration variables in ``supybot.databases.plugins`` affect this plugin.
+
 .. _commands-Quote:
 
 Commands

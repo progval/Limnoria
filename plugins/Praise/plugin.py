@@ -48,6 +48,8 @@ class Praise(plugins.ChannelIdDatabasePlugin):
     * If you add ``hugs $who``
     * Someone says ``@praise ChanServ``.
     * ``* bot hugs ChanServ``
+
+    Configuration variables in ``supybot.databases.plugins`` affect this plugin.
     """
     _meRe = re.compile(r'\bme\b', re.I)
     _myRe = re.compile(r'\bmy\b', re.I)

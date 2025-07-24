@@ -19,6 +19,8 @@ Basically, it replaces the standard 'The operation succeeded.' messages
 with messages kept in a database, able to give more personable
 responses.
 
+Configuration variables in ``supybot.databases.plugins`` affect this plugin.
+
 .. _commands-Success:
 
 Commands

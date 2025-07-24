@@ -21,6 +21,8 @@ Example:
 * And Someone says ``@lart ChanServ``.
 * ``* bot slaps ChanServ``.
 
+Configuration variables in ``supybot.databases.plugins`` affect this plugin.
+
 .. _commands-Lart:
 
 Commands

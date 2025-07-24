@@ -41,7 +41,9 @@ class Dunno(plugins.ChannelIdDatabasePlugin):
     messages with messages kept in a database, able to give more personable
     responses.
 
-    ``$command`` in the message will be replaced by the command's name."""
+    ``$command`` in the message will be replaced by the command's name.
+
+    Configuration variables in ``supybot.databases.plugins`` affect this plugin."""
 
     callAfter = ['MoobotFactoids', 'Factoids', 'Infobot']
     def invalidCommand(self, irc, msg, tokens):

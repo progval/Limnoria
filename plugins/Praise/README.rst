@@ -22,6 +22,8 @@ Example:
 * Someone says ``@praise ChanServ``.
 * ``* bot hugs ChanServ``
 
+Configuration variables in ``supybot.databases.plugins`` affect this plugin.
+
 .. _commands-Praise:
 
 Commands

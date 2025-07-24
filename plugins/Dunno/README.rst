@@ -22,6 +22,8 @@ responses.
 
 ``$command`` in the message will be replaced by the command's name.
 
+Configuration variables in ``supybot.databases.plugins`` affect this plugin.
+
 .. _commands-Dunno:
 
 Commands
