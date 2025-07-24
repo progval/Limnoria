@@ -169,7 +169,7 @@ supybot.plugins.Web.titleSnarfer
 
 
 supybot.plugins.Web.urlWhitelist
-  This config variable defaults to " ", is not network-specific, and is not channel-specific.
+  This config variable defaults to " ", is network-specific, and is channel-specific.
 
   If set, bot will only fetch data from urls in the whitelist, i.e. starting with http://domain/optionalpath/. This will apply to all commands that retrieve data from user-supplied URLs, including fetch, headers, title, doctype.
 

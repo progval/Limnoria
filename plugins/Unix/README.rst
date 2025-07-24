@@ -23,11 +23,6 @@ Commands
 ``call <command to call with any arguments>``
   Calls any command available on the system, and returns its output. Requires owner capability. Note that being restricted to owner, this command does not do any sanity checking on input/output. So it is up to you to make sure you don't run anything that will spamify your channel or that will bring your machine to its knees.
 
-.. _command-unix-crypt:
-
-``crypt <password> [<salt>]``
-  Returns the resulting of doing a crypt() on <password>. If <salt> is not given, uses a random salt. If running on a glibc2 system, prepending '$1$' to your salt will cause crypt to return an MD5sum based crypt rather than the standard DES based crypt.
-
 .. _command-unix-errno:
 
 ``errno <error number or code>``

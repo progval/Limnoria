@@ -93,8 +93,8 @@ Commands
 
 .. _command-rss-rss:
 
-``rss <name|url> [<number of headlines>]``
-  Gets the title components of the given RSS feed. If <number of headlines> is given, return only that many headlines.
+``rss [--random] <name|url> [<number of headlines>]``
+  Gets the title components of the given RSS feed. If <number of headlines> is given, return only that many headlines. Use --random flag for random sorting of entries.
 
 .. _conf-RSS:
 
