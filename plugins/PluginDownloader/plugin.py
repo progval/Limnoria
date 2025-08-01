@@ -229,6 +229,10 @@ repositories = utils.InsensitivePreservingDict({
                                                    'spithash',
                                                    'Limnoria-Plugins',
                                                    ),
+               'Nelluk':           GithubRepository(
+                                                   'nelluk',
+                                                   'Limnoria-Plugins',
+                                                   ),
                })
 
 class PluginDownloader(callbacks.Plugin):
