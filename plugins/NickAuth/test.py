@@ -129,15 +129,13 @@ class NickAuthTestCase(PluginTestCase):
     def testList(self):
         self.assertNotError('register foobar 123')
         self.assertRegexp('nick list', 'You have no recognized services accounts')
-        self.assertNotError('nick add foo')
+        self.assertNotError('nick add foobar foo')
         self.assertRegexp('nick list', 'foo')
-        self.assertNotError('nick add %s bar' % self.nick)
+        self.assertNotError('nick add %s foobar bar' % self.irc.network)
         self.assertRegexp('nick list', 'foo and bar')
-        self.assertNotError('nick add %s %s baz' % (self.irc.network, self.nick))
-        self.assertRegexp('nick list', 'foo, bar, and baz')
-        self.assertRegexp('nick list %s' % self.irc.network, 'foo, bar, and baz')
+        self.assertRegexp('nick list %s' % self.irc.network, 'foo and bar')
         self.assertRegexp('nick list %s foobar' % self.irc.network,
-                'foo, bar, and baz')
+                'foo and bar')
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
