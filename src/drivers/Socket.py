@@ -326,7 +326,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
         self.conn.settimeout(max(10, conf.supybot.drivers.poll()*10))
         try:
             # Connect before SSL, otherwise SSL is disabled if we use SOCKS.
-            # See http://stackoverflow.com/q/16136916/539465
+            # See https://stackoverflow.com/q/16136916/539465
             self.conn.connect(
                 (address, self.currentServer.port))
             if network_config.ssl() or \
@@ -349,7 +349,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
                         'does not use SSL/TLS, which makes it vulnerable to '
                         'man-in-the-middle attacks and passive eavesdropping. '
                         'You should consider upgrading your connection to SSL/TLS '
-                        '<http://docs.limnoria.net/en/latest/use/faq.html#how-to-make-a-connection-secure>')
+                        '<https://docs.limnoria.net/en/latest/use/faq.html#how-to-make-a-connection-secure>')
                         % self.irc.network)
 
             conf.supybot.drivers.poll.addCallback(self.setTimeout)
