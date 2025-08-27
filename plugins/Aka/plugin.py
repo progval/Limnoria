@@ -356,9 +356,15 @@ def findBiggestAt(alias):
 if 'sqlite3' in conf.supybot.databases() and 'sqlite3' in available_db:
     AkaDB = SQLiteAkaDB
 elif 'sqlalchemy' in conf.supybot.databases() and 'sqlalchemy' in available_db:
-    log.warning('Aka\'s only enabled database engine is SQLAlchemy, which '
-            'is deprecated. Please consider adding \'sqlite3\' to '
-            'supybot.databases (and/or install sqlite3).')
+    if 'sqlite3' not in available_db:
+        log.warning("Python's sqlite3 module is missing so Aka probably will "
+                "not be able to access its database. "
+                "If you compiled Python yourself (eg. via pyenv), try "
+                "installing libsqlite3-dev and recompiling Python.")
+    else:
+        log.warning('Aka\'s only enabled database engine is SQLAlchemy, which '
+                'is deprecated. Please consider adding \'sqlite3\' to '
+                'supybot.databases (and/or install sqlite3).')
     AkaDB = SqlAlchemyAkaDB
 else:
     raise plugins.NoSuitableDatabase(['sqlite3', 'sqlalchemy'])
