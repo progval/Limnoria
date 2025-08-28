@@ -119,6 +119,11 @@ conf.registerChannelValue(BadWords, 'selfCensor',
 conf.registerChannelValue(BadWords, 'kick',
     registry.Boolean(False, _("""Determines whether the bot will kick people with
     a warning when they use bad words.""")))
+conf.registerChannelValue(BadWords, 'redact',
+    registry.Boolean(False, _("""Determines whether the bot will redact
+    messages containing bad words (only on servers supporting IRCv3
+    draft/message-redaction; requires supybot.protocols.irc.experimentalExtensions).
+    """)))
 conf.registerChannelValue(BadWords.kick, 'message',
     registry.NormalizedString(_("""You have been kicked for using a word
     prohibited in the presence of this bot.  Please use more appropriate
