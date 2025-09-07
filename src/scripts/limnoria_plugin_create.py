@@ -198,6 +198,11 @@ readme = "README.md"
 dependencies = [
     "limnoria",
 ]
+classifiers = [
+    'Environment :: Plugins',
+    'Programming Language :: Python :: 3',
+    'Topic :: Communications :: Chat',
+]
 
 [project.entry-points.'limnoria.plugins']
 %(name)s = "limnoria_%(name_lowercase)s"
