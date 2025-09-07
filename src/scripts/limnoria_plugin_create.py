@@ -184,14 +184,30 @@ configure = config.configure
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 '''.lstrip()
 
-setupTemplate = '''
-%s
+pyprojectTemplate = '''
+[build-system]
+requires = ["setuptools"]
 
-from supybot.setup import plugin_setup
+[project]
+name = "limnoria-%(name_lowercase)s"
+version = "0.0.0"
+authors = [
+    { name = "%(author_name)s" }
+]
+readme = "README.md"
+dependencies = [
+    "limnoria",
+]
 
-plugin_setup(
-    %r,
-)
+[project.entry-points.'limnoria.plugins']
+%(name)s = "limnoria_%(name_lowercase)s"
+
+[tool.setuptools.package-dir]
+"limnoria_%(name_lowercase)s" = "."
+"limnoria_%(name_lowercase)s.local" = "local/"
+
+[tool.setuptools.package-data]
+"limnoria_%(name_lowercase)s" = ["locales/*.po"]
 '''.lstrip()
 
 testTemplate = '''
@@ -296,7 +312,12 @@ def _main():
     writeFile('config.py', configTemplate % (copyright, name, name, name, name,
                                              name))
     writeFile('__init__.py', __init__Template % (copyright, name, options.desc))
-    writeFile('setup.py', setupTemplate % (copyright, name))
+    writeFile('pyproject.toml', pyprojectTemplate % {
+        'copyright': copyright,
+        'name': name,
+        'name_lowercase': name.lower(),
+        'author_name': realName.replace(r'"', r'\"'),  # good enough escape
+    })
     writeFile('test.py', testTemplate % (copyright, name, name))
     writeFile('README.md', readmeTemplate % (options.desc,))
 
