@@ -190,7 +190,7 @@ requires = ["setuptools"]
 
 [project]
 name = "limnoria-%(name_lowercase)s"
-version = "1.0.0"
+version = "0.0.0"
 authors = [
     { name = "%(author_name)s" }
 ]
