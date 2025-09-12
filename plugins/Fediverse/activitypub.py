@@ -86,7 +86,7 @@ def sandbox(f):
             return commands.process(
                 f,
                 *args,
-                timeout=10,
+                timeout=20,
                 heap_size=300 * 1024 * 1024,
                 pn="Fediverse",
                 cn=f.__name__,
