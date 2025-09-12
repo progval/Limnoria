@@ -71,6 +71,11 @@ def loadPluginModule(name, ignoreDeprecation=False):
     pluginDirs = conf.supybot.directories.plugins()[:]
     pluginDirs.append(_pluginsDir)
     module = None
+
+    # Invalidate caches to allow new third party dependencies and plugins to be
+    # located without restarting the bot.
+    importlib.invalidate_caches()
+
     for dir in pluginDirs:
         try:
             files.extend(os.listdir(dir))
