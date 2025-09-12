@@ -92,11 +92,10 @@ def sandbox(f):
                 cn=f.__name__,
                 **kwargs
             )
-        except (commands.ProcessTimeoutError, MemoryError):
-            raise web.Error(
-                "Page is too big or the server took "
-                "too much time to answer the request."
-            )
+        except commands.ProcessTimeoutError:
+            raise web.Error("The server took too much time to answer the request.")
+        except MemoryError:
+            raise web.Error("Page is too big to be processed")
 
     return newf
 
