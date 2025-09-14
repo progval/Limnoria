@@ -111,8 +111,8 @@ Synchronized = MetaSynchronized('Synchronized', (), {})
 
 def glob2re(g):
     pattern = fnmatch.translate(g)
-    if pattern.startswith('(?s:') and pattern.endswith(')\\Z'):
-        # Python >= 3.6
+    if pattern.startswith('(?s:') and pattern.endswith((')\\Z', ')\\z')):
+        # \Z from Python 3.6 to 3.13, \z for Python >= 3.14
         return pattern[4:-3] + '\\Z'
     elif pattern.endswith('\\Z(?ms)'):
         # Python >= 2.6 and < 3.6
