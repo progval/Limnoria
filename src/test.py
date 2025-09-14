@@ -44,14 +44,9 @@ from . import (callbacks, conf, drivers, httpserver, i18n, ircdb, irclib,
         ircmsgs, ircutils, log, plugin, registry, utils, world)
 from .utils import minisix
 
-if minisix.PY2:
-    from httplib import HTTPConnection
-    from urllib import splithost, splituser
-    from urllib import URLopener
-else:
-    from http.client import HTTPConnection
-    from urllib.parse import splithost, splituser
-    from urllib.request import URLopener
+from http.client import HTTPConnection
+from urllib.parse import splithost, splituser
+from urllib.request import OpenerDirector
 
 class verbosity:
     NONE = 0
@@ -614,7 +609,7 @@ def open_http(url, data=None):
     if proxy_auth: c.putheader('Proxy-Authorization', 'Basic %s' % proxy_auth)
     if auth: c.putheader('Authorization', 'Basic %s' % auth)
     if realhost: c.putheader('Host', realhost)
-    for args in URLopener().addheaders: c.putheader(*args)
+    for args in OpenerDirector().addheaders: c.putheader(*args)
     c.endheaders()
     return c
 
