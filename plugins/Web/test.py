@@ -179,6 +179,31 @@ class WebTestCase(ChannelPluginTestCase):
                 conf.supybot.plugins.Web.urlWhitelist.set('')
                 conf.supybot.plugins.Web.fetch.maximum.set(fm)
 
+        def testtitleOembedRegistry(self):
+            try:
+                conf.supybot.plugins.Web.useOembedRegistry.setValue(True)
+                self.assertResponse(
+                    'title https://www.flickr.com/photos/bees/2362225867/',
+                    'Bacon Lollys')
+            finally:
+                conf.supybot.plugins.Web.useOembedRegistry.setValue(False)
+
+        def testtitleOembedDiscovery(self):
+            try:
+                conf.supybot.plugins.Web.useOembedDiscovery.setValue(True)
+                self.assertResponse(
+                    'title https://flickr.com/photos/bees/2362225867/',
+                    'Bacon Lollys')
+            finally:
+                conf.supybot.plugins.Web.useOembedDiscovery.setValue(False)
+
+        def testtitleOembedError(self):
+            try:
+                conf.supybot.plugins.Web.useOembedDiscovery.setValue(True)
+                self.assertError('title https://nonexistent.example.com/post/123')
+            finally:
+                conf.supybot.plugins.Web.useOembedDiscovery.setValue(False)
+
     def testNonSnarfingRegexpConfigurable(self):
         self.assertSnarfNoResponse('http://foo.bar.baz/', 2)
         try:
