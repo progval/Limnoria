@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2002-2004, Jeremiah Fincher
 # Copyright (c) 2009, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2023, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -77,24 +77,49 @@ class BadWords(callbacks.Privmsg):
             channel = msg.channel
             self.updateRegexp(channel, irc.network)
             s = ircutils.stripFormatting(msg.args[1])
-            if irc.isChannel(channel) \
-                    and self.registryValue('kick', channel, irc.network):
-                if self.regexp.search(s):
-                    c = irc.state.channels[channel]
-                    cap = ircdb.makeChannelCapability(channel, 'op')
-                    if c.isHalfopPlus(irc.nick):
-                        if c.isHalfopPlus(msg.nick) or \
-                                ircdb.checkCapability(msg.prefix, cap):
-                            self.log.debug("Not kicking %s from %s, because "
-                                           "they are halfop+ or can't be "
-                                           "kicked.", msg.nick, channel)
-                        else:
-                            message = self.registryValue('kick.message',
-                                                         channel, irc.network)
-                            irc.queueMsg(ircmsgs.kick(channel, msg.nick, message))
-                    else:
-                        self.log.warning('Should kick %s from %s, but not opped.',
-                                         msg.nick, channel)
+            if not irc.isChannel(channel):
+                # not a channel, don't bother checking
+                return msg
+
+            may_kick = self.registryValue('kick', channel, irc.network)
+            msgid = msg.server_tags.get("msgid")
+            may_redact = (
+                "draft/message-redaction" in irc.state.capabilities_ack
+                and msgid
+                and conf.supybot.protocols.irc.experimentalExtensions()
+                and self.registryValue('redact', channel, irc.network)
+            )
+
+            if not may_kick and not may_redact:
+                # no configured action, don't bother checking
+                return msg
+
+            if not self.regexp.search(s):
+                # message does not contain a bad word
+                return msg
+
+            c = irc.state.channels[channel]
+            cap = ircdb.makeChannelCapability(channel, 'op')
+            if not c.isHalfopPlus(irc.nick):
+                self.log.warning(
+                    'Should kick and/or redact %s from %s, but not opped.',
+                    msg.nick, channel)
+                return msg
+
+            if may_redact:
+                irc.queueMsg(ircmsgs.IrcMsg(
+                    command="REDACT", args=(channel, msgid)))
+
+            if may_kick:
+                if c.isHalfopPlus(msg.nick) or \
+                        ircdb.checkCapability(msg.prefix, cap):
+                    self.log.debug("Not kicking %s from %s, because "
+                                   "they are halfop+ or can't be "
+                                   "kicked.", msg.nick, channel)
+                else:
+                    message = self.registryValue('kick.message',
+                                                 channel, irc.network)
+                    irc.queueMsg(ircmsgs.kick(channel, msg.nick, message))
         return msg
 
     def updateRegexp(self, channel, network):
