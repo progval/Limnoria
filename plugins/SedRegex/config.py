@@ -49,6 +49,10 @@ SedRegex = conf.registerPlugin('SedRegex')
 
 conf.registerChannelValue(SedRegex, 'displayErrors',
     registry.Boolean(True, _("""Should errors be displayed?""")))
+conf.registerChannelValue(SedRegex, 'delimiters',
+    registry.String('', _("""List of delimiters to match sed expressions on.
+        Multiple delimiters can be specified as a single string: e.g. "/@".
+        If empty, defaults to all symbols.""")))
 conf.registerChannelValue(SedRegex, 'boldReplacementText',
     registry.Boolean(True, _("""Should the replacement text be bolded?""")))
 conf.registerChannelValue(SedRegex, 'enable',

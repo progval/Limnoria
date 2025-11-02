@@ -47,7 +47,7 @@ try:
 except ImportError:
     _ = lambda x: x
 
-from .sedregex import SED_REGEX
+from .sedregex import makeSedRegex
 
 TAG_SEEN = 'SedRegex.seen'
 TAG_IS_REGEX = 'SedRegex.isRegex'
@@ -92,7 +92,7 @@ class SedRegex(callbacks.Plugin):
     public = True
 
     @staticmethod
-    def _unpack_sed(expr):
+    def _unpack_sed(sedRegex, expr):
         if '\0' in expr:
             raise ValueError('Expression can\'t contain NUL')
 
@@ -107,7 +107,7 @@ class SedRegex(callbacks.Plugin):
 
             escaped_expr += c
 
-        match = SED_REGEX.search(escaped_expr)
+        match = sedRegex.search(escaped_expr)
 
         if not match:
             return
@@ -145,7 +145,12 @@ class SedRegex(callbacks.Plugin):
         # SedRegex was enabled.
         msg.tag(TAG_SEEN)
 
-        regexMatch = SED_REGEX.match(msg.args[1])
+        delimiters = self.registryValue('delimiters', msg.channel, irc.network)
+        if delimiters:
+            delimiters = re.escape(delimiters)
+        sedRegex = makeSedRegex(delimiters)
+        text = msg.args[1]
+        regexMatch = sedRegex.match(text)
         if not regexMatch:
             return
 
@@ -154,7 +159,7 @@ class SedRegex(callbacks.Plugin):
         msg.tag(TAG_IS_REGEX)
 
         try:
-            (pattern, replacement, count, flags) = self._unpack_sed(msg.args[1])
+            (pattern, replacement, count, flags) = self._unpack_sed(sedRegex, text)
         except Exception as e:
             self.log.warning(_("SedRegex parser error: %s"), e, exc_info=True)
             if self.registryValue('displayErrors', msg.channel, irc.network):
@@ -172,7 +177,7 @@ class SedRegex(callbacks.Plugin):
         regex_timeout = self.registryValue('processTimeout')
         try:
             message = process(self._replacer_process, irc, msg,
-                    target, pattern, replacement, count, iterable,
+                    target, pattern, replacement, count, iterable, sedRegex,
                     timeout=regex_timeout, pn=self.name(), cn='replacer')
         except ProcessTimeoutError:
             irc.error(_("Search timed out."))
@@ -187,7 +192,7 @@ class SedRegex(callbacks.Plugin):
         else:
             irc.reply(message, prefixNick=False)
 
-    def _replacer_process(self, irc, msg, target, pattern, replacement, count, messages):
+    def _replacer_process(self, irc, msg, target, pattern, replacement, count, messages, sedRegex):
         for m in messages:
             if m.command in ('PRIVMSG', 'NOTICE') and \
                     ircutils.strEqual(m.args[0], msg.args[0]) and m.tagged('receivedBy') == irc:
@@ -209,7 +214,7 @@ class SedRegex(callbacks.Plugin):
                 # so we only need to do this check once per message.
                 if not m.tagged(TAG_SEEN):
                     m.tag(TAG_SEEN)
-                    if SED_REGEX.match(m.args[1]):
+                    if sedRegex.match(m.args[1]):
                         m.tag(TAG_IS_REGEX)
                 # Ignore messages containing a regexp if ignoreRegex is on.
                 if self.registryValue('ignoreRegex', msg.channel, irc.network) and m.tagged(TAG_IS_REGEX):
