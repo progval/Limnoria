@@ -2,9 +2,6 @@
 
 import re
 
-TAG_SEEN = 'SedRegex.seen'
-TAG_IS_REGEX = 'SedRegex.isRegex'
-
 SED_REGEX = re.compile(
     # This part matches an optional nick followed by ":" or ",", used to direct replacement
     # at a particular user.
