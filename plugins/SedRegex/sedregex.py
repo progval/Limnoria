@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+import functools
 import re
 
+@functools.lru_cache
 def makeSedRegex(delimiters=''):
     delimiters = delimiters or r"^\w\s"
 
