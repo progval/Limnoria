@@ -40,7 +40,6 @@ import supybot.ircdb as ircdb
 import supybot.utils as utils
 
 import re
-import sys
 
 try:
     from supybot.i18n import PluginInternationalization
@@ -48,7 +47,10 @@ try:
 except ImportError:
     _ = lambda x: x
 
-from .constants import SED_REGEX, TAG_SEEN, TAG_IS_REGEX
+from .sedregex import SED_REGEX
+
+TAG_SEEN = 'SedRegex.seen'
+TAG_IS_REGEX = 'SedRegex.isRegex'
 
 # Replace newlines and friends with things like literal "\n" (backslash and "n")
 axe_spaces = utils.str.MultipleReplacer({'\n': '\\n', '\t': '\\t', '\r': '\\r'})

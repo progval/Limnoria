@@ -48,14 +48,14 @@ __maintainer__ = supybot.authors.limnoria_core
 
 __url__ = 'https://github.com/progval/Limnoria/tree/master/plugins/SedRegex'
 
+from . import sedregex
 from . import config
 from . import plugin
-from . import constants
 from importlib import reload
 
+reload(sedregex)
 reload(config)
 reload(plugin)
-reload(constants)
 
 if world.testing:
     from . import test
