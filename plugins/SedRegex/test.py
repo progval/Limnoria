@@ -151,6 +151,33 @@ class SedRegexTestCase(ChannelPluginTestCase):
         m = self.getMsg(' ')
         self.assertIn('4 * 2 = 8', str(m))
 
+    def testCustomDelimiters(self):
+        with conf.supybot.plugins.sedregex.delimiters.context("@."):
+            self.feedMsg('test')
+            self.feedMsg('s@t@b')
+            m = self.getMsg(' ')
+            self.assertIn('best', str(m))
+
+            self.feedMsg('s.t.w')
+            m = self.getMsg(' ')
+            self.assertIn('west', str(m))
+
+            # / is not in the delimiters list, so it is ignored
+            self.getMsg('s/t/r')
+            for msg in self.irc.state.history:
+                self.assertNotIn("rest", str(msg))
+
+        # These would fail if the delimiters set isn't escaped correctly
+        with conf.supybot.plugins.sedregex.delimiters.context("]["):
+            self.feedMsg('test')
+            self.feedMsg('s]t]f')
+            m = self.getMsg(' ')
+            self.assertIn('fest', str(m))
+
+            self.feedMsg('s[t[qu[')
+            m = self.getMsg(' ')
+            self.assertIn('quest', str(m))
+
     def testWeirdSeparatorsFail(self):
         self.feedMsg("can't touch this", frm=self.__class__.other)
         # Only symbols are allowed as separators
