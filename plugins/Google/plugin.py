@@ -60,8 +60,6 @@ class Google(callbacks.Plugin):
         sourceLang = utils.web.urlquote(sourceLang)
         targetLang = utils.web.urlquote(targetLang)
 
-        text = utils.web.urlquote(text)
-
         url = 'https://translate.googleapis.com/translate_a/single?' + \
             utils.web.urlencode({
                 'client': 'gtx',
