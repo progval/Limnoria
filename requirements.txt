@@ -1,6 +1,7 @@
 # mandatory:
 
 setuptools
+setuptools-scm
 
 # optional core dependencies:
 
