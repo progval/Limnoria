@@ -87,7 +87,7 @@ def _rlimit_min(a, b):
     elif b == resource.RLIM_INFINITY:
         return a
     else:
-        return min(soft, heap_size)
+        return min(a, b)
 
 def _process_target(f, q, heap_size, *args, **kwargs):
     """Called by :func:`process`"""
