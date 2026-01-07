@@ -233,30 +233,33 @@ class ChannelUserDB(ChannelUserDictionary):
         except EnvironmentError as e:
             log.warning('Couldn\'t open %s: %s.', self.filename, e)
             return
-        reader = csv.reader(fd)
         try:
-            lineno = 0
-            for t in reader:
-                lineno += 1
-                try:
-                    channel = t.pop(0)
-                    id = t.pop(0)
+            reader = csv.reader(fd)
+            try:
+                lineno = 0
+                for t in reader:
+                    lineno += 1
                     try:
-                        id = int(id)
-                    except ValueError:
-                        # We'll skip over this so, say, nicks can be kept here.
-                        pass
-                    channel = sys.intern(channel)
-                    v = self.deserialize(channel, id, t)
-                    self[channel, id] = v
-                except Exception as e:
-                    log.warning('Invalid line #%s in %s.',
-                                lineno, self.__class__.__name__)
-                    log.debug('Exception: %s', utils.exnToString(e))
-        except Exception as e: # This catches exceptions from csv.reader.
-            log.warning('Invalid line #%s in %s.',
-                        lineno, self.__class__.__name__)
-            log.debug('Exception: %s', utils.exnToString(e))
+                        channel = t.pop(0)
+                        id = t.pop(0)
+                        try:
+                            id = int(id)
+                        except ValueError:
+                            # We'll skip over this so, say, nicks can be kept here.
+                            pass
+                        channel = sys.intern(channel)
+                        v = self.deserialize(channel, id, t)
+                        self[channel, id] = v
+                    except Exception as e:
+                        log.warning('Invalid line #%s in %s.',
+                                    lineno, self.__class__.__name__)
+                        log.debug('Exception: %s', utils.exnToString(e))
+            except Exception as e: # This catches exceptions from csv.reader.
+                log.warning('Invalid line #%s in %s.',
+                            lineno, self.__class__.__name__)
+                log.debug('Exception: %s', utils.exnToString(e))
+        finally:
+            fd.close()
 
     def flush(self):
         mode = 'wb' if utils.minisix.PY2 else 'w'
