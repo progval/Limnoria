@@ -192,7 +192,6 @@ setup(
         'Environment :: No Input/Output (Daemon)',
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Natural Language :: Finnish',
         'Natural Language :: French',
@@ -209,6 +208,7 @@ setup(
         'Topic :: Communications :: Chat :: Internet Relay Chat',
         'Topic :: Software Development :: Libraries :: Python Modules',
         ],
+    license="BSD-3-Clause",
 
     # Installation data
     packages=packages,
