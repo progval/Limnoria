@@ -33,9 +33,8 @@ import copy
 import json
 import functools
 import contextlib
-from multiprocessing import Manager
 
-from supybot import conf, log, utils
+from supybot import conf, log, utils, world
 from supybot.test import ChannelPluginTestCase, network
 
 from . import activitypub as ap
@@ -125,7 +124,7 @@ class NetworklessFediverseTestCase(BaseFediverseTestCase):
 
     @contextlib.contextmanager
     def mockRequests(self, expected_requests):
-        with Manager() as m:
+        with world.SUPYPROCESS_MULTIPROCESSING_CONTEXT.Manager() as m:
             expected_requests = m.list(list(expected_requests))
             original_getUrlContent = utils.web.getUrlContent
 
