@@ -15,7 +15,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - python-version: "3.14.0-rc.2"
+          - python-version: "3.15.0-alpha.5"
+            with-opt-deps: true
+            runs-on: ubuntu-22.04
+
+          - python-version: "3.14"
             with-opt-deps: true
             runs-on: ubuntu-22.04
 
