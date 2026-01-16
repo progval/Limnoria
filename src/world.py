@@ -64,8 +64,15 @@ class SupyThread(threading.Thread, object):
         super(SupyThread, self).__init__(*args, **kwargs)
         log.debug('Spawning thread %q.', self.getName())
 
+SUPYPROCESS_MULTIPROCESSING_CONTEXT = multiprocessing.get_context('fork')
+"""
+Which :mod:`multiprocessing` is used to run :class:`SupyProcess`
+
+Currently this is (unfortunately) ``fork`` because functions running in forks
+often need to read the global state.
+"""
 processesSpawned = 1 # Starts at one for the initial process.
-class SupyProcess(multiprocessing.get_context('fork').Process):
+class SupyProcess(SUPYPROCESS_MULTIPROCESSING_CONTEXT.Process):
     def __init__(self, *args, **kwargs):
         global processesSpawned
         processesSpawned += 1
