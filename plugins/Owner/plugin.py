@@ -156,8 +156,7 @@ class Owner(callbacks.Plugin):
                     ircquote_response["irc"].reply(str(msg).strip())
         except Exception as e:
             self.log.exception("Errored while sending ircquote response")
-        finally:
-            return ret
+        return ret
 
     def outFilter(self, irc, msg):
         if msg.command == 'PRIVMSG' and not world.testing:
