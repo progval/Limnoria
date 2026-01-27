@@ -39,7 +39,6 @@ import time
 import heapq
 import functools
 from threading import Lock
-import traceback
 
 from . import drivers, log, world
 
@@ -119,7 +118,7 @@ class Schedule(drivers.IrcDriver):
             try:
                 f(*args, **kwargs)
             except Exception:
-                traceback.print_exc()
+                log.exception('Uncaught exception in scheduled function:')
                 # Even if it raises an exception, let's schedule it.
             if count is not None:
                 count -= 1
