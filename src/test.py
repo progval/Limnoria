@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2011, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2026, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -37,8 +37,11 @@ import time
 import shutil
 import urllib
 import unittest
+import unittest.mock
 import functools
 import threading
+import contextlib
+import multiprocessing
 
 from . import (callbacks, conf, drivers, httpserver, i18n, ircdb, irclib,
         ircmsgs, ircutils, log, plugin, registry, utils, world)
@@ -660,5 +663,53 @@ class ChannelHTTPPluginTestCase(ChannelPluginTestCase, HTTPPluginTestCase):
     def setUp(self):
         ChannelPluginTestCase.setUp(self, forceSetup=True)
 
-# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
+# allows plugins to test the 'spawn' and 'forkserver' methods when
+# the global multiprocessing context is 'fork'.
+#
+# This has to be here because plugins can't define it in their test.py,
+# because Python unpickles the Process before we get a change to load the
+# plugin.
+try:
+    _SPAWN_MULTIPROCESSING_CONTEXT = multiprocessing.get_context('spawn')
+except ValueError:
+    @contextlib.contextmanager
+    def useSpawnContext():
+        raise unittest.SkipTest("'spawn' start method is not supported")
+else:
+    class _SpawnSupyProcess(_SPAWN_MULTIPROCESSING_CONTEXT.Process):
+        def __init__(self, *args, **kwargs):
+            world.processesSpawned += 1
+            super(world.SupyProcess, self).__init__(*args, **kwargs)
+            log.debug('Spawning process %q.', self.name)
+
+    class _SpawnCommandProcess(_SpawnSupyProcess):
+        """Just does some extra logging and error-recovery for commands that need
+        to run in processes.
+        """
+        def __init__(self, target=None, args=(), kwargs={}):
+            pn = kwargs.pop('pn', 'Unknown')
+            cn = kwargs.pop('cn', 'unknown')
+            procName = 'Process #%s (for %s.%s)' % (world.processesSpawned,
+                                                     pn,
+                                                     cn)
+            log.debug('Spawning process %s (args: %r)', procName, args)
+            super().__init__(target=target, name=procName,
+                             args=args, kwargs=kwargs)
+
+    @contextlib.contextmanager
+    def useSpawnContext():
+        """Temporarily redefine SupyProcess and CommandProcess to use the
+        'spawn' multiprocessing context, simulating Windows behaviour on POSIX
+        systems."""
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(unittest.mock.patch(
+                "supybot.world.SUPYPROCESS_MULTIPROCESSING_CONTEXT",
+                _SPAWN_MULTIPROCESSING_CONTEXT))
+            stack.enter_context(unittest.mock.patch(
+                "supybot.world.SupyProcess", _SpawnSupyProcess))
+            stack.enter_context(unittest.mock.patch(
+                "supybot.callbacks.CommandProcess", _SpawnCommandProcess))
+            yield
+
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

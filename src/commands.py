@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2009-2010,2015, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2026, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -103,6 +103,17 @@ def _process_target(f, q, heap_size, *args, **kwargs):
     except Exception as e:
         q.put([True, e])
 
+def _process_queued_target(f_q, q, heap_size, *args, preload_plugins, **kwargs):
+    """Called by :func:`process` on non-``fork`` multiprocessing contexts"""
+    from .plugin import loadPluginModule
+
+    for plugin in preload_plugins:
+        loadPluginModule(plugin, ignoreDeprecation=True)
+
+    f = f_q.get()
+    _process_target(f, q, heap_size, *args, **kwargs)
+
+
 def process(f, *args, **kwargs):
     """Runs a function <f> in a subprocess.
     
@@ -121,13 +132,14 @@ def process(f, *args, **kwargs):
     if world.disableMultiprocessing:
         pn = kwargs.pop('pn', 'Unknown')
         cn = kwargs.pop('cn', 'unknown')
+        kwargs.pop('preload_plugins')
         try:
             return f(*args, **kwargs)
         except Exception as e:
             raise e
     
     try:
-        q = multiprocessing.Queue()
+        q = world.SUPYPROCESS_MULTIPROCESSING_CONTEXT.Queue()
     except OSError:
         log.error('Using multiprocessing.Queue raised an OSError.\n'
                 'This is probably caused by your system denying semaphore\n'
@@ -137,9 +149,21 @@ def process(f, *args, **kwargs):
                 '(See https://github.com/travis-ci/travis-core/issues/187\n'
                 'for more information about this bug.)\n')
         raise
-    targetArgs = (f, q, heap_size) + args
-    p = callbacks.CommandProcess(target=_process_target,
-                                 args=targetArgs, kwargs=kwargs)
+    if isinstance(world.SUPYPROCESS_MULTIPROCESSING_CONTEXT,
+                  multiprocessing.context.ForkContext):
+        # no need to pickle f
+        targetArgs = (f, q, heap_size) + args
+        p = callbacks.CommandProcess(target=_process_target,
+                                     args=targetArgs, kwargs=kwargs)
+    else:
+        # f must be picklable, but it probably comes from a plugin module,
+        # so we need to load the plugin module first, before unpickling it.
+        # so we put it on the queue instead of an argument.
+        f_q = world.SUPYPROCESS_MULTIPROCESSING_CONTEXT.Queue()
+        f_q.put(f)
+        targetArgs = (f_q, q, heap_size) + args
+        p = callbacks.CommandProcess(target=_process_queued_target,
+                                     args=targetArgs, kwargs=kwargs)
     try:
         p.start()
     except OSError as e:
