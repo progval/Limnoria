@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2015, Michael Daniel Telatynski <postmaster@webdevguru.co.uk>
-# Copyright (c) 2015-2020, James Lu <james@overdrivenetworks.com>
-# Copyright (c) 2020-2021, Valentin Lorentz
+# Copyright (c) 2015-2025, James Lu <james@overdrivenetworks.com>
+# Copyright (c) 2020-2026, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@
 
 ###
 
+import multiprocessing
 from supybot.commands import *
 from supybot.commands import ProcessTimeoutError
 import supybot.plugins as plugins
@@ -38,6 +39,7 @@ import supybot.callbacks as callbacks
 import supybot.ircutils as ircutils
 import supybot.ircdb as ircdb
 import supybot.utils as utils
+import supybot.world as world
 
 import re
 
@@ -111,6 +113,14 @@ def apply_substitution(pattern, replacement, m, count):
         subst = '* %s %s' % (m.nick, subst)
 
     return axe_spaces(subst)
+
+def apply_substitution_to_first_matching_message(pattern, replacement,
+                                                 messages, count):
+    m = get_first_matching_message(pattern, messages)
+    if m:
+        subst = apply_substitution(pattern, replacement, m, count)
+        return (m, subst)
+
 
 class SedRegex(callbacks.Plugin):
     """
@@ -232,9 +242,21 @@ class SedRegex(callbacks.Plugin):
         if self.registryValue('boldReplacementText', msg.channel, irc.network):
             replacement = ircutils.bold(replacement)
         try:
-            message = process(self._replacer_process, irc, msg,
-                    target, pattern, replacement, count, iterable, sedRegex,
-                    timeout=regex_timeout, pn=self.name(), cn='replacer')
+            if isinstance(world.SUPYPROCESS_MULTIPROCESSING_CONTEXT,
+                          multiprocessing.context.ForkContext):
+                # global state is shared with child processes, so the child
+                # process has access to history and can lazily filter it
+                message = process(self._replacer_process, irc, msg,
+                        target, pattern, replacement, count, iterable, sedRegex,
+                        timeout=regex_timeout, pn=self.name(), cn='replacer')
+            else:
+                # SpawnContext (or possibly ForkServerContext in future
+                # versions of Limnoria): global state is not shared with child
+                # processes, so we have to filter the message list in the main
+                # process and pass it to the child.
+                message = self._replacer(irc, msg,
+                        target, pattern, replacement, count, iterable, sedRegex,
+                        timeout=regex_timeout, pn=self.name(), cn='replacer')
         except ProcessTimeoutError:
             irc.error(_("Search timed out."))
         except SearchNotFoundError:
@@ -268,6 +290,28 @@ class SedRegex(callbacks.Plugin):
             m = get_first_matching_message(pattern, messages)
             if m:
                 subst = apply_substitution(pattern, replacement, m, count)
+                return self._format_result(irc, msg, m, subst)
+        except Exception as e:
+            self.log.warning(_("SedRegex error: %s"), e, exc_info=True)
+            raise
+
+        self.log.debug(_("SedRegex: Search %r not found in the last %i messages of %s."),
+                         msg.args[1], len(irc.state.history), msg.args[0])
+        raise SearchNotFoundError()
+
+    def _replacer(self, irc, msg, target, pattern, replacement, count,
+                          messages, sedRegex, **kwargs):
+        ignoreRegex = self.registryValue('ignoreRegex', msg.channel, irc.network)
+        messages = filter_messages(irc.network, msg, target, messages,
+                                   ignoreRegex, sedRegex)
+        messages = list(messages)  # materialize the iterator to pickle it
+
+        try:
+            result = process(apply_substitution_to_first_matching_message,
+                             pattern, replacement, messages, count,
+                             preload_plugins=["SedRegex"], **kwargs)
+            if result:
+                (m, subst) = result
                 return self._format_result(irc, msg, m, subst)
         except Exception as e:
             self.log.warning(_("SedRegex error: %s"), e, exc_info=True)

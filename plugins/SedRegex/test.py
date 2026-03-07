@@ -1,6 +1,6 @@
 ###
-# Copyright (c) 2017-2020, James Lu <james@overdrivenetworks.com>
-# Copyright (c) 2020-2021, Valentin Lorentz
+# Copyright (c) 2017-2025, James Lu <james@overdrivenetworks.com>
+# Copyright (c) 2020-2026, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,11 @@
 
 from __future__ import print_function
 import unittest
+import contextlib
+import multiprocessing
 from supybot.test import *
+import supybot.world as world
+import supybot.callbacks as callbacks
 
 class SedRegexTestCase(ChannelPluginTestCase):
     other = "blah!blah@someone.else"
@@ -323,5 +327,32 @@ class SedRegexTestCase(ChannelPluginTestCase):
                                                             ircutils.nickFromHostmask(self.__class__.other)), str(m))
 
     # TODO: test ignores
+
+
+    @unittest.skipIf(
+        world.disableMultiprocessing,
+        "Test requires multiprocessing to be enabled"
+    )
+    def testSpawnContext(self):
+        """Test that SedRegex works with 'spawn' multiprocessing context
+        (Windows compatibility)."""
+        with useSpawnContext():
+            self.feedMsg('hello world')
+            self.feedMsg('s/world/everyone/')
+            m = self.getMsg(' ')
+            self.assertIn('hello everyone', str(m))
+
+    @unittest.skipIf(
+        world.disableMultiprocessing,
+        "Test requires multiprocessing to be enabled"
+    )
+    def testSpawnReDoSTimeout(self):
+        """Test that ReDoS protection works with 'spawn' context."""
+        with useSpawnContext():
+            for idx in range(500):
+                self.feedMsg("ACCCCCCCCCCCCCCCCCCCCCCCCCCCCX")
+            self.feedMsg(r"s/A(B|C+)+D/this should abort/")
+            m = self.getMsg(' ', timeout=1)
+            self.assertIn('timed out', str(m))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
