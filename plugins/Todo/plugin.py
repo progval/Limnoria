@@ -239,20 +239,28 @@ class Todo(callbacks.Plugin):
         if not optlist and not globs:
             raise callbacks.ArgumentError
         criteria = []
+        regex_arg = None
         for (option, arg) in optlist:
             if option == 'regexp':
-                criteria.append(lambda s:
-                                regexp_wrapper(s, reobj=arg, timeout=0.1,
-                                               plugin_name=self.name(),
-                                               fcn_name='search'))
+                regex_arg = arg
         for glob in globs:
             glob = utils.python.glob2re(glob)
             criteria.append(re.compile(glob).search)
         try:
-            tasks = self.db.select(user.id, criteria)
+            tasks = list(self.db.select(user.id, criteria))
+        except dbi.NoRecordError:
+            tasks = []
+        if regex_arg is not None and tasks:
+            texts = [t.task for t in tasks]
+            matches = batch_regexp_wrapper(
+                texts, reobj=regex_arg, timeout=1,
+                plugin_name=self.name(), fcn_name='search')
+            if matches is not None:
+                tasks = [t for t, m in zip(tasks, matches) if m]
+        if tasks:
             L = [format('#%i: %s', t.id, self._shrink(t.task)) for t in tasks]
             irc.reply(format('%L', L))
-        except dbi.NoRecordError:
+        else:
             irc.reply(_('No tasks matched that query.'))
     search = wrap(search,
                   ['user', getopts({'regexp': 'regexpMatcher'}), any('glob')])
