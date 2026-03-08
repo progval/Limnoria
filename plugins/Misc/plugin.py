@@ -47,6 +47,7 @@ import supybot.utils as utils
 from supybot.commands import *
 from supybot.commands import ProcessTimeoutError
 import supybot.ircdb as ircdb
+import supybot.world as world
 import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
@@ -70,6 +71,19 @@ def getPluginsInDirectory(directory):
 
 class RegexpTimeout(Exception):
     pass
+
+
+def _matchMessages(messages, arg, q):
+    reobj = re.compile(arg)
+
+    for m in messages:
+        if ircmsgs.isAction(m):
+            s = ircmsgs.unAction(m)
+        else:
+            s = m.args[1]
+        if reobj.search(s):
+            q.put(m)
+
 
 class Misc(callbacks.Plugin):
     """Miscellaneous commands to access Supybot core. This is a core
@@ -495,22 +509,13 @@ class Misc(callbacks.Plugin):
                 predicates.setdefault('without', []).append(f)
             elif option == 'regexp':
                 def f(messages, arg=arg):
-                    reobj = re.compile(arg)
-
                     # using a queue to return results, so we can return at
                     # least some results in case of timeout
-                    q = multiprocessing.Queue()
+                    q = world.SUPYPROCESS_MULTIPROCESSING_CONTEXT.Queue()
 
-                    def p(messages):
-                        for m in messages:
-                            if ircmsgs.isAction(m):
-                                s = ircmsgs.unAction(m)
-                            else:
-                                s = m.args[1]
-                            if reobj.search(s):
-                                q.put(m)
                     try:
-                        process(p, messages, timeout=3.,
+                        process(_matchMessages, messages, arg, q,
+                                timeout=3., preload_plugins=['Misc'],
                                 pn=self.name(), cn='last')
                     except ProcessTimeoutError:
                         pass
