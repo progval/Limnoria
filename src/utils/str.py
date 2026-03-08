@@ -278,9 +278,13 @@ def perlReToFindall(s):
     """
     (r, g) = perlReToPythonRe(s, allowG=True)
     if g:
-        return lambda s: r.findall(s)
+        return r.findall
     else:
-        return lambda s: r.search(s) and r.search(s).group(0) or ''
+        return functools.partial(_matchFindall, r=r)
+
+def _matchFindall(s, r):
+    match = r.search(s)
+    return match and match.group(0) or ''
 
 def perlReToReplacer(s):
     """Converts a string representation of a Perl regular expression (i.e.,
