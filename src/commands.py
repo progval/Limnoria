@@ -199,18 +199,21 @@ def regexp_wrapper(s, reobj, timeout, plugin_name, fcn_name):
 
     This is used because specially-crafted regexps can use exponential time
     and hang the bot.'''
-    def re_bool(s, reobj):
-        """Since we can't enqueue match objects into the multiprocessing queue,
-        we'll just wrap the function to return bools."""
-        if reobj.search(s) is not None:
-            return True
-        else:
-            return False
     try:
-        v = process(re_bool, s, reobj, timeout=timeout, pn=plugin_name, cn=fcn_name)
+        v = process(_re_bool, s, reobj, timeout=timeout, pn=plugin_name, cn=fcn_name)
         return v
     except ProcessTimeoutError:
         return None
+
+def _re_bool(s, reobj):
+    """(helper for :func:`regexp_wrapper`)
+
+    _Since we can't enqueue match objects into the multiprocessing queue,
+    we'll just wrap the function to return bools."""
+    if reobj.search(s) is not None:
+        return True
+    else:
+        return False
 
 class UrlSnarfThread(world.SupyThread):
     def __init__(self, *args, **kwargs):
