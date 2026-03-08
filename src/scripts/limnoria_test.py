@@ -3,7 +3,7 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2011, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2026, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 import os
 import sys
 import time
+import codecs
 import shutil
 import fnmatch
 from tempfile import TemporaryDirectory
@@ -49,6 +50,8 @@ main_temp_dir = TemporaryDirectory()
 os.makedirs(os.path.join(main_temp_dir.name, 'conf'))
 os.makedirs(os.path.join(main_temp_dir.name, 'data'))
 os.makedirs(os.path.join(main_temp_dir.name, 'logs'))
+
+encoder = codecs.getencoder("unicode_escape")
 
 registryFilename = os.path.join(main_temp_dir.name, 'conf', 'test.conf')
 with open(registryFilename, 'w') as fd:
@@ -72,9 +75,9 @@ supybot.networks.testnet3.server: should.not.need.this
 supybot.nick: test
 supybot.databases.users.allowUnregistration: True
 """.format(
-        temp_conf=os.path.join(main_temp_dir.name, 'conf'),
-        temp_data=os.path.join(main_temp_dir.name, 'data'),
-        temp_logs=os.path.join(main_temp_dir.name, 'logs')
+        temp_conf=encoder(os.path.join(main_temp_dir.name, 'conf'))[0].decode(),
+        temp_data=encoder(os.path.join(main_temp_dir.name, 'data'))[0].decode(),
+        temp_logs=encoder(os.path.join(main_temp_dir.name, 'logs'))[0].decode(),
     ))
 
 import supybot.registry as registry
