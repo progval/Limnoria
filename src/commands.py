@@ -164,6 +164,8 @@ def process(f, *args, **kwargs):
         f_q = world.SUPYPROCESS_MULTIPROCESSING_CONTEXT.Queue()
         f_q.put(f)
         targetArgs = (f_q, q, heap_size) + args
+        if 'preload_plugins' not in kwargs:
+            kwargs['preload_plugins'] = []
         p = callbacks.CommandProcess(target=_process_queued_target,
                                      args=targetArgs, kwargs=kwargs)
     try:
@@ -198,19 +200,46 @@ def regexp_wrapper(s, reobj, timeout, plugin_name, fcn_name):
     '''A convenient wrapper to stuff regexp search queries through a subprocess.
 
     This is used because specially-crafted regexps can use exponential time
-    and hang the bot.'''
-    def re_bool(s, reobj):
-        """Since we can't enqueue match objects into the multiprocessing queue,
-        we'll just wrap the function to return bools."""
-        if reobj.search(s) is not None:
-            return True
-        else:
-            return False
+    and hang the bot.
+
+    Use :`batch_regexp_wrapper` if you need to check multiple strings.'''
     try:
-        v = process(re_bool, s, reobj, timeout=timeout, pn=plugin_name, cn=fcn_name)
+        v = process(_re_bool, s, reobj, timeout=timeout, pn=plugin_name, cn=fcn_name)
         return v
     except ProcessTimeoutError:
         return None
+
+def _re_bool(s, reobj):
+    """(helper for :func:`regexp_wrapper`)
+
+    _Since we can't enqueue match objects into the multiprocessing queue,
+    we'll just wrap the function to return bools."""
+    if reobj.search(s) is not None:
+        return True
+    else:
+        return False
+
+def batch_regexp_wrapper(strings, reobj, timeout, plugin_name, fcn_name):
+    """Like :func:`regexp_wrapper`, but checks all strings in a single subprocess.
+
+    Returns a list of bools parallel to ``strings`` indicating matches.
+    Returns None on timeout."""
+    if not strings:
+        return []
+    try:
+        return process(
+            _re_filter_batch, strings, reobj,
+            timeout=timeout, pn=plugin_name, cn=fcn_name
+        )
+    except ProcessTimeoutError:
+        return None
+
+def _re_filter_batch(strings, reobj):
+    """(helper for batch_regexp_wrapper)
+
+    Returns a list of bools, one per string, indicating whether the regex
+    matched."""
+    return [reobj.search(s) is not None for s in strings]
 
 class UrlSnarfThread(world.SupyThread):
     def __init__(self, *args, **kwargs):
@@ -1257,7 +1286,7 @@ __all__ = [
     # Decorators.
     'urlSnarfer', 'thread',
     # Functions.
-    'wrap', 'process', 'regexp_wrapper',
+    'wrap', 'process', 'regexp_wrapper', 'batch_regexp_wrapper',
     # Stuff for testing.
     'Spec',
 ]

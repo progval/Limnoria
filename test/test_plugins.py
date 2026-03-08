@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
+import os.path
+
 from supybot.test import *
 import supybot.conf as conf
 
@@ -39,13 +41,21 @@ class PluginsTestCase(SupyTestCase):
     def testMakeChannelFilename(self):
         self.assertEqual(
             plugins.makeChannelFilename('dir', '#foo'),
-            conf.supybot.directories.data() + '/#foo/dir')
+            os.path.join(conf.supybot.directories.data(), '#foo', 'dir'))
         self.assertEqual(
             plugins.makeChannelFilename('dir', '#f/../oo'),
-            conf.supybot.directories.data() + '/#f..oo/dir')
+            os.path.join(conf.supybot.directories.data(), '#f..oo', 'dir'))
         self.assertEqual(
             plugins.makeChannelFilename('dir', '/./'),
-            conf.supybot.directories.data() + '/_/dir')
+            os.path.join(conf.supybot.directories.data(), '_', 'dir'))
         self.assertEqual(
             plugins.makeChannelFilename('dir', '/../'),
-            conf.supybot.directories.data() + '/__/dir')
+            os.path.join(conf.supybot.directories.data(), '__', 'dir'))
+
+        # \ is RFC1459-lowercased to | which is invalid on Windows
+        self.assertEqual(
+            plugins.makeChannelFilename('dir', r'#f\..\oo'),
+            os.path.join(conf.supybot.directories.data(), '#f..oo', 'dir'))
+        self.assertEqual(
+            plugins.makeChannelFilename('dir', r'#f|..|oo'),
+            os.path.join(conf.supybot.directories.data(), '#f..oo', 'dir'))
