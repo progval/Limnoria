@@ -132,7 +132,7 @@ def process(f, *args, **kwargs):
     if world.disableMultiprocessing:
         pn = kwargs.pop('pn', 'Unknown')
         cn = kwargs.pop('cn', 'unknown')
-        kwargs.pop('preload_plugins')
+        kwargs.pop('preload_plugins', None)
         try:
             return f(*args, **kwargs)
         except Exception as e:
@@ -153,6 +153,7 @@ def process(f, *args, **kwargs):
                   multiprocessing.context.ForkContext):
         # no need to pickle f
         targetArgs = (f, q, heap_size) + args
+        kwargs.pop('preload_plugins', None)
         p = callbacks.CommandProcess(target=_process_target,
                                      args=targetArgs, kwargs=kwargs)
     else:
