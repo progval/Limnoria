@@ -69,7 +69,8 @@ class ValidNickSet(conf.ValidNicks):
 Services = conf.registerPlugin('Services')
 conf.registerNetworkValue(Services, 'nicks',
     ValidNickSet([], _("""Space-separated list of nicks the bot will use with
-    services.""")))
+    services. Don't change this config value yourself, use the 'services password'
+    command instead.""")))
 
 class Networks(registry.SpaceSeparatedSetOfStrings):
     List = ircutils.IrcSet
