@@ -149,8 +149,9 @@ def process(f, *args, **kwargs):
                 '(See https://github.com/travis-ci/travis-core/issues/187\n'
                 'for more information about this bug.)\n')
         raise
-    if isinstance(world.SUPYPROCESS_MULTIPROCESSING_CONTEXT,
-                  multiprocessing.context.ForkContext):
+    if hasattr(multiprocessing.context, "ForkContext") and \
+            isinstance(world.SUPYPROCESS_MULTIPROCESSING_CONTEXT,
+                       multiprocessing.context.ForkContext):
         # no need to pickle f
         targetArgs = (f, q, heap_size) + args
         kwargs.pop('preload_plugins', None)
