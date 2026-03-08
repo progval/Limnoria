@@ -1,0 +1,44 @@
+name: Test on Windows
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-2025
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade pip
+        run: |
+          python3 -m pip install --upgrade pip setuptools
+
+      - name: Install optional dependencies
+        if: ${{ matrix.with-opt-deps }}
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+
+      - name: Install
+        run: |
+          LIMNORIA_WARN_OLD_PYTHON=0 pip install .
+
+      - name: Test with unittest
+        run: |
+          supybot-test test -v --plugins-dir=./plugins/ --no-network
+
+      - name: Test with irctest
+        if: "${{ matrix.with-opt-deps && matrix.python-version != '3.7' && matrix.python-version != 'pypy-3.7' && matrix.python-version != 'pypy-3.9' }}"
+        run: |
+          git clone https://github.com/progval/irctest.git
+          cd irctest
+          pip3 install -r requirements.txt
+          make limnoria PYTEST_ARGS=-vs
+
