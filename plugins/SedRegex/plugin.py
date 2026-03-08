@@ -30,6 +30,7 @@
 
 ###
 
+import functools
 import multiprocessing
 from supybot.commands import *
 from supybot.commands import ProcessTimeoutError
@@ -64,6 +65,9 @@ class SearchNotFoundError(Exception):
 def filter_messages(network, msg, target, messages, ignoreRegex, sedRegex):
     """Applies all filters but the user-provided regexp, so it is safe to
     run in the main process."""
+    # short-lived cache for the duration of this request.
+    checkIgnored = functools.cache(ircdb.checkIgnored)
+
     for m in messages:
         if m.command in ('PRIVMSG', 'NOTICE') and \
                 ircutils.strEqual(m.args[0], msg.args[0]) and \
