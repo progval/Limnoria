@@ -164,6 +164,8 @@ def process(f, *args, **kwargs):
         f_q = world.SUPYPROCESS_MULTIPROCESSING_CONTEXT.Queue()
         f_q.put(f)
         targetArgs = (f_q, q, heap_size) + args
+        if 'preload_plugins' not in kwargs:
+            kwargs['preload_plugins'] = []
         p = callbacks.CommandProcess(target=_process_queued_target,
                                      args=targetArgs, kwargs=kwargs)
     try:
