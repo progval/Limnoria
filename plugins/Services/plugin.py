@@ -40,6 +40,7 @@ from supybot.commands import *
 import supybot.irclib as irclib
 import supybot.ircmsgs as ircmsgs
 import supybot.ircutils as ircutils
+import supybot.registry as registry
 import supybot.callbacks as callbacks
 from supybot.i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization('Services')
@@ -109,7 +110,18 @@ class Services(callbacks.Plugin):
     def _getNickServPassword(self, nick, network):
         # This should later be nick-specific.
         assert nick in self.registryValue('nicks', network=network)
-        return self.registryValue('NickServ.password.%s' % nick, network=network)
+        try:
+            return self.registryValue(f'NickServ.password.{nick}', network=network)
+        except registry.NonExistentRegistryEntry:
+            msg = (
+                f'Nick {nick} is listed in supybot.plugins.Services.nicks, '
+                f'supybot.plugins.NickServ.password.{nick} does not exist. '
+                f'If you manually changed the value, undo it and use the '
+                f'"services password" command instead.'
+            )
+            self.log.error(msg)
+            raise callbacks.Error(msg)
+
 
     def _setNickServPassword(self, nick, password, network):
         # This also should be nick-specific.
