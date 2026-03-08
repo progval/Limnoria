@@ -415,6 +415,7 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
         Searches for $types matching the criteria given.
         """
         predicates = []
+        regex_arg = None
         def p(record):
             for predicate in predicates:
                 if not predicate(record):
@@ -431,14 +432,21 @@ class ChannelIdDatabasePlugin(callbacks.Plugin):
                     # https://github.com/progval/Limnoria/issues/855 for details
                     irc.errorNoCapability('trusted')
 
-                predicates.append(lambda r: regexp_wrapper(r.text, reobj=arg,
-                        timeout=0.1, plugin_name=self.name(), fcn_name='search'))
+                regex_arg = arg
         if glob:
             def globP(r, glob=glob.lower()):
                 return fnmatch.fnmatch(r.text.lower(), glob)
             predicates.append(globP)
+        candidates = list(self.db.select(channel, p))
+        if regex_arg is not None and candidates:
+            texts = [r.text for r in candidates]
+            matches = batch_regexp_wrapper(
+                texts, reobj=regex_arg, timeout=1,
+                plugin_name=self.name(), fcn_name='search')
+            if matches is not None:
+                candidates = [r for r, m in zip(candidates, matches) if m]
         L = []
-        for record in self.db.select(channel, p):
+        for record in candidates:
             L.append(self.searchSerializeRecord(record))
         if L:
             L.sort()

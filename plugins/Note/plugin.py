@@ -290,6 +290,7 @@ class Note(callbacks.Plugin):
         the notes.  If --sent is specified, only search sent notes.
         """
         criteria = []
+        regex_arg = None
         def to(note):
             return note.to == user.id
         def frm(note):
@@ -297,10 +298,7 @@ class Note(callbacks.Plugin):
         own = to
         for (option, arg) in optlist:
             if option == 'regexp':
-                criteria.append(lambda s:
-                                regexp_wrapper(s, reobj=arg, timeout=0.1,
-                                               plugin_name=self.name(),
-                                               fcn_name='search'))
+                regex_arg = arg
             elif option == 'sent':
                 own = frm
         if glob:
@@ -312,6 +310,13 @@ class Note(callbacks.Plugin):
                     return False
             return True
         notes = list(self.db.select(lambda n: match(n) and own(n)))
+        if regex_arg is not None and notes:
+            texts = [n.text for n in notes]
+            matches = batch_regexp_wrapper(
+                texts, reobj=regex_arg, timeout=1,
+                plugin_name=self.name(), fcn_name='search')
+            if matches is not None:
+                notes = [n for n, m in zip(notes, matches) if m]
         if not notes:
             irc.reply('No matching notes were found.')
         else:
