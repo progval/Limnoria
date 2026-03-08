@@ -52,7 +52,10 @@ class PluginsTestCase(SupyTestCase):
             plugins.makeChannelFilename('dir', '/../'),
             os.path.join(conf.supybot.directories.data(), '__', 'dir'))
 
-        # RFC1459-lowercased
+        # \ is RFC1459-lowercased to | which is invalid on Windows
         self.assertEqual(
             plugins.makeChannelFilename('dir', r'#f\..\oo'),
-            os.path.join(conf.supybot.directories.data(), '#f|..|oo', 'dir'))
+            os.path.join(conf.supybot.directories.data(), '#f..oo', 'dir'))
+        self.assertEqual(
+            plugins.makeChannelFilename('dir', r'#f|..|oo'),
+            os.path.join(conf.supybot.directories.data(), '#f..oo', 'dir'))

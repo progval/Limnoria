@@ -39,8 +39,8 @@ import os.path
 from . import crypt, force
 
 def sanitizeName(filename):
-    """Removes / from filenames and escapes them if they are '.' or '..'."""
-    filename = filename.replace('/', '')
+    r"""Removes '/', '\', and '|' from filenames and escapes them if they are '.' or '..'."""
+    filename = filename.replace('/', '').replace(r'\'', '').replace('|', '')
     if filename == '.':
         return '_'
     elif filename == '..':
