@@ -21,7 +21,6 @@ jobs:
           python3 -m pip install --upgrade pip setuptools
 
       - name: Install optional dependencies
-        if: ${{ matrix.with-opt-deps }}
         run: |
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
