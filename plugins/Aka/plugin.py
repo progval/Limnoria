@@ -81,8 +81,8 @@ if sqlite3:
             self.filename = filename.replace('sqlite3', 'sqlalchemy')
 
         def close(self):
-            for engine in self.engines.values()
-                engine.clear()
+            for engine in self.engines.values():
+                engine.close()
 
         def get_db(self, channel):
             if channel in self.engines:
