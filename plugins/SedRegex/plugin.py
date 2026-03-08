@@ -242,8 +242,9 @@ class SedRegex(callbacks.Plugin):
         if self.registryValue('boldReplacementText', msg.channel, irc.network):
             replacement = ircutils.bold(replacement)
         try:
-            if isinstance(world.SUPYPROCESS_MULTIPROCESSING_CONTEXT,
-                          multiprocessing.context.ForkContext):
+            if hasattr(multiprocessing.context, "ForkContext") and \
+                    isinstance(world.SUPYPROCESS_MULTIPROCESSING_CONTEXT,
+                               multiprocessing.context.ForkContext):
                 # global state is shared with child processes, so the child
                 # process has access to history and can lazily filter it
                 message = process(self._replacer_process, irc, msg,
