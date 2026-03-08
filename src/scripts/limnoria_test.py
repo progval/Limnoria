@@ -136,6 +136,8 @@ def main():
     import optparse
     import supybot.test as test
     import supybot.plugin as plugin
+    import supybot.world as world
+    world._registerAtexit()
 
     parser = optparse.OptionParser(usage='Usage: %prog [options] [plugins]',
                                    version='Supybot %s' % conf.version)

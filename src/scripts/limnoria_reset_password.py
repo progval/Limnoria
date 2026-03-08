@@ -43,6 +43,8 @@ import optparse
 def _main():
     import supybot.log as log
     import supybot.conf as conf
+    import supybot.world as world
+    world._registerAtexit()
     conf.supybot.log.stdout.setValue(False)
     parser = optparse.OptionParser(usage='Usage: %prog [options] <users.conf>',
                                    version='supybot %s' % conf.version)

@@ -85,6 +85,7 @@ def run():
     import supybot.ircmsgs as ircmsgs
     import supybot.schedule as schedule
     import supybot.httpserver as httpserver
+    world._registerAtexit()
     # We schedule this event rather than have it actually run because if there
     # is a failure between now and the time it takes the Owner plugin to load
     # all the various plugins, our registry file might be wiped.  That's bad.
