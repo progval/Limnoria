@@ -41,7 +41,7 @@ import weakref
 import threading
 import collections.abc
 
-from .. import callbacks, conf, dbi, ircdb, ircutils, i18n, log, utils, world
+from .. import callbacks, conf, dbi, ircdb, irclib, ircutils, i18n, log, utils, world
 from ..commands import *
 
 _ = i18n.PluginInternationalization()
@@ -101,7 +101,7 @@ def getChannel(channel):
 #     to refactor it.
 # XXX We need to get rid of this, it's ugly and opposed to
 #     database-independence.
-class ChannelDBHandler(object):
+class ChannelDBHandler(irclib.IrcCallback):
     """A class to handle database stuff for individual channels transparently.
     """
     suffix = '.db'
@@ -146,7 +146,7 @@ class ChannelDBHandler(object):
             return self.dbCacheThreads[currentThread]
 
     def die(self):
-        dbCache = self;_getDbCache()
+        dbCache = self._getDbCache()
         for db in dbCache.values():
             try:
                 db.commit()
@@ -158,6 +158,7 @@ class ChannelDBHandler(object):
                 pass
             del db
         gc.collect()
+        super().die()
 
 
 class DbiChannelDB(object):
