@@ -32,7 +32,7 @@ jobs:
 
       - name: Test with unittest
         run: |
-          supybot-test test -v --plugins-dir=./plugins/ --no-network --exclude=./plugins/Fediverse --exclude=./plugins/RSS
+          supybot-test test -v --plugins-dir=./plugins/ --no-network --exclude="*Fediverse" --exclude="*RSS"
 
       - name: Test with irctest
         if: "${{ matrix.with-opt-deps && matrix.python-version != '3.7' && matrix.python-version != 'pypy-3.7' && matrix.python-version != 'pypy-3.9' }}"
