@@ -154,7 +154,7 @@ def close(registry, filename, private=True):
                         exception('Exception instantiating default for %s:' %
                                   value._name)
                     try:
-                        lines = iter(textwrap.wrap(x))
+                        lines = iter(textwrap.wrap(str(x)))
                         lines.append('# Default value: %s\n' % next(lines))
                         for line in lines:
                             lines.append('# %s\n' % line)
