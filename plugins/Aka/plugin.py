@@ -544,6 +544,7 @@ class Aka(callbacks.Plugin):
     def die(self):
         if self._http_running:
             self._stopHttp()
+        self.db.close()
 
     def _httpConfCallback(self):
         if self.registryValue('web.enable'):
