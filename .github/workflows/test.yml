@@ -71,14 +71,14 @@ jobs:
 
       - name: Install
         run: |
-          LIMNORIA_WARN_OLD_PYTHON=0 pip install .
+          pip install .
 
       - name: Test with unittest
         run: |
           supybot-test test -v --plugins-dir=./plugins/ --no-network
 
       - name: Test with irctest
-        if: "${{ matrix.with-opt-deps && matrix.python-version != '3.7' && matrix.python-version != 'pypy-3.7' && matrix.python-version != 'pypy-3.9' }}"
+        if: "${{ matrix.with-opt-deps && matrix.python-version != 'pypy-3.9' }}"
         run: |
           git clone https://github.com/progval/irctest.git
           cd irctest
