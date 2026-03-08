@@ -157,7 +157,7 @@ def close(registry, filename, private=True):
                                   value._name)
                     try:
                         lines_ = iter(textwrap.wrap(str(x)))
-                        lines.append('# Default value: %s\n' % next(lines_))
+                        lines.append('# Default value: %s\n' % next(lines_, ""))
                         for line in lines_:
                             lines.append('# %s\n' % line)
                     except Exception:
