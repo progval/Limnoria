@@ -89,6 +89,18 @@ class SupyProcess(SUPYPROCESS_MULTIPROCESSING_CONTEXT.Process):
         super(SupyProcess, self).__init__(*args, **kwargs)
         log.debug('Spawning process %q.', self.name)
 
+    def run(self):
+        global supyprocessing
+        supyprocessing = True
+        return super().run()
+
+# significantly speeds up starting SupyProcess
+multiprocessing.set_forkserver_preload([
+    "multiprocessing",
+    "supybot", "supybot.callbacks", "supybot.plugin", "supybot.plugins",
+    "supybot.irclib", "supybot.ircmsgs", "supybot.ircutils",
+    "supybot.shlex", "supybot.utils"])
+
 commandsProcessed = 0
 
 ircs = [] # A list of all the IRCs.
@@ -231,6 +243,11 @@ testing = False
 starting = False
 profiling = False
 documenting = False
+supyprocessing = False
+"""Whether the current process is running as the target of SupyProcess.
+
+Plugins can check if this is True to avoid unnecessary imports that slow down
+process initialization."""
 
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
