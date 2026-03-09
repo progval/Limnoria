@@ -314,7 +314,7 @@ class SedRegex(callbacks.Plugin):
         try:
             result = process(apply_substitution_to_first_matching_message,
                              pattern, replacement, messages, count,
-                             preload_plugins=["SedRegex"], **kwargs)
+                             load_plugin_modules=["SedRegex"], **kwargs)
             if result:
                 (m, subst) = result
                 return self._format_result(irc, msg, m, subst)
