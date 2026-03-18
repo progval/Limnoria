@@ -35,14 +35,14 @@ import supybot.registry as registry
 from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization('Services')
 
-def registerNick(nick, password=''):
+def registerNick(nick, password='', network=None):
     p = conf.supybot.plugins.Services.Nickserv.get('password')
     h = _('Determines what password the bot will use with NickServ when ' \
         'identifying as %s.') % nick
     v = conf.registerNetworkValue(p, nick,
                                   registry.String(password, h, private=True))
     if password:
-        v.setValue(password)
+        v.getSpecific(network=network).setValue(password)
 
 def configure(advanced):
     from supybot.questions import something
