@@ -47,14 +47,6 @@ def registerNick(nick, password=''):
 def configure(advanced):
     from supybot.questions import something
     conf.registerPlugin('Services', True)
-    nick = something(_('What is your registered nick?'))
-    password = something(_('What is your password for that nick?'))
-    chanserv = something(_('What is your ChanServ named?'), default='ChanServ')
-    nickserv = something(_('What is your NickServ named?'), default='NickServ')
-    conf.supybot.plugins.Services.nicks.setValue([nick])
-    conf.supybot.plugins.Services.NickServ.setValue(nickserv)
-    registerNick(nick, password)
-    conf.supybot.plugins.Services.ChanServ.setValue(chanserv)
 
 class ValidNickOrEmptyString(registry.String):
     def setValue(self, v):
