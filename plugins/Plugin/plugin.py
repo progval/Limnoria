@@ -29,8 +29,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-import supybot
+import sys
 
+import supybot
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
@@ -122,8 +123,20 @@ class Plugin(callbacks.Plugin):
                 irc.reply(format(_('The %q command is available in the %L %s.'),
                                  command, L, plugin))
         else:
-            irc.error(format('There is no command %q.', command))
+            irc.error(format(_('There is no command %q.'), command))
     plugins = wrap(plugins, [many('something')])
+
+    @internationalizeDocstring
+    def path(self, irc, msg, args, name):
+        """<name>
+
+        Returns the path where a plugin is loaded from.
+        """
+        cb = irc.getCallback(name)
+        if cb is None:
+            irc.error(format(_('There is no plugin %s'), name), Raise=True)
+        irc.reply(sys.modules[cb.__module__].__file__)
+    path = wrap(path, ['owner', 'somethingWithoutSpaces'])
 
     def author(self, irc, msg, args, cb):
         """<plugin>
