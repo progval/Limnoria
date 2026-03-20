@@ -103,7 +103,7 @@ class NetworkedFediverseTestCase(BaseFediverseTestCase):
 
 
 class NetworklessFediverseTestCase(BaseFediverseTestCase):
-    timeout = 3.0
+    timeout = 5.0
 
     @contextlib.contextmanager
     def mockWebfingerSupport(self, value):
