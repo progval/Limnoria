@@ -43,7 +43,7 @@ _ = PluginInternationalization('Plugin')
 
 class Plugin(callbacks.Plugin):
     """
-    This plugin exists to help users manage their plugins.  Use 'plugin
+    This plugin exists to help users manage their plugins.  Use 'misc
     list' to list the loaded plugins; use 'plugin help' to get the description
     of a plugin; use the 'plugin' command itself to determine what plugin a
     command exists in.
