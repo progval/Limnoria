@@ -35,6 +35,11 @@ import re
 import supybot.conf as conf
 import supybot.registry as registry
 
+conf.registerGlobalValue(conf.supybot, 'testRegexp1',
+    registry.Regexp(r'm/(example\.org)/', 'this is a test registry variable'))
+conf.registerGlobalValue(conf.supybot, 'testRegexp2',
+    registry.Regexp(r'm/(example\.org)/', 'this is a test registry variable'))
+
 join = registry.join
 split = registry.split
 escape = registry.escape
@@ -280,11 +285,14 @@ class ValuesTestCase(SupyTestCase):
             .getSpecific(network='testreloadnet',
                 channel='#testreloadchan')(),
             '#')
+        self.assertEqual(conf.supybot.testRegexp1().pattern, r'(example\.org)')
+        self.assertEqual(conf.supybot.testRegexp2().pattern, r'(example\.org)')
 
         filename = conf.supybot.directories.conf.dirize('reload.conf')
         registry.close(conf.supybot, filename)
         with open(filename, 'at') as fd:
-            fd.write('supybot.reply.whenAddressedBy.chars: !')
+            fd.write('supybot.reply.whenAddressedBy.chars: !\n')
+            fd.write('supybot.testRegexp1: m/example\\\\.com/\n')
 
         registry.open_registry(filename)
 
@@ -299,6 +307,7 @@ class ValuesTestCase(SupyTestCase):
         self.assertEqual(conf.supybot.reply.whenAddressedBy.chars
             .getSpecific(channel='#testchan')(),
             '!')
+        self.assertEqual(conf.supybot.testRegexp1().pattern, r'example\.com')
 
         # remain unchanged
         self.assertEqual(conf.supybot.reply.whenAddressedBy.chars
@@ -308,6 +317,7 @@ class ValuesTestCase(SupyTestCase):
             .getSpecific(network='testreloadnet',
                 channel='#testreloadchan')(),
             '#')
+        self.assertEqual(conf.supybot.testRegexp2().pattern, r'(example\.org)')
 
     def testWith(self):
         v = registry.String('foo', 'help')

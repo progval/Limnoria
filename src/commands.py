@@ -103,11 +103,11 @@ def _process_target(f, q, heap_size, *args, **kwargs):
     except Exception as e:
         q.put([True, e])
 
-def _process_queued_target(f_q, q, heap_size, *args, preload_plugins, **kwargs):
+def _process_queued_target(f_q, q, heap_size, *args, load_plugin_modules, **kwargs):
     """Called by :func:`process` on non-``fork`` multiprocessing contexts"""
     from .plugin import loadPluginModule
 
-    for plugin in preload_plugins:
+    for plugin in load_plugin_modules:
         loadPluginModule(plugin, ignoreDeprecation=True)
 
     f = f_q.get()
@@ -132,7 +132,7 @@ def process(f, *args, **kwargs):
     if world.disableMultiprocessing:
         pn = kwargs.pop('pn', 'Unknown')
         cn = kwargs.pop('cn', 'unknown')
-        kwargs.pop('preload_plugins', None)
+        kwargs.pop('load_plugin_modules', None)
         try:
             return f(*args, **kwargs)
         except Exception as e:
@@ -154,7 +154,7 @@ def process(f, *args, **kwargs):
                        multiprocessing.context.ForkContext):
         # no need to pickle f
         targetArgs = (f, q, heap_size) + args
-        kwargs.pop('preload_plugins', None)
+        kwargs.pop('load_plugin_modules', None)
         p = callbacks.CommandProcess(target=_process_target,
                                      args=targetArgs, kwargs=kwargs)
     else:

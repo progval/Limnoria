@@ -84,7 +84,7 @@ def open_registry(filename, clear=False):
     fd = utils.file.nonCommentNonEmptyLines(_fd)
     acc = ''
     slashEnd = re.compile(r'\\*$')
-    for line in fd:
+    for (lineno, line) in enumerate(fd):
         line = line.rstrip('\r\n')
         # XXX There should be some way to determine whether or not we're
         #     starting a new variable or not.  As it is, if there's a backslash
@@ -106,7 +106,9 @@ def open_registry(filename, clear=False):
             value = decoder(value)[0]
             acc = ''
         except ValueError:
-            raise InvalidRegistryFile('Error unpacking line %r' % acc)
+            raise InvalidRegistryFile(
+                f'Error unpacking {filename} line {lineno+1}: {acc!r}'
+            )
         _cache[key] = value
     _lastModified = monotonic_time()
     _fd.close()
@@ -154,9 +156,9 @@ def close(registry, filename, private=True):
                         exception('Exception instantiating default for %s:' %
                                   value._name)
                     try:
-                        lines = iter(textwrap.wrap(x))
-                        lines.append('# Default value: %s\n' % next(lines))
-                        for line in lines:
+                        lines_ = iter(textwrap.wrap(str(x)))
+                        lines.append('# Default value: %s\n' % next(lines_, ""))
+                        for line in lines_:
                             lines.append('# %s\n' % line)
                     except Exception:
                         exception('Exception printing default value of %s:' %
