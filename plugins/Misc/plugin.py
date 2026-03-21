@@ -515,7 +515,7 @@ class Misc(callbacks.Plugin):
 
                     try:
                         process(_matchMessages, messages, arg, q,
-                                timeout=3., preload_plugins=['Misc'],
+                                timeout=3., load_plugin_modules=['Misc'],
                                 pn=self.name(), cn='last')
                     except ProcessTimeoutError:
                         pass
