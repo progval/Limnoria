@@ -59,10 +59,11 @@ class Network(callbacks.Plugin):
         """[--nossl] <network> [<host[:port]>] [<password>]
 
         Connects to another network (which will be represented by the name
-        provided in <network>) at <host:port>.  If port is not provided, it
-        defaults to 6697, the default port for IRC with SSL.  If password is
-        provided, it will be sent to the server in a PASS command.  If --nossl is
-        provided, an SSL connection will not be attempted, and the port will
+        provided in <network>) at <host:port>.
+        The bot will then connect to the network automatically when it restarts.
+        If port is not provided, it defaults to 6697, the default port for IRC with SSL.
+        If <password> is provided, it will be sent to the server in a PASS command. 
+        If --nossl is provided, an SSL connection will not be attempted, and the port will
         default to 6667.
         """
         if '.' in network:
