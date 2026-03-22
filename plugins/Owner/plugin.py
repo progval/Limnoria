@@ -586,6 +586,8 @@ class Owner(callbacks.Plugin):
         Loads the plugin <plugin> from any of the directories in
         conf.supybot.directories.plugins; usually this includes the main
         installed directory and 'plugins' in the current directory.
+        The <plugin> will then be loaded automatically every time the bot
+        restarts.
         --deprecated is necessary if you wish to load deprecated plugins.
         """
         ignoreDeprecation = False
