@@ -233,6 +233,11 @@ repositories = utils.InsensitivePreservingDict({
                                                    'nelluk',
                                                    'Limnoria-Plugins',
                                                    ),
+               'Alcheri':          GithubRepository(
+                                                   'Alcheri',
+                                                   'Limnoria-plugins',
+                                                   'plugins',
+                                                   ),
                })
 
 class PluginDownloader(callbacks.Plugin):
