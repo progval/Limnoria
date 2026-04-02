@@ -249,7 +249,7 @@ class Services(callbacks.Plugin):
             if not password:
                 return
             self._doGhost(irc)
-            
+
     def do477(self, irc, msg):
         # DALnet: Cannot join channel (+R, need to be identified)
         state = self._getState(irc)
