@@ -37,10 +37,11 @@ import codecs
 import string
 import fnmatch
 import os.path
+import weakref
 import threading
 import collections.abc
 
-from .. import callbacks, conf, dbi, ircdb, ircutils, i18n, log, utils, world
+from .. import callbacks, conf, dbi, ircdb, irclib, ircutils, i18n, log, utils, world
 from ..commands import *
 
 _ = i18n.PluginInternationalization()
@@ -100,12 +101,16 @@ def getChannel(channel):
 #     to refactor it.
 # XXX We need to get rid of this, it's ugly and opposed to
 #     database-independence.
-class ChannelDBHandler(object):
+class ChannelDBHandler(irclib.IrcCallback):
     """A class to handle database stuff for individual channels transparently.
     """
     suffix = '.db'
     def __init__(self, suffix='.db'):
+        # only main thread's DBs, for backward compatibility
         self.dbCache = ircutils.IrcDict()
+        # {thread: {channel: DB}}
+        self.dbCacheThreads = weakref.WeakKeyDictionary()
+
         suffix = self.suffix
         if self.suffix and self.suffix[0] != '.':
             suffix = '.' + suffix
@@ -123,18 +128,26 @@ class ChannelDBHandler(object):
 
     def getDb(self, channel):
         """Use this to get a database for a specific channel."""
-        currentThread = threading.currentThread()
-        if channel not in self.dbCache and currentThread == world.mainThread:
-            self.dbCache[channel] = self.makeDb(self.makeFilename(channel))
-        if currentThread != world.mainThread:
-            db = self.makeDb(self.makeFilename(channel))
-        else:
-            db = self.dbCache[channel]
+        dbCache = self._getDbCache()
+
+        if channel not in dbCache:
+            dbCache[channel] = self.makeDb(self.makeFilename(channel))
+        db = self.dbCache[channel]
         db.isolation_level = None
         return db
 
+    def _getDbCache(self):
+        currentThread = threading.currentThread()
+        if currentThread == world.mainThread:
+            return self.dbCache
+        else:
+            if currentThread not in self.dbCacheThreads:
+                self.dbCacheThreads[currentThread] = ircutils.IrcDict()
+            return self.dbCacheThreads[currentThread]
+
     def die(self):
-        for db in self.dbCache.values():
+        dbCache = self._getDbCache()
+        for db in dbCache.values():
             try:
                 db.commit()
             except AttributeError: # In case it's not an SQLite database.
@@ -145,6 +158,7 @@ class ChannelDBHandler(object):
                 pass
             del db
         gc.collect()
+        super().die()
 
 
 class DbiChannelDB(object):

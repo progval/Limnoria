@@ -59,13 +59,16 @@ class ChannelLoggerTestCase(ChannelPluginTestCase):
         )
 
     def testLogDir(self):
+        path = os.path.join('ChannelLogger', 'test', '#foo')
         self.assertEqual(
             self.irc.getCallback('ChannelLogger').getLogDir(self.irc, '#foo'),
-            conf.supybot.directories.log.dirize('ChannelLogger/test/#foo')
+            conf.supybot.directories.log.dirize(path)
         )
+
+        path = os.path.join('ChannelLogger', 'test', '#f..oo')
         self.assertEqual(
             self.irc.getCallback('ChannelLogger').getLogDir(self.irc, '#f/../oo'),
-            conf.supybot.directories.log.dirize('ChannelLogger/test/#f..oo')
+            conf.supybot.directories.log.dirize(path)
         )
 
     @patch_open
@@ -75,8 +78,9 @@ class ChannelLoggerTestCase(ChannelPluginTestCase):
             self.irc.getCallback('ChannelLogger').getLog(self.irc, '#foo'),
             mock_open.return_value
         )
+        path = os.path.join('ChannelLogger', 'test', '#foo', '#foo.log')
         mock_open.assert_called_once_with(
-            conf.supybot.directories.log.dirize('ChannelLogger/test/#foo/#foo.log'),
+            conf.supybot.directories.log.dirize(path),
             encoding='utf-8',
             mode='a'
         )
