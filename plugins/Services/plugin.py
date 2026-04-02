@@ -77,7 +77,7 @@ class Services(callbacks.Plugin):
 
     def do001(self, irc, msg):
         for nick in self.registryValue('nicks', network=irc.network):
-            config.registerNick(nick)
+            config.registerNick(nick, network=irc.network)
 
     def _getState(self, irc):
         return self.state.setdefault(irc.network, State())
@@ -669,7 +669,7 @@ class Services(callbacks.Plugin):
             v = self.registryValue('nicks', network=irc.network).copy()
             v.add(nick)
             self.setRegistryValue('nicks', value=v, network=irc.network)
-            config.registerNick(nick, password)
+            config.registerNick(nick, password, network=irc.network)
             irc.replySuccess()
     password = wrap(password, [('checkCapability', 'admin'),
                                 'private', 'nick', 'text'])
