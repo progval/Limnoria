@@ -95,7 +95,7 @@ class Services(callbacks.Plugin):
             if not state.identified:
                 if self.registryValue('noJoinsUntilIdentified', network=irc.network):
                     self.log.info('Holding JOIN to %s @ %s until identified.',
-                                  msg.channel, irc.network)
+                                  msg.args[0], irc.network)
                     state.waitingJoins.append(msg)
                     return None
         return msg
