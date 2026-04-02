@@ -286,7 +286,9 @@ class Services(callbacks.Plugin):
     def doNotice(self, irc, msg):
         if irc.afterConnect:
             nickserv = self.registryValue('NickServ', network=irc.network)
+            nickserv = nickserv.split('@')[0]
             chanserv = self.registryValue('ChanServ', network=irc.network)
+            chanserv = chanserv.split('@')[0]
             if nickserv and ircutils.strEqual(msg.nick, nickserv):
                 self.doNickservNotice(irc, msg)
             elif chanserv and ircutils.strEqual(msg.nick, chanserv):
