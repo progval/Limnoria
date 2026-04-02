@@ -250,10 +250,25 @@ class Services(callbacks.Plugin):
                 return
             self._doGhost(irc)
 
+    def do477(self, irc, msg):
+        # DALnet: Cannot join channel (+R, need to be identified)
+        state = self._getState(irc)
+        channel = msg.args[1]
+        self.log.debug(
+            'Got 477 (need identified) for %s on %s, will retry after identify.',
+            channel, irc.network
+        )
+        state.channels.append(channel)
+
     def do515(self, irc, msg):
         # Can't join this channel, it's +r (we must be identified).
         state = self._getState(irc)
-        state.channels.append(msg.args[1])
+        channel = msg.args[1]
+        self.log.debug(
+            'Got 515 (need identified) for %s on %s, will retry after identify.',
+            channel, irc.network
+        )
+        state.channels.append(channel)
 
     def doNick(self, irc, msg):
         nick = self._getNick(irc.network)
