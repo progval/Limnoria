@@ -289,9 +289,6 @@ class Services(callbacks.Plugin):
             chanserv = self.registryValue('ChanServ', network=irc.network)
             if nickserv and ircutils.strEqual(msg.nick, nickserv):
                 self.doNickservNotice(irc, msg)
-            elif msg.nick and msg.nick.lower() == 'nickserv':
-                # Fallback for networks like DALnet
-                self.doNickservNotice(irc, msg)
             elif chanserv and ircutils.strEqual(msg.nick, chanserv):
                 self.doChanservNotice(irc, msg)
 
