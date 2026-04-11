@@ -339,7 +339,8 @@ class Value(Group):
     """Invalid registry value.  If you're getting this message, report it,
     because we forgot to put a proper help string here."""
     __slots__ = ('__parent', '_default', '_showDefault', '_help', '_callbacks',
-            'value', '_networkValue', '_channelValue', '_opSettable')
+            'value', '_networkValue', '_channelValue', '_opSettable',
+            '_settable')
     def __init__(self, default, help, setDefault=True,
                  showDefault=True, **kwargs):
         self.__parent = super(Value, self)

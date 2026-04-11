@@ -82,31 +82,9 @@ def getCapability(irc, name):
         ### Do more later, for specific capabilities/sections.
     return capability
 
-def isReadOnly(name):
-    """Prevents changing certain config variables to gain shell access via
-    a vulnerable IRC network."""
-    parts = registry.split(name.lower())
-    if parts[0] != 'supybot':
-        parts.insert(0, 'supybot')
-    if parts == ['supybot', 'commands', 'allowshell'] and \
-            not conf.supybot.commands.allowShell():
-        # allow setting supybot.commands.allowShell from True to False,
-        # but not from False to True.
-        # Otherwise an IRC network could overwrite it.
-        return True
-    elif parts[0:2] == ['supybot', 'directories'] and \
-            not conf.supybot.commands.allowShell():
-        # Setting plugins directory allows for arbitrary code execution if
-        # an attacker can both use the IRC network to MITM and upload files
-        # on the server (eg. with a web CMS).
-        # Setting other directories allows writing data at arbitrary
-        # locations.
-        return True
-    else:
-        return False
-
 def checkCanSetValue(irc, msg, group):
-    if isReadOnly(group._name):
+    settable = getattr(group, '_settable', True)
+    if not utils.force(settable):
         irc.error(_("This configuration variable is not writeable "
             "via IRC. To change it you have to: 1) use the 'flush' command 2) edit "
             "the config file 3) use the 'config reload' command."), Raise=True)
