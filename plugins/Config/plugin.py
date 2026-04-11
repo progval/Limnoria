@@ -72,7 +72,8 @@ def getCapability(irc, name):
     while parts:
         part = parts.pop(0)
         group = group.get(part)
-        if not getattr(group, '_opSettable', True):
+        op_settable = getattr(group, '_opSettable', True)
+        if not utils.force(op_settable):
             return 'owner'
         if irc.isChannel(part):
             # If a registry value has a channel in it, it requires a
