@@ -85,15 +85,17 @@ def registerGroup(Group, name, group=None, **kwargs):
         group = registry.Group(**kwargs)
     return Group.register(name, group)
 
-def registerGlobalValue(group, name, value):
+def registerGlobalValue(group, name, value, settable=True):
     value._networkValue = False
     value._channelValue = False
+    value._settable = settable
     return group.register(name, value)
 
-def registerNetworkValue(group, name, value):
+def registerNetworkValue(group, name, value, settable=True):
     value._supplyDefault = True
     value._networkValue = True
     value._channelValue = False
+    value._settable = settable
     g = group.register(name, value)
     gname = g._name.lower()
     for name in registry._cache.keys():
@@ -105,11 +107,12 @@ def registerNetworkValue(group, name, value):
                 g.get(parts[0])()
     return g
 
-def registerChannelValue(group, name, value, opSettable=True):
+def registerChannelValue(group, name, value, opSettable=True, settable=True):
     value._supplyDefault = True
     value._networkValue = True
     value._channelValue = True
     value._opSettable = opSettable
+    value._settable = settable
     g = group.register(name, value)
     gname = g._name.lower()
     for name in registry._cache.keys():
@@ -868,7 +871,8 @@ registerGlobalValue(supybot.commands, 'allowShell',
     to prevent MITM from the IRC network itself (vulnerable IRCd or IRCops)
     from gaining shell access to the bot's server by impersonating the owner.
     Setting this to False also disables plugins and commands that can be
-    used to indirectly gain shell access.""")))
+    used to indirectly gain shell access.""")),
+    settable=lambda: supybot.commands.allowShell())
 
 # supybot.commands.disabled moved to callbacks for canonicalName.
 
@@ -991,22 +995,28 @@ class DataFilenameDirectory(DataFilename, Directory):
 registerGroup(supybot, 'directories')
 registerGlobalValue(supybot.directories, 'conf',
     Directory('conf', _("""Determines what directory configuration data is
-    put into.""")))
+    put into.""")),
+    settable=lambda: supybot.commands.allowShell())
 registerGlobalValue(supybot.directories, 'data',
-    Directory('data', _("""Determines what directory data is put into.""")))
+    Directory('data', _("""Determines what directory data is put into.""")),
+    settable=lambda: supybot.commands.allowShell())
 registerGlobalValue(supybot.directories, 'backup',
     Directory('backup', _("""Determines what directory backup data is put
     into. Set it to /dev/null to disable backup (it is a special value,
-    so it also works on Windows and systems without /dev/null).""")))
+    so it also works on Windows and systems without /dev/null).""")),
+    settable=lambda: supybot.commands.allowShell())
 registerGlobalValue(supybot.directories, 'log',
-    Directory('logs', """Determines what directory the bot will store its
-    logfiles in."""))
+    Directory('logs', _("""Determines what directory the bot will store its
+    logfiles in.""")),
+    settable=lambda: supybot.commands.allowShell())
 registerGlobalValue(supybot.directories.data, 'tmp',
     DataFilenameDirectory('tmp', _("""Determines what directory temporary files
-    are put into.""")))
+    are put into.""")),
+    settable=lambda: supybot.commands.allowShell())
 registerGlobalValue(supybot.directories.data, 'web',
     DataFilenameDirectory('web', _("""Determines what directory files of the
-    web server (templates, custom images, ...) are put into.""")))
+    web server (templates, custom images, ...) are put into.""")),
+    settable=lambda: supybot.commands.allowShell())
 
 def _update_tmp():
     utils.file.AtomicFile.default.tmpDir = supybot.directories.data.tmp
@@ -1023,7 +1033,8 @@ registerGlobalValue(supybot.directories, 'plugins',
     strings.
     This means that to add another directory, you can nest the former value and
     add a new one.  E.g. you can say: bot: 'config supybot.directories.plugins
-    [config supybot.directories.plugins], newPluginDirectory'.""")))
+    [config supybot.directories.plugins], newPluginDirectory'.""")),
+    settable=lambda: supybot.commands.allowShell())
 
 registerGlobalValue(supybot, 'plugins',
     registry.SpaceSeparatedSetOfStrings([], _("""List of all plugins that were
@@ -1036,7 +1047,8 @@ registerGlobalValue(supybot.plugins, 'alwaysLoadImportant',
     regardless of what their configured state is.  Generally, if these plugins
     are configured not to load, you didn't do it on purpose, and you still
     want them to load.  Users who don't want to load these plugins are smart
-    enough to change the value of this variable appropriately :)""")))
+    enough to change the value of this variable appropriately :)""")),
+    settable=lambda: supybot.commands.allowShell())
 
 ###
 # supybot.databases.  For stuff relating to Supybot's databases (duh!)
