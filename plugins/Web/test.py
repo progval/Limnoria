@@ -102,6 +102,16 @@ class WebTestCase(ChannelPluginTestCase):
             finally:
                 conf.supybot.plugins.Web.titleSnarfer.setValue(False)
 
+        def testTitleSnarferCtcp(self):
+            try:
+                conf.supybot.plugins.Web.titleSnarfer.setValue(True)
+                self.assertSnarfRegexp(
+                    '\x01ACTION is browsing https://microsoft.com/\x01',
+                    'Microsoft'
+                )
+            finally:
+                conf.supybot.plugins.Web.titleSnarfer.setValue(False)
+
         def testMultipleTitleSnarfer(self):
             try:
                 conf.supybot.plugins.Web.titleSnarfer.setValue(True)
