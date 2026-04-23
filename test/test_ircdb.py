@@ -400,7 +400,7 @@ class IrcNetworkTestCase(IrcdbTestCase):
         fd = io.StringIO()
         n.preserve(fd, indent='    ')
         fd.seek(0)
-        self.assertCountEqual(fd.read().split('\n'), [
+        self.assertCountEqual(fd.read().split(os.linesep), [
             '    stsPolicy foo 123 sts1',
             '    stsPolicy bar 456 sts2',
             '    lastDisconnectTime foo %d' % disconnect_time_foo,
@@ -500,7 +500,7 @@ class NetworksDictionaryTestCase(IrcdbTestCase):
                 'supybot.utils.file.AtomicFile', return_value=fd):
             self.networks.flush()
 
-        lines = fd.getvalue().split('\n')
+        lines = fd.getvalue().split(os.linesep)
         self.assertEqual(lines.pop(0), 'network foonet')
         self.assertCountEqual(lines, [
             '  stsPolicy foo 123 sts1',
@@ -533,17 +533,18 @@ class NetworksDictionaryTestCase(IrcdbTestCase):
             self.networks.flush()
 
         fd.seek(0)
-        self.assertEqual(fd.getvalue(),
-            'network barnet\n'
-            '  stsPolicy bar 456 sts2\n'
-            '\n'
-            'network baznet\n'
-            '  stsPolicy baz 789 sts3\n'
-            '\n'
-            'network foonet\n'
-            '  stsPolicy foo 123 sts1\n'
-            '\n'
-        )
+        self.assertEqual(fd.getvalue().split(os.linesep), [
+            'network barnet',
+            '  stsPolicy bar 456 sts2',
+            '',
+            'network baznet',
+            '  stsPolicy baz 789 sts3',
+            '',
+            'network foonet',
+            '  stsPolicy foo 123 sts1',
+            '',
+            '',
+        ])
 
 
 class CheckCapabilityTestCase(IrcdbTestCase):

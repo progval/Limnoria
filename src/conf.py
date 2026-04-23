@@ -953,7 +953,8 @@ class Directory(registry.String):
     def __call__(self):
         # ??? Should we perhaps always return an absolute path here?
         v = super(Directory, self).__call__()
-        if not os.path.exists(v):
+        if v != "/dev/null" and not os.path.exists(v):
+            # /dev/null is a special value to disable directories (eg. backup),
             os.mkdir(v)
         return v
 

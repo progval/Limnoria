@@ -81,7 +81,8 @@ if sqlite3:
             self.filename = filename.replace('sqlite3', 'sqlalchemy')
 
         def close(self):
-            self.dbs.clear()
+            for engine in self.engines.values():
+                engine.close()
 
         def get_db(self, channel):
             if channel in self.engines:
@@ -544,6 +545,7 @@ class Aka(callbacks.Plugin):
     def die(self):
         if self._http_running:
             self._stopHttp()
+        self._db.close()
 
     def _httpConfCallback(self):
         if self.registryValue('web.enable'):
