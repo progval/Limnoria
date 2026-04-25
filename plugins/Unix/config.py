@@ -72,7 +72,8 @@ Unix = conf.registerPlugin('Unix')
 conf.registerGroup(Unix, 'fortune')
 conf.registerGlobalValue(Unix.fortune, 'command',
     registry.String(utils.findBinaryInPath('fortune') or '', _("""Determines
-    what command will be called for the fortune command.""")))
+    what command will be called for the fortune command.""")),
+    settable=lambda: conf.supybot.commands.allowShell())
 conf.registerChannelValue(Unix.fortune, 'short',
     registry.Boolean(True, _("""Determines whether only short fortunes will be
     used if possible.  This sends the -s option to the fortune program.""")))
@@ -95,7 +96,8 @@ conf.registerGroup(Unix, 'spell')
 conf.registerGlobalValue(Unix.spell, 'command',
     registry.String(utils.findBinaryInPath('aspell') or
                     utils.findBinaryInPath('ispell') or '', _("""Determines
-    what command will be called for the spell command.""")))
+    what command will be called for the spell command.""")),
+    settable=lambda: conf.supybot.commands.allowShell())
 conf.registerGlobalValue(Unix.spell, 'language',
     registry.String('en', _("""Determines what aspell dictionary will be used
     for spell checking.""")))
@@ -103,28 +105,33 @@ conf.registerGlobalValue(Unix.spell, 'language',
 conf.registerGroup(Unix, 'wtf')
 conf.registerGlobalValue(Unix.wtf, 'command',
     registry.String(utils.findBinaryInPath('wtf') or '', _("""Determines what
-    command will be called for the wtf command.""")))
+    command will be called for the wtf command.""")),
+    settable=lambda: conf.supybot.commands.allowShell())
 
 conf.registerGroup(Unix, 'ping')
-conf.registerGlobalValue(Unix.ping, 'command', 
-    registry.String(utils.findBinaryInPath('ping') or '', """Determines what 
-    command will be called for the ping command."""))
+conf.registerGlobalValue(Unix.ping, 'command',
+    registry.String(utils.findBinaryInPath('ping') or '', """Determines what
+    command will be called for the ping command."""),
+    settable=lambda: conf.supybot.commands.allowShell())
 conf.registerGlobalValue(Unix.ping, 'defaultCount',
     registry.PositiveInteger(5, """Determines what ping and ping6 counts (-c) will default to."""))
 
 conf.registerGroup(Unix, 'ping6')
-conf.registerGlobalValue(Unix.ping6, 'command', 
-    registry.String(utils.findBinaryInPath('ping6') or '', """Determines what 
-    command will be called for the ping6 command."""))
+conf.registerGlobalValue(Unix.ping6, 'command',
+    registry.String(utils.findBinaryInPath('ping6') or '', """Determines what
+    command will be called for the ping6 command."""),
+    settable=lambda: conf.supybot.commands.allowShell())
 
 conf.registerGroup(Unix, 'sysuptime')
 conf.registerGlobalValue(Unix.sysuptime, 'command',
     registry.String(utils.findBinaryInPath('uptime') or '', """Determines what
-    command will be called for the uptime command."""))
+    command will be called for the uptime command."""),
+    settable=lambda: conf.supybot.commands.allowShell())
 
 conf.registerGroup(Unix, 'sysuname')
 conf.registerGlobalValue(Unix.sysuname, 'command',
     registry.String(utils.findBinaryInPath('uname') or '', """Determines what
-    command will be called for the uname command."""))
+    command will be called for the uname command."""),
+    settable=lambda: conf.supybot.commands.allowShell())
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

@@ -70,14 +70,11 @@ class Services(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Services, self)
         self.__parent.__init__(irc)
+        self._initializedNetworks = set()
         self.reset()
 
     def reset(self):
         self.state = {}
-
-    def do001(self, irc, msg):
-        for nick in self.registryValue('nicks', network=irc.network):
-            config.registerNick(nick)
 
     def _getState(self, irc):
         return self.state.setdefault(irc.network, State())
@@ -187,6 +184,12 @@ class Services(callbacks.Plugin):
         self.__parent.__call__(irc, msg)
         if self.disabled(irc):
             return
+
+        if irc.network not in self._initializedNetworks:
+            self._initializedNetworks.add(irc.network)
+            for nick in self.registryValue('nicks', network=irc.network):
+                config.registerNick(nick)
+
         state = self._getState(irc)
         nick = self._getNick(irc.network)
         if nick not in self.registryValue('nicks', network=irc.network):
