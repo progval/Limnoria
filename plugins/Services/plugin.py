@@ -70,14 +70,13 @@ class Services(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Services, self)
         self.__parent.__init__(irc)
+        network = irc.network if irc else None
+        for nick in self.registryValue('nicks', network=network):
+            config.registerNick(nick)
         self.reset()
 
     def reset(self):
         self.state = {}
-
-    def do001(self, irc, msg):
-        for nick in self.registryValue('nicks', network=irc.network):
-            config.registerNick(nick)
 
     def _getState(self, irc):
         return self.state.setdefault(irc.network, State())
