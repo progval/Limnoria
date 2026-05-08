@@ -30,6 +30,7 @@
 ###
 
 import os
+import hmac
 import time
 import operator
 
@@ -269,9 +270,9 @@ class IrcUser(object):
             return False
         if self.hashed:
             (salt, _) = self.password.split('|')
-            return (self.password == utils.saltHash(password, salt=salt))
+            return hmac.compare_digest(self.password, utils.saltHash(password, salt=salt))
         else:
-            return (self.password == password)
+            return hmac.compare_digest(self.password, password)
 
     def checkHostmask(self, hostmask, useAuth=True):
         """Checks a given hostmask against the user's hostmasks or current
