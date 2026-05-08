@@ -192,7 +192,15 @@ def ssl_wrap_socket(conn, hostname, logger, certfile=None,
         conn = context.wrap_socket(conn, server_hostname=hostname)
 
     if trusted_fingerprints:
-        check_certificate_fingerprint(conn, trusted_fingerprints)
+        try:
+            check_certificate_fingerprint(conn, trusted_fingerprints)
+        except:
+            # We need to explicitly close the SSL wrapper here, because we
+            # don't return it to the caller.
+            # Without it, current PyPy versions won't close the underlying
+            # socket until this wrapper gets garbage-collected.
+            conn.close()
+            raise
 
     return conn
 
