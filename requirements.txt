@@ -4,7 +4,7 @@ setuptools
 
 # optional core dependencies:
 
-chardet                     # to detect encoding of incoming IRC lines, if they are not in UTF-8
+chardet < 7.0.0             # to detect encoding of incoming IRC lines, if they are not in UTF-8. Version 7.0.0 was fully vibe-rewritten in two weeks to launder copyright (https://github.com/chardet/chardet/releases/tag/7.0.0), so we'll pass.
 python-gnupg                # for authenticated based on GPG tokens
 PySocks                     # for SOCKS proxy (typically used to connect to IRC via Tor)
 pyxmpp2-scram               # for the scram-sha-256 SASL mechanism
