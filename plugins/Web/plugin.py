@@ -31,6 +31,7 @@
 
 import re
 import socket
+import json
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -135,7 +136,23 @@ class Web(callbacks.PluginRegexp):
     """Add the help for 'help Web' here."""
     regexps = ['titleSnarfer']
     threaded = True
-
+    _oembed_providers = None
+        
+    def _loadOEmbedProviders(self):
+        """
+        Loads the oEmbed providers JSON if not already loaded.
+        Returns the providers list.
+        """
+        if self._oembed_providers is None:
+            try:
+                providers_url = "https://oembed.com/providers.json"
+                response = utils.web.getUrl(providers_url)
+                self._oembed_providers = json.loads(response)
+            except Exception as e:
+                self.log.debug(f"Failed to load oEmbed providers: {e}")
+                self._oembed_providers = []
+        return self._oembed_providers
+        
     def noIgnore(self, irc, msg):
         return not self.registryValue('checkIgnored', msg.channel, irc.network)
 
@@ -255,6 +272,55 @@ class Web(callbacks.PluginRegexp):
                                'to have no HTML title within the first %S.',
                                url, size)
 
+    def _getOEmbedEndpoint(self, url):
+        """
+        Finds the appropriate oEmbed endpoint for the given URL.
+        First tries the providers registry if enabled, then falls back to
+        HTML discovery if needed and enabled.
+        """
+        if self.registryValue('useOembedRegistry'):
+            providers = self._loadOEmbedProviders()
+            for provider in providers:
+                for pattern in provider.get('endpoints', []):
+                    schemes = pattern.get('schemes', [])
+                    endpoint = pattern.get('url', '')
+                    for scheme in schemes:
+                        regex = re.escape(scheme).replace(r'\*', '.*')
+                        if re.match(regex, url):
+                            return endpoint
+        if self.registryValue('useOembedDiscovery'):
+            try:
+                timeout = self.registryValue('timeout')
+                response = utils.web.getUrl(url, timeout=timeout)
+                text = response.decode('utf8', errors='replace')
+                match = re.search(
+                    r'<link[^>]+?type="application/json\+oembed"[^>]+?href="([^"]+)"',
+                    text,
+                    re.IGNORECASE)
+                if match:
+                    endpoint = match.group(1)
+                    endpoint = endpoint.split('?')[0]
+                    return endpoint
+            except Exception as e:
+                    self.log.debug(f"Failed to discover oEmbed endpoint in HTML: {e}")
+        return None
+
+    def getOEmbedTitle(self, url):
+        """
+        Retrieves the oEmbed title.
+        """
+        try:
+            oembed_endpoint = self._getOEmbedEndpoint(url)
+            if not oembed_endpoint:
+                return None
+            oembed_url = f"{oembed_endpoint}?format=json&url={url}"
+            response = utils.web.getUrl(oembed_url)
+            oembed_data = json.loads(response)
+            return oembed_data.get('title')
+        except Exception as e:
+            self.log.debug(f"Failed to retrieve oEmbed title: {e}")
+            return None
+
     @fetch_sandbox
     def titleSnarfer(self, irc, msg, match):
         channel = msg.channel
@@ -271,10 +337,13 @@ class Web(callbacks.PluginRegexp):
             if r and r.search(url):
                 self.log.debug('Not titleSnarfing %q.', url)
                 return
-            r = self.getTitle(irc, url, False, msg)
-            if not r:
-                return
-            (target, title) = r
+            title = self.getOEmbedTitle(url)
+            target = url
+            if not title:
+                r = self.getTitle(irc, url, False, msg)
+                if not r:
+                    return
+                (target, title) = r
             if title:
                 domain = utils.web.getDomain(target
                         if self.registryValue('snarferShowTargetDomain',
@@ -413,10 +482,13 @@ class Web(callbacks.PluginRegexp):
         if not self._checkURLWhitelist(irc, msg, url):
             irc.error("This url is not on the whitelist.")
             return
-        r = self.getTitle(irc, url, True, msg)
-        if not r:
-            return
-        (target, title) = r
+        title = self.getOEmbedTitle(url)
+        target = url
+        if not title:
+            r = self.getTitle(irc, url, True, msg)
+            if not r:
+                return
+            (target, title) = r
         if title:
             if not [y for x,y in optlist if x == 'no-filter']:
                 for i in range(1, 4):
