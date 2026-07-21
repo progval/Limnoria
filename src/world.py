@@ -50,10 +50,10 @@ startedAt = time.time() # Just in case it doesn't get set later.
 
 starting = False
 
-mainThread = threading.currentThread()
+mainThread = threading.current_thread()
 
 def isMainThread():
-    return mainThread is threading.currentThread()
+    return mainThread is threading.current_thread()
 
 threadsSpawned = 1 # Starts at one for the initial "thread."
 
