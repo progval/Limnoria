@@ -1199,7 +1199,7 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
                     "batch start: %r",
                     msg,
                 )
-                log.error("Previous message was: %r", self.history[-1])
+                log.error("Previous message was: %r", self.history[-2])
                 return
             batch.messages.append(msg)
             msg.tag('batch', batch)
