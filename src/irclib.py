@@ -1191,7 +1191,16 @@ class IrcState(IrcCommandDispatcher, log.Firewalled):
             msg.tag('batch', batch)
             self.batches[batch_name] = batch
         elif msg.args[0].startswith('-'):
-            batch = self.batches.pop(batch_name)
+            try:
+                batch = self.batches.pop(batch_name)
+            except KeyError:
+                log.error(
+                    "Got end of batch, but there is no corresponding "
+                    "batch start: %r",
+                    msg,
+                )
+                log.error("Previous message was: %r", self.history[-1])
+                return
             batch.messages.append(msg)
             msg.tag('batch', batch)
         else:
