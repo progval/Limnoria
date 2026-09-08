@@ -87,8 +87,9 @@ def checkCanSetValue(irc, msg, group):
     settable = getattr(group, '_settable', True)
     if not utils.force(settable):
         irc.error(_("This configuration variable is not writeable "
-            "via IRC. To change it you have to: 1) use the 'flush' command 2) edit "
-            "the config file 3) use the 'config reload' command."), Raise=True)
+            "via IRC. To change it you have to: 1) use the 'flush' command "
+            "2) use the 'config flush false' command 3) edit the config "
+            "file 4) use the 'config reload' command."), Raise=True)
     capability = getCapability(irc, group._name)
     if not ircdb.checkCapability(msg.prefix, capability):
         irc.errorNoCapability(capability, Raise=True)
