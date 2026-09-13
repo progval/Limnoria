@@ -170,7 +170,7 @@ class AtomicFile(object):
             self.tempFilename = os.path.join(tmpDir, tempFilename)
         # This doesn't work because of the uncollectable garbage effect.
         # self.__parent = super(AtomicFile, self)
-        self._fd = codecs.open(self.tempFilename, mode, encoding=encoding)
+        self._fd = open(self.tempFilename, mode, encoding=encoding)
 
     def __enter__(self):
         return self
