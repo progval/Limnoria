@@ -197,7 +197,6 @@ class FlatfileMapping(MappingInterface):
         with open(self.filename, 'r+', encoding='utf8') as fd:
             try:
                 fd.seek(0, 2) # End.
-                print("add writing", repr(line))
                 fd.write(line)
                 return self.currentId
             finally:
