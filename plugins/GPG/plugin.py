@@ -221,6 +221,12 @@ class GPG(callbacks.Plugin):
                 content = content.decode()
             match = self._auth_re.search(content)
             if not match:
+                import base64
+                print('GPG_DEBUG url=%r' % url, flush=True)
+                print('GPG_DEBUG content_repr=%r' % content, flush=True)
+                print('GPG_DEBUG content_b64=%s' % base64.b64encode(
+                        content.encode('utf-8', errors='replace')
+                        ).decode(), flush=True)
                 irc.error(_('Signature or token not found.'), Raise=True)
             data = match.group(0)
             token = match.group(1)
