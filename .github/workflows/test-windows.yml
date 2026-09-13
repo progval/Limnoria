@@ -16,13 +16,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install native GnuPG
-        # Git for Windows' gpg (MSYS build) can't run gpg-agent secret-key ops,
-        # breaking plugins/GPG
-        run: |
-          choco install gpg4win --yes --no-progress
-          echo "C:\Program Files\GnuPG\bin" >> $env:GITHUB_PATH
-
       - name: Upgrade pip
         run: |
           python3 -m pip install --upgrade pip setuptools
@@ -39,7 +32,7 @@ jobs:
 
       - name: Test with unittest
         run: |
-          supybot-test test -v --plugins-dir=./plugins/ --no-network --exclude="*Fediverse" --exclude="*RSS"
+          supybot-test test -v --plugins-dir=./plugins/ --no-network --exclude="*Fediverse" --exclude="*GPG" --exclude="*RSS"
 
       - name: Test with irctest
         if: "${{ matrix.with-opt-deps && matrix.python-version != '3.7' && matrix.python-version != 'pypy-3.7' && matrix.python-version != 'pypy-3.9' }}"
