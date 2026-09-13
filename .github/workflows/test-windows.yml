@@ -27,7 +27,6 @@ jobs:
 
       - name: Install
         run: |
-          set LIMNORIA_WARN_OLD_PYTHON=0
           pip install .
 
       - name: Test with unittest
