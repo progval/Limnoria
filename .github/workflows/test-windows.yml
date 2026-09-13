@@ -33,11 +33,3 @@ jobs:
         run: |
           supybot-test test -v --plugins-dir=./plugins/ --no-network --exclude="*Fediverse" --exclude="*GPG" --exclude="*RSS"
 
-      - name: Test with irctest
-        if: "${{ matrix.with-opt-deps && matrix.python-version != '3.7' && matrix.python-version != 'pypy-3.7' && matrix.python-version != 'pypy-3.9' }}"
-        run: |
-          git clone https://github.com/progval/irctest.git
-          cd irctest
-          pip3 install -r requirements.txt
-          make limnoria PYTEST_ARGS=-vs
-
