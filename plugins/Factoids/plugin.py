@@ -218,7 +218,7 @@ class Factoids(callbacks.Plugin, plugins.ChannelDBHandler):
     def die(self):
         if self.registryValue('web.enable'):
             self._stopHttp()
-        super(self.__class__, self).die()
+        super().die()
 
     def makeDb(self, filename):
         if os.path.exists(filename):

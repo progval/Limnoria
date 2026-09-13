@@ -39,8 +39,8 @@ import os.path
 from . import crypt, force
 
 def sanitizeName(filename):
-    """Removes / from filenames and escapes them if they are '.' or '..'."""
-    filename = filename.replace('/', '')
+    r"""Removes '/', '\', and '|' from filenames and escapes them if they are '.' or '..'."""
+    filename = filename.replace('/', '').replace(r'\'', '').replace('|', '')
     if filename == '.':
         return '_'
     elif filename == '..':
@@ -170,7 +170,7 @@ class AtomicFile(object):
             self.tempFilename = os.path.join(tmpDir, tempFilename)
         # This doesn't work because of the uncollectable garbage effect.
         # self.__parent = super(AtomicFile, self)
-        self._fd = codecs.open(self.tempFilename, mode, encoding=encoding)
+        self._fd = open(self.tempFilename, mode, encoding=encoding)
 
     def __enter__(self):
         return self
