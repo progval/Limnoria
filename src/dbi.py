@@ -150,21 +150,18 @@ class FlatfileMapping(MappingInterface):
     def __init__(self, filename, maxSize=10**6):
         self.filename = filename
         try:
-            fd = open(self.filename, encoding='utf8')
-            strId = fd.readline().rstrip()
-            self.maxSize = len(strId)
-            try:
-                self.currentId = int(strId)
-            except ValueError:
-                raise Error('Invalid file for FlatfileMapping: %s' % filename)
+            with open(self.filename, encoding='utf8') as fd:
+                strId = fd.readline().rstrip()
+                self.maxSize = len(strId)
+                try:
+                    self.currentId = int(strId)
+                except ValueError:
+                    raise Error('Invalid file for FlatfileMapping: %s' % filename)
         except EnvironmentError as e:
             # File couldn't be opened.
             self.maxSize = int(math.log10(maxSize))
             self.currentId = 0
             self._incrementCurrentId()
-        finally:
-            if 'fd' in locals():
-                fd.close()
 
     def _canonicalId(self, id):
         if id is not None:
@@ -173,15 +170,14 @@ class FlatfileMapping(MappingInterface):
             return '-'*self.maxSize
     
     def _incrementCurrentId(self, fd=None):
-        fdWasNone = fd is None
-        if fdWasNone:
-            fd = open(self.filename, 'a', encoding='utf8')
-        fd.seek(0)
-        self.currentId += 1
-        fd.write(self._canonicalId(self.currentId))
-        fd.write('\n')
-        if fdWasNone:
-            fd.close()
+        if fd is None:
+            with open(self.filename, 'a', encoding='utf8') as fd:
+                self._incrementCurrentId(fd)
+        else:
+            fd.seek(0)
+            self.currentId += 1
+            fd.write(self._canonicalId(self.currentId))
+            fd.write('\n')
         
     def _splitLine(self, line):
         line = line.rstrip('\r\n')
@@ -193,47 +189,41 @@ class FlatfileMapping(MappingInterface):
 
     def add(self, s):
         line = self._joinLine(self.currentId, s)
-        fd = open(self.filename, 'r+', encoding='utf8')
-        try:
-            fd.seek(0, 2) # End.
-            fd.write(line)
-            return self.currentId
-        finally:
-            self._incrementCurrentId(fd)
-            fd.close()
+        with open(self.filename, 'r+', encoding='utf8') as fd:
+            try:
+                fd.seek(0, 2) # End.
+                print("add writing", repr(line))
+                fd.write(line)
+                return self.currentId
+            finally:
+                self._incrementCurrentId(fd)
 
     def get(self, id):
         strId = self._canonicalId(id)
-        try:
-            fd = open(self.filename, encoding='utf8')
+        with open(self.filename, encoding='utf8') as fd:
             fd.readline() # First line, nextId.
             for line in fd:
                 (lineId, s) = self._splitLine(line)
                 if lineId == strId:
                     return s
             raise NoRecordError(id)
-        finally:
-            fd.close()
 
     # XXX This assumes it's not been given out.  We should make sure that our
     #     maximum id remains accurate if this is some value we've never given
     #     out -- i.e., self.maxid = max(self.maxid, id) or something.
     def set(self, id, s):
         strLine = self._joinLine(id, s)
-        try:
-            fd = open(self.filename, 'r+', encoding='utf8')
+        with open(self.filename, 'r+', encoding='utf8') as fd:
             self.remove(id, fd)
             fd.seek(0, 2) # End.
             fd.write(strLine)
-        finally:
-            fd.close()
 
     def remove(self, id, fd=None):
-        fdWasNone = fd is None
-        strId = self._canonicalId(id)
-        try:
-            if fdWasNone:
-                fd = open(self.filename, 'r+', encoding='utf8')
+        if fd is None:
+            with open(self.filename, 'r+', encoding='utf8') as fd:
+                self.remove(id, fd)
+        else:
+            strId = self._canonicalId(id)
             fd.seek(0)
             fd.readline() # First line, nextId
             pos = fd.tell()
@@ -248,28 +238,22 @@ class FlatfileMapping(MappingInterface):
                 pos = fd.tell()
                 line = fd.readline()
             # We should be at the end.
-        finally:
-            if fdWasNone:
-                fd.close()
 
     def __iter__(self):
-        fd = open(self.filename, encoding='utf8')
-        fd.readline() # First line, nextId.
-        for line in fd:
-            (id, s) = self._splitLine(line)
-            if not id.startswith('-'):
-                yield (int(id), s)
-        fd.close()
+        with open(self.filename, encoding='utf8') as fd:
+            fd.readline() # First line, nextId.
+            for line in fd:
+                (id, s) = self._splitLine(line)
+                if not id.startswith('-'):
+                    yield (int(id), s)
 
     def vacuum(self):
-        infd = open(self.filename, encoding='utf8')
-        outfd = utils.file.AtomicFile(self.filename,makeBackupIfSmaller=False)
-        outfd.write(infd.readline()) # First line, nextId.
-        for line in infd:
-            if not line.startswith('-'):
-                outfd.write(line)
-        infd.close()
-        outfd.close()
+        with open(self.filename, encoding='utf8') as infd, utils.file.AtomicFile(self.filename,makeBackupIfSmaller=False) as outfd:
+            firstline = infd.readline()
+            outfd.write(firstline) # First line, nextId.
+            for line in infd:
+                if not line.startswith('-'):
+                    outfd.write(line)
 
     def flush(self):
         pass # No-op, we maintain no open files.
