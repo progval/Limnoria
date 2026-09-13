@@ -16,6 +16,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install native GnuPG
+        # Git for Windows' gpg (MSYS build) can't run gpg-agent secret-key ops,
+        # breaking plugins/GPG
+        run: |
+          choco install gpg4win --yes --no-progress
+          echo "C:\Program Files\GnuPG\bin" >> $env:GITHUB_PATH
+
       - name: Upgrade pip
         run: |
           python3 -m pip install --upgrade pip setuptools
