@@ -34,7 +34,6 @@ from supybot.test import *
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircmsgs as ircmsgs
-import supybot.utils.minisix as minisix
 import supybot.callbacks as callbacks
 
 tokenize = callbacks.tokenize
@@ -74,13 +73,9 @@ class TokenizerTestCase(SupyTestCase):
         self.assertEqual(tokenize('foo "bar baz" quux'),
                          ['foo', 'bar baz', 'quux'])
 
-    _testUnicode = """
-def testUnicode(self):
-    self.assertEqual(tokenize(u'好'), [u'好'])
-    self.assertEqual(tokenize(u'"好"'), [u'好'])"""
-    if minisix.PY3:
-        _testUnicode = _testUnicode.replace("u'", "'")
-    exec(_testUnicode)
+    def testUnicode(self):
+        self.assertEqual(tokenize('好'), ['好'])
+        self.assertEqual(tokenize('"好"'), ['好'])
 
     def testNesting(self):
         self.assertEqual(tokenize('[]'), [[]])

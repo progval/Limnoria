@@ -37,15 +37,11 @@ import random
 
 from . import ircutils, registry, utils
 from .dynamicScope import dynamic
-from .utils import minisix
 from .utils.net import isSocketAddress
 from .version import version
 from .i18n import PluginInternationalization
 _ = PluginInternationalization()
-if minisix.PY2:
-    from urllib2 import build_opener, install_opener, ProxyHandler
-else:
-    from urllib.request import build_opener, install_opener, ProxyHandler
+from urllib.request import build_opener, install_opener, ProxyHandler
 
 ###
 # *** The following variables are affected by command-line options.  They are

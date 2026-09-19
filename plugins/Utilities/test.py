@@ -30,7 +30,6 @@
 ###
 
 
-from supybot.utils.minisix import u
 from supybot.test import *
 
 class UtilitiesTestCase(PluginTestCase):
@@ -50,8 +49,8 @@ class UtilitiesTestCase(PluginTestCase):
     def testEcho(self):
         self.assertHelp('echo')
         self.assertResponse('echo foo', 'foo')
-        self.assertResponse(u('echo 好'), '好')
-        self.assertResponse(u('echo "好"'), '好')
+        self.assertResponse('echo 好', '好')
+        self.assertResponse('echo "好"', '好')
 
     def testEchoDollarOneRepliesDollarOne(self):
         self.assertResponse('echo $1', '$1')

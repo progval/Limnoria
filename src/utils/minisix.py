@@ -29,77 +29,35 @@
 
 """Restricted equivalent to six."""
 
-from __future__ import division
-
 import sys
 import warnings
 
-if sys.version_info[0] >= 3:
-    PY2 = False
-    PY3 = True
-    intern = sys.intern
-    integer_types = (int,)
-    string_types = (str,)
-    long = int
+warnings.warn("supybot.utils.minisix is deprecated; import underlying classes directly.", DeprecationWarning)
 
-    import io
-    import pickle
-    import queue
+PY2 = False
+PY3 = True
+intern = sys.intern
+integer_types = (int,)
+string_types = (str,)
+long = int
 
-    u = lambda x:x
-    L = lambda x:x
+import io
+import pickle
+import queue
 
-    def make_datetime_utc(dt):
-        import datetime
-        return dt.replace(tzinfo=datetime.timezone.utc)
-    def timedelta__totalseconds(td):
-        return td.total_seconds()
-    if sys.version_info >= (3, 3):
-        def datetime__timestamp(dt):
-            return dt.timestamp()
-    else:
-        def datetime__timestamp(dt):
-            import datetime
-            td = dt - datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
-            return timedelta__totalseconds(td)
+u = lambda x:x
+L = lambda x:x
+
+def make_datetime_utc(dt):
+    import datetime
+    return dt.replace(tzinfo=datetime.timezone.utc)
+def timedelta__totalseconds(td):
+    return td.total_seconds()
+if sys.version_info >= (3, 3):
+    def datetime__timestamp(dt):
+        return dt.timestamp()
 else:
-    PY2 = True
-    PY3 = False
-    if isinstance(__builtins__, dict):
-        intern = __builtins__['intern']
-    else:
-        intern = __builtins__.intern
-    integer_types = (int, long)
-    string_types = (basestring,)
-    long = long
-
-    class io:
-        # cStringIO is buggy with Python 2.6 (
-        # see http://paste.progval.net/show/227/ )
-        # and it does not handle unicode objects in Python  2.x
-        from StringIO import StringIO
-        from cStringIO import StringIO as BytesIO
-    import cPickle as pickle
-    import Queue as queue
-
-    u = lambda x:x.decode('utf8')
-    L = lambda x:long(x)
-
-    def make_datetime_utc(dt):
-        warnings.warn('Timezones are not available on this version of '
-                     'Python and may lead to incorrect results. You should '
-                     'consider upgrading to Python 3.')
-        return dt.replace(tzinfo=None)
-    if sys.version_info >= (2, 7):
-        def timedelta__totalseconds(td):
-            return td.total_seconds()
-    else:
-        def timedelta__totalseconds(td):
-            return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-
     def datetime__timestamp(dt):
         import datetime
-        warnings.warn('Timezones are not available on this version of '
-                     'Python and may lead to incorrect results. You should '
-                     'consider upgrading to Python 3.')
-        return timedelta__totalseconds(dt - datetime.datetime(1970, 1, 1))
+        td = dt - datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+        return timedelta__totalseconds(td)

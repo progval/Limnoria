@@ -30,14 +30,11 @@
 
 """Handles interactive questions; useful for wizards and whatnot."""
 
-from __future__ import print_function
-
 import sys
 import textwrap
 from getpass import getpass as getPass
 
 from . import ansi, utils
-from .utils import minisix
 from supybot.i18n import PluginInternationalization
 _ = PluginInternationalization()
 
@@ -78,10 +75,7 @@ def expect(prompt, possibilities, recursed=False, default=None,
     if useBold:
         prompt += ansi.RESET
         print(ansi.BOLD, end=' ', file=fd)
-    if minisix.PY3:
-        s = input(prompt)
-    else:
-        s = raw_input(prompt)
+    s = input(prompt)
     s = s.strip()
     print(file=fd)
     if possibilities:

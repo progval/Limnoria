@@ -29,8 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from __future__ import unicode_literals
-
 from supybot.test import *
 
 import re

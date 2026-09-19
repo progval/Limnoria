@@ -29,8 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from __future__ import division
-
 import math
 import string
 

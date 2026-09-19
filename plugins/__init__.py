@@ -262,7 +262,7 @@ class ChannelUserDB(ChannelUserDictionary):
             fd.close()
 
     def flush(self):
-        mode = 'wb' if utils.minisix.PY2 else 'w'
+        mode = 'w'
         fd = utils.file.AtomicFile(self.filename, mode, makeBackupIfSmaller=False)
         writer = csv.writer(fd)
         items = list(self.items())
@@ -525,8 +525,8 @@ class PeriodicFileDownloader(object):
     three-tuples of
     (url, seconds between downloads, function to run with downloaded file).
 
-    'url' should be in some form that urllib2.urlopen can handle (do note that
-    urllib2.urlopen handles file:// links perfectly well.)
+    'url' should be in some form that urllib.request.urlopen can handle (do note
+    that urllib.request.urlopen handles file:// links perfectly well.)
 
     'seconds between downloads' is the number of seconds between downloads,
     obviously.  An important point to remember, however, is that it is only

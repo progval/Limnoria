@@ -162,7 +162,7 @@ def collect_extra_debug_data():
             if inspected in frame_locals:
                 try:
                     attribute_names = dir(frame_locals[inspected])
-                except Exception: # For Python 2 and Pypy
+                except Exception: # For Pypy
                     try:
                         attribute_names = list(
                             frame_locals[inspected].__dict__)

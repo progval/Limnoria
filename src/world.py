@@ -41,10 +41,7 @@ import select
 import threading
 import multiprocessing
 
-import re
-
 from . import conf, ircutils, log, registry
-from .utils import minisix
 
 startedAt = time.time() # Just in case it doesn't get set later.
 
@@ -170,8 +167,6 @@ def upkeep():
         #if registryFilename is not None:
         #    registry.open(registryFilename)
     if not dying:
-        if minisix.PY2:
-            log.debug('Regexp cache size: %s', len(re._cache))
         log.debug('Pattern cache size: %s', len(ircutils._patternCache))
         log.debug('HostmaskPatternEqual cache size: %s',
                   len(ircutils._hostmaskPatternEqualCache))

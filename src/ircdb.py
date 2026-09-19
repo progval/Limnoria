@@ -35,7 +35,6 @@ import time
 import operator
 
 from . import conf, ircutils, log, registry, unpreserve, utils, world
-from .utils import minisix
 
 def isCapability(capability):
     return len(capability.split(None, 1)) == 1
@@ -314,7 +313,7 @@ class IrcUser(object):
     def addNick(self, network, nick):
         """Adds a nick to the user's registered nicks on the network."""
         global users
-        assert isinstance(network, minisix.string_types)
+        assert isinstance(network, str)
         assert ircutils.isNick(nick), 'got %s' % nick
         if users.getUserFromNick(network, nick) is not None:
             raise KeyError
@@ -325,7 +324,7 @@ class IrcUser(object):
 
     def removeNick(self, network, nick):
         """Removes a nick from the user's registered nicks on the network."""
-        assert isinstance(network, minisix.string_types)
+        assert isinstance(network, str)
         if nick not in self.nicks[network]:
             raise KeyError
         self.nicks[network].remove(nick)

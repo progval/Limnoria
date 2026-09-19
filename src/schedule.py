@@ -33,8 +33,6 @@ Schedule plugin with a subclass of drivers.IrcDriver in order to be run as a
 Supybot driver.
 """
 
-from __future__ import with_statement
-
 import time
 import heapq
 import functools

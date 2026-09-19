@@ -29,8 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from __future__ import print_function
-
 import os
 import sys
 import ast
@@ -44,7 +42,6 @@ import collections.abc
 from . import crypt
 from .str import format
 from .file import mktemp
-from . import minisix
 
 # will be replaced by supybot.i18n.install()
 _ = lambda x: x
@@ -216,9 +213,9 @@ class IterableMap(object):
     """
     __slots__ = ()
     def items(self):
-        if minisix.PY3 and hasattr(self, 'iteritems'):
+        if hasattr(self, 'iteritems'):
             # For old plugins
-            return self.iteritems() # avoid 2to3
+            return self.iteritems()
         else:
             raise NotImplementedError()
     __iter__ = items

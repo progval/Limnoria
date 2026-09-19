@@ -40,7 +40,6 @@ import string
 import textwrap
 import functools
 
-from . import minisix
 from .iter import any
 from .structures import TwoWayDictionary
 
@@ -78,37 +77,33 @@ def _relocalizeFunctions(localizer):
         f = localizer.localizeFunction(f_name) or _defaultFunctions[f_name]
         _localizedFunctions[f_name] = f
 
-if minisix.PY3:
-    def decode_raw_line(line):
-        #first, try to decode using utf-8
-        try:
-            line = line.decode('utf8', 'strict')
-        except UnicodeError:
-            # if this fails and charade is loaded, try to guess the correct encoding
-            if charadeLoaded:
-                u = UniversalDetector()
-                u.feed(line)
-                u.close()
-                if u.result['encoding']:
-                    # try to use the guessed encoding
-                    try:
-                        line = line.decode(u.result['encoding'],
-                            'strict')
-                    # on error, give up and replace the offending characters
-                    except UnicodeError:
-                        line = line.decode(errors='replace')
-                else:
-                    # if no encoding could be guessed, fall back to utf-8 and
-                    # replace offending characters
-                    line = line.decode('utf8', 'replace')
-            # if charade is not loaded, try to decode using utf-8 and replace any
-            # offending characters
+def decode_raw_line(line):
+    #first, try to decode using utf-8
+    try:
+        line = line.decode('utf8', 'strict')
+    except UnicodeError:
+        # if this fails and charade is loaded, try to guess the correct encoding
+        if charadeLoaded:
+            u = UniversalDetector()
+            u.feed(line)
+            u.close()
+            if u.result['encoding']:
+                # try to use the guessed encoding
+                try:
+                    line = line.decode(u.result['encoding'],
+                        'strict')
+                # on error, give up and replace the offending characters
+                except UnicodeError:
+                    line = line.decode(errors='replace')
             else:
+                # if no encoding could be guessed, fall back to utf-8 and
+                # replace offending characters
                 line = line.decode('utf8', 'replace')
-        return line
-else:
-    def decode_raw_line(line):
-        return line
+        # if charade is not loaded, try to decode using utf-8 and replace any
+        # offending characters
+        else:
+            line = line.decode('utf8', 'replace')
+    return line
 
 def rsplit(s, sep=None, maxsplit=-1):
     """Equivalent to str.split, except splitting from the right."""
@@ -208,10 +203,7 @@ def dqrepr(s):
     """Returns a repr() of s guaranteed to be in double quotes."""
     # The wankers-that-be decided not to use double-quotes anymore in 2.3.
     # return '"' + repr("'\x00" + s)[6:]
-    encoding = 'string_escape' if minisix.PY2 else 'unicode_escape'
-    if minisix.PY2 and isinstance(s, unicode):
-        s = s.encode('utf8', 'replace')
-    return '"%s"' % s.encode(encoding).decode().replace('"', '\\"')
+    return '"%s"' % s.encode('unicode_escape').decode().replace('"', '\\"')
 
 def quoted(s):
     """Returns a quoted s."""
@@ -325,10 +317,7 @@ def perlVariableSubstitute(vars, text):
             if callable(x):
                 return x()
             else:
-                try:
-                    return str(x)
-                except UnicodeEncodeError: # Python 2
-                    return str(x).encode('utf8')
+                return str(x)
         except KeyError:
             if braced:
                 return '${%s}' % braced
@@ -479,7 +468,7 @@ def nItems(n, item, between=None):
     >>> nItems(10, 'clock', between='grandfather')
     '10 grandfather clocks'
     """
-    assert isinstance(n, minisix.integer_types), \
+    assert isinstance(n, int), \
            'The order of the arguments to nItems changed again, sorry.'
     if item == '<empty>':
         if between is None:
@@ -575,13 +564,6 @@ def format(s, *args, **kwargs):
     # to add the character to the _formatRe regexp or it will be ignored
     # (and hard to debug if you don't know the trick).
     # Of course, you should also document it in the docstring above.
-    if minisix.PY2:
-        def pred(s):
-            if isinstance(s, unicode):
-                return s.encode('utf8')
-            else:
-                return s
-        args = map(pred, args)
     args = list(args)
     args.reverse() # For more efficient popping.
     def sub(match):
@@ -590,8 +572,6 @@ def format(s, *args, **kwargs):
             token = args.pop()
             if isinstance(token, str):
                 return token
-            elif minisix.PY2 and isinstance(token, unicode):
-                return token.encode('utf8', 'replace')
             else:
                 return str(token)
         elif char == 'i':
@@ -608,7 +588,7 @@ def format(s, *args, **kwargs):
             if isinstance(t, tuple) and len(t) == 2:
                 if not isinstance(t[0], list):
                     raise ValueError('Invalid list for %%L in format: %s' % t)
-                if not isinstance(t[1], minisix.string_types):
+                if not isinstance(t[1], str):
                     raise ValueError('Invalid string for %%L in format: %s' % t)
                 return commaAndify(t[0], And=t[1])
             elif hasattr(t, '__iter__'):
@@ -633,7 +613,7 @@ def format(s, *args, **kwargs):
                 raise ValueError('Invalid value for %%n in format: %s' % t)
         elif char == 'S':
             t = args.pop()
-            if not isinstance(t, minisix.integer_types):
+            if not isinstance(t, int):
                 raise ValueError('Invalid value for %%S in format: %s' % t)
             for suffix in ['B','KB','MB','GB','TB']:
                 if t < 1024:

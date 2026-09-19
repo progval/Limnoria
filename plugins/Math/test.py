@@ -29,8 +29,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from __future__ import print_function
-
 from supybot.test import *
 
 class MathTestCase(PluginTestCase):
