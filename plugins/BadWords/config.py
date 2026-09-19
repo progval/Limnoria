@@ -28,8 +28,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from __future__ import division
-
 import time
 
 import supybot.conf as conf

@@ -33,8 +33,6 @@
 Contains simple socket drivers.  Asyncore bugged (haha, pun!) me.
 """
 
-from __future__ import division
-
 import os
 import sys
 import time
@@ -46,7 +44,6 @@ import socket
 import ipaddress
 
 from .. import (conf, drivers, log, utils, world)
-from ..utils import minisix
 from ..utils.str import decode_raw_line
 
 try:
@@ -136,10 +133,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             self.outbuffer += ''.join(map(str, msgs))
         if self.outbuffer:
             try:
-                if minisix.PY2:
-                    sent = self.conn.send(self.outbuffer)
-                else:
-                    sent = self.conn.send(self.outbuffer.encode())
+                sent = self.conn.send(self.outbuffer.encode())
                 self.outbuffer = self.outbuffer[sent:]
                 self.eagains = 0
             except socket.error as e:
@@ -157,10 +151,7 @@ class SocketDriver(drivers.IrcDriver, drivers.ServersMixin):
             for inst in cls._instances:
                 # Do not use a list comprehension here, we have to edit the list
                 # and not to reassign it.
-                if not inst.connected or \
-                        (minisix.PY3 and inst.conn._closed) or \
-                        (minisix.PY2 and
-                            inst.conn._sock.__class__ is socket._closedsocket):
+                if not inst.connected or inst.conn._closed:
                     cls._instances.remove(inst)
                 elif inst.conn.fileno() == -1:
                     inst.reconnect()

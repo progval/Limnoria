@@ -42,10 +42,10 @@ import functools
 import threading
 import contextlib
 import multiprocessing
+import io
 
 from . import (callbacks, conf, drivers, httpserver, i18n, ircdb, irclib,
         ircmsgs, ircutils, log, plugin, registry, utils, world)
-from .utils import minisix
 
 from http.client import HTTPConnection
 from urllib.parse import splithost, splituser
@@ -275,8 +275,6 @@ class PluginTestCase(SupyTestCase):
         prefixChars = conf.supybot.reply.whenAddressedBy.chars()
         if not usePrefixChar and query[0] in prefixChars:
             query = query[1:]
-        if minisix.PY2:
-            query = query.encode('utf8') # unicode->str
         msg = ircmsgs.privmsg(to, query, prefix=frm)
         if self.myVerbose >= verbosity.MESSAGES:
             print('Feeding: %r' % msg)
@@ -486,8 +484,6 @@ class ChannelPluginTestCase(PluginTestCase):
         prefixChars = conf.supybot.reply.whenAddressedBy.chars()
         if query[0] not in prefixChars and usePrefixChar:
             query = prefixChars[0] + query
-        if minisix.PY2 and isinstance(query, unicode):
-            query = query.encode('utf8') # unicode->str
         if not expectException and self.myVerbose >= verbosity.EXCEPTIONS:
             conf.supybot.log.stdout.setValue(True)
         msg = ircmsgs.privmsg(to, query, prefix=frm)
@@ -638,8 +634,8 @@ class HTTPPluginTestCase(PluginTestCase):
 
     def request(self, url, method='GET', read=True, data={}):
         assert url.startswith('/')
-        wfile = minisix.io.BytesIO()
-        rfile = minisix.io.BytesIO()
+        wfile = io.BytesIO()
+        rfile = io.BytesIO()
         connection = FakeHTTPConnection(wfile, rfile)
         connection.putrequest(method, url)
         connection.endheaders()

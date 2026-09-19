@@ -37,7 +37,6 @@ import pickle
 import supybot.conf as conf
 import supybot.utils as utils
 from supybot.utils.structures import *
-import supybot.utils.minisix as minisix
 
 class UtilsTest(SupyTestCase):
     def testReversed(self):
@@ -130,10 +129,6 @@ class GenTest(SupyTestCase):
         self.assertEqual(list(AL.items()), [(1, 2), (2, 3), (3, 4)])
         self.assertEqual(list(AL.items()), [(1, 2), (2, 3), (3, 4)])
         self.assertEqual(list(AL.keys()), [1, 2, 3])
-        if minisix.PY2:
-            self.assertEqual(list(AL.keys()), [1, 2, 3])
-            self.assertEqual(list(AL.values()), [2, 3, 4])
-            self.assertEqual(list(AL.values()), [2, 3, 4])
         self.assertEqual(len(AL), 3)
 
     def testSortBy(self):

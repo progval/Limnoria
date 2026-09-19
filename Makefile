@@ -6,7 +6,6 @@ all:
 	@echo "make source - Create source package"
 	@echo "make install - Install on local system"
 	@echo "make buildrpm - Generate a rpm package"
-	@echo "make builddeb_py2 - Generate a deb package for Python 2"
 	@echo "make builddeb_py3 - Generate a deb package for Python 3"
 	@echo "make clean - Get rid of scratch and byte files"
 
@@ -21,11 +20,6 @@ install:
 
 buildrpm:
 	$(PYTHON) setup.py bdist_rpm
-
-builddeb_py2:
-	cp debian/control.py2 debian/control
-	debuild -us -uc
-	rm debian/control
 
 builddeb_py3:
 	cp debian/control.py3 debian/control

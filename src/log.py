@@ -40,7 +40,6 @@ import textwrap
 import traceback
 
 from . import ansi, conf, ircutils, registry, utils
-from .utils import minisix
 
 deadlyExceptions = [KeyboardInterrupt, SystemExit]
 
@@ -97,7 +96,7 @@ class StdoutStreamHandler(logging.StreamHandler):
         if record.levelname != 'ERROR' and conf.supybot.log.stdout.wrap():
             # We check for ERROR there because otherwise, tracebacks (which are
             # already wrapped by Python itself) wrap oddly.
-            if not isinstance(record.levelname, minisix.string_types):
+            if not isinstance(record.levelname, str):
                 print(record)
                 print(record.levelname)
                 print(utils.stackTrace())

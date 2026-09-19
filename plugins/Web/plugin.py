@@ -227,14 +227,8 @@ class Web(callbacks.PluginRegexp):
                               'not guess the page\'s encoding. (Try '
                               'installing python-charade.)', url)
                 return
-        try:
-            parser = Title()
-            parser.feed(text)
-        except UnicodeDecodeError:
-            # Workaround for Python 2
-            # https://github.com/progval/Limnoria/issues/1359
-            parser = Title()
-            parser.feed(text.encode('utf8'))
+        parser = Title()
+        parser.feed(text)
         parser.close()
         title = utils.str.normalizeWhitespace(''.join(parser.data).strip())
         if title:

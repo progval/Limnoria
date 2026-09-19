@@ -33,21 +33,19 @@ Database module, similar to dbhash.  Uses a format similar to (if not entirely
 the same as) DJB's CDB <http://cr.yp.to/cdb.html>.
 """
 
-from __future__ import division
-
 import os
 import sys
 import struct
+import pickle
 import os.path
 
 from . import utils
-from .utils import minisix
 
 def hash(s):
     """DJB's hash function for CDB."""
     h = 5381
     for c in s:
-        h = ((h + (h << 5)) ^ ord(c)) & minisix.L(0xFFFFFFFF)
+        h = ((h + (h << 5)) ^ ord(c)) & 0xFFFFFFFF
     return h
 
 def unpack2Ints(s):
@@ -448,14 +446,14 @@ class ReaderWriter(utils.IterableMap):
 class Shelf(ReaderWriter):
     """Uses pickle to mimic the shelf module."""
     def __getitem__(self, key):
-        return minisix.pickle.loads(ReaderWriter.__getitem__(self, key))
+        return pickle.loads(ReaderWriter.__getitem__(self, key))
 
     def __setitem__(self, key, value):
-        ReaderWriter.__setitem__(self, key, minisix.pickle.dumps(value, True))
+        ReaderWriter.__setitem__(self, key, pickle.dumps(value, True))
 
     def items(self):
         for (key, value) in ReaderWriter.items(self):
-            yield (key, minisix.pickle.loads(value))
+            yield (key, pickle.loads(value))
 
 
 if __name__ == '__main__':

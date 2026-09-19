@@ -36,11 +36,9 @@ dicts, a nick class to handle nicks (so comparisons and hashing and whatnot
 work in an IRC-case-insensitive fashion), and numerous other things.
 """
 
-from __future__ import division
-from __future__ import print_function
-
 import re
 import sys
+import io
 import time
 import uuid
 import base64
@@ -51,7 +49,6 @@ import functools
 import collections.abc
 
 from . import utils
-from .utils import minisix
 from .version import version
 
 from .i18n import PluginInternationalization
@@ -107,13 +104,13 @@ def splitHostmask(hostmask):
         # broken by design.
         warning("Invalid hostmask format: %s", hostmask)
         # TODO: error if strictRfc is True
-    return (minisix.intern(nick), minisix.intern(user), minisix.intern(host))
+    return (sys.intern(nick), sys.intern(user), sys.intern(host))
 
 def joinHostmask(nick, ident, host):
     """nick, user, host => hostmask
     Joins the nick, ident, host into a user hostmask."""
     assert nick and ident and host
-    return minisix.intern('%s!%s@%s' % (nick, ident, host))
+    return sys.intern('%s!%s@%s' % (nick, ident, host))
 
 _rfc1459trans = utils.str.MultipleReplacer(dict(list(zip(
                                  string.ascii_uppercase + r'\[]~',
@@ -131,8 +128,8 @@ def toLower(s, casemapping=None):
 def strEqual(nick1, nick2):
     """s1, s2 => bool
     Returns True if nick1 == nick2 according to IRC case rules."""
-    assert isinstance(nick1, minisix.string_types)
-    assert isinstance(nick2, minisix.string_types)
+    assert isinstance(nick1, str)
+    assert isinstance(nick2, str)
     return toLower(nick1) == toLower(nick2)
 
 nickEqual = strEqual
@@ -189,7 +186,7 @@ def _compileHostmaskPattern(pattern):
     except KeyError:
         # We make our own regexps, rather than use fnmatch, because fnmatch's
         # case-insensitivity is not IRC's case-insensitity.
-        fd = minisix.io.StringIO()
+        fd = io.StringIO()
         for c in pattern:
             if c == '*':
                 fd.write('.*')
@@ -684,7 +681,7 @@ class FormatContext(object):
 
 class FormatParser(object):
     def __init__(self, s):
-        self.fd = minisix.io.StringIO(s)
+        self.fd = io.StringIO(s)
         self.last = None
         self.max_context_size = 0
 
@@ -779,10 +776,7 @@ def isValidArgument(s):
 
 def safeArgument(s):
     """If s is unsafe for IRC, returns a safe version."""
-    if minisix.PY2 and isinstance(s, unicode):
-        s = s.encode('utf-8')
-    elif (minisix.PY2 and not isinstance(s, minisix.string_types)) or \
-            (minisix.PY3 and not isinstance(s, str)):
+    if not isinstance(s, str):
         debug('Got a non-string in safeArgument: %r', s)
         s = str(s)
     if isValidArgument(s):
@@ -813,7 +807,7 @@ def dccIP(ip):
 
 def unDccIP(i):
     """Takes an integer DCC IP and return a normal string IP."""
-    assert isinstance(i, minisix.integer_types), '%r is not an number.' % i
+    assert isinstance(i, int), '%r is not an number.' % i
     L = []
     while len(L) < 4:
         L.append(i % 256)
@@ -1052,8 +1046,7 @@ AUTHENTICATE_CHUNK_SIZE = 400
 def authenticate_generator(authstring, base64ify=True):
     if base64ify:
         authstring = base64.b64encode(authstring)
-        if minisix.PY3:
-            authstring = authstring.decode()
+        authstring = authstring.decode()
     # +1 so we get an empty string at the end if len(authstring) is a multiple
     # of AUTHENTICATE_CHUNK_SIZE (including 0)
     for n in range(0, len(authstring)+1, AUTHENTICATE_CHUNK_SIZE):
@@ -1070,8 +1063,7 @@ class AuthenticateDecoder(object):
         if chunk == '+' or len(chunk) != AUTHENTICATE_CHUNK_SIZE:
             self.ready = True
         if chunk != '+':
-            if minisix.PY3:
-                chunk = chunk.encode()
+            chunk = chunk.encode()
             self.chunks.append(chunk)
     def get(self):
         assert self.ready

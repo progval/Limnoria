@@ -36,8 +36,9 @@ Includes wrappers for commands.
 import time
 import getopt
 import inspect
+import queue
 import threading
-import multiprocessing #python2.6 or later!
+import multiprocessing
 
 try:
     import resource
@@ -47,7 +48,6 @@ except ImportError: # Windows!
 from . import callbacks, conf, ircdb, ircmsgs, ircutils, log, \
         utils, world
 from .dynamicScope import dynamic
-from .utils import minisix
 from .i18n import PluginInternationalization, internationalizeDocstring
 _ = PluginInternationalization()
 
@@ -186,7 +186,7 @@ def process(f, *args, **kwargs):
         raise ProcessTimeoutError("%s aborted due to timeout." % (p.name,))
     try:
         raised, v = q.get(block=False)
-    except minisix.queue.Empty:
+    except queue.Empty:
         return None
     finally:
         q.close()
@@ -366,7 +366,7 @@ def getNonInt(irc, msg, args, state, type=_('non-integer value')):
 
 def getLong(irc, msg, args, state, type='long'):
     getInt(irc, msg, args, state, type)
-    state.args[-1] = minisix.long(state.args[-1])
+    state.args[-1] = int(state.args[-1])
 
 def getFloat(irc, msg, args, state, type=_('floating point number')):
     try:
@@ -815,7 +815,7 @@ def getMatch(irc, msg, args, state, regexp, errmsg):
 
 def getLiteral(irc, msg, args, state, literals, errmsg=None):
     # ??? Should we allow abbreviations?
-    if isinstance(literals, minisix.string_types):
+    if isinstance(literals, str):
         literals = (literals,)
     abbrevs = utils.abbrev(literals)
     if args[0] in abbrevs:
@@ -965,7 +965,7 @@ class context(object):
             self.converter = getConverter(spec[0])
         elif spec is None:
             self.converter = getConverter('anything')
-        elif isinstance(spec, minisix.string_types):
+        elif isinstance(spec, str):
             self.args = ()
             self.converter = getConverter(spec)
         else:

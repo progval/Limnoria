@@ -38,7 +38,6 @@ import socket
 from collections import namedtuple
 
 from .. import conf, ircdb, ircmsgs, ircutils, log as supylog, utils
-from ..utils import minisix
 
 
 Server = namedtuple('Server', 'hostname port attempt force_tls_verification')
@@ -212,7 +211,7 @@ class Log(object):
     def reconnect(self, network, when=None):
         s = 'Reconnecting to %s' % network
         if when is not None:
-            if not isinstance(when, minisix.string_types):
+            if not isinstance(when, str):
                 when = self.timestamp(when)
             s += ' at %s.' % when
         else:

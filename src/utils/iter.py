@@ -28,13 +28,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from __future__ import division
-
 import random
 
 from itertools import *
-
-from . import minisix
 
 # For old plugins
 ifilter = filter
@@ -106,7 +102,7 @@ def flatten(iterable, strings=False):
     """Flattens a list of lists into a single list.  See the test for examples.
     """
     for elt in iterable:
-        if not strings and isinstance(elt, minisix.string_types):
+        if not strings and isinstance(elt, str):
             yield elt
         else:
             try:
@@ -119,7 +115,7 @@ def split(isSeparator, iterable, maxsplit=-1, yieldEmpty=False):
     """split(isSeparator, iterable, maxsplit=-1, yieldEmpty=False)
 
     Splits an iterator based on a predicate isSeparator."""
-    if isinstance(isSeparator, minisix.string_types):
+    if isinstance(isSeparator, str):
         f = lambda s: s == isSeparator
     else:
         f = isSeparator

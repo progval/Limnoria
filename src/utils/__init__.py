@@ -29,20 +29,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ###
 
-from . import minisix
+import csv
+import io
 
 ###
 # csv.{join,split} -- useful functions that should exist.
 ###
-import csv
 def join(L):
-    fd = minisix.io.StringIO()
+    fd = io.StringIO()
     writer = csv.writer(fd)
     writer.writerow(L)
     return fd.getvalue().rstrip('\r\n')
 
 def split(s):
-    fd = minisix.io.StringIO(s)
+    fd = io.StringIO(s)
     reader = csv.reader(fd)
     return next(reader)
 csv.join = join

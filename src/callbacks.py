@@ -35,6 +35,7 @@ This module contains the basic callbacks for handling PRIVMSGs.
 """
 
 import re
+import io
 import copy
 import time
 from . import shlex
@@ -46,7 +47,6 @@ import warnings
 from . import (conf, ircdb, irclib, ircmsgs, ircutils, log, registry,
         utils, world)
 from .dynamicScope import dynamic
-from .utils import minisix
 from .utils.iter import any, all
 from .i18n import PluginInternationalization
 _ = PluginInternationalization()
@@ -167,9 +167,7 @@ def canonicalName(command, preserve_spaces=False):
     Currently, this makes everything lowercase and removes all dashes and
     underscores.
     """
-    if minisix.PY2 and isinstance(command, unicode):
-        command = command.encode('utf-8')
-    elif minisix.PY3 and isinstance(command, bytes):
+    if isinstance(command, bytes):
         command = command.decode()
     special = '\t-_'
     if not preserve_spaces:
@@ -341,21 +339,14 @@ class Tokenizer(object):
             # It has to handle both IRC commands and serialized configuration.
             #
             # Whoever you are, if you make a single modification to this
-            # code, TEST the code with Python 2 & 3, both with the unit
-            # tests and on IRC with this: @echo "好"
-            if minisix.PY2:
-                try:
-                    token = token.encode('utf8').decode('string_escape')
-                    token = token.decode('utf8')
-                except:
-                    token = token.decode('string_escape')
-            else:
-                token = codecs.getencoder('utf8')(token)[0]
-                token = codecs.getdecoder('unicode_escape')(token)[0]
-                try:
-                    token = token.encode('iso-8859-1').decode()
-                except: # Prevent issue with tokens like '"\\x80"'.
-                    pass
+            # code, TEST the code with the unit tests and on IRC with this:
+            # @echo "好"
+            token = codecs.getencoder('utf8')(token)[0]
+            token = codecs.getdecoder('unicode_escape')(token)[0]
+            try:
+                token = token.encode('iso-8859-1').decode()
+            except: # Prevent issue with tokens like '"\\x80"'.
+                pass
         return token
 
     def _insideBrackets(self, lexer):
@@ -377,7 +368,7 @@ class Tokenizer(object):
         return ret
 
     def tokenize(self, s):
-        lexer = shlex.shlex(minisix.io.StringIO(s))
+        lexer = shlex.shlex(io.StringIO(s))
         lexer.commenters = ''
         lexer.quotes = self.quotes
         lexer.separators = self.separators
@@ -439,7 +430,7 @@ def formatCommand(command):
 
 def checkCommandCapability(msg, cb, commandName):
     plugin = cb.name().lower()
-    if not isinstance(commandName, minisix.string_types):
+    if not isinstance(commandName, str):
         assert commandName[0] == plugin, ('checkCommandCapability no longer '
                 'accepts command names that do not start with the callback\'s '
                 'name (%s): %s') % (plugin, commandName)
@@ -537,9 +528,9 @@ class RichReplyMethods(object):
             prefixer = ''
         if joiner is None:
             joiner = utils.str.commaAndify
-        if isinstance(prefixer, minisix.string_types):
+        if isinstance(prefixer, str):
             prefixer = prefixer.__add__
-        if isinstance(joiner, minisix.string_types):
+        if isinstance(joiner, str):
             joiner = joiner.join
         to = self._getTarget(kwargs.get('to'))
         if oneToOne is None: # Can be True, False, or None
@@ -797,7 +788,7 @@ class ReplyIrcProxy(RichReplyMethods):
                 log.warning('Truncating to %s bytes from %s bytes.',
                             maximumLength, len(s))
                 s = s[:maximumLength]
-            s_size = len(s.encode()) if minisix.PY3 else len(s)
+            s_size = len(s.encode())
             if s_size <= allowedLength or \
                not conf.get(conf.supybot.reply.mores,
                     channel=target, network=self.replyIrc.network):
@@ -1045,7 +1036,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
     def evalArgs(self, withClass=None):
         while self.counter < len(self.args):
             self.repliedTo = False
-            if isinstance(self.args[self.counter], minisix.string_types):
+            if isinstance(self.args[self.counter], str):
                 # If it's a string, just go to the next arg.  There is no
                 # evaluation to be done for strings.  If, at some point,
                 # we decided to, say, convert every string using
@@ -1069,7 +1060,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
                 return
         # Once all the list args are evaluated, we then evaluate our own
         # list of args, since we're assured that they're all strings now.
-        assert all(lambda x: isinstance(x, minisix.string_types), self.args)
+        assert all(lambda x: isinstance(x, str), self.args)
         self.finalEval()
 
     def _callInvalidCommands(self):
@@ -1237,7 +1228,7 @@ class NestedCommandsIrcProxy(ReplyIrcProxy):
         target = self._getTarget(to)
         # action=True implies noLengthCheck=True and prefixNick=False
         self.noLengthCheck=noLengthCheck or self.noLengthCheck or self.action
-        if not isinstance(s, minisix.string_types): # avoid trying to str() unicode
+        if not isinstance(s, str):
             s = str(s) # Allow non-string esses.
 
         if self.finalEvaled:
@@ -1493,7 +1484,7 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
 
     def isCommand(self, command):
         """Convenience, backwards-compatibility, semi-deprecated."""
-        if isinstance(command, minisix.string_types):
+        if isinstance(command, str):
             return self.isCommandMethod(command)
         else:
             # Since we're doing a little type dispatching here, let's not be
@@ -1525,7 +1516,7 @@ class Commands(BasePlugin, SynchronizedAndFirewalled):
         Plugins only need to implement this if they have a dynamic set of
         commands."""
         #print '*** %s.getCommandMethod(%r)' % (self.name(), command)
-        assert not isinstance(command, minisix.string_types)
+        assert not isinstance(command, str)
         assert command == list(map(canonicalName, command))
         assert self.getCommand(command) == command
         for cb in self.cbs:

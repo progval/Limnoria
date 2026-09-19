@@ -80,7 +80,7 @@ class UnixConfigTestCase(ChannelPluginTestCase):
                 'foo bar')
         self.assertRegexp('config channel plugins.Unix.fortune.files '
                 '"-foo bar"',
-                'Error:.*dash.*not u?\'-foo\'') # The u is for Python 2
+                'Error:.*dash.*not \'-foo\'')
         self.assertNotError('config channel plugins.Unix.fortune.files ""')
 
 

@@ -40,7 +40,7 @@ import atexit
 import shutil
 import signal
 
-from io import StringIO  # Import this after version check since this will fail on Python 2
+from io import StringIO
 
 def _termHandler(signalNumber, stackFrame):
     raise SystemExit('Signal #%s.' % signalNumber)

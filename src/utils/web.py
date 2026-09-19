@@ -40,41 +40,22 @@ except AttributeError:
     pass
 
 from .str import normalizeWhitespace
-from . import minisix
 
-if minisix.PY2:
-    import urllib
-    import urllib2
-    from httplib import InvalidURL
-    from urlparse import urlsplit, urlunsplit, urlparse, urlunparse
-    from htmlentitydefs import entitydefs, name2codepoint
-    from HTMLParser import HTMLParser
-    from cgi import escape as html_escape
-    Request = urllib2.Request
-    urlquote = urllib.quote
-    urlquote_plus = urllib.quote_plus
-    urlunquote = urllib.unquote
-    urlopen = urllib2.urlopen
-    def urlencode(*args, **kwargs):
-        return urllib.urlencode(*args, **kwargs).encode()
-    from urllib2 import HTTPError, URLError
-    from urllib import splithost, splituser
-else:
-    from http.client import InvalidURL
-    from urllib.parse import urlsplit, urlunsplit, urlparse, urlunparse
-    from html.entities import entitydefs, name2codepoint
-    from html.parser import HTMLParser
-    from html import escape as html_escape
-    import urllib.request, urllib.parse, urllib.error
-    Request = urllib.request.Request
-    urlquote = urllib.parse.quote
-    urlquote_plus = urllib.parse.quote_plus
-    urlunquote = urllib.parse.unquote
-    urlopen = urllib.request.urlopen
-    def urlencode(*args, **kwargs):
-        return urllib.parse.urlencode(*args, **kwargs)
-    from urllib.error import HTTPError, URLError
-    from urllib.parse import splithost, splituser
+from http.client import InvalidURL
+from urllib.parse import urlsplit, urlunsplit, urlparse, urlunparse
+from html.entities import entitydefs, name2codepoint
+from html.parser import HTMLParser
+from html import escape as html_escape
+import urllib.request, urllib.parse, urllib.error
+Request = urllib.request.Request
+urlquote = urllib.parse.quote
+urlquote_plus = urllib.parse.quote_plus
+urlunquote = urllib.parse.unquote
+urlopen = urllib.request.urlopen
+def urlencode(*args, **kwargs):
+    return urllib.parse.urlencode(*args, **kwargs)
+from urllib.error import HTTPError, URLError
+from urllib.parse import splithost, splituser
 
 class Error(Exception):
     pass
@@ -136,7 +117,7 @@ def getUrlFd(url, headers=None, data=None, timeout=None):
     arguments."""
     if headers is None:
         headers = defaultHeaders
-    if minisix.PY3 and isinstance(data, str):
+    if isinstance(data, str):
         data = data.encode()
     try:
         if not isinstance(url, Request):
@@ -260,20 +241,12 @@ class HtmlToText(HTMLParser, object):
         self.append(data)
 
     def handle_entityref(self, data):
-        if minisix.PY3:
-            if data in name2codepoint:
-                self.append(chr(name2codepoint[data]))
-            elif isinstance(data, bytes):
-                self.append(data.decode())
-            else:
-                self.append(data)
+        if data in name2codepoint:
+            self.append(chr(name2codepoint[data]))
+        elif isinstance(data, bytes):
+            self.append(data.decode())
         else:
-            if data in name2codepoint:
-                self.append(unichr(name2codepoint[data]))
-            elif isinstance(data, str):
-                self.append(data.decode('utf8', errors='replace'))
-            else:
-                self.append(data)
+            self.append(data)
 
     def getText(self):
         text = ''.join(self.data).strip()
@@ -290,7 +263,7 @@ def htmlToText(s, tagReplace=None):
         s = s.decode(encoding)
     else:
         try:
-            if minisix.PY2 or isinstance(s, bytes):
+            if isinstance(s, bytes):
                 s = s.decode('utf8')
         except:
             pass
