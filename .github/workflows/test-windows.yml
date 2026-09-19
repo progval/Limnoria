@@ -1,0 +1,35 @@
+name: Test on Windows
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-2025
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade pip
+        run: |
+          python3 -m pip install --upgrade pip setuptools
+
+      - name: Install optional dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+
+      - name: Install
+        run: |
+          pip install .
+
+      - name: Test with unittest
+        run: |
+          supybot-test test -v --plugins-dir=./plugins/ --no-network --exclude="*Fediverse" --exclude="*GPG" --exclude="*RSS"
+

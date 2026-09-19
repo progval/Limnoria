@@ -232,12 +232,10 @@ class _PluginInternationalization:
         self._loadL10nCode()
 
         try:
-            try:
-                translationFile = open(getLocalePath(self.name,
-                                                     localeName, 'po'), 'ru')
-            except ValueError: # We are using Windows
-                translationFile = open(getLocalePath(self.name,
-                                                     localeName, 'po'), 'r')
+            translationFile = open(
+                getLocalePath(self.name, localeName, 'po'),
+                'r', encoding='utf8'
+            )
             self._parse(translationFile)
         except (IOError, PluginNotFound): # The translation is unavailable
             pass

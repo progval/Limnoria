@@ -177,6 +177,11 @@ class FlatfileMapping(MappingInterface):
             fd.seek(0)
             self.currentId += 1
             fd.write(self._canonicalId(self.currentId))
+
+            # This relies on the file being open()ed with consistent values
+            # for the 'newlines' parameter, otherwise on Windows it may
+            # overwrite more/less than it should because '\n' may be translated
+            # to '\r\n' depending on its value.
             fd.write('\n')
         
     def _splitLine(self, line):
@@ -192,7 +197,6 @@ class FlatfileMapping(MappingInterface):
         with open(self.filename, 'r+', encoding='utf8') as fd:
             try:
                 fd.seek(0, 2) # End.
-                print("add writing", repr(line))
                 fd.write(line)
                 return self.currentId
             finally:
