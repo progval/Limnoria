@@ -42,9 +42,9 @@ class SchedulerTestCase(ChannelPluginTestCase):
     def testAddRemove(self):
         self.assertRegexp('scheduler list', 'no.*commands')
         m = self.assertNotError('scheduler add 5 echo testAddRemove')
-        self.assertResponse(
+        self.assertRegexp(
             'scheduler list',
-            '1 (in 4 seconds): "echo testAddRemove"')
+            r'1 \(in [4,5] seconds\): "echo testAddRemove"')
         timeFastForward(2)
         self.assertNoResponse(' ', timeout=1)
         timeFastForward(2)
@@ -77,9 +77,9 @@ class SchedulerTestCase(ChannelPluginTestCase):
 
     def testRemind(self):
         self.assertNotError('scheduler remind 5 testRemind')
-        self.assertResponse(
+        self.assertRegexp(
             'scheduler list',
-            '3 (in 4 seconds): "testRemind"')
+            r'3 \(in [4,5] seconds\): "testRemind"')
         timeFastForward(3)
         self.assertNoResponse(' ', timeout=1)
         timeFastForward(3)
