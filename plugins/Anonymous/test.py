@@ -150,7 +150,8 @@ class AnonymousTestCase(ChannelPluginTestCase):
                         % self.channel))
 
             # Works (+draft/reply only)
-            self.irc.state.supported['CLIENTTAGDENY'] = '*,-draft/reply,-draft/react'
+            value = '*,-draft/reply,-draft/react'
+            self.irc.state.supported['CLIENTTAGDENY'] = value
             with self.subTest('allowed by CLIENTTAGDENY=%s' % value):
                 m = self.getMsg('anonymous react :) blah')
                 self.assertEqual(m, ircmsgs.IrcMsg(
@@ -158,7 +159,8 @@ class AnonymousTestCase(ChannelPluginTestCase):
                     % self.channel))
 
             # Works (+reply only)
-            self.irc.state.supported['CLIENTTAGDENY'] = '*,-reply,-draft/react'
+            value = '*,-reply,-draft/react'
+            self.irc.state.supported['CLIENTTAGDENY'] = value
             with self.subTest('allowed by CLIENTTAGDENY=%s' % value):
                 m = self.getMsg('anonymous react :) blah')
                 self.assertEqual(m, ircmsgs.IrcMsg(
