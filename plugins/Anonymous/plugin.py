@@ -167,10 +167,18 @@ class Anonymous(callbacks.Plugin):
             irc.error(_('Unable to react, the network does not support '
                         'message-tags.'), Raise=True)
 
-        if irc.state.getClientTagDenied('draft/reply') \
-                or irc.state.getClientTagDenied('draft/react'):
+        if irc.state.getClientTagDenied('draft/react'):
             irc.error(_('Unable to react, the network does not allow '
-                        'draft/reply and/or draft/react.'), Raise=True)
+                        'draft/react.'), Raise=True)
+
+        reply_keys = []
+        if not irc.state.getClientTagDenied('draft/reply'):
+            reply_keys.append('+draft/reply')
+        if not irc.state.getClientTagDenied('reply'):
+            reply_keys.append('+reply')
+        if not reply_keys:
+            irc.error(_('Unable to react, the network does not allow '
+                        'reply nor draft/reply.'), Raise=True)
 
         iterable = filter(functools.partial(self._validLastMsg, irc),
                           reversed(irc.state.history))
@@ -192,9 +200,11 @@ class Anonymous(callbacks.Plugin):
         self.log.info('Reacting with %q in %s due to %s.',
                       reaction, channel, msg.prefix)
 
+        server_tags = {'+draft/react': reaction}
+        for key in reply_keys:
+            server_tags[key] = react_to_msgid
         reaction_msg = ircmsgs.IrcMsg(command='TAGMSG', args=(channel,),
-            server_tags={'+draft/reply': react_to_msgid,
-                         '+draft/react': reaction})
+            server_tags=server_tags)
 
         irc.queueMsg(reaction_msg)
     react = wrap(

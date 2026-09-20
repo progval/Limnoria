@@ -687,7 +687,8 @@ class PrivmsgTestCase(ChannelPluginTestCase):
                 msg = self.irc.takeMsg()
                 self.assertEqual(msg, ircmsgs.IrcMsg(
                     command='PRIVMSG', args=('#foo', '%s: foo' % self.nick),
-                    server_tags={'+draft/reply': 'foobar'}))
+                    server_tags={'+reply': 'foobar',
+                                 '+draft/reply': 'foobar'}))
             finally:
                 self.irc.state.capabilities_ack.remove('message-tags')
 
@@ -698,7 +699,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             conf.supybot.protocols.irc.experimentalExtensions.setValue(True)
             self.irc.state.capabilities_ack.add('message-tags')
 
-            # Reply in channel to channel message -> +draft/channel-context
+            # Reply in channel to channel message -> +channel-context
             # is absent
             self.irc.feedMsg(ircmsgs.IrcMsg(
                 command='PRIVMSG', prefix=self.prefix,
@@ -707,9 +708,10 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             msg = self.irc.takeMsg()
             self.assertEqual(msg, ircmsgs.IrcMsg(
                 command='PRIVMSG', args=('#foo', '%s: foo' % self.nick),
-                server_tags={'+draft/reply': 'foobar'}))
+                server_tags={'+reply': 'foobar',
+                             '+draft/reply': 'foobar'}))
 
-            # Reply in private to channel message -> +draft/channel-context
+            # Reply in private to channel message -> +channel-context
             # is present
             with conf.supybot.reply.inPrivate.context(True):
                 self.irc.feedMsg(ircmsgs.IrcMsg(
@@ -719,10 +721,12 @@ class PrivmsgTestCase(ChannelPluginTestCase):
                 msg = self.irc.takeMsg()
                 self.assertEqual(msg, ircmsgs.IrcMsg(
                     command='NOTICE', args=(self.nick, 'foo'),
-                    server_tags={'+draft/reply': 'foobar',
+                    server_tags={'+reply': 'foobar',
+                                 '+draft/reply': 'foobar',
+                                 '+channel-context': '#foo',
                                  '+draft/channel-context': '#foo'}))
 
-            # Reply in private to private message -> +draft/channel-context
+            # Reply in private to private message -> +channel-context
             # is absent
             self.irc.feedMsg(ircmsgs.IrcMsg(
                 command='PRIVMSG', prefix=self.prefix,
@@ -731,7 +735,8 @@ class PrivmsgTestCase(ChannelPluginTestCase):
             msg = self.irc.takeMsg()
             self.assertEqual(msg, ircmsgs.IrcMsg(
                 command='NOTICE', args=(self.nick, 'foo'),
-                server_tags={'+draft/reply': 'foobar'}))
+                server_tags={'+reply': 'foobar',
+                             '+draft/reply': 'foobar'}))
         finally:
             conf.supybot.protocols.irc.experimentalExtensions.setValue(False)
             self.irc.state.capabilities_ack.remove('message-tags')
@@ -830,7 +835,7 @@ class MultilinePrivmsgTestCase(ChannelPluginTestCase):
         self.irc.state.capabilities_ack.add('draft/multiline')
         self.irc.state.capabilities_ls['draft/multiline'] = 'max-bytes=4096'
 
-        # Enable msgid and +draft/reply
+        # Enable msgid and +reply
         self.irc.state.capabilities_ack.add('message-tags')
 
         conf.supybot.protocols.irc.experimentalExtensions.setValue(True)
@@ -1021,7 +1026,8 @@ class MultilinePrivmsgTestCase(ChannelPluginTestCase):
             m, ircmsgs.IrcMsg(command='BATCH',
                 args=('+' + batch_name,
                     'draft/multiline', self.channel),
-                server_tags={'+draft/reply': 'initialmsgid'}))
+                server_tags={'+reply': 'initialmsgid',
+                             '+draft/reply': 'initialmsgid'}))
 
         # Second message, first PRIVMSG
         m = self.irc.takeMsg()

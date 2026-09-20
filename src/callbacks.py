@@ -248,16 +248,17 @@ def _makeReply(irc, msg, s,
     ret = msgmaker(target, s)
     ret.tag('inReplyTo', msg)
     if 'msgid' in msg.server_tags \
-            and conf.supybot.protocols.irc.experimentalExtensions() \
             and 'message-tags' in irc.state.capabilities_ack:
         # In theory, msgid being in server_tags implies message-tags was
         # negotiated, but the +reply spec requires it explicitly. Plus, there's
         # no harm in doing this extra check, in case a plugin is replying
         # across network (as it may happen with '@network command').
+        ret.server_tags['+reply'] = msg.server_tags['msgid']
         ret.server_tags['+draft/reply'] = msg.server_tags['msgid']
         if msg.channel and not irc.isChannel(ret.args[0]):
             # If replying in non-channel to a channel message, use the tag
             # defined in https://github.com/ircv3/ircv3-specifications/pull/498
+            ret.server_tags["+channel-context"] = msg.channel
             ret.server_tags["+draft/channel-context"] = msg.channel
     return ret
 

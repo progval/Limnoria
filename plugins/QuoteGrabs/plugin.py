@@ -283,10 +283,9 @@ class QuoteGrabs(callbacks.Plugin):
             raise callbacks.ArgumentError
         if ircutils.nickEqual(nick, msg.nick):
             irc.error(_('You can\'t quote grab yourself.'), Raise=True)
-        if conf.supybot.protocols.irc.experimentalExtensions():
+        msgid = msg.server_tags.get('+reply')
+        if msgid is None:
             msgid = msg.server_tags.get('+draft/reply')
-        else:
-            msgid = None
         for m in reversed(irc.state.history):
             if msgid and m.server_tags.get('msgid') != msgid:
                 continue

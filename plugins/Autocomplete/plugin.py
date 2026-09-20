@@ -121,10 +121,7 @@ class Autocomplete(callbacks.Plugin):
     """Provides command completion for IRC clients that support it."""
 
     def _enabled(self, irc, msg):
-        return (
-            conf.supybot.protocols.irc.experimentalExtensions()
-            and self.registryValue("enabled", msg.channel, irc.network)
-        )
+        return self.registryValue("enabled", msg.channel, irc.network)
 
     def doTagmsg(self, irc, msg):
         if REQUEST_TAG not in msg.server_tags:
@@ -166,6 +163,7 @@ class Autocomplete(callbacks.Plugin):
             ircmsgs.IrcMsg(
                 server_tags={
                     "+draft/reply": msgid,
+                    "+reply": msgid,
                     RESPONSE_TAG: autocomplete_response,
                 },
                 command="TAGMSG",

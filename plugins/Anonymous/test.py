@@ -107,7 +107,7 @@ class AnonymousTestCase(ChannelPluginTestCase):
             with self.subTest('canonical working case'):
                 m = self.getMsg('anonymous react :) blah')
                 self.assertEqual(m, ircmsgs.IrcMsg(
-                    '@+draft/reply=123;+draft/react=:) TAGMSG %s'
+                    '@+draft/reply=123;+reply=123;+draft/react=:) TAGMSG %s'
                     % self.channel))
 
 
@@ -123,25 +123,47 @@ class AnonymousTestCase(ChannelPluginTestCase):
         with conf.supybot.plugins.Anonymous.requireRegistration.context(False), \
                 conf.supybot.protocols.irc.experimentalExtensions.context(True):
 
-            # Works
-            self.irc.state.supported['CLIENTTAGDENY'] = 'foo,bar'
-
-            for value in ('draft/reply', 'draft/react', '*,-draft/reply',
-                          '*,draft/react'):
+            # Rejected because +draft/react is denied
+            for value in ('draft/react', '*,-draft/reply,reply', '*,draft/react'):
                 self.irc.state.supported['CLIENTTAGDENY'] = value
                 with self.subTest('denied by CLIENTTAGDENY=%s' % value):
                     self.assertRegexp('anonymous react :) blah',
-                                      'draft/reply and/or draft/react')
+                                      r'does not allow draft/react\.$')
                     self.assertIsNone(self.irc.takeMsg())
 
-            # Works
-            for value in ('foo,bar', '*,-draft/reply,-draft/react'):
+            # Rejected because +reply and +draft/reply are both denied
+            for value in ('draft/reply,reply', '*,draft/reply,reply,-draft/react',
+                          '*,-draft/react'):
+                self.irc.state.supported['CLIENTTAGDENY'] = value
+                with self.subTest('denied by CLIENTTAGDENY=%s' % value):
+                    self.assertRegexp('anonymous react :) blah',
+                                      r'reply nor draft/reply\.$')
+                    self.assertIsNone(self.irc.takeMsg())
+
+            # Works (both +draft/reply and +reply)
+            for value in ('foo,bar', '*,-draft/reply,-reply,-draft/react'):
                 self.irc.state.supported['CLIENTTAGDENY'] = value
                 with self.subTest('allowed by CLIENTTAGDENY=%s' % value):
                     m = self.getMsg('anonymous react :) blah')
                     self.assertEqual(m, ircmsgs.IrcMsg(
-                        '@+draft/reply=123;+draft/react=:) TAGMSG %s'
+                        '@+draft/reply=123;+reply=123;+draft/react=:) TAGMSG %s'
                         % self.channel))
+
+            # Works (+draft/reply only)
+            self.irc.state.supported['CLIENTTAGDENY'] = '*,-draft/reply,-draft/react'
+            with self.subTest('allowed by CLIENTTAGDENY=%s' % value):
+                m = self.getMsg('anonymous react :) blah')
+                self.assertEqual(m, ircmsgs.IrcMsg(
+                    '@+draft/reply=123;+draft/react=:) TAGMSG %s'
+                    % self.channel))
+
+            # Works (+reply only)
+            self.irc.state.supported['CLIENTTAGDENY'] = '*,-reply,-draft/react'
+            with self.subTest('allowed by CLIENTTAGDENY=%s' % value):
+                m = self.getMsg('anonymous react :) blah')
+                self.assertEqual(m, ircmsgs.IrcMsg(
+                    '@+reply=123;+draft/react=:) TAGMSG %s'
+                    % self.channel))
 
 
 
