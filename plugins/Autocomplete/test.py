@@ -60,6 +60,7 @@ class AutocompleteTestCase(PluginTestCase):
             m,
             ircmsgs.IrcMsg(
                 server_tags={
+                    "+reply": "1234",
                     "+draft/reply": "1234",
                     "+draft/autocomplete-response": expectedResponse,
                 },
@@ -140,6 +141,7 @@ class AutocompleteChannelTestCase(ChannelPluginTestCase):
             m,
             ircmsgs.IrcMsg(
                 server_tags={
+                    "+reply": "1234",
                     "+draft/reply": "1234",
                     "+draft/autocomplete-response": expectedResponse,
                 },

@@ -165,6 +165,7 @@ class Autocomplete(callbacks.Plugin):
         irc.queueMsg(
             ircmsgs.IrcMsg(
                 server_tags={
+                    "+reply": msgid,
                     "+draft/reply": msgid,
                     RESPONSE_TAG: autocomplete_response,
                 },
