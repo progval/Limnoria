@@ -60,8 +60,8 @@ class AutocompleteTestCase(PluginTestCase):
             m,
             ircmsgs.IrcMsg(
                 server_tags={
-                    "+draft/reply": "1234",
                     "+reply": "1234",
+                    "+draft/reply": "1234",
                     "+draft/autocomplete-response": expectedResponse,
                 },
                 command="TAGMSG",
@@ -70,41 +70,52 @@ class AutocompleteTestCase(PluginTestCase):
         )
 
     def testResponse(self):
-        with conf.supybot.plugins.Autocomplete.enabled.context(True):
-            self._assertAutocompleteResponse("apro", "pos")
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
+                self._assertAutocompleteResponse("apro", "pos")
 
     def testSingleCommandName(self):
-        with conf.supybot.plugins.Autocomplete.enabled.context(True):
-            self._assertAutocompleteResponse("apro", "pos")
-            self._assertAutocompleteResponse("apr", "opos")
-            self._assertAutocompleteResponse("tel", "l")
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
+                self._assertAutocompleteResponse("apro", "pos")
+                self._assertAutocompleteResponse("apr", "opos")
+                self._assertAutocompleteResponse("tel", "l")
 
     def testTwoResults(self):
-        with conf.supybot.plugins.Autocomplete.enabled.context(True):
-            self._assertAutocompleteResponse("te", "ll\tstplugin")
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
+                self._assertAutocompleteResponse("te", "ll\tstplugin")
 
     def testCommandNameAndPluginName(self):
-        with conf.supybot.plugins.Autocomplete.enabled.context(True):
-            self._assertAutocompleteResponse("misc t", "ell")
-            self._assertAutocompleteResponse(
-                "misc c", "learmores\tompletenick"
-            )
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
+                self._assertAutocompleteResponse("misc t", "ell")
+                self._assertAutocompleteResponse(
+                    "misc c", "learmores\tompletenick"
+                )
 
     def testSinglePluginName(self):
-        with conf.supybot.plugins.Autocomplete.enabled.context(True):
-            self._assertAutocompleteResponse(
-                "lat", "er notes\ter remove\ter tell\ter undo"
-            )
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
+                self._assertAutocompleteResponse(
+                    "lat", "er notes\ter remove\ter tell\ter undo"
+                )
 
     def testNextWord(self):
-        with conf.supybot.plugins.Autocomplete.enabled.context(True):
-            self._assertAutocompleteResponse(
-                "later", " notes\t remove\t tell\t undo"
-            )
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
+                self._assertAutocompleteResponse(
+                    "later", " notes\t remove\t tell\t undo"
+                )
 
     def testNoResponse(self):
-        self._sendRequest("apro")
-        self.assertIsNone(self.irc.takeMsg())
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            self._sendRequest("apro")
+            self.assertIsNone(self.irc.takeMsg())
+
+        with conf.supybot.plugins.Autocomplete.enabled.context(True):
+            self._sendRequest("apro")
+            self.assertIsNone(self.irc.takeMsg())
 
 
 class AutocompleteChannelTestCase(ChannelPluginTestCase):
@@ -130,8 +141,8 @@ class AutocompleteChannelTestCase(ChannelPluginTestCase):
             m,
             ircmsgs.IrcMsg(
                 server_tags={
-                    "+draft/reply": "1234",
                     "+reply": "1234",
+                    "+draft/reply": "1234",
                     "+draft/autocomplete-response": expectedResponse,
                 },
                 command="TAGMSG",
@@ -140,12 +151,18 @@ class AutocompleteChannelTestCase(ChannelPluginTestCase):
         )
 
     def testResponse(self):
-        with conf.supybot.plugins.Autocomplete.enabled.context(True):
-            self._assertAutocompleteResponse("@apro", "pos")
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            with conf.supybot.plugins.Autocomplete.enabled.context(True):
+                self._assertAutocompleteResponse("@apro", "pos")
 
     def testNoResponse(self):
-        self._sendRequest("@apro")
-        self.assertIsNone(self.irc.takeMsg())
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            self._sendRequest("@apro")
+            self.assertIsNone(self.irc.takeMsg())
+
+        with conf.supybot.plugins.Autocomplete.enabled.context(True):
+            self._sendRequest("@apro")
+            self.assertIsNone(self.irc.takeMsg())
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
