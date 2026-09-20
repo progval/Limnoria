@@ -630,7 +630,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
     def testClientTagReply(self):
         self.irc.addCallback(self.First(self.irc))
 
-        # no CAP, no msgid, no experimentalExtensions -> no +reply
+        # no CAP, no msgid -> no +reply
         self.irc.feedMsg(ircmsgs.IrcMsg(
             command='PRIVMSG', prefix=self.prefix,
             args=('#foo', '%s: firstcmd' % self.nick)))
@@ -638,7 +638,7 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertEqual(msg, ircmsgs.IrcMsg(
             command='PRIVMSG', args=('#foo', '%s: foo' % self.nick)))
 
-        # CAP and msgid, not no experimentalExtensions -> no +reply
+        # no CAP, but msgid -> no +reply
         self.irc.feedMsg(ircmsgs.IrcMsg(
             command='PRIVMSG', prefix=self.prefix,
             args=('#foo', '%s: firstcmd' % self.nick),
@@ -647,56 +647,45 @@ class PrivmsgTestCase(ChannelPluginTestCase):
         self.assertEqual(msg, ircmsgs.IrcMsg(
             command='PRIVMSG', args=('#foo', '%s: foo' % self.nick)))
 
-        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
-            # no CAP, but msgid and experimentalExtensions -> no +reply
+        # msgid, but no CAP -> no +reply
+        # (note that in theory it's impossible to receive msgid without
+        # the CAP, but the +reply spec explicitly requires to check it)
+        self.irc.feedMsg(ircmsgs.IrcMsg(
+            command='PRIVMSG', prefix=self.prefix,
+            args=('#foo', '%s: firstcmd' % self.nick),
+            server_tags={'msgid': 'foobar'}))
+        msg = self.irc.takeMsg()
+        self.assertEqual(msg, ircmsgs.IrcMsg(
+            command='PRIVMSG', args=('#foo', '%s: foo' % self.nick)))
+
+        try:
+            self.irc.state.capabilities_ack.add('message-tags')
+
+            # no msgid, but CAP -> no +reply
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                command='PRIVMSG', prefix=self.prefix,
+                args=('#foo', '%s: firstcmd' % self.nick)))
+            msg = self.irc.takeMsg()
+            self.assertEqual(msg, ircmsgs.IrcMsg(
+                command='PRIVMSG', args=('#foo', '%s: foo' % self.nick)))
+
+            # both CAP and msgid -> yes +reply
             self.irc.feedMsg(ircmsgs.IrcMsg(
                 command='PRIVMSG', prefix=self.prefix,
                 args=('#foo', '%s: firstcmd' % self.nick),
                 server_tags={'msgid': 'foobar'}))
             msg = self.irc.takeMsg()
             self.assertEqual(msg, ircmsgs.IrcMsg(
-                command='PRIVMSG', args=('#foo', '%s: foo' % self.nick)))
-
-            # msgid and experimentalExtensions, but no CAP -> no +reply
-            # (note that in theory it's impossible to receive msgid without
-            # the CAP, but the +reply spec explicitly requires to check it)
-            self.irc.feedMsg(ircmsgs.IrcMsg(
-                command='PRIVMSG', prefix=self.prefix,
-                args=('#foo', '%s: firstcmd' % self.nick),
-                server_tags={'msgid': 'foobar'}))
-            msg = self.irc.takeMsg()
-            self.assertEqual(msg, ircmsgs.IrcMsg(
-                command='PRIVMSG', args=('#foo', '%s: foo' % self.nick)))
-
-            try:
-                self.irc.state.capabilities_ack.add('message-tags')
-
-                # no msgid, but CAP and experimentalExtensions -> no +reply
-                self.irc.feedMsg(ircmsgs.IrcMsg(
-                    command='PRIVMSG', prefix=self.prefix,
-                    args=('#foo', '%s: firstcmd' % self.nick)))
-                msg = self.irc.takeMsg()
-                self.assertEqual(msg, ircmsgs.IrcMsg(
-                    command='PRIVMSG', args=('#foo', '%s: foo' % self.nick)))
-
-                # all of CAP, msgid, experimentalExtensions -> yes +reply
-                self.irc.feedMsg(ircmsgs.IrcMsg(
-                    command='PRIVMSG', prefix=self.prefix,
-                    args=('#foo', '%s: firstcmd' % self.nick),
-                    server_tags={'msgid': 'foobar'}))
-                msg = self.irc.takeMsg()
-                self.assertEqual(msg, ircmsgs.IrcMsg(
-                    command='PRIVMSG', args=('#foo', '%s: foo' % self.nick),
-                    server_tags={'+reply': 'foobar',
-                                 '+draft/reply': 'foobar'}))
-            finally:
-                self.irc.state.capabilities_ack.remove('message-tags')
+                command='PRIVMSG', args=('#foo', '%s: foo' % self.nick),
+                server_tags={'+reply': 'foobar',
+                             '+draft/reply': 'foobar'}))
+        finally:
+            self.irc.state.capabilities_ack.remove('message-tags')
 
     def testClientTagReplyChannel(self):
         self.irc.addCallback(self.First(self.irc))
 
         try:
-            conf.supybot.protocols.irc.experimentalExtensions.setValue(True)
             self.irc.state.capabilities_ack.add('message-tags')
 
             # Reply in channel to channel message -> +channel-context
@@ -738,7 +727,6 @@ class PrivmsgTestCase(ChannelPluginTestCase):
                 server_tags={'+reply': 'foobar',
                              '+draft/reply': 'foobar'}))
         finally:
-            conf.supybot.protocols.irc.experimentalExtensions.setValue(False)
             self.irc.state.capabilities_ack.remove('message-tags')
 
     class TwoRepliesFirstAction(callbacks.Plugin):
