@@ -238,6 +238,11 @@ repositories = utils.InsensitivePreservingDict({
                                                    'Limnoria-plugins',
                                                    'plugins',
                                                    ),
+               'livetennisapi':    GithubRepository(
+                                                   'livetennisapi',
+                                                   'limnoria-livetennis',
+                                                   'plugins',
+                                                   ),
                })
 
 class PluginDownloader(callbacks.Plugin):
