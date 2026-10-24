@@ -694,12 +694,6 @@ class Services(callbacks.Plugin):
 
 
     def _checkCanRegister(self, irc, otherIrc):
-        if not conf.supybot.protocols.irc.experimentalExtensions():
-            irc.error(
-                _("Experimental IRC extensions are not enabled for this bot."),
-                Raise=True
-            )
-
         if "draft/account-registration" not in otherIrc.state.capabilities_ls:
             irc.error(
                 _("This network does not support draft/account-registration."),
@@ -715,6 +709,12 @@ class Services(callbacks.Plugin):
         if otherIrc.sasl_authenticated:
             irc.error(
                 _("This bot is already authenticated on the network."),
+                Raise=True
+            )
+
+        if not conf.supybot.protocols.irc.experimentalExtensions():
+            irc.error(
+                _("Experimental IRC extensions are not enabled for this bot."),
                 Raise=True
             )
 
