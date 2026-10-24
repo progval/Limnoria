@@ -101,23 +101,6 @@ class ServicesTestCase(PluginTestCase):
         self.assertEqual(m.command, 'PRIVMSG', m)
         self.assertEqual(m.args, ('ChanServ', 'foo bar'), m)
 
-    def testRegisterNoExperimentalExtensions(self):
-        self.assertRegexp(
-            "register p4ssw0rd", "error: Experimental IRC extensions")
-
-        self.irc.feedMsg(IrcMsg(
-            command="FAIL", args=["REGISTER", "BLAH", "message"]))
-        self.assertIsNone(self.irc.takeMsg())
-
-        self.irc.feedMsg(IrcMsg(
-            command="REGISTER", args=["SUCCESS", "account", "msg"]))
-        self.assertIsNone(self.irc.takeMsg())
-
-        self.irc.feedMsg(IrcMsg(
-            command="REGISTER",
-            args=["VERIFICATION_REQUIRED", "account", "msg"]))
-        self.assertIsNone(self.irc.takeMsg())
-
 
 class JoinsBeforeIdentifiedTestCase(PluginTestCase):
     plugins = ('Services',)
@@ -200,6 +183,24 @@ class ExperimentalServicesTestCase(PluginTestCase):
         self.irc.state.capabilities_ls = self._initialCaps
         conf.supybot.protocols.irc.experimentalExtensions.setValue(False)
         super().tearDown()
+
+    def testRegisterNoExperimentalExtensions(self):
+        with conf.supybot.protocols.irc.experimentalExtensions.context(False):
+            self.assertRegexp(
+                "register p4ssw0rd", "error: Experimental IRC extensions")
+
+            self.irc.feedMsg(IrcMsg(
+                command="FAIL", args=["REGISTER", "BLAH", "message"]))
+            self.assertIsNone(self.irc.takeMsg())
+
+            self.irc.feedMsg(IrcMsg(
+                command="REGISTER", args=["SUCCESS", "account", "msg"]))
+            self.assertIsNone(self.irc.takeMsg())
+
+            self.irc.feedMsg(IrcMsg(
+                command="REGISTER",
+                args=["VERIFICATION_REQUIRED", "account", "msg"]))
+            self.assertIsNone(self.irc.takeMsg())
 
     def testRegisterSupportError(self):
         old_caps = self.irc.state.capabilities_ls.copy()
