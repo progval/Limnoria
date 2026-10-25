@@ -96,4 +96,12 @@ conf.registerGlobalValue(Web.fetch, 'timeout',
     seconds the bot will wait for the site to respond, when using the 'fetch'
     command in this plugin. If 0, will use socket.defaulttimeout"""))
 
+conf.registerGlobalValue(Web, 'useOembedRegistry',
+    registry.Boolean(False, _("""Determines whether the bot will use the 
+    oembed.com providers registry.""")))
+
+conf.registerGlobalValue(Web, 'useOembedDiscovery',
+    registry.Boolean(False, _("""Determines whether the bot will use HTML
+    discovery to find oEmbed endpoints.""")))
+
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
