@@ -1,7 +1,7 @@
 ###
 # Copyright (c) 2002-2005, Jeremiah Fincher
 # Copyright (c) 2009, James McCoy
-# Copyright (c) 2010-2021, Valentin Lorentz
+# Copyright (c) 2010-2023, Valentin Lorentz
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -413,6 +413,72 @@ class ChannelTestCase(ChannelPluginTestCase):
         self.assertEqual(m.command, 'PART')
         self.assertEqual(m.args[0], '#foo')
         self.assertEqual(m.args[1], 'reason')
+
+    def assertRedactNoMsgid(self, query, hostmask, **kwargs):
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.irc.state.capabilities_ack.add('draft/message-redaction')
+
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                command='PRIVMSG',
+                args=(self.channel, '@redact')))
+            self.assertRegexp(' ', 'Error: --msgid is required when')
+
+    def assertRedactMsgid(self, query, hostmask, **kwargs):
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.irc.state.capabilities_ack.add('draft/message-redaction')
+
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                command='PRIVMSG',
+                args=(self.channel, '@redact --msgid foobar')))
+            self.assertRegexp(' ', 'Error: Cound not find')
+
+            m = self.getMsg(' ', timeout=0.5)
+            self.assertIsNone(m)
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                command='PRIVMSG',
+                args=(self.channel, 'oh shit'),
+                server_tags={'msgid': 'foobar'}))
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                command='PRIVMSG',
+                args=(self.channel, '@redact --msgid foobar')))
+
+            m = self.getMsg(' ')
+
+            self.assertEqual(m.command, 'REDACT')
+            self.assertEqual(m.args, (self.channel, 'foobar'))
+
+    def assertRedactReply(self, query, hostmask, **kwargs):
+        self.irc.feedMsg(ircmsgs.op(self.channel, self.nick))
+        self.irc.state.capabilities_ack.add('draft/message-redaction')
+
+        with conf.supybot.protocols.irc.experimentalExtensions.context(True):
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                command='PRIVMSG',
+                args=(self.channel, '@redact'),
+                server_tags={'+draft/reply=foobar'}))
+            self.assertRegexp(' ', 'Error: Cound not find')
+
+            m = self.getMsg(' ', timeout=0.5)
+            self.assertIsNone(m)
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                command='PRIVMSG',
+                args=(self.channel, 'oh shit'),
+                server_tags={'msgid': 'foobar'}))
+
+            self.irc.feedMsg(ircmsgs.IrcMsg(
+                command='PRIVMSG',
+                args=(self.channel, '@redact'),
+                server_tags={'+draft/reply=foobar'}))
+
+            m = self.getMsg(' ')
+
+            self.assertEqual(m.command, 'REDACT')
+            self.assertEqual(m.args, (self.channel, 'foobar'))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
 
