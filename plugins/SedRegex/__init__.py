@@ -37,30 +37,31 @@ History replacer using sed-style expressions.
 import supybot
 import supybot.world as world
 
-__version__ = supybot.version.version
-__author__ = supybot.Author("Michael Daniel Telatynski", "t3chguy", "postmaster@webdevguru.co.uk")
-__contributors__ = {supybot.authors.jlu:
-                    	["options bolding the replacement text", "misc. bug fixes and enhancements"],
-                    supybot.Author('nyuszika7h', 'nyuszika7h', 'nyuszika7h@openmailbox.org'):
-                    	["_unpack_sed method within plugin.py"]
-                   }
-__maintainer__ = supybot.authors.limnoria_core
+if not world.supyprocessing:
+    __version__ = supybot.version.version
+    __author__ = supybot.Author("Michael Daniel Telatynski", "t3chguy", "postmaster@webdevguru.co.uk")
+    __contributors__ = {supybot.authors.jlu:
+                            ["options bolding the replacement text", "misc. bug fixes and enhancements"],
+                        supybot.Author('nyuszika7h', 'nyuszika7h', 'nyuszika7h@openmailbox.org'):
+                            ["_unpack_sed method within plugin.py"]
+                       }
+    __maintainer__ = supybot.authors.limnoria_core
 
-__url__ = 'https://github.com/progval/Limnoria/tree/master/plugins/SedRegex'
+    __url__ = 'https://github.com/progval/Limnoria/tree/master/plugins/SedRegex'
 
-from . import sedregex
-from . import config
-from . import plugin
-from importlib import reload
+    from . import sedregex
+    from . import config
+    from . import plugin
+    from importlib import reload
 
-reload(sedregex)
-reload(config)
-reload(plugin)
+    reload(sedregex)
+    reload(config)
+    reload(plugin)
 
-if world.testing:
-    from . import test
+    if world.testing:
+        from . import test
 
-Class = plugin.Class
-configure = config.configure
+    Class = plugin.Class
+    configure = config.configure
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
