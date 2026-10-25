@@ -70,5 +70,10 @@ conf.registerChannelValue(Karma, 'allowUnaddressedKarma',
 conf.registerChannelValue(Karma, 'onlyNicks',
     registry.Boolean(False, _("""Determines whether the bot will
     only increase/decrease karma for nicks in the current channel.""")))
+conf.registerChannelValue(Karma, 'trackUserVotes',
+    registry.Boolean(False, _("""Determines whether the bot will track votes
+    per user. If enabled, each user can only vote once per thing; a second
+    vote in the same direction is ignored, and a vote in the opposite direction
+    changes the previous vote. Default is False for backward compatibility.""")))
 
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
