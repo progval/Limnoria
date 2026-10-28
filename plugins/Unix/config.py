@@ -91,6 +91,14 @@ conf.registerChannelValue(Unix.fortune, 'files',
     (if any) will be used with the fortune command; if none is given, the
     system-wide default will be used.  Do note that this fortune file must be
     placed with the rest of your system's fortune files.""")))
+conf.registerChannelValue(Unix.fortune, 'requireCapability',
+    registry.String('channel,op; channel,halfop', _("""Determines the
+    capabilities required (if any) to select fortune files from the
+    arguments of the fortune command, instead of the ones configured in
+    supybot.plugins.Unix.fortune.files.  Use 'channel,capab' for
+    channel-level capabilities.  If empty, anyone can select fortune files.
+    Note that absence of an explicit anticapability means user has
+    capability.""")))
 
 conf.registerGroup(Unix, 'spell')
 conf.registerGlobalValue(Unix.spell, 'command',

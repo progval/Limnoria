@@ -30,8 +30,8 @@ Commands
 
 .. _command-unix-fortune:
 
-``fortune takes no arguments``
-  Returns a fortune from the Unix fortune program.
+``fortune [<file> ...]``
+  Returns a fortune from the Unix fortune program. If one or more <file>s are given, the fortune is picked from these fortune files instead of the ones configured in supybot.plugins.Unix.fortune.files; this requires one of the capabilities configured in supybot.plugins.Unix.fortune.requireCapability.
 
 .. _command-unix-pid:
 
@@ -120,6 +120,14 @@ supybot.plugins.Unix.fortune
     This config variable defaults to "False", is network-specific, and is channel-specific.
 
     Determines whether fortune will retrieve offensive fortunes along with the normal fortunes. This sends the -a option to the fortune program.
+
+  .. _conf-supybot.plugins.Unix.fortune.requireCapability:
+
+
+  supybot.plugins.Unix.fortune.requireCapability
+    This config variable defaults to "channel,op; channel,halfop", is network-specific, and is channel-specific.
+
+    Determines the capabilities required (if any) to select fortune files from the arguments of the fortune command, instead of the ones configured in supybot.plugins.Unix.fortune.files. Use 'channel,capab' for channel-level capabilities. If empty, anyone can select fortune files. Note that absence of an explicit anticapability means user has capability.
 
   .. _conf-supybot.plugins.Unix.fortune.short:
 
