@@ -952,7 +952,7 @@ class Directory(registry.String):
     __slots__ = ()
     def __call__(self):
         # ??? Should we perhaps always return an absolute path here?
-        v = super(Directory, self).__call__()
+        v = os.path.expanduser(super(Directory, self).__call__())
         if v != "/dev/null" and not os.path.exists(v):
             # /dev/null is a special value to disable directories (eg. backup),
             os.mkdir(v)
@@ -1024,8 +1024,19 @@ def _update_backup():
 supybot.directories.backup.addCallback(_update_backup)
 _update_backup()
 
+class ExpandedPath(registry.String):
+    """A path in which a leading ``~`` or ``~user`` is expanded to the
+    corresponding home directory."""
+    __slots__ = ()
+    def setValue(self, v):
+        super(ExpandedPath, self).setValue(os.path.expanduser(v))
+
+class CommaSeparatedListOfDirectories(registry.CommaSeparatedListOfStrings):
+    __slots__ = ()
+    Value = ExpandedPath
+
 registerGlobalValue(supybot.directories, 'plugins',
-    registry.CommaSeparatedListOfStrings([], _("""Determines what directories
+    CommaSeparatedListOfDirectories([], _("""Determines what directories
     the bot will look for plugins in.  Accepts a comma-separated list of
     strings.
     This means that to add another directory, you can nest the former value and
