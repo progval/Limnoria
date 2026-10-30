@@ -155,15 +155,24 @@ class DDG(callbacks.Plugin):
             irc.error("No results found.")
         else:
             strings = []
+            channel = msg.args[0]
+            resultFormat = self.registryValue('format', channel)
+            separator = self.registryValue('separator', channel)
 
             for r in results:
                 if not r[0]:
                     # This result has no title, so it's likely a redirect from !bang.
                     strings.append(format("See %u", r[2]))
                 else:
-                    strings.append(format("%s - %s %u", ircutils.bold(r[0]), r[1], r[2]))
+                    env = {
+                        'title': ircutils.bold(r[0]),
+                        'snippet': r[1],
+                        'url': format('%u', r[2]),
+                    }
+                    strings.append(ircutils.standardSubstitute(
+                        irc, msg, resultFormat, env))
 
-            irc.reply(', '.join(strings))
+            irc.reply(separator.join(strings))
 
 Class = DDG
 
