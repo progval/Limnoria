@@ -51,6 +51,10 @@ def configure(advanced):
 class SafeSearch(registry.OnlySomeStrings):
     validStrings = ['active', 'moderate', 'off']
 
+class DDGResultFormat(registry.TemplatedString):
+    """Value must include $title and $url."""
+    requiredTemplates = ['title', 'url']
+
 DDG = conf.registerPlugin('DDG')
 conf.registerChannelValue(DDG, 'maxResults',
     registry.PositiveInteger(4, _("""Determines the maximum number of
@@ -67,6 +71,13 @@ conf.registerChannelValue(DDG, 'searchFilter',
     SafeSearch('moderate', _("""Determines what level of search filtering to use
     by default.  'active' - most filtering, 'moderate' - default filtering,
     'off' - no filtering""")))
+conf.registerChannelValue(DDG, 'separator',
+    registry.String(', ', _("""Determines the separator used between search
+    results in the bot's reply.""")))
+conf.registerChannelValue(DDG, 'format',
+    DDGResultFormat('$title - $snippet $url', _("""Determines how each search
+    result is formatted.  Available variables: $title (bolded link title),
+    $snippet (result snippet, possibly empty), $url (formatted URL).""")))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 

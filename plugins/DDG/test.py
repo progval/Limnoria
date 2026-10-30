@@ -31,9 +31,21 @@
 
 import supybot.conf as conf
 from supybot.test import *
+from unittest.mock import patch
 
 class DDGTestCase(PluginTestCase):
     plugins = ('DDG',)
+
+    def testSearchFormatAndSeparator(self):
+        ddg = self.irc.getCallback('DDG')
+        results = [('Title', 'snippet text', 'https://example.com/')]
+        with patch.object(ddg, 'search_core', return_value=results):
+            with conf.supybot.plugins.DDG.separator.context(' | '):
+                with conf.supybot.plugins.DDG.format.context(
+                        '$url - $title $snippet'):
+                    self.assertRegexp(
+                        'ddg search foo',
+                        r'<https://example.com/> - \x02Title\x02 snippet text')
 
     if network:
 
