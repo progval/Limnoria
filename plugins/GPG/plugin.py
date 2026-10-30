@@ -72,6 +72,12 @@ def check_gpg_available(f):
         newf.__name__ = f.__name__
         return newf
 
+def _normalize_keyid(keyid):
+    """Removes whitespace from a key id or fingerprint, so fingerprints
+    copy-pasted from ``gpg --fingerprint`` (which groups hex digits
+    with spaces) are accepted."""
+    return ''.join(keyid.split())
+
 if hasattr(http_client, '_MAXHEADERS'):
     safe_getUrl = utils.web.getUrl
 else:
@@ -122,7 +128,12 @@ class GPG(callbacks.Plugin):
         def add(self, irc, msg, args, user, keyid, keyserver):
             """<key id> <key server>
 
-            Add a GPG key to your account."""
+            Add a GPG key to your account. The key id may contain spaces,
+            as displayed by ``gpg --fingerprint``, if it is quoted."""
+            keyid = _normalize_keyid(keyid)
+            if not keyid:
+                irc.error(_('You must give a valid key id'))
+                return
             if keyid in user.gpgkeys:
                 irc.error(_('This key is already associated with your '
                     'account.'))
@@ -139,7 +150,7 @@ class GPG(callbacks.Plugin):
             else:
                 irc.error(reply)
         add = wrap(add, ['user',
-                         ('somethingWithoutSpaces',
+                         ('something',
                              _('You must give a valid key id')),
                          ('somethingWithoutSpaces',
                              _('You must give a valid key server'))])
@@ -149,6 +160,7 @@ class GPG(callbacks.Plugin):
             """<fingerprint>
 
             Remove a GPG key from your account."""
+            fingerprint = _normalize_keyid(fingerprint)
             try:
                 keyids = [x['keyid'] for x in gpg.keyring.list_keys()
                         if x['fingerprint'] == fingerprint]
@@ -163,7 +175,7 @@ class GPG(callbacks.Plugin):
                 irc.replySuccess()
             except ValueError:
                 irc.error(_('GPG key not associated with your account.'))
-        remove = wrap(remove, ['user', 'somethingWithoutSpaces'])
+        remove = wrap(remove, ['user', 'something'])
 
         @check_gpg_available
         def list(self, irc, msg, args, user):

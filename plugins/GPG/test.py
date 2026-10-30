@@ -82,6 +82,31 @@ class GPGTestCase(PluginTestCase):
         super(GPGTestCase, self).setUp()
         gpg.loadKeyring()
 
+    if gpg.available:
+        def testGpgAddFingerprintWithSpaces(self):
+            self.assertNotError('register spam egg')
+            calls = []
+            class Result:
+                imported = 1
+                unchanged = 0
+                not_imported = 0
+                results = [{'fingerprint': FINGERPRINT}]
+            def recv_keys(keyserver, keyid):
+                calls.append((keyserver, keyid))
+                return Result()
+            original_recv_keys = gpg.keyring.recv_keys
+            gpg.keyring.recv_keys = recv_keys
+            try:
+                self.assertRegexp('gpg key add "2CF3 E415 0021 8D30 F0B6  '
+                                  '54F5 C9D3 323C 20AF 012B" pgp.mit.edu',
+                                  '1 key imported')
+                self.assertEqual(calls, [('pgp.mit.edu', FINGERPRINT)])
+                self.assertResponse('gpg key list', FINGERPRINT)
+                self.assertError('gpg key add "    " pgp.mit.edu')
+                self.assertEqual(len(calls), 1)
+            finally:
+                gpg.keyring.recv_keys = original_recv_keys
+
     if gpg.available and network:
         def testGpgAddRemove(self):
             self.assertNotError('register foo bar')
