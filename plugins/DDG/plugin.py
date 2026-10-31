@@ -165,7 +165,7 @@ class DDG(callbacks.Plugin):
                     strings.append(format("See %u", r[2]))
                 else:
                     env = {
-                        'title': ircutils.bold(r[0]),
+                        'title': r[0],
                         'snippet': r[1],
                         'url': format('%u', r[2]),
                     }

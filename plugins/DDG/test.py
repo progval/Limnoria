@@ -38,14 +38,20 @@ class DDGTestCase(PluginTestCase):
 
     def testSearchFormatAndSeparator(self):
         ddg = self.irc.getCallback('DDG')
-        results = [('Title', 'snippet text', 'https://example.com/')]
+        results = [('Title', 'snippet text', 'https://example.com/'),
+                   ('Other', 'more text', 'https://example.org/')]
         with patch.object(ddg, 'search_core', return_value=results):
+            self.assertResponse(
+                'ddg search foo',
+                '\x02Title\x02 - snippet text <https://example.com/>, '
+                '\x02Other\x02 - more text <https://example.org/>')
             with conf.supybot.plugins.DDG.separator.context(' | '):
                 with conf.supybot.plugins.DDG.format.context(
                         '$url - $title $snippet'):
-                    self.assertRegexp(
+                    self.assertResponse(
                         'ddg search foo',
-                        r'<https://example.com/> - \x02Title\x02 snippet text')
+                        '<https://example.com/> - Title snippet text | '
+                        '<https://example.org/> - Other more text')
 
     if network:
 
