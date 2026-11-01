@@ -75,6 +75,11 @@ def filter_messages(network, msg, target, messages, ignoreRegex, sedRegex):
                 m.tagged('receivedBy').network == network :
             if target and m.nick != target:
                 continue
+            # Skip the bot's own echoed PRIVMSG/NOTICE. With echo-message
+            # (or Limnoria's emulated echo), those appear in history and
+            # would otherwise be treated as snarfable channel traffic.
+            if m.tagged('emulatedEcho') or 'label' in m.server_tags:
+                continue
             # Don't snarf ignored users' messages unless specifically
             # told to.
             if ircdb.checkIgnored(m.prefix) and not target:

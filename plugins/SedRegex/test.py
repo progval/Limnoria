@@ -33,6 +33,8 @@ import unittest
 import contextlib
 import multiprocessing
 from supybot.test import *
+import supybot.ircmsgs as ircmsgs
+import supybot.ircutils as ircutils
 import supybot.world as world
 import supybot.callbacks as callbacks
 
@@ -355,3 +357,30 @@ class SedRegexTestCase(ChannelPluginTestCase):
             self.assertIn('timed out', str(m))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+
+    def testIgnoreBotEchoMessages(self):
+        # Echoed bot lines (echo-message / emulatedEcho) must not be snarfed.
+        self.feedMsg('hello world', frm=self.__class__.other)
+        echo = ircmsgs.privmsg(
+            self.channel,
+            'hello botline',
+            prefix=ircutils.joinHostmask(self.irc.nick, 'bot', 'bot.example'),
+        )
+        echo.tag('emulatedEcho', True)
+        self.irc.feedMsg(echo)
+        self.feedMsg('s/hello/goodbye/')
+        m = self.getMsg(' ')
+        self.assertIn('goodbye world', str(m))
+        self.assertNotIn('goodbye botline', str(m))
+
+    def testDoNotMatchBotEchoOnly(self):
+        echo = ircmsgs.privmsg(
+            self.channel,
+            'secret bot line',
+            prefix=ircutils.joinHostmask(self.irc.nick, 'bot', 'bot.example'),
+        )
+        echo.tag('emulatedEcho', True)
+        self.irc.feedMsg(echo)
+        self.feedMsg('s/secret/public/')
+        m = self.getMsg(' ')
+        self.assertIn('Search not found', str(m))
