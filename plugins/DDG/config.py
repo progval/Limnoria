@@ -67,6 +67,13 @@ conf.registerChannelValue(DDG, 'searchFilter',
     SafeSearch('moderate', _("""Determines what level of search filtering to use
     by default.  'active' - most filtering, 'moderate' - default filtering,
     'off' - no filtering""")))
+conf.registerChannelValue(DDG, 'separator',
+    registry.String(', ', _("""Determines the separator used between search
+    results in the bot's reply.""")))
+conf.registerChannelValue(DDG, 'format',
+    registry.String('\x02$title\x02 - $snippet $url', _("""Determines
+    how each search result is formatted.  Available variables: $title (link
+    title), $snippet (result snippet, possibly empty), $url (formatted URL).""")))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
 
