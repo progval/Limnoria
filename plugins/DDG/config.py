@@ -51,10 +51,6 @@ def configure(advanced):
 class SafeSearch(registry.OnlySomeStrings):
     validStrings = ['active', 'moderate', 'off']
 
-class DDGResultFormat(registry.TemplatedString):
-    """Value must include $title and $url."""
-    requiredTemplates = ['title', 'url']
-
 DDG = conf.registerPlugin('DDG')
 conf.registerChannelValue(DDG, 'maxResults',
     registry.PositiveInteger(4, _("""Determines the maximum number of
@@ -75,7 +71,7 @@ conf.registerChannelValue(DDG, 'separator',
     registry.String(', ', _("""Determines the separator used between search
     results in the bot's reply.""")))
 conf.registerChannelValue(DDG, 'format',
-    DDGResultFormat('\x02$title\x02 - $snippet $url', _("""Determines
+    registry.String('\x02$title\x02 - $snippet $url', _("""Determines
     how each search result is formatted.  Available variables: $title (link
     title), $snippet (result snippet, possibly empty), $url (formatted URL).""")))
 
