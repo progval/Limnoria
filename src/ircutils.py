@@ -698,6 +698,10 @@ class FormatParser(object):
 
     def parse(self):
         context = FormatContext()
+        if self.fd.getvalue().isprintable():
+            # no format character, so we can skip parsing the string.
+            # this saves some time in the most common case.
+            return context
         c = self.getChar()
         while c:
             if c == '\x02':
