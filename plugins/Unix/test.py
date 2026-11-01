@@ -29,7 +29,9 @@
 ###
 
 import os
+import shutil
 import socket
+import tempfile
 
 try:
     import crypt
@@ -190,4 +192,87 @@ if os.name == 'posix':
 
         def testUname(self):
             self.assertNotError('unix sysuname')
+
+    class UnixFortuneTestCase(ChannelPluginTestCase):
+        plugins = ('Unix',)
+
+        def setUp(self):
+            super().setUp()
+            # Use a fake fortune program that prints its arguments, so these
+            # tests don't depend on fortune (and its files) being installed.
+            self._fortuneDir = tempfile.mkdtemp()
+            fortuneCmd = os.path.join(self._fortuneDir, 'fortune')
+            with open(fortuneCmd, 'w') as fd:
+                fd.write('#!/bin/sh\necho "fake fortune: $*"\n')
+            os.chmod(fortuneCmd, 0o755)
+            self._origFortuneCmd = conf.supybot.plugins.Unix.fortune.command()
+            conf.supybot.plugins.Unix.fortune.command.setValue(fortuneCmd)
+
+        def tearDown(self):
+            conf.supybot.plugins.Unix.fortune.command.setValue(
+                self._origFortuneCmd)
+            shutil.rmtree(self._fortuneDir)
+            super().tearDown()
+
+        def testFortune(self):
+            self.assertResponse('fortune', 'fake fortune: -s -e')
+            self.assertNotError('config channel plugins.Unix.fortune.files '
+                    'foo bar')
+            try:
+                self.assertResponse('fortune', 'fake fortune: -s -e foo bar')
+            finally:
+                self.assertNotError('config channel plugins.Unix.fortune.files '
+                        '""')
+
+        def testFortuneFilesArgument(self):
+            self.assertResponse('fortune baz', 'fake fortune: -s -e baz')
+            self.assertNotError('config channel plugins.Unix.fortune.files '
+                    'foo bar')
+            try:
+                # Files given as arguments replace the configured ones.
+                self.assertResponse('fortune baz qux',
+                                    'fake fortune: -s -e baz qux')
+            finally:
+                self.assertNotError('config channel plugins.Unix.fortune.files '
+                        '""')
+
+        def testFortuneFilesArgumentDash(self):
+            self.assertRegexp('fortune -o', 'Error:.*"-o".*dash')
+            self.assertRegexp('fortune foo -o', 'Error:.*"-o".*dash')
+
+        def testFortuneFilesRequireCapability(self):
+            # The default test prefix is allowed everything while testing, so
+            # use a prefix the capability system actually checks.
+            origprefix = self.prefix
+            self.prefix = 'stuff!stuff@stuff.__no_testcap__'
+            try:
+                # Selecting fortune files requires a capability by default...
+                self.assertRegexp('fortune foo', 'Error:.*capability')
+                # ...but using the configured ones does not.
+                self.assertResponse('fortune', 'fake fortune: -s -e')
+
+                self.assertNotError('config channel '
+                        'plugins.Unix.fortune.requireCapability ""',
+                        frm=origprefix)
+                self.assertResponse('fortune foo', 'fake fortune: -s -e foo')
+
+                self.assertNotError('config channel '
+                        'plugins.Unix.fortune.requireCapability trusted',
+                        frm=origprefix)
+                self.assertRegexp('fortune foo', 'Error:.*capability')
+                u = ircdb.users.newUser()
+                u.name = 'nottester'
+                u.addHostmask(self.prefix)
+                u.addCapability('trusted')
+                ircdb.users.setUser(u)
+                try:
+                    self.assertResponse('fortune foo',
+                                        'fake fortune: -s -e foo')
+                finally:
+                    ircdb.users.delUser(u.id)
+            finally:
+                self.prefix = origprefix
+                self.assertNotError('config channel '
+                        'plugins.Unix.fortune.requireCapability '
+                        '"channel,op; channel,halfop"')
 # vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:

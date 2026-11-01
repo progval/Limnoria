@@ -47,6 +47,7 @@ except ImportError:
     crypt = None
 
 import supybot.conf as conf
+import supybot.ircdb as ircdb
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
@@ -207,14 +208,50 @@ class Unix(callbacks.Plugin):
         irc.reply(resp)
     spell = thread(wrap(spell, ['something']))
 
-    @internationalizeDocstring
-    def fortune(self, irc, msg, args):
-        """takes no arguments
+    def _checkFortuneFilesCapability(self, irc, msg, channel):
+        """Checks if the user has any of the capabilities required to select
+        fortune files from the arguments of the fortune command.
 
-        Returns a fortune from the Unix fortune program.
+        The list of required capabilities is in the
+        fortune.requireCapability channel config.
+        """
+        capabilities = self.registryValue('fortune.requireCapability',
+                                          channel, irc.network)
+        if not capabilities:
+            return
+        for capability in re.split(r'\s*;\s*', capabilities):
+            if capability.startswith('channel,'):
+                if channel is None:
+                    # Channel capabilities can't be checked in private.
+                    continue
+                capability = ircdb.makeChannelCapability(
+                    channel, capability[8:])
+            if capability and ircdb.checkCapability(msg.prefix, capability):
+                return
+        irc.errorNoCapability(capabilities, Raise=True)
+
+    @internationalizeDocstring
+    def fortune(self, irc, msg, args, files):
+        """[<file> ...]
+
+        Returns a fortune from the Unix fortune program.  If one or more
+        <file>s are given, the fortune is picked from these fortune files
+        instead of the ones configured in
+        supybot.plugins.Unix.fortune.files; this requires one of the
+        capabilities configured in
+        supybot.plugins.Unix.fortune.requireCapability.
         """
         channel = msg.channel
         network = irc.network
+        if files:
+            self._checkFortuneFilesCapability(irc, msg, channel)
+            for filename in files:
+                if filename.startswith('-'):
+                    irc.error(format(_('%q is not a valid fortune file: '
+                                       'it must not start with a dash (-).'),
+                                     filename), Raise=True)
+        else:
+            files = self.registryValue('fortune.files', channel, network)
         fortuneCmd = self.registryValue('fortune.command')
         if fortuneCmd:
             args = [fortuneCmd]
@@ -224,7 +261,7 @@ class Unix(callbacks.Plugin):
                 args.append('-e')
             if self.registryValue('fortune.offensive', channel, network):
                 args.append('-a')
-            args.extend(self.registryValue('fortune.files', channel, network))
+            args.extend(files)
             try:
                 with open(os.devnull) as null:
                     inst = subprocess.Popen(args,
@@ -245,6 +282,7 @@ class Unix(callbacks.Plugin):
                       'installed on this system, reconfigure the '
                       'supybot.plugins.Unix.fortune.command configuration '
                       'variable appropriately.'))
+    fortune = wrap(fortune, [any('somethingWithoutSpaces')])
 
     @internationalizeDocstring
     def wtf(self, irc, msg, args, foo, something):
