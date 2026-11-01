@@ -681,44 +681,50 @@ class FormatContext(object):
 
 class FormatParser(object):
     def __init__(self, s):
-        self.fd = io.StringIO(s)
-        self.last = None
+        if not isinstance(s, str):
+            # Let StringIO reject non-str input (and accept None) as before.
+            s = io.StringIO(s).getvalue()
+        self.s = s
+        self.pos = 0
         self.max_context_size = 0
 
     def getChar(self):
-        if self.last is not None:
-            c = self.last
-            self.last = None
-            return c
-        else:
-            return self.fd.read(1)
+        c = self.s[self.pos:self.pos + 1]
+        self.pos += len(c)
+        return c
 
     def ungetChar(self, c):
-        self.last = c
+        self.pos -= len(c)
 
     def parse(self):
         context = FormatContext()
-        c = self.getChar()
-        while c:
-            if c == '\x02':
+        if self.s.isprintable():
+            # Plain text has no control characters, so nothing to parse.
+            return context
+        max_size = self.max_context_size
+        size = context.size
+        for (i, c) in enumerate(self.s):
+            if c > '\x1f':
+                # Not a control character; this is the common case.
+                continue
+            elif c == '\x02':
                 context.bold = not context.bold
-                self.max_context_size = max(
-                        self.max_context_size, context.size())
             elif c == '\x16':
                 context.reverse = not context.reverse
-                self.max_context_size = max(
-                        self.max_context_size, context.size())
             elif c == '\x1f':
                 context.underline = not context.underline
-                self.max_context_size = max(
-                        self.max_context_size, context.size())
             elif c == '\x0f':
                 context.reset()
+                continue
             elif c == '\x03':
+                # Color codes only consume digits and a comma, which the
+                # loop would skip anyway, so we can carry on from here.
+                self.pos = i + 1
                 self.getColor(context)
-                self.max_context_size = max(
-                        self.max_context_size, context.size())
-            c = self.getChar()
+            else:
+                continue
+            max_size = max(max_size, size())
+        self.max_context_size = max_size
         return context
 
     def getInt(self):
@@ -729,7 +735,6 @@ class FormatParser(object):
             j = i * 10
             j += int(c)
             if j >= 16:
-                self.ungetChar(c)
                 break
             else:
                 setI = True
@@ -761,12 +766,15 @@ def wrap(s, length, break_on_hyphens = False):
 
     processed = []
     chunks = utils.str.byteTextWrap(s, length - format_overhead)
-    context = None
+    context = FormatContext()
     for chunk in chunks:
-        if context is not None:
-            chunk = context.start(chunk)
-        context = FormatParser(chunk).parse()
-        processed.append(context.end(chunk))
+        chunk = context.start(chunk)
+        if not chunk.isprintable():
+            # Plain chunks cannot change the context, so only parse the
+            # chunks that contain formatting.
+            context = FormatParser(chunk).parse()
+            chunk = context.end(chunk)
+        processed.append(chunk)
     return processed
 
 def isValidArgument(s):
