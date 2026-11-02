@@ -30,6 +30,9 @@ import supybot.conf as conf
 import supybot.registry as registry
 import supybot.ircutils as ircutils
 
+import os
+from unittest import mock
+
 
 class SupyConfTestCase(SupyTestCase):
     def testJoinToOneChannel(self):
@@ -57,3 +60,28 @@ class SupyConfTestCase(SupyTestCase):
         chan_list = (msgs[0].args[0] + ',' + msgs[1].args[0]).split(',')
         self.assertCountEqual(input_list, chan_list)
         conf.supybot.networks.test.channels.setValue(orig)
+
+
+class DirectoriesTestCase(SupyTestCase):
+    def testDirectoryExpandsUser(self):
+        home = os.path.expanduser('~')
+        d = conf.Directory('~/limnoria-test-dir', 'help')
+        mkdir = []
+        with mock.patch('os.mkdir', mkdir.append), \
+                mock.patch('os.path.exists', lambda path: False):
+            self.assertEqual(d(), os.path.join(home, 'limnoria-test-dir'))
+        self.assertEqual(mkdir, [os.path.join(home, 'limnoria-test-dir')])
+        # The configured value itself is left untouched
+        self.assertEqual(str(d), '~/limnoria-test-dir')
+
+    def testPluginDirectoriesExpandUser(self):
+        home = os.path.expanduser('~')
+        orig = conf.supybot.directories.plugins()[:]
+        try:
+            conf.supybot.directories.plugins.set(
+                '~/plugins, /opt/limnoria/plugins')
+            self.assertEqual(conf.supybot.directories.plugins(),
+                             [os.path.join(home, 'plugins'),
+                              '/opt/limnoria/plugins'])
+        finally:
+            conf.supybot.directories.plugins.setValue(orig)
