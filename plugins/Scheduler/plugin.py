@@ -33,6 +33,7 @@ import os
 import pickle
 import shutil
 import tempfile
+import datetime
 
 import supybot.conf as conf
 import supybot.utils as utils
@@ -268,6 +269,36 @@ class Scheduler(callbacks.Plugin):
     repeat = wrap(repeat, [
         getopts({'delay': 'positiveInt'}),
         'nonInt', 'positiveInt', 'text'])
+
+    @internationalizeDocstring
+    def daily(self, irc, msg, args, name, time_of_day, command):
+        """ <name> <time_of_day> <command>
+
+        Schedules a command <command> to run daily at a given
+        time <time_of_day>. The format of <time_of_day> is HH:MM:SS
+        """
+        name = name.lower()
+        if name in self.events:
+            irc.error(_('There is already an event with that name, please '
+                        'choose another name.'), Raise=True)
+        epoch = int(time.time())
+        seconds_until_next_run = 0
+        while True:
+            dt = datetime.datetime.fromtimestamp(epoch + seconds_until_next_run)
+            try:
+                hours, minutes, seconds = map(int, time_of_day.split(":"))
+            except ValueError:
+                irc.error(_('Unable to parse time_of_day'), Raise=True)
+            if dt.hour == hours and dt.minute == minutes and dt.second == seconds:
+                break
+            seconds_until_next_run += 1
+
+        self._repeat(irc.network, msg, name, 60 * 60 * 24, command,
+                     epoch + seconds_until_next_run, seconds_until_next_run)
+        # Reply status since the command is run at a later time
+        irc.replySuccess()
+
+    daily = wrap(daily, ['nonInt', 'nonInt', 'text'])
 
     @internationalizeDocstring
     def list(self, irc, msg, args):
