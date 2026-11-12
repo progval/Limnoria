@@ -228,6 +228,24 @@ class IrcUserTestCase(IrcdbTestCase):
         u.removeHostmask('foo!bar@baz')
         self.assertFalse(u.checkHostmask('foo!bar@baz'))
 
+    def testNicks(self):
+        u = ircdb.IrcUser()
+        self.assertRaises(KeyError, u.checkNick, 'net', 'foo')
+        u.addNick('net', 'Foo')
+        self.assertTrue(u.checkNick('net', 'Foo'))
+        # Nicks and services accounts are case-insensitive on IRC.
+        self.assertTrue(u.checkNick('net', 'foo'))
+        self.assertTrue(u.checkNick('net', 'FOO'))
+        self.assertFalse(u.checkNick('net', 'bar'))
+        self.assertRaises(KeyError, u.checkNick, 'othernet', 'foo')
+        # Adding the same nick with a different case does not duplicate it,
+        # and the original spelling is kept.
+        u.addNick('net', 'FOO')
+        self.assertEqual(u.nicks['net'], ['Foo'])
+        u.removeNick('net', 'fOo')
+        self.assertFalse(u.checkNick('net', 'Foo'))
+        self.assertRaises(KeyError, u.removeNick, 'net', 'Foo')
+
     def testOwner(self):
         u = ircdb.IrcUser()
         u.addCapability('owner')
@@ -462,6 +480,19 @@ class UsersDictionaryTestCase(IrcdbTestCase):
         u2 = self.users.newUser()
         u2.addHostmask('*!xyzzy@baz.domain.c?m')
         self.assertRaises(ValueError, self.users.setUser, u2)
+
+    def testGetUserFromNick(self):
+        self.assertEqual(self.users.getUserFromNick('net', 'foo'), None)
+        u = self.users.newUser()
+        u.name = 'foo'
+        u.nicks['net'] = ['Foo']
+        self.users.setUser(u)
+        self.assertEqual(self.users.getUserFromNick('net', 'Foo'), u)
+        # Nicks and services accounts are case-insensitive on IRC.
+        self.assertEqual(self.users.getUserFromNick('net', 'foo'), u)
+        self.assertEqual(self.users.getUserFromNick('net', 'FOO'), u)
+        self.assertEqual(self.users.getUserFromNick('net', 'bar'), None)
+        self.assertEqual(self.users.getUserFromNick('othernet', 'foo'), None)
 
 
 class NetworksDictionaryTestCase(IrcdbTestCase):

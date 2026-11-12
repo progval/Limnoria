@@ -45,7 +45,7 @@ class NickAuthTestCase(PluginTestCase):
         self.assertNotError('nick add foobar baz')
         self.assertNotError('unidentify')
 
-    def _procedure(self, nickserv_reply):
+    def _procedure(self, nickserv_reply, account='baz'):
         self._register()
         self.prefix = self.prefix1
         self.assertError('nick add foobar qux')
@@ -64,7 +64,7 @@ class NickAuthTestCase(PluginTestCase):
         self.assertEqual(self.irc.takeMsg().command, 'WHOIS')
         if nickserv_reply:
             self.irc.feedMsg(ircmsgs.IrcMsg(':leguin.freenode.net 330 pgjrgrg '
-                    '%s baz :is logged in as' % self.nick))
+                    '%s %s :is logged in as' % (self.nick, account)))
             msg = self.irc.takeMsg()
             self.assertNotEqual(msg, None)
             self.assertEqual(msg.args[1], 'You are now authenticated as foobar.')
@@ -79,6 +79,11 @@ class NickAuthTestCase(PluginTestCase):
         self._procedure(True)
     def testNoAuth(self):
         self._procedure(False)
+
+    def testAuthCaseInsensitive(self):
+        # Services accounts are case-insensitive, like nicks; the account
+        # was registered as 'baz'.
+        self._procedure(True, account='BAZ')
 
     def testUserJoin(self):
         self.irc.feedMsg(ircmsgs.IrcMsg('CAP * NEW extended-join'))
@@ -131,6 +136,9 @@ class NickAuthTestCase(PluginTestCase):
         self.assertRegexp('nick list', 'You have no recognized services accounts')
         self.assertNotError('nick add foo')
         self.assertRegexp('nick list', 'foo')
+        # Services accounts are case-insensitive, so this is the same account.
+        self.assertRegexp('nick add FOO', 'already used')
+        self.assertResponse('nick list', 'foo')
         self.assertNotError('nick add %s bar' % self.nick)
         self.assertRegexp('nick list', 'foo and bar')
         self.assertNotError('nick add %s %s baz' % (self.irc.network, self.nick))

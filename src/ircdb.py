@@ -306,9 +306,18 @@ class IrcUser(object):
         """Removes a hostmask from the user's hostmasks."""
         self.hostmasks.remove(hostmask)
 
+    def _findNick(self, network, nick):
+        """Returns the user's registered nick on the network that matches
+        the given nick (case-insensitively, as IRC nicks and services accounts
+        are), or None if there is none."""
+        for registered in self.nicks[network]:
+            if ircutils.nickEqual(registered, nick):
+                return registered
+        return None
+
     def checkNick(self, network, nick):
         """Checks a given nick against the user's nicks."""
-        return nick in self.nicks[network]
+        return self._findNick(network, nick) is not None
 
     def addNick(self, network, nick):
         """Adds a nick to the user's registered nicks on the network."""
@@ -319,15 +328,16 @@ class IrcUser(object):
             raise KeyError
         if network not in self.nicks:
             self.nicks[network] = []
-        if nick not in self.nicks[network]:
+        if self._findNick(network, nick) is None:
             self.nicks[network].append(nick)
 
     def removeNick(self, network, nick):
         """Removes a nick from the user's registered nicks on the network."""
         assert isinstance(network, str)
-        if nick not in self.nicks[network]:
+        registered = self._findNick(network, nick)
+        if registered is None:
             raise KeyError
-        self.nicks[network].remove(nick)
+        self.nicks[network].remove(registered)
 
     def addAuth(self, hostmask):
         """Sets a user's authenticated hostmask.  This times out according to
@@ -833,7 +843,7 @@ class UsersDictionary(utils.IterableMap):
         """Return a user given its nick."""
         for user in self.users.values():
             try:
-                if nick in user.nicks[network]:
+                if user.checkNick(network, nick):
                     return user
             except KeyError:
                 pass
